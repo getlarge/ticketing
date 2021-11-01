@@ -1,0 +1,37 @@
+{
+  "name": "ticketing",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "nx serve",
+    "build": "nx build",
+    "test": "nx test"
+  },
+  "private": true,
+  "dependencies": {
+    "express": "4.17.1",
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {
+    "@nrwl/cli": "13.1.2",
+    "@nrwl/eslint-plugin-nx": "13.1.2",
+    "@nrwl/express": "13.1.2",
+    "@nrwl/jest": "13.1.2",
+    "@nrwl/linter": "13.1.2",
+    "@nrwl/node": "13.1.2",
+    "@nrwl/nx-cloud": "latest",
+    "@nrwl/tao": "13.1.2",
+    "@nrwl/workspace": "13.1.2",
+    "@types/express": "4.17.0",
+    "@types/jest": "27.0.2",
+    "@types/node": "14.14.33",
+    "@typescript-eslint/eslint-plugin": "~4.33.0",
+    "@typescript-eslint/parser": "~4.33.0",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.1.0",
+    "jest": "27.2.3",
+    "prettier": "^2.3.1",
+    "ts-jest": "27.0.5",
+    "typescript": "~4.3.5"
+  }
+}
