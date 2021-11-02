@@ -1,6 +1,7 @@
-
-
 # Ticketing
+
+This is a remix of the app built in the course [microservices with node.js and react](https://www.udemy.com/course/microservices-with-node-js-and-react/) starting at chapter 5.
+It shows how to integrate Nx into a Kubernetes workflow.
 
 This project was generated using [Nx](https://nx.dev).
 
@@ -78,8 +79,6 @@ Run `nx dep-graph` to see a diagram of the dependencies of your projects.
 ## Further help
 
 Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-
 
 ## ☁ Nx Cloud
 
