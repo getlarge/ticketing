@@ -13,8 +13,66 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": [
+                  "type:app",
+                  "type:env",
+                  "scope:shared"
+                ]
+              },
+              {
+                "sourceTag": "type:api",
+                "onlyDependOnLibsWithTags": [
+                  "type:core",
+                  "type:ui",
+                  "type:util"
+                ]
+              },
+              {
+                "sourceTag": "type:core",
+                "onlyDependOnLibsWithTags": [
+                  "type:api",
+                  "type:util",
+                  "type:ui",
+                  "type:env",
+                  "type:core"
+                ]
+              },
+              {
+                "sourceTag": "type:ui",
+                "onlyDependOnLibsWithTags": [
+                  "type:ui",
+                  "type:util",
+                  "type:api",
+                  "type:core"
+                ]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:env",
+                "onlyDependOnLibsWithTags": ["type:env"]
+              },
+              {
+                "sourceTag": "scope:auth",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:auth"]
+              },
+              {
+                "sourceTag": "platform:web",
+                "onlyDependOnLibsWithTags": ["platform:web", "platform:shared"]
+              },
+              {
+                "sourceTag": "platform:server",
+                "onlyDependOnLibsWithTags": [
+                  "platform:server",
+                  "platform:shared"
+                ]
+              },
+              {
+                "sourceTag": "platform:shared",
+                "onlyDependOnLibsWithTags": ["platform:shared"]
               }
             ]
           }
