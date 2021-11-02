@@ -1,6 +1,7 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": ["../../.eslintrc.json", "plugin:sonarjs/recommended", "plugin:security/recommended"],
   "ignorePatterns": ["!**/*"],
+  "plugins": ["security"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
