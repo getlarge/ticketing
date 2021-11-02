@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
+    "@nrwl/next": "^13.1.2",
     "express": "4.17.1",
     "tslib": "^2.0.0"
   },
