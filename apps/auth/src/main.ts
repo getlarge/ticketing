@@ -4,15 +4,18 @@
  */
 
 import * as express from 'express';
+import { json } from 'body-parser';
 
 const app = express();
+app.use(json());
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to auth!' });
+app.get('/api/users/currentuser', (req, res) => {
+  res.send('Hi there!');
 });
 
-const port = process.env.port || 3333;
+const port = process.env.port || 3000;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
+
 server.on('error', console.error);

@@ -1,0 +1,11 @@
+.git
+*.tar.gz
+dist
+node_modules
+test
+fixtures
+coverage
+.env
+.env.*
+.clinic
+.scannerwork

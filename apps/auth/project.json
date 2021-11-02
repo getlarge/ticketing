@@ -10,7 +10,8 @@
         "outputPath": "dist/apps/auth",
         "main": "apps/auth/src/main.ts",
         "tsConfig": "apps/auth/tsconfig.app.json",
-        "assets": ["apps/auth/src/assets"]
+        "assets": ["apps/auth/src/assets"],
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -23,6 +24,10 @@
               "with": "apps/auth/src/environments/environment.prod.ts"
             }
           ]
+        },
+        "development": {
+          "optimization": false,
+          "inspect": false
         }
       }
     },
@@ -30,7 +35,16 @@
       "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "auth:build"
-      }
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "auth:build:production"
+        },
+        "development": {
+          "buildTarget": "auth:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -46,7 +60,17 @@
         "jestConfig": "apps/auth/jest.config.js",
         "passWithNoTests": true
       }
+    },
+    "deploy": {
+      "builder": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "nx build auth",
+          "docker build -f ./apps/auth/Dockerfile . -t getlarge/ticketing-auth"
+        ],
+        "parallel": false
+      }
     }
   },
-  "tags": []
+  "tags": ["scope:auth", "type:app", "platform:server"]
 }
