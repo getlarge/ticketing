@@ -1,0 +1,28 @@
+apiVersion: skaffold/v2beta25
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - './infra/k8s/*'
+build:
+  local:
+    push: false
+  artifacts:
+    - image: getlarge/ticketing-auth
+      context: .
+      # sync:
+      #   manual:
+      #     - src: 'apps/auth/src/**/*.ts'
+      #       dest: .
+      custom:
+        buildCommand: npx nx run auth:deploy
+        dependencies:
+          # TODO: create script using Nx to retrieve app dependencies and pass to command
+          paths:
+            - 'apps/auth/src/main.ts'
+            - 'apps/auth/src/**/*.ts'
+          ignore:
+            - 'apps/auth/src/environments/*.ts'
+  tagPolicy:
+    envTemplate:
+      template: latest
