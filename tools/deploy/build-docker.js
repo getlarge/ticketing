@@ -64,7 +64,7 @@ async function buildApp({ dockerfile = 'Dockerfile', npmToken, org, projectEnv, 
       },
       npmToken: {
         description: 'NPM token to read private packages',
-        demandOption: true,
+        demandOption: false,
         alias: 'n',
       },
     })

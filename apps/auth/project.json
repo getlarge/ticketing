@@ -61,13 +61,10 @@
         "passWithNoTests": true
       }
     },
-    "deploy": {
+    "build-docker": {
       "builder": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          "nx build auth",
-          "docker build -f ./apps/auth/Dockerfile . -t getlarge/ticketing-auth"
-        ],
+        "commands": ["node ./tools/deploy/build-docker.js -p auth"],
         "parallel": false
       }
     }
