@@ -10,19 +10,16 @@ build:
   artifacts:
     - image: getlarge/ticketing-auth
       context: .
-      # sync:
-      #   manual:
-      #     - src: 'apps/auth/src/**/*.ts'
-      #       dest: .
+      sync:
+        manual:
+          - src: .
+            dest: .
+          # - src: 'apps/auth'
+          #   dest: .
       custom:
-        buildCommand: npx nx run auth:deploy
+        buildCommand: npx nx run auth:build-docker --conf=development --tag=latest --file=Dockerfile
         dependencies:
-          # TODO: create script using Nx to retrieve app dependencies and pass to command
-          paths:
-            - 'apps/auth/src/main.ts'
-            - 'apps/auth/src/**/*.ts'
-          ignore:
-            - 'apps/auth/src/environments/*.ts'
+          command: node ./tools/nx/get-dependencies-cli.js -p auth
   tagPolicy:
     envTemplate:
       template: latest
