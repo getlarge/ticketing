@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/filters",
+  "sourceRoot": "libs/microservices/shared/filters/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/filters/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/filters"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/filters/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
