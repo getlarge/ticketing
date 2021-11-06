@@ -1,3 +1,4 @@
+export * from './body-parser-error';
 export * from './custom-error';
 export * from './database-connection-error';
 export * from './error-response';

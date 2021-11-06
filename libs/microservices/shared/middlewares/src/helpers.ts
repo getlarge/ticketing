@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { BodyParserError } from '@ticketing/shared/errors';
 import { Request, Response } from 'express';
 
 export const ErrorTypeStatusMap = {
@@ -18,8 +19,8 @@ export function handleBodyParserErrors(
   next: (error?: Error | HttpException) => unknown
 ) {
   if (err && 'type' in err) {
-    const status = ErrorTypeStatusMap[err.type];
-    const exception = new HttpException(err.message, status);
+    const status = ErrorTypeStatusMap[err.type] || 400;
+    const exception = new BodyParserError(status, err.message);
     next(exception);
   } else {
     next();
