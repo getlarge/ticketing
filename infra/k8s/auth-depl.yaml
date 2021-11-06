@@ -15,9 +15,17 @@ spec:
       containers:
         - name: auth
           image: getlarge/ticketing-auth
+          envFrom:
+            - configMapRef:
+                name: api-config
           env:
             - name: PORT
-              value: '3333'
+              value: '3000'
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-secret
+                  key: MONGODB_URI
           resources:
             limits:
               memory: '128Mi'

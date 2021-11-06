@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  NODE_ENV: 'development'
+  FRONTEND_URL: 'http://ticketing.dev'
+  MAX_PAYLOAD_SIZE: '5'
+  SWAGGER_PATH: api
+  ASYNC_API_PATH: async-api
+  HEAP_USED_TRESHOLD: '1073741824'
+  MEMORY_RSS_TRESHOLD: '3221225472'
+  DISK_STORAGE_TRESHOLD: '536870912000'
