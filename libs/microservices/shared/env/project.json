@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/env",
+  "sourceRoot": "libs/microservices/shared/env/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/env/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/env"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/env/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
