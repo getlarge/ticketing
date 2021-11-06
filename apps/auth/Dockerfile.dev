@@ -1,0 +1,19 @@
+FROM getlarge/ticketing:nx-base AS builder
+
+ARG APP_NAME=auth
+ARG NODE_ENV
+ARG BUILD_FLAG
+WORKDIR /app/builder
+COPY . .
+RUN npx nx build ${APP_NAME} ${BUILD_FLAG}
+
+FROM getlarge/ticketing:nx-base
+
+WORKDIR /app
+COPY --from=builder /app/builder ./
+ENV NODE_ENV=$NODE_ENV
+
+# TODO: to make image lighter:
+#? use generated package.json and remove dependencies from root package.json, then run npm prune
+
+CMD ["node", "./dist/apps/${APP_NAME}/main.js"]
