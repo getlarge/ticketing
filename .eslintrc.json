@@ -16,21 +16,27 @@
                 "sourceTag": "type:app",
                 "onlyDependOnLibsWithTags": [
                   "type:app",
+                  "type:core",
+                  "type:const",
                   "type:env",
+                  "type:util",
                   "scope:shared"
                 ]
               },
               {
                 "sourceTag": "type:api",
                 "onlyDependOnLibsWithTags": [
+                  "type:const",
                   "type:core",
                   "type:ui",
-                  "type:util"
+                  "type:util",
+                  "scope:shared"
                 ]
               },
               {
                 "sourceTag": "type:core",
                 "onlyDependOnLibsWithTags": [
+                  "type:const",
                   "type:api",
                   "type:util",
                   "type:ui",
@@ -41,6 +47,7 @@
               {
                 "sourceTag": "type:ui",
                 "onlyDependOnLibsWithTags": [
+                  "type:const",
                   "type:ui",
                   "type:util",
                   "type:api",
@@ -49,11 +56,15 @@
               },
               {
                 "sourceTag": "type:util",
-                "onlyDependOnLibsWithTags": ["type:util"]
+                "onlyDependOnLibsWithTags": ["type:const", "type:util"]
+              },
+              {
+                "sourceTag": "type:const",
+                "onlyDependOnLibsWithTags": ["type:const"]
               },
               {
                 "sourceTag": "type:env",
-                "onlyDependOnLibsWithTags": ["type:env"]
+                "onlyDependOnLibsWithTags": ["type:const", "type:env"]
               },
               {
                 "sourceTag": "scope:auth",
