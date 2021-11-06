@@ -18,16 +18,12 @@
           "optimization": true,
           "extractLicenses": true,
           "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/auth/src/environments/environment.ts",
-              "with": "apps/auth/src/environments/environment.prod.ts"
-            }
-          ]
+          "sourceMap": true
         },
         "development": {
           "optimization": false,
-          "inspect": false
+          "inspect": false,
+          "sourceMap": false
         }
       }
     },
@@ -62,10 +58,18 @@
       }
     },
     "build-docker": {
-      "builder": "@nrwl/workspace:run-commands",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["node ./tools/deploy/build-docker.js -p auth"],
+        "commands": [
+          "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
+        ],
         "parallel": false
+      }
+    },
+    "get-dependencies": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node ./tools/nx/get-dependencies-cli.js -p auth"
       }
     }
   },

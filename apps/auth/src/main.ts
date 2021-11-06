@@ -1,35 +1,22 @@
-import 'express-async-errors';
+/**
+ * This is not a production server yet!
+ * This is only a minimal backend to get started.
+ */
 
-import { json } from 'body-parser';
-import * as express from 'express';
+import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 
-import { NotFoundError } from './app/errors';
-import { errorHandler } from './app/middlewares/error-handler';
-import {
-  CurrentUserRouter,
-  SigninRouter,
-  SignoutRouter,
-  SignupRouter,
-} from './app/routes/';
+import { AppModule } from './app/app.module';
 
-const app = express();
-app.use(json());
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  const globalPrefix = 'api';
+  app.setGlobalPrefix(globalPrefix);
 
-app.use(CurrentUserRouter);
-app.use(SigninRouter);
-app.use(SignoutRouter);
-app.use(SignupRouter);
+  const port = process.env.PORT || 3333;
+  await app.listen(port, () => {
+    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+  });
+}
 
-app.all('*', () => {
-  throw new NotFoundError();
-});
-
-app.use(errorHandler);
-
-const port = process.env.port || 3000;
-const server = app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Listening at http://localhost:${port}/api`);
-});
-
-server.on('error', console.error);
+bootstrap();
