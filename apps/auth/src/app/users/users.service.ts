@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { CreateUser } from './models/create-user';
@@ -14,9 +14,14 @@ export class UsersService {
     return {};
   }
 
-  signUp(user: CreateUser) {
-    // this.userModel.b
-    return {};
+  async signUp(user: CreateUser): Promise<CreateUser> {
+    const existingUser = await this.userModel.findOne({ email: user.email });
+    if (existingUser) {
+      throw new HttpException('Email already used', HttpStatus.BAD_REQUEST);
+    }
+    const newUser = this.userModel.build(user);
+    const savedUser = await newUser.save();
+    return savedUser.toJSON();
   }
 
   signIn(user: CreateUser) {

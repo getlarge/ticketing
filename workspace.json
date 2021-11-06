@@ -2,7 +2,6 @@
   "version": 2,
   "projects": {
     "auth": "apps/auth",
-    "microservices-shared-constants": "libs/microservices/shared/constants",
     "microservices-shared-env": "libs/microservices/shared/env",
     "microservices-shared-filters": "libs/microservices/shared/filters",
     "microservices-shared-middlewares": "libs/microservices/shared/middlewares",

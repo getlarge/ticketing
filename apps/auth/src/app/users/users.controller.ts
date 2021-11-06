@@ -2,14 +2,16 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Resources } from '@ticketing/shared/constants';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 
+import { CreateUserDto } from './models';
 import { CreateUser } from './models/create-user';
 import { UsersService } from './users.service';
 
@@ -32,8 +34,18 @@ export class UsersController {
       whitelist: true,
     })
   )
+  @ApiOperation({
+    description: 'Request creation of a user',
+    summary: `Register a user - Scope : ${Resources.USERS}:${Actions.CREATE_ONE}`,
+  })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User created',
+    // type: UserResponseDto,
+  })
   @Post('sign-up')
-  signup(@Body() user: CreateUser) {
+  signup(@Body() user: CreateUser): Promise<CreateUser> {
     return this.usersService.signUp(user);
   }
 
