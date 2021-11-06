@@ -1,4 +1,6 @@
-const { createPackageJson } = require('@nrwl/workspace/src/utilities/create-package-json');
+const {
+  createPackageJson,
+} = require('@nrwl/workspace/src/utilities/create-package-json');
 const fs = require('fs');
 const { getProjectGraph } = require('./get-project-graph');
 
@@ -32,7 +34,10 @@ async function getPackageJson({ projectName, root, skipDev = false }) {
   return packageJson;
 }
 
-function outputPackageJson({ output = 'stdout', outputPath = process.cwd() }, packageJson = {}) {
+function outputPackageJson(
+  { output = 'stdout', outputPath = process.cwd() },
+  packageJson = {}
+) {
   const serializedPackageJson = JSON.stringify(packageJson, null, 2);
   if (output === 'stdout') {
     console.log(serializedPackageJson);

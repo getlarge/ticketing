@@ -1,8 +1,12 @@
-const fs = require('fs');
 const { getProjectGraph } = require('./get-project-graph');
-// const minimatch = require('minimatch');
+const minimatch = require('minimatch');
 
-async function getProjectDependenciesFiles({ context, exclude, include, projectName }) {
+async function getProjectDependenciesFiles({
+  context,
+  exclude,
+  include,
+  projectName,
+}) {
   const graph = await getProjectGraph({
     focus: projectName,
     skipExternal: true,
@@ -18,8 +22,11 @@ async function getProjectDependenciesFiles({ context, exclude, include, projectN
     { source, target },
     ...getAllDependencies(getTargetDependencies(target)),
   ];
-  const getAllDependencies = (deps = []) => deps.flatMap((c) => getOneDependency(c));
-  const libTargets = getAllDependencies(getTargetDependencies(projectName)).map(({ target }) => target);
+  const getAllDependencies = (deps = []) =>
+    deps.flatMap((c) => getOneDependency(c));
+  const libTargets = getAllDependencies(getTargetDependencies(projectName)).map(
+    ({ target }) => target
+  );
   const libsDependencies = Array.from(new Set(libTargets));
 
   //
@@ -27,21 +34,24 @@ async function getProjectDependenciesFiles({ context, exclude, include, projectN
   const getNode = (target) => graph.nodes[target];
   const getFilesFromNode = ({ data, type }) => {
     const { files, sourceRoot } = data;
-    // return files
-    //   .filter(
-    //     ({ file }) =>
-    //       !exclude.some((val) => minimatch(file, val, { matchBase: true })) &&
-    //       include.some((val) => minimatch(file, val, { matchBase: true }))
-    //   )
-    //   .map(({ file }) => file);
-    return type === 'app' ? [`${sourceRoot}/main.ts`, `${sourceRoot}/**/*.ts`] : [`${sourceRoot}/**/*.ts`];
+    return files
+      .filter(
+        ({ file }) =>
+          !exclude.some((val) => minimatch(file, val, { matchBase: true })) &&
+          include.some((val) => minimatch(file, val, { matchBase: true }))
+      )
+      .map(({ file }) => file);
   };
 
   const appDependenciesFiles = getFilesFromNode(getNode(projectName));
-  const libsDependenciesFiles = libsDependencies.flatMap((target) => getFilesFromNode(getNode(target)));
+  const libsDependenciesFiles = libsDependencies.flatMap((target) =>
+    getFilesFromNode(getNode(target))
+  );
   const dependenciesFiles = [...appDependenciesFiles, ...libsDependenciesFiles];
 
-  return context === '.' ? dependenciesFiles : dependenciesFiles.map((file) => file.replace(context, ''));
+  return context === '.'
+    ? dependenciesFiles
+    : dependenciesFiles.map((file) => file.replace(context, ''));
 }
 
 module.exports = {

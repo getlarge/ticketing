@@ -18,6 +18,13 @@ const { getPackageJson, outputPackageJson } = require('./get-package-json');
         default: process.cwd(),
         alias: 'r',
       },
+      skipDev: {
+        description: 'Wether to include devDependencies',
+        demandOption: false,
+        type: 'boolean',
+        default: true,
+        alias: 'D',
+      },
       output: {
         description: 'Where to output package.json',
         demandOption: false,

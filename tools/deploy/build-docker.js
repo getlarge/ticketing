@@ -3,21 +3,46 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { getPackageJson, outputPackageJson } = require('../nx/get-package-json');
 const { stringIsUndefined } = require('../utils');
+const { name } = require('../../package.json');
 
-async function buildApp({ dockerfile = 'Dockerfile', npmToken, org, projectEnv, projectName, root, tag }) {
+async function buildApp({
+  dockerfile = 'Dockerfile',
+  npmToken,
+  org,
+  projectEnv,
+  projectName,
+  root,
+  tag,
+}) {
+  const skipDev = projectEnv === 'production';
   const packageJson = await getPackageJson({
     projectName,
     root,
-    skipDev: true,
+    skipDev,
   });
-  outputPackageJson({ output: 'file', outputPath: `apps/${projectName}` }, packageJson);
-  execSync(`npm i --prefix apps/${projectName} --package-lock-only`, { stdio: 'inherit' });
-  execSync(`npx nx run ${projectName}:build:${projectEnv}`, { stdio: 'inherit' });
+  outputPackageJson(
+    { output: 'file', outputPath: `apps/${projectName}` },
+    packageJson
+  );
+  execSync(`npm i --prefix apps/${projectName} --package-lock-only`, {
+    stdio: 'inherit',
+  });
+
   // TODO: allow skipping docker cache ? --no-cache
+  execSync(`npx nx run ${projectName}:build:${projectEnv}`, {
+    stdio: 'inherit',
+  });
   execSync(
-    `docker build -f ./apps/${projectName}/${dockerfile} --build-arg npm_token=${npmToken} -t ${org}/${projectName}:${tag} .`,
+    `docker build -f ./apps/${projectName}/${dockerfile} --build-arg npm_token=${npmToken} -t ${org}/${name}-${projectName}:${tag} .`,
     { stdio: 'inherit' }
   );
+
+  // execSync(
+  //   `docker build -f ./apps/${projectName}/${dockerfile} --build-arg npm_token=${npmToken}\
+  //   --build-arg NODE_ENV=${projectEnv} --build-arg BUILD_FLAG=""\
+  //   --cache-from ${org}/${name}:nx-base -t ${org}/${name}-${projectName}:${tag} .`,
+  //   { stdio: 'inherit' }
+  // );
 }
 
 (async function () {
@@ -35,6 +60,7 @@ async function buildApp({ dockerfile = 'Dockerfile', npmToken, org, projectEnv, 
         demandOption: false,
         example: 'development',
         default: 'production',
+        coerce: (value) => (stringIsUndefined(value) ? 'production' : value),
         alias: 'c',
       },
       root: {
@@ -47,6 +73,7 @@ async function buildApp({ dockerfile = 'Dockerfile', npmToken, org, projectEnv, 
         description: 'Dockerfile name',
         demandOption: false,
         default: 'Dockerfile',
+        coerce: (value) => (stringIsUndefined(value) ? 'Dockerfile' : value),
         alias: 'f',
       },
       tag: {
@@ -60,7 +87,7 @@ async function buildApp({ dockerfile = 'Dockerfile', npmToken, org, projectEnv, 
         description: 'Docker registry org',
         demandOption: false,
         alias: 'o',
-        default: 's1seven',
+        default: 'getlarge',
       },
       npmToken: {
         description: 'NPM token to read private packages',
