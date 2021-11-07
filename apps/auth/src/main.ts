@@ -11,6 +11,7 @@ import {
 } from '@nestjs/swagger';
 import { Resources } from '@ticketing/shared/constants';
 import { fastifyHelmet } from 'fastify-helmet';
+import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 import { Logger } from 'nestjs-pino';
 
@@ -59,6 +60,9 @@ async function bootstrap() {
       signed: false,
     },
   });
+
+  app.register(fastifyPassport.initialize());
+  app.register(fastifyPassport.secureSession());
 
   const config = new DocumentBuilder()
     .setTitle('Auth API')

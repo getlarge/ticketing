@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import {
   BaseEnvironmentVariables,
+  JWTEnvironmentVariables,
   MongoEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Exclude } from 'class-transformer';
@@ -14,6 +15,7 @@ export type AppConfigService = ConfigService<EnvironmentVariables>;
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
+  JWTEnvironmentVariables,
   MongoEnvironmentVariables
 ) {
   @Exclude()
