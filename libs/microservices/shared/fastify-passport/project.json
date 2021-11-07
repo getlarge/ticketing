@@ -1,0 +1,25 @@
+{
+  "root": "libs/microservices/shared/fastify-passport",
+  "sourceRoot": "libs/microservices/shared/fastify-passport/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/microservices/shared/fastify-passport/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/fastify-passport"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:util", "platform:server"]
+}

@@ -1,0 +1,22 @@
+{
+  "extends": ["../../../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "max-nested-callbacks": ["error", { "max": 4 }],
+        "max-params": ["error", 10],
+        "max-params-no-constructor/max-params-no-constructor": ["error", 6]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    }
+  ]
+}

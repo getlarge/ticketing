@@ -3,6 +3,7 @@
   "projects": {
     "auth": "apps/auth",
     "microservices-shared-env": "libs/microservices/shared/env",
+    "microservices-shared-fastify-passport": "libs/microservices/shared/fastify-passport",
     "microservices-shared-filters": "libs/microservices/shared/filters",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
