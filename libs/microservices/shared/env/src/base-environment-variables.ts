@@ -97,7 +97,7 @@ export class BaseEnvironmentVariables {
   @decorate(Expose())
   @decorate(IsOptional())
   @decorate(IsString())
-  SWAGGER_PATH?: string = 'api';
+  SWAGGER_PATH?: string = 'open-api';
 
   @decorate(Expose())
   @decorate(IsOptional())

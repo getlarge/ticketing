@@ -8,7 +8,7 @@ export class MongoEnvironmentVariables {
   @decorate(Expose())
   @decorate(
     IsUrl({
-      protocols: ['mongodb', 'mongodbs'],
+      protocols: ['mongodb', 'mongodb+srv', 'mongodbs'],
       require_tld: false,
       require_protocol: true,
       require_valid_protocol: true,
