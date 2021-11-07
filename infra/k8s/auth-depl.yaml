@@ -26,6 +26,21 @@ spec:
                 secretKeyRef:
                   name: auth-service-secret
                   key: MONGODB_URI
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PRIVATE_KEY
+            - name: JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PUBLIC_KEY
+            - name: SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: SESSION_KEY
           resources:
             limits:
               memory: '128Mi'
