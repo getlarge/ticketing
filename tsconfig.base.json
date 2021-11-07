@@ -21,9 +21,6 @@
       "@ticketing/microservices/shared/filters": [
         "libs/microservices/shared/filters/src/index.ts"
       ],
-      "@ticketing/microservices/shared/middlewares": [
-        "libs/microservices/shared/middlewares/src/index.ts"
-      ],
       "@ticketing/shared/constants": ["libs/shared/constants/src/index.ts"],
       "@ticketing/shared/errors": ["libs/shared/errors/src/index.ts"],
       "@ticketing/shared/models": ["libs/shared/models/src/index.ts"]
