@@ -27,6 +27,16 @@
         }
       }
     },
+
+    "build-docker": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nrwl/node:execute",
       "options": {
@@ -54,18 +64,20 @@
       "outputs": ["coverage/apps/auth"],
       "options": {
         "jestConfig": "apps/auth/jest.config.js",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "codeCoverage": true
       }
     },
-    "build-docker": {
-      "executor": "@nrwl/workspace:run-commands",
+    "e2e": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/auth-e2e"],
       "options": {
-        "commands": [
-          "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
-        ],
-        "parallel": false
+        "jestConfig": "apps/auth/jest-e2e.config.js",
+        "codeCoverage": true,
+        "detectOpenHandles": true
       }
     },
+
     "get-dependencies": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

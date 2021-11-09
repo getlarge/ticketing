@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "lib": ["es2019"],
+    "emitDecoratorMetadata": true,
+    "types": ["jest", "node"],
+    "allowJs": true
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts"]
+  "include": ["**/*.e2e-spec.ts", "**/*.spec.ts", "**/*.d.ts"]
 }
