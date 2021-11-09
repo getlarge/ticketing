@@ -39,3 +39,6 @@ export enum Actions {
   VALIDATE_ONE = 'validate_one',
   ALL = '*',
 }
+
+export const CURRENT_USER_KEY = 'currentUser';
+export const SESSION_ACCESS_TOKEN = 'access_token';

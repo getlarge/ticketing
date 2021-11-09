@@ -60,7 +60,6 @@ async function bootstrap() {
       signed: false,
     },
   });
-
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
 

@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@ticketing/microservices/shared/fastify-passport';
+import { SESSION_ACCESS_TOKEN } from '@ticketing/shared/constants';
+import { FastifyRequest } from 'fastify';
 import { Strategy, StrategyOptions } from 'passport-jwt';
 
 import { AppConfigService } from '../env';
@@ -10,8 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(@Inject(ConfigService) configService: AppConfigService) {
     super({
       jwtFromRequest: (req) => {
-        if (!req || !req.cookies) return null;
-        return req.cookies['access_token'];
+        const request = req as unknown as FastifyRequest;
+        return request.session.get(SESSION_ACCESS_TOKEN);
       },
       ignoreExpiration: false,
       audience: '',
@@ -23,8 +25,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     } as StrategyOptions);
   }
 
-  async validate(payload: any) {
+  validate(payload: {
+    username: string;
+    sub: string;
+    iat: number;
+    exp: number;
+    aud: string;
+    iss: string;
+  }): { id: string; email: string } {
     // TODO: has user been banned ?
-    return { userId: payload.sub, username: payload.username };
+    return { id: payload.sub, email: payload.username };
   }
 }

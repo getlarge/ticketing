@@ -2,21 +2,23 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Post,
-  Request,
+  Session,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Actions, Resources } from '@ticketing/shared/constants';
+import { Actions, Resources, SESSION_ACCESS_TOKEN } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import type { FastifyRequest } from 'fastify';
+import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { User, UserCredentialsDto } from './models';
+import { CurrentUser } from '../shared/current-user.decorator';
+import { User, UserCredentialsDto, UserDto } from './models';
 import { UserCredentials } from './models/user-credentials';
 import { UsersService } from './users.service';
 
@@ -40,7 +42,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'User created',
-    // type: UserResponseDto,
+    type: UserDto,
   })
   @Post('sign-up')
   signUp(@Body() user: UserCredentials): Promise<UserCredentials> {
@@ -56,29 +58,41 @@ export class UsersController {
     })
   )
   @ApiBody({ type: UserCredentialsDto })
-  @Post('sign-in')
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
     description: 'JWT Token',
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          description: 'JWT token',
+          type: 'string',
+        },
+      },
+    },
   })
+  @HttpCode(HttpStatus.OK)
+  @Post('sign-in')
   async signIn(
     @Body() _user: UserCredentials,
-    @Request() request: FastifyRequest & { user: User & { id: string } }
+    @Session() session: FastifySession,
+    @CurrentUser() user: User
   ) {
-    const { token } = await this.usersService.signIn(request.user);
-    request.session.set('token', token);
+    const { token } = await this.usersService.signIn(user);
+    session.set(SESSION_ACCESS_TOKEN, token);
     return { token };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('sign-out')
-  signOut() {
+  signOut(@Session() session: FastifySession) {
+    session.delete();
     return this.usersService.signOut();
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('current-user')
-  getCurrentUser() {
-    return this.usersService.getCurrentUser();
+  getCurrentUser(@CurrentUser() user: User) {
+    return user;
   }
 }

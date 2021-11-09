@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
+import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 
 import { AppConfigService } from '../env';
 import { JwtStrategy } from '../guards/jwt.strategy';
@@ -30,7 +31,10 @@ import { UsersService } from './users.service';
         inject: [ConfigService],
       },
     ]),
-    PassportModule.register({ assignProperty: 'user', session: true }),
+    PassportModule.register({
+      assignProperty: CURRENT_USER_KEY,
+      session: true,
+    }),
     JwtModule.registerAsync({
       useFactory: (configService: AppConfigService) => ({
         privateKey: configService.get('JWT_PRIVATE_KEY'),

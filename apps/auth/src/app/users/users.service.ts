@@ -37,7 +37,7 @@ export class UsersService {
   ): Promise<{ id: string; email: string }> {
     const existingUser = await this.userModel.findOne({ email }, {});
     if (!existingUser) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException();
     }
     await this.validatePassword(existingUser.password, password);
     return { id: existingUser.id, email };
@@ -47,17 +47,17 @@ export class UsersService {
     storedPassword: string,
     password: string
   ): Promise<void> {
-    try {
-      const isValid = await Password.compare(storedPassword, password);
-      if (!isValid) {
+    const isValid = await Password.compare(storedPassword, password).catch(
+      () => {
         throw new UnauthorizedException();
       }
-    } catch (err) {
+    );
+    if (!isValid) {
       throw new UnauthorizedException();
     }
   }
 
-  async signIn(user: User & { id: string }): Promise<{ token: string }> {
+  async signIn(user: User): Promise<{ token: string }> {
     const payload = { username: user.email, sub: user.id };
     const token = await this.jwtService.signAsync(payload);
     return { token };

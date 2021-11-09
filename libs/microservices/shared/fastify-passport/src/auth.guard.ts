@@ -66,8 +66,9 @@ function createAuthGuard(type?: string | string[]): Type<CanActivate> {
             if (err || !user) {
               reject(err || new UnauthorizedException());
             } else {
-              request[options.assignProperty || defaultOptions.assignProperty] =
-                user;
+              const key =
+                options.assignProperty || defaultOptions.assignProperty;
+              request[key] = user;
               resolve(user);
             }
           }
