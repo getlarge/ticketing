@@ -1,9 +1,11 @@
 apiVersion: skaffold/v2beta25
 kind: Config
+metadata:
+  name: apps
 deploy:
   kubectl:
     manifests:
-      - './infra/k8s/*'
+      - './infra/k8s/apps/*'
 build:
   local:
     push: false
@@ -23,3 +25,13 @@ build:
   tagPolicy:
     envTemplate:
       template: latest
+
+---
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: deps
+deploy:
+  kubectl:
+    manifests:
+      - './infra/k8s/deps/*'

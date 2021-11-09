@@ -19,6 +19,12 @@
     "format": "nx format:write",
     "format:write": "nx format:write",
     "format:check": "nx format:check",
+    "k8s:dev:deps": "skaffold dev --module deps --port-forward",
+    "k8s:dev:apps": "skaffold dev --module apps",
+    "k8s:dev": "skaffold dev --port-forward",
+    "k8s:start": "skaffold run",
+    "k8s:stop": "skaffold delete",
+    "k8s:log": "skaffold run --tail",
     "update": "nx migrate latest",
     "dep-graph": "nx dep-graph"
   },
