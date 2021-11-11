@@ -25,7 +25,7 @@ export class UsersService {
   async signUp(user: UserCredentials): Promise<UserCredentials> {
     const existingUser = await this.userModel.findOne({ email: user.email });
     if (existingUser) {
-      throw new HttpException('Email already used', HttpStatus.BAD_REQUEST);
+      throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
     }
     const newUser = await this.userModel.create(user);
     return newUser.toJSON();
@@ -35,7 +35,7 @@ export class UsersService {
     email: string,
     password: string
   ): Promise<{ id: string; email: string }> {
-    const existingUser = await this.userModel.findOne({ email }, {});
+    const existingUser = await this.userModel.findOne({ email });
     if (!existingUser) {
       throw new UnauthorizedException();
     }

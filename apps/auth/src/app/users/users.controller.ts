@@ -11,7 +11,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Actions, Resources, SESSION_ACCESS_TOKEN } from '@ticketing/shared/constants';
+import {
+  Actions,
+  Resources,
+  SESSION_ACCESS_TOKEN,
+} from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { Session as FastifySession } from 'fastify-secure-session';
 
@@ -84,6 +88,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('sign-out')
   signOut(@Session() session: FastifySession) {
     session.delete();

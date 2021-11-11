@@ -9,7 +9,7 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { Resources } from '@ticketing/shared/constants';
+import { Environment, Resources } from '@ticketing/shared/constants';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
@@ -19,6 +19,11 @@ import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
 
 const globalPrefix = 'api';
+const devEnvironments = [
+  Environment.Test,
+  Environment.Development,
+  Environment.DockerDevelopment,
+];
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -34,7 +39,9 @@ async function bootstrap() {
 
   const configService = app.get<AppConfigService>(ConfigService);
   const port = configService.get('PORT', 3333, { infer: true });
+  const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
+
   const logger = app.get(Logger);
   app.useLogger(logger);
   app.setGlobalPrefix(globalPrefix);
@@ -56,7 +63,7 @@ async function bootstrap() {
   app.register(fastifySecureSession, {
     key: configService.get('SESSION_KEY'),
     cookie: {
-      secure: false,
+      secure: !devEnvironments.includes(environment),
       signed: false,
     },
   });
