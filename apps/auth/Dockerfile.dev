@@ -5,6 +5,7 @@ ARG NODE_ENV
 ARG BUILD_FLAG
 WORKDIR /app/builder
 COPY . .
+COPY --from=deps /app/node_modules ./node_modules
 RUN npx nx build ${APP_NAME} ${BUILD_FLAG}
 
 FROM getlarge/ticketing:nx-base

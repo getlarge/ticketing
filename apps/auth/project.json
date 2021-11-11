@@ -28,15 +28,6 @@
       }
     },
 
-    "build-docker": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
-        ],
-        "parallel": false
-      }
-    },
     "serve": {
       "executor": "@nrwl/node:execute",
       "options": {
@@ -82,6 +73,21 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "command": "node ./tools/nx/get-dependencies-cli.js -p auth"
+      }
+    },
+    "docker-build": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
+        ],
+        "parallel": false
+      }
+    },
+    "docker-run": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-auth ghcr.io/getlarge/ticketing-auth:latest"
       }
     }
   },
