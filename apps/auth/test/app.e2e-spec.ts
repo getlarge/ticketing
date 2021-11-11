@@ -1,12 +1,10 @@
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { validate } from '@ticketing/microservices/shared/env';
-import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
 
 import { AppController } from '../src/app/app.controller';
 import { AppService } from '../src/app/app.service';
@@ -15,7 +13,7 @@ import { EnvironmentVariables } from '../src/app/env';
 describe('AppController (e2e)', () => {
   let app: NestFastifyApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
@@ -25,13 +23,7 @@ describe('AppController (e2e)', () => {
           validate: validate(EnvironmentVariables),
         }),
       ],
-      providers: [
-        AppService,
-        {
-          provide: APP_FILTER,
-          useFactory: () => new HttpErrorFilter(),
-        },
-      ],
+      providers: [AppService],
       controllers: [AppController],
     }).compile();
 
@@ -39,7 +31,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  afterEach(() => app.close());
+  afterAll(() => app.close());
 
   it('/ (GET) - returns a 200', async () => {
     const { payload, statusCode } = await app.inject({
