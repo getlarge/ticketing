@@ -1,0 +1,76 @@
+{
+  "root": "apps/client",
+  "sourceRoot": "apps/client",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "apps/client",
+        "outputPath": "dist/apps/client"
+      },
+      "configurations": {
+        "production": {},
+        "development": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "options": {
+        "buildTarget": "client:build",
+        "dev": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "client:build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "client:build:development",
+          "dev": true
+        }
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "client:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/client"],
+      "options": {
+        "jestConfig": "apps/client/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/client/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+
+    "docker-build": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node ./tools/deploy/build-docker.js -p client -c {args.conf} -t {args.tag} -f {args.file}"
+        ],
+        "parallel": false
+      }
+    },
+
+    "docker-run": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-client ghcr.io/getlarge/ticketing-client:latest"
+      }
+    }
+  },
+  "tags": ["scope:client", "type:app", "platform:web"]
+}
