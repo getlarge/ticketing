@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: getlarge/ticketing-auth
+          image: ghcr.io/getlarge/ticketing-auth
           envFrom:
             - configMapRef:
                 name: api-config
