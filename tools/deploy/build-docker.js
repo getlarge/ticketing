@@ -7,14 +7,14 @@ const { name } = require('../../package.json');
 
 async function buildApp({
   dockerfile = 'Dockerfile',
-  npmToken,
   org,
   projectEnv,
   projectName,
   root,
   tag,
 }) {
-  const skipDev = projectEnv === 'production';
+  // const skipDev = projectEnv === 'production';
+  const skipDev = true
   const packageJson = await getPackageJson({
     projectName,
     root,
@@ -33,12 +33,12 @@ async function buildApp({
     stdio: 'inherit',
   });
   execSync(
-    `docker build -f ./apps/${projectName}/${dockerfile} --build-arg npm_token=${npmToken} -t ${org}/${name}-${projectName}:${tag} .`,
+    `docker build -f ./apps/${projectName}/${dockerfile} --build-arg APP_NAME=${projectName} -t ${org}/${name}-${projectName}:${tag} .`,
     { stdio: 'inherit' }
   );
 
   // execSync(
-  //   `docker build -f ./apps/${projectName}/${dockerfile} --build-arg npm_token=${npmToken}\
+  //   `docker build -f ./apps/${projectName}/${dockerfile} --build-arg APP_NAME=${projectName}\
   //   --build-arg NODE_ENV=${projectEnv} --build-arg BUILD_FLAG=""\
   //   --cache-from ${org}/${name}:nx-base -t ${org}/${name}-${projectName}:${tag} .`,
   //   { stdio: 'inherit' }
@@ -87,12 +87,8 @@ async function buildApp({
         description: 'Docker registry org',
         demandOption: false,
         alias: 'o',
-        default: 'getlarge',
-      },
-      npmToken: {
-        description: 'NPM token to read private packages',
-        demandOption: false,
-        alias: 'n',
+        // default: 'getlarge',
+        default: 'ghcr.io/getlarge',
       },
     })
     .option('verbose', {
