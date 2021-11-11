@@ -23,13 +23,13 @@ const { stringToArray } = require('../utils');
         description: 'File patterns to include.',
         demandOption: false,
         alias: 'i',
-        coerce: (value) => stringToArray(value, ['*.ts']),
+        coerce: (value) => stringToArray(value, ['*.ts', '*.tsx', '*.css']),
       },
       exclude: {
         description: 'File patterns to exclude.',
         demandOption: false,
         alias: 'e',
-        coerce: (value) => stringToArray(value, ['*spec.ts']),
+        coerce: (value) => stringToArray(value, ['*spec.ts', '*spec.tsx']),
       },
     })
     .option('verbose', {

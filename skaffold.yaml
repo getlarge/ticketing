@@ -10,7 +10,7 @@ build:
   local:
     push: false
   artifacts:
-    - image: getlarge/ticketing-auth
+    - image: ghcr.io/getlarge/ticketing-auth
       context: .
       sync:
         manual:
@@ -19,9 +19,19 @@ build:
           # - src: 'apps/auth'
           #   dest: .
       custom:
-        buildCommand: npx nx run auth:build-docker --conf=development --tag=latest --file=Dockerfile
+        buildCommand: npx nx run auth:docker-build --conf=production --tag=latest --file=Dockerfile
         dependencies:
           command: node ./tools/nx/get-dependencies-cli.js -p auth
+    - image: ghcr.io/getlarge/ticketing-client
+      context: .
+      sync:
+        manual:
+          - src: .
+            dest: .
+      custom:
+        buildCommand: npx nx run client:docker-build --conf=production --tag=latest --file=Dockerfile
+        dependencies:
+          command: node ./tools/nx/get-dependencies-cli.js -p client          
   tagPolicy:
     envTemplate:
       template: latest
