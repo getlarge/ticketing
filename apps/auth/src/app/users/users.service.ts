@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import { UserCredentials, UserResponse } from '@ticketing/shared/models';
 
 import { Password } from '../shared/password';
-import { UserCredentials } from './models/user-credentials';
 import { User, UserModel } from './schemas/user.schema';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class UsersService {
     @Inject(JwtService) private jwtService: JwtService
   ) {}
 
-  async signUp(user: UserCredentials): Promise<UserCredentials> {
+  async signUp(user: UserCredentials): Promise<UserResponse> {
     const existingUser = await this.userModel.findOne({ email: user.email });
     if (existingUser) {
       throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
@@ -31,10 +31,7 @@ export class UsersService {
     return newUser.toJSON();
   }
 
-  async validateUser(
-    email: string,
-    password: string
-  ): Promise<{ id: string; email: string }> {
+  async validateUser(email: string, password: string): Promise<UserResponse> {
     const existingUser = await this.userModel.findOne({ email });
     if (!existingUser) {
       throw new UnauthorizedException();
@@ -63,11 +60,7 @@ export class UsersService {
     return { token };
   }
 
-  signOut() {
-    return {};
-  }
-
-  getCurrentUser() {
+  signOut(): Record<string, unknown> {
     return {};
   }
 }

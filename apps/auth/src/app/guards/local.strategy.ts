@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@ticketing/microservices/shared/fastify-passport';
+import { UserResponse } from '@ticketing/shared/models';
 import { Strategy } from 'passport-local';
 
 import { UsersService } from '../users/users.service';
@@ -13,7 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(username: string, password: string) {
+  validate(username: string, password: string): Promise<UserResponse> {
     return this.userService.validateUser(username, password);
   }
 }
