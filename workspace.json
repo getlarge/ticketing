@@ -7,6 +7,7 @@
     "microservices-shared-env": "libs/microservices/shared/env",
     "microservices-shared-fastify-passport": "libs/microservices/shared/fastify-passport",
     "microservices-shared-filters": "libs/microservices/shared/filters",
+    "microservices-shared-models": "libs/microservices/shared/models",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
     "shared-models": "libs/shared/models"
