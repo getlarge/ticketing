@@ -19,7 +19,7 @@ build:
           # - src: 'apps/auth'
           #   dest: .
       custom:
-        buildCommand: npx nx run auth:docker-build --conf=production --tag=latest --file=Dockerfile
+        buildCommand: npx nx run auth:docker-build --conf=development --tag=dev --file=Dockerfile
         dependencies:
           command: node ./tools/nx/get-dependencies-cli.js -p auth
     - image: ghcr.io/getlarge/ticketing-client
@@ -29,12 +29,12 @@ build:
           - src: .
             dest: .
       custom:
-        buildCommand: npx nx run client:docker-build --conf=production --tag=latest --file=Dockerfile
+        buildCommand: npx nx run client:docker-build --conf=development --tag=dev --file=Dockerfile
         dependencies:
           command: node ./tools/nx/get-dependencies-cli.js -p client          
   tagPolicy:
     envTemplate:
-      template: latest
+      template: dev
 
 ---
 apiVersion: skaffold/v2beta25

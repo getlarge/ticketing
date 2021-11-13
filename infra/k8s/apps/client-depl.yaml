@@ -15,6 +15,9 @@ spec:
       containers:
         - name: client
           image: ghcr.io/getlarge/ticketing-client
+          envFrom:
+            - configMapRef:
+                name: client-config
           resources:
             limits:
               memory: '128Mi'
