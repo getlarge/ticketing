@@ -1,19 +1,22 @@
-import { AppProps } from 'next/app';
-import Head from 'next/head';
+import 'bootstrap/dist/css/bootstrap.css';
 import './styles.css';
 
-function CustomApp({ Component, pageProps }: AppProps) {
+import { Resources } from '@ticketing/shared/constants';
+import { AxiosError } from 'axios';
+import App, { AppContext, AppProps } from 'next/app';
+import Head from 'next/head';
+
+import buildClient from '../api/build-client';
+import Header from '../components/header/header';
+
+function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
       <Head>
-        <title>Welcome to client!</title>
+        <title>Ticketing</title>
       </Head>
       <div className="app">
-        <header className="flex">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/nx-logo-white.svg" alt="Nx logo" width="75" height="50" />
-          <h1>Welcome to client!</h1>
-        </header>
+        <Header {...pageProps} />
         <main>
           <Component {...pageProps} />
         </main>
@@ -21,5 +24,29 @@ function CustomApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+// Currently getServerSideProps is not working in Custom App
+CustomApp.getInitialProps = async (appContext: AppContext) => {
+  const url = `/api/${Resources.USERS}/current-user`;
+  const appProps = await App.getInitialProps(appContext);
+  let pageProps: Record<string, unknown>;
+  if (typeof appContext.Component.getInitialProps === 'function') {
+    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
+  }
+  try {
+    const { data } = await buildClient(appContext.ctx).get(url);
+    appProps.pageProps = { ...pageProps, currentUser: data };
+    return appProps;
+  } catch (err) {
+    if ('isAxiosError' in err) {
+      const error = err as AxiosError;
+      console.error(error.response?.data || error.message);
+    } else {
+      console.error(err.message);
+    }
+    appProps.pageProps = { ...pageProps, currentUser: null };
+    return appProps;
+  }
+};
 
 export default CustomApp;
