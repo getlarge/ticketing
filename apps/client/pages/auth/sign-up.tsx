@@ -1,6 +1,7 @@
 import './sign-up.module.css';
 
 import { Resources } from '@ticketing/shared/constants';
+import { UserCredentials } from '@ticketing/shared/models';
 import Router from 'next/router';
 import { FormEvent, useState } from 'react';
 
@@ -15,11 +16,14 @@ export function SignUp(props: SignUpProps): JSX.Element {
   const { doRequest, errors } = useRequest({
     url: `/api/${Resources.USERS}/sign-up`,
     method: 'post',
-    body: { email, password },
+    body: { email, password } as UserCredentials,
     onSuccess() {
       Router.push('/');
     },
   });
+
+  // import useSWR from 'swr'
+  // const { data, error } = useSWR('/api/user', doRequest)
 
   async function onSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();

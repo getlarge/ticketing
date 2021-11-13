@@ -1,6 +1,7 @@
 import './sign-in.module.css';
 
 import { Resources } from '@ticketing/shared/constants';
+import { UserCredentials } from '@ticketing/shared/models';
 import Router from 'next/router';
 import { FormEvent, useState } from 'react';
 
@@ -16,7 +17,7 @@ export function SignIn(props: SignInProps): JSX.Element {
   const { doRequest, errors } = useRequest({
     url: `/api/${Resources.USERS}/sign-in`,
     method: 'post',
-    body: { email, password },
+    body: { email, password } as UserCredentials,
     onSuccess() {
       Router.push('/');
     },

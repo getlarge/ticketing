@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './styles.css';
 
 import { Resources } from '@ticketing/shared/constants';
+import { UserResponse } from '@ticketing/shared/models';
 import { AxiosError } from 'axios';
 import App, { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
@@ -27,14 +28,14 @@ function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
 
 // Currently getServerSideProps is not working in Custom App
 CustomApp.getInitialProps = async (appContext: AppContext) => {
-  const url = `/api/${Resources.USERS}/current-user`;
   const appProps = await App.getInitialProps(appContext);
   let pageProps: Record<string, unknown>;
   if (typeof appContext.Component.getInitialProps === 'function') {
     pageProps = await appContext.Component.getInitialProps(appContext.ctx);
   }
   try {
-    const { data } = await buildClient(appContext.ctx).get(url);
+    const url = `/api/${Resources.USERS}/current-user`;
+    const { data } = await buildClient(appContext.ctx).get<UserResponse>(url);
     appProps.pageProps = { ...pageProps, currentUser: data };
     return appProps;
   } catch (err) {

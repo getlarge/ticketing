@@ -1,10 +1,11 @@
 import './header.module.css';
 
+import { UserResponse } from '@ticketing/shared/models';
 import Link from 'next/link';
 
 export interface HeaderProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  currentUser?: any;
+  currentUser?: UserResponse;
 }
 
 export function Header(props: HeaderProps): JSX.Element {

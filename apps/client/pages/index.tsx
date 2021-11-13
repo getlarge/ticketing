@@ -1,7 +1,8 @@
+import { UserResponse } from '@ticketing/shared/models';
+
 import styles from './index.module.css';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function Index(props: { currentUser: any }): JSX.Element {
+export function Index(props: { currentUser: UserResponse }): JSX.Element {
   const { currentUser } = props;
   return (
     <div className={styles.page}>
