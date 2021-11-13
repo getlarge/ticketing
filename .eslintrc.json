@@ -91,7 +91,8 @@
       }
     },
     {
-      "files": ["*.ts"],
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nrwl/nx/typescript"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": ["tsconfig.base.json"]
@@ -176,11 +177,6 @@
         ],
         "simple-import-sort/exports": "error"
       }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
-      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
