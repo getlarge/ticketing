@@ -24,6 +24,9 @@
       "@ticketing/microservices/shared/filters": [
         "libs/microservices/shared/filters/src/index.ts"
       ],
+      "@ticketing/microservices/shared/guards": [
+        "libs/microservices/shared/guards/src/index.ts"
+      ],
       "@ticketing/microservices/shared/models": [
         "libs/microservices/shared/models/src/index.ts"
       ],
