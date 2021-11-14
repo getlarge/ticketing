@@ -5,6 +5,7 @@ export enum Services {
 export enum Resources {
   HEALTH = 'health',
   USERS = 'users',
+  TICKETS = 'tickets',
 }
 
 export enum Actions {
