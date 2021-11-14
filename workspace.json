@@ -10,6 +10,7 @@
     "microservices-shared-models": "libs/microservices/shared/models",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
-    "shared-models": "libs/shared/models"
+    "shared-models": "libs/shared/models",
+    "tickets": "apps/tickets"
   }
 }
