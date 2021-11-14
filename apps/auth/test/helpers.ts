@@ -6,7 +6,7 @@ export async function signUpAndLogin(
     email: string;
     password: string;
   }
-) {
+): Promise<{ session: string }> {
   await app.inject({
     method: 'POST',
     url: '/users/sign-up',

@@ -11,6 +11,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { UserCredentials } from '@ticketing/shared/models';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 
@@ -67,10 +68,14 @@ describe('UsersController (e2e)', () => {
   describe('/users/sign-up (POST)', () => {
     const url = '/users/sign-up';
     it('should return a 201 on successful sign-up', async () => {
+      const credentials: UserCredentials = {
+        email: 'test@test.com',
+        password: 'P4s&wORD',
+      };
       const { payload, statusCode } = await app.inject({
         method: 'POST',
         url,
-        payload: { email: 'test@test.com', password: 'P4s&wORD' },
+        payload: credentials,
       });
       //
       const body = JSON.parse(payload);
@@ -80,10 +85,14 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return a 400 when providing invalid email', async () => {
+      const credentials: UserCredentials = {
+        email: 'test',
+        password: 'P4s&wORD',
+      };
       const { payload, statusCode } = await app.inject({
         method: 'POST',
         url,
-        payload: { email: 'test', password: 'P4s&wORD' },
+        payload: credentials,
       });
       //
       const body = JSON.parse(payload);
@@ -93,10 +102,14 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return a 400 when providing invalid password', async () => {
+      const credentials: UserCredentials = {
+        email: 'test@test.com',
+        password: 'P4s',
+      };
       const { payload, statusCode } = await app.inject({
         method: 'POST',
         url,
-        payload: { email: 'test@test.com', password: 'P4s' },
+        payload: credentials,
       });
       //
       const body = JSON.parse(payload);
@@ -108,19 +121,22 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return a 400 when email is duplicate', async () => {
-      const payload = { email: 'test@test.com', password: 'P4s&wORD' };
+      const credentials: UserCredentials = {
+        email: 'test@test.com',
+        password: 'P4s&wORD',
+      };
       await app
         .inject({
           method: 'POST',
           url,
-          payload,
+          payload: credentials,
         })
         .then(({ statusCode }) => expect(statusCode).toBe(201));
 
       const response = await app.inject({
         method: 'POST',
         url,
-        payload,
+        payload: credentials,
       });
       //
       const body = JSON.parse(response.payload);
@@ -134,19 +150,22 @@ describe('UsersController (e2e)', () => {
     const url = '/users/sign-in';
 
     it('should return a 200 on successful sign-in and set cookie', async () => {
-      const payload = { email: 'test@test.it', password: 'pass' };
+      const credentials: UserCredentials = {
+        email: 'test@test.it',
+        password: 'pass',
+      };
       await app
         .inject({
           method: 'POST',
           url: '/users/sign-up',
-          payload,
+          payload: credentials,
         })
         .then(({ statusCode }) => expect(statusCode).toBe(201));
       //
       const response = await app.inject({
         method: 'POST',
         url,
-        payload,
+        payload: credentials,
       });
       //
       const body = JSON.parse(response.payload);
@@ -162,12 +181,15 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return a 401 when unknown credential are supplied', async () => {
-      const payload = { email: 'unknown@test.it', password: 'pass' };
+      const credentials: UserCredentials = {
+        email: 'unknown@test.com',
+        password: 'pass',
+      };
       //
       const response = await app.inject({
         method: 'POST',
         url,
-        payload,
+        payload: credentials,
       });
       //
       const body = JSON.parse(response.payload);
@@ -202,19 +224,22 @@ describe('UsersController (e2e)', () => {
     const url = '/users/sign-out';
 
     it('should return a 200 on successful sign-out and delete cookie', async () => {
-      const payload = { email: 'test@test.it', password: 'pass' };
+      const credentials: UserCredentials = {
+        email: 'test@test.it',
+        password: 'P4s&wORD',
+      };
       await app
         .inject({
           method: 'POST',
           url: '/users/sign-up',
-          payload,
+          payload: credentials,
         })
         .then(({ statusCode }) => expect(statusCode).toBe(201));
 
       const signInResponse = await app.inject({
         method: 'POST',
         url: '/users/sign-in',
-        payload,
+        payload: credentials,
       });
       expect(signInResponse.headers['set-cookie']).toBeDefined();
       const cookies = { session: (signInResponse.cookies[0] as any).value };
@@ -222,7 +247,7 @@ describe('UsersController (e2e)', () => {
       const response = await app.inject({
         method: 'POST',
         url,
-        payload,
+        payload: credentials,
         cookies,
       });
       //
@@ -238,8 +263,11 @@ describe('UsersController (e2e)', () => {
     const url = '/users/current-user';
 
     it('should return a 200 with current user when logged in', async () => {
-      const user = { email: 'test@test.it', password: 'pass' };
-      const cookies = await signUpAndLogin(app, user);
+      const credentials: UserCredentials = {
+        email: 'test@test.it',
+        password: 'P4s&wORD',
+      };
+      const cookies = await signUpAndLogin(app, credentials);
       //
       const response = await app.inject({
         method: 'GET',
@@ -251,7 +279,7 @@ describe('UsersController (e2e)', () => {
       expect(response.statusCode).toBe(200);
       expect(body).toHaveProperty('id');
       expect(body).toHaveProperty('email');
-      expect(body.email).toBe(user.email);
+      expect(body.email).toBe(credentials.email);
       expect(body).not.toHaveProperty('password');
     });
 
