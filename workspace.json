@@ -4,6 +4,7 @@
     "auth": "apps/auth",
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
+    "microservices-shared-decorators": "libs/microservices/shared/decorators",
     "microservices-shared-env": "libs/microservices/shared/env",
     "microservices-shared-fastify-passport": "libs/microservices/shared/fastify-passport",
     "microservices-shared-filters": "libs/microservices/shared/filters",

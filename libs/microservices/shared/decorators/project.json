@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/decorators",
+  "sourceRoot": "libs/microservices/shared/decorators/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/decorators/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/decorators"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/decorators/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
