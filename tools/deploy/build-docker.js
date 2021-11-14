@@ -14,7 +14,7 @@ async function buildApp({
   tag,
 }) {
   // const skipDev = projectEnv === 'production';
-  const skipDev = true
+  const skipDev = true;
   const packageJson = await getPackageJson({
     projectName,
     root,
@@ -33,7 +33,7 @@ async function buildApp({
     stdio: 'inherit',
   });
   execSync(
-    `docker build -f ./apps/${projectName}/${dockerfile} --build-arg APP_NAME=${projectName} -t ${org}/${name}-${projectName}:${tag} .`,
+    `docker build -f ${dockerfile} --build-arg APP_NAME=${projectName} -t ${org}/${name}-${projectName}:${tag} .`,
     { stdio: 'inherit' }
   );
 
@@ -72,8 +72,8 @@ async function buildApp({
       dockerfile: {
         description: 'Dockerfile name',
         demandOption: false,
-        default: 'Dockerfile',
-        coerce: (value) => (stringIsUndefined(value) ? 'Dockerfile' : value),
+        coerce: (value) =>
+          stringIsUndefined(value) ? 'infra/docker/Dockerfile.backend' : value,
         alias: 'f',
       },
       tag: {
