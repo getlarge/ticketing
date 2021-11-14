@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import passport from 'fastify-passport';
+import passport, { Authenticator } from 'fastify-passport';
 
 import { Type } from '../interfaces';
 
@@ -13,7 +13,7 @@ export function PassportStrategy<T extends Type<any> = any>(
     abstract validate(...args: any[]): any;
 
     constructor(...args: any[]) {
-      const callback = async (...params: any[]) => {
+      const callback = async (...params: any[]): Promise<void> => {
         const done = params[params.length - 1];
         try {
           const validateResult = await this.validate(...params);
@@ -47,7 +47,7 @@ export function PassportStrategy<T extends Type<any> = any>(
       }
     }
 
-    getPassportInstance() {
+    getPassportInstance(): Authenticator {
       return passport;
     }
   }

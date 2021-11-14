@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CanActivate,
   ExecutionContext,
@@ -31,8 +29,8 @@ export const AuthGuard: (type?: string | string[]) => Type<IAuthGuard> =
 const NO_STRATEGY_ERROR = `In order to use "defaultStrategy", please, ensure to import PassportModule in each place where AuthGuard() is being used. Otherwise, passport won't work correctly.`;
 
 // eslint-disable-next-line max-lines-per-function
-function createAuthGuard(type?: string | string[]): Type<CanActivate> {
-  class MixinAuthGuard<TUser = any> implements CanActivate {
+function createAuthGuard(type?: string | string[]): Type<IAuthGuard> {
+  class MixinAuthGuard<TUser = unknown> implements CanActivate {
     constructor(@Optional() protected readonly options?: AuthModuleOptions) {
       this.options = this.options || {};
       if (!type && !this.options.defaultStrategy) {
@@ -58,9 +56,9 @@ function createAuthGuard(type?: string | string[]): Type<CanActivate> {
             _req: FastifyRequest,
             _res: FastifyReply,
             err: null | Error,
-            user?: unknown,
-            info?: unknown,
-            status?: number
+            user?: TUser,
+            info?: unknown
+            // _status?: number
           ) {
             request.authInfo = info;
             if (err || !user) {
@@ -100,7 +98,8 @@ function createAuthGuard(type?: string | string[]): Type<CanActivate> {
     }
 
     getAuthenticateOptions(
-      context: ExecutionContext
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _context: ExecutionContext
     ): Promise<IAuthModuleOptions> | IAuthModuleOptions | undefined {
       return undefined;
     }

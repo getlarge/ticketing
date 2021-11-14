@@ -7,7 +7,8 @@
       "rules": {
         "max-nested-callbacks": ["error", { "max": 4 }],
         "max-params": ["error", 10],
-        "max-params-no-constructor/max-params-no-constructor": ["error", 6]
+        "max-params-no-constructor/max-params-no-constructor": ["error", 6],
+        "no-explicit-any": "warn"
       }
     },
     {

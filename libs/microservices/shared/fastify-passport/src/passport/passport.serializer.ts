@@ -1,5 +1,5 @@
 import { FastifyRequest } from 'fastify';
-import passport from 'fastify-passport';
+import passport, { Authenticator } from 'fastify-passport';
 
 export abstract class PassportSerializer {
   abstract serializeUser<User, StoredUser = any>(
@@ -17,7 +17,7 @@ export abstract class PassportSerializer {
     passportInstance.deserializeUser = this.deserializeUser;
   }
 
-  getPassportInstance() {
+  getPassportInstance(): Authenticator {
     return passport;
   }
 }

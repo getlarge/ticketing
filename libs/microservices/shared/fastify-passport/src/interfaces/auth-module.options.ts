@@ -1,6 +1,6 @@
 import { ModuleMetadata, Type } from '@nestjs/common/interfaces';
 
-export interface IAuthModuleOptions<T = any> {
+export interface IAuthModuleOptions {
   defaultStrategy?: string | string[];
   session?: boolean;
   assignProperty?: string;
@@ -14,7 +14,6 @@ export interface IAuthModuleOptions<T = any> {
   // successMessage?: boolean | string;
   // successReturnToOrRedirect?: string;
   // authInfo?: boolean;
-  
   [key: string]: any;
 }
 
