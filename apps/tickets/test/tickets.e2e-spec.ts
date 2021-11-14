@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,8 +12,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
 import { CreateTicket } from '@ticketing/shared/models';
+import { randomBytes } from 'crypto';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
+import { Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
 import {
@@ -21,7 +24,7 @@ import {
 } from '../src/app/tickets/schemas/ticket.schema';
 import { TicketsModule } from '../src/app/tickets/tickets.module';
 import { envFilePath } from './constants';
-import { createSigninSession } from './helpers';
+import { createSigninSession, createTicket } from './helpers';
 
 const defaultUserEmail = 'test@test.com';
 
@@ -96,7 +99,7 @@ describe('TicketsController (e2e)', () => {
       expect(statusCode).toBe(401);
     });
 
-    it('should return an error if an invalid title is provided', async () => {
+    it('should return a 400 if an invalid title is provided', async () => {
       const session = createSigninSession(app, { email: defaultUserEmail });
       const invalidTicket: CreateTicket = { title: '', price: 10 };
       //
@@ -109,7 +112,7 @@ describe('TicketsController (e2e)', () => {
       expect(statusCode).toBe(400);
     });
 
-    it('should return an error if an invalid price is provided', async () => {
+    it('should return a 400 if an invalid price is provided', async () => {
       const session = createSigninSession(app, { email: defaultUserEmail });
       const invalidTicket: CreateTicket = { title: 'ticket title', price: -10 };
       //
@@ -149,6 +152,170 @@ describe('TicketsController (e2e)', () => {
 
       tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
+    });
+  });
+
+  describe('/tickets (GET)', () => {
+    const url = '/tickets';
+
+    it('should return all tickets', async () => {
+      const ticketsToCreate = [
+        { title: 'title1' },
+        { title: 'title2' },
+        { title: 'title3' },
+      ];
+      await Promise.all(
+        ticketsToCreate.map((ticketToCreate) =>
+          createTicket(ticketToCreate, ticketModel)
+        )
+      );
+      //
+      const { payload, statusCode } = await app.inject({
+        method: 'GET',
+        url,
+      });
+      //
+      expect(statusCode).toBe(200);
+      const body = JSON.parse(payload);
+      expect(body.length).toEqual(ticketsToCreate.length);
+    });
+  });
+
+  describe('/tickets/:id (GET)', () => {
+    const baseUrl = '/tickets';
+
+    it('should return 404 if ticket is not found', async () => {
+      const { statusCode } = await app.inject({
+        method: 'GET',
+        url: `${baseUrl}/non_existant`,
+      });
+      //
+      expect(statusCode).toBe(404);
+    });
+
+    it('should return the ticket if it exists', async () => {
+      const ticketToCreate = {
+        title: 'title',
+        price: 20,
+        userId: randomBytes(4).toString('hex'),
+      };
+      await ticketModel.create(ticketToCreate);
+      const ticket = await ticketModel.findOne({
+        userId: ticketToCreate.userId,
+      });
+      //
+      const { payload, statusCode } = await app.inject({
+        method: 'GET',
+        url: `${baseUrl}/${ticket._id}`,
+      });
+      //
+      expect(statusCode).toBe(200);
+      const body = JSON.parse(payload);
+      expect(body.id).toEqual(ticket._id.toString());
+      expect(body.title).toEqual(ticket.title);
+    });
+  });
+
+  describe('/tickets/:id (PUT)', () => {
+    const baseUrl = '/tickets';
+
+    it('should return 404 if ticket is not found', async () => {
+      const session = createSigninSession(app, { email: defaultUserEmail });
+      const ticketUpdate: CreateTicket = {
+        title: 'title-updated',
+        price: 19,
+      };
+      const { statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/non_existant`,
+        cookies: { session },
+        payload: ticketUpdate,
+      });
+      //
+      expect(statusCode).toBe(404);
+    });
+
+    it('should return 401 if the user is not authenticated', async () => {
+      const { id } = await createTicket({}, ticketModel);
+      //
+      const { statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/${id}`,
+      });
+      //
+      expect(statusCode).toBe(401);
+    });
+
+    it('should return 403 if the user is not the owner', async () => {
+      const session = createSigninSession(app, { email: defaultUserEmail });
+      const { id, title, price } = await createTicket({}, ticketModel);
+      const ticketUpdate: CreateTicket = {
+        title: 'title-updated',
+        price: 19,
+      };
+      //
+      const { statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/${id}`,
+        cookies: { session },
+        payload: ticketUpdate,
+      });
+      //
+      expect(statusCode).toBe(403);
+      const ticket = await ticketModel.findOne({ _id: id });
+      expect(ticket._id.toString()).toEqual(id);
+      expect(ticket.title).toEqual(title);
+      expect(ticket.price).toEqual(price);
+    });
+
+    it('should return a 400 if an invalid price or title is provided', async () => {
+      const session = createSigninSession(app, { email: defaultUserEmail });
+      const { id } = await createTicket({}, ticketModel);
+      const invalidTicket: CreateTicket = { title: '', price: -10 };
+      const expectedErrors = [
+        {
+          message: 'title must be a between 3 and 56 characters',
+        },
+        {
+          message: 'price must not be less than 0',
+        },
+      ];
+      //
+      const { payload, statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/${id}`,
+        cookies: { session },
+        payload: invalidTicket,
+      });
+      expect(statusCode).toBe(400);
+      const body = JSON.parse(payload);
+      expect(body.errors).toEqual(expectedErrors);
+    });
+
+    it('should update and return the ticket when it exists and user is owner', async () => {
+      const userId = new Types.ObjectId().toHexString();
+      const session = createSigninSession(app, {
+        email: defaultUserEmail,
+        id: userId,
+      });
+      const { id } = await createTicket({ userId }, ticketModel);
+      const ticketUpdate: CreateTicket = {
+        title: 'title-updated',
+        price: 19,
+      };
+      //
+      const { payload, statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/${id}`,
+        cookies: { session },
+        payload: ticketUpdate,
+      });
+      //
+      expect(statusCode).toBe(200);
+      const body = JSON.parse(payload);
+      expect(body.id).toEqual(id);
+      expect(body.title).toEqual(ticketUpdate.title);
+      expect(body.price).toEqual(ticketUpdate.price);
     });
   });
 });
