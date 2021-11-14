@@ -12,6 +12,9 @@ spec:
       labels:
         app: client
     spec:
+      imagePullSecrets:
+        - name: ghcr-cred
+      restartPolicy: Always    
       containers:
         - name: client
           image: ghcr.io/getlarge/ticketing-client
