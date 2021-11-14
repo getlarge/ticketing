@@ -95,5 +95,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:tickets", "type:app", "platform:server"]
 }
