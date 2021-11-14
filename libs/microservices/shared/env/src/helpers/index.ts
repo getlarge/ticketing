@@ -6,7 +6,7 @@ import { resolve as pathResolve } from 'path';
 
 // helpers that can be called before configService init
 
-function getEnvFilePath() {
+function getEnvFilePath(): string {
   return process.env.NODE_ENV === Environment.Test ? '.env.test' : '.env';
 }
 
@@ -40,7 +40,10 @@ export function strToBool(val?: string | boolean): boolean {
   return val && (val === 'true' || val === true) ? true : false;
 }
 
-export function loadEnv(envFilePath: string, overrideProcessEnv = false) {
+export function loadEnv(
+  envFilePath: string,
+  overrideProcessEnv = false
+): NodeJS.ProcessEnv {
   const variables = existsSync(envFilePath)
     ? parse(readFileSync(envFilePath))
     : {};

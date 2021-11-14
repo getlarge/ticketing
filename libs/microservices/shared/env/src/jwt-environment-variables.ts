@@ -11,14 +11,14 @@ import { decorate } from 'ts-mixer';
 @ValidatorConstraint({ name: 'isBase64Buffer', async: false })
 export class IsBuffer implements ValidatorConstraintInterface {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  validate(value: any) {
+  validate(value: any): boolean {
     if (Buffer.isBuffer(value)) {
       return true;
     }
     return false;
   }
 
-  defaultMessage() {
+  defaultMessage(): string {
     return 'Input ($value) is not a valid base64 string';
   }
 }
