@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
+import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 
 import { AppConfigService } from '../env';
-import { JwtStrategy } from '../guards/jwt.strategy';
 import { LocalStrategy } from '../guards/local.strategy';
 import { Password } from '../shared/password';
 import { User, UserSchema } from './schemas/user.schema';
