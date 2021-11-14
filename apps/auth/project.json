@@ -87,7 +87,13 @@
     "docker-run": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-auth ghcr.io/getlarge/ticketing-auth:latest"
+        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-auth ghcr.io/getlarge/ticketing-tickets:{args.tag}"
+      }
+    },
+    "docker-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker push ghcr.io/getlarge/ticketing-tickets:{args.tag}"
       }
     }
   },

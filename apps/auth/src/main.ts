@@ -25,7 +25,7 @@ const devEnvironments = [
   Environment.DockerDevelopment,
 ];
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
