@@ -9,14 +9,15 @@ import { Document, Model } from 'mongoose';
 @Schema({
   toJSON: {
     transform(doc, ret) {
-      ret.id = doc._id;
+      ret.id = doc._id.toString();
       return omit(ret, ['_id', '__v']);
     },
   },
 })
 export class Ticket implements TicketAttrs {
   @Prop({ type: String, virtual: true })
-  id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  id: any;
 
   @Prop({
     type: String,
