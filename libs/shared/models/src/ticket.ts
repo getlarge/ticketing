@@ -2,8 +2,7 @@ import { Expose } from 'class-transformer';
 import { IsNumber, IsString } from 'class-validator';
 
 export class Ticket {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  id: any;
+  id: string;
 
   @Expose()
   @IsString({ message: 'title must be a string' })
