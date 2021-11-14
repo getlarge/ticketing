@@ -8,7 +8,7 @@ export class BodyParserError extends CustomError {
     Object.setPrototypeOf(this, BodyParserError.prototype);
   }
 
-  serializeErrors() {
+  serializeErrors(): { message: string }[] {
     return [{ message: this.reason }];
   }
 }

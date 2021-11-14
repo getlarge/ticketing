@@ -10,7 +10,7 @@ export class RequestValidationError extends CustomError {
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }
 
-  serializeErrors() {
+  serializeErrors(): { message: string }[] {
     const messages = extractValidationErrorField(this.errors);
     return messages.map((message) => ({ message }));
   }
@@ -60,7 +60,7 @@ export function extractValidationErrorField(
 
 export function requestValidationErrorFactory(
   validationErrors: ValidationError[]
-) {
+): RequestValidationError {
   return new RequestValidationError(validationErrors);
 }
 

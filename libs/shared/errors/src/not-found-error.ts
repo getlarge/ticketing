@@ -9,7 +9,7 @@ export class NotFoundError extends CustomError {
     Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 
-  serializeErrors() {
+  serializeErrors(): { message: string }[] {
     return [{ message: this.reason }];
   }
 }
