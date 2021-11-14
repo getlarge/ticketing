@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      imagePullSecrets:
+        - name: ghcr-cred
+      restartPolicy: Always
+      containers:
+        - name: tickets
+          image: ghcr.io/getlarge/ticketing-tickets
+          envFrom:
+            - configMapRef:
+                name: api-config
+          env:
+            - name: PORT
+              value: '3000'
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: tickets-service-secret
+                  key: MONGODB_URI
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PRIVATE_KEY
+            - name: JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PUBLIC_KEY
+            - name: SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: SESSION_KEY
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-srv
+spec:
+  selector:
+    app: tickets
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
