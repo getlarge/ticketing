@@ -68,7 +68,13 @@
     "docker-run": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-client ghcr.io/getlarge/ticketing-client:latest"
+        "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-client ghcr.io/getlarge/ticketing-client:{args.tag}"
+      }
+    },
+    "docker-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker push ghcr.io/getlarge/ticketing-client:{args.tag}"
       }
     }
   },
