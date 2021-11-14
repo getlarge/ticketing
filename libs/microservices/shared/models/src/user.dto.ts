@@ -6,7 +6,6 @@ export class UserDto extends OmitType(UserCredentialsDto, ['password']) {
   @ApiProperty({
     description: 'User id',
     required: true,
-    // format: 'email',
   })
   id: string;
 }

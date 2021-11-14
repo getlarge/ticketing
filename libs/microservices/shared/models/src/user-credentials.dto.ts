@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { userConstraints, UserCredentials } from '@ticketing/shared/models';
 
-export class UserCredentialsDto {
+export class UserCredentialsDto extends UserCredentials {
   @ApiProperty({
     description: 'User password',
     required: true,
     format: 'password',
-    minLength: 4,
-    maxLength: 20,
+    minLength: userConstraints.password.min,
+    maxLength: userConstraints.password.max,
   })
   password: string;
 
