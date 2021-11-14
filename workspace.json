@@ -9,6 +9,7 @@
     "microservices-shared-filters": "libs/microservices/shared/filters",
     "microservices-shared-guards": "libs/microservices/shared/guards",
     "microservices-shared-models": "libs/microservices/shared/models",
+    "microservices-shared-pipes": "libs/microservices/shared/pipes",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
     "shared-models": "libs/shared/models",

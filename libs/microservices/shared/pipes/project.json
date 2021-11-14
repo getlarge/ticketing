@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/pipes",
+  "sourceRoot": "libs/microservices/shared/pipes/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/pipes/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/pipes"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/pipes/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
