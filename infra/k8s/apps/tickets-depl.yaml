@@ -29,6 +29,10 @@ spec:
                 secretKeyRef:
                   name: tickets-service-secret
                   key: MONGODB_URI
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
