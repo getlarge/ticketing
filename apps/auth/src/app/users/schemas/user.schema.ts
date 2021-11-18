@@ -6,7 +6,7 @@ import { Document, Model } from 'mongoose';
 @Schema({
   toJSON: {
     transform(doc, ret) {
-      ret.id = doc._id;
+      ret.id = doc._id.toString();
       return omit(ret, ['_id', 'password', '__v']);
     },
   },

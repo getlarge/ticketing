@@ -11,6 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
   UserCredentialsDto,
@@ -26,7 +27,6 @@ import { User, UserCredentials, UserResponse } from '@ticketing/shared/models';
 import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { CurrentUser } from '../shared/current-user.decorator';
 import { UsersService } from './users.service';
 
 @Controller(Resources.USERS)

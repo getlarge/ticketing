@@ -28,7 +28,7 @@ export class UsersService {
       throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
     }
     const newUser = await this.userModel.create(user);
-    return newUser.toJSON();
+    return newUser.toJSON<UserResponse>();
   }
 
   async validateUser(email: string, password: string): Promise<UserResponse> {

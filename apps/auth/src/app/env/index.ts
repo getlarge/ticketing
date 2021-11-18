@@ -11,7 +11,7 @@ import { Mixin } from 'ts-mixer';
 
 // import { DEFAULT_SERVER_URL } from '../shared/constants';
 
-export type AppConfigService = ConfigService<EnvironmentVariables>;
+export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
