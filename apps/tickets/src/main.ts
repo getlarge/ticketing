@@ -31,6 +31,7 @@ const devEnvironments = [
   Environment.DockerDevelopment,
 ];
 
+// eslint-disable-next-line max-lines-per-function
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -98,6 +99,12 @@ async function bootstrap(): Promise<void> {
     .setTitle('Tickets API')
     .setDescription('Ticketing tickets API description')
     .setVersion('1.0')
+    .addSecurity('bearer', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
+    .addSecurityRequirements('bearer')
     .addTag(Resources.TICKETS)
     .build();
 

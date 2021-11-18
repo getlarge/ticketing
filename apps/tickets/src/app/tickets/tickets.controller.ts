@@ -10,7 +10,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
@@ -38,6 +44,7 @@ export class TicketsController {
       whitelist: true,
     })
   )
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Request creation of a ticket',
     summary: `Create a ticket - Scope : ${Resources.TICKETS}:${Actions.CREATE_ONE}`,
@@ -94,6 +101,7 @@ export class TicketsController {
       whitelist: true,
     })
   )
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Request a ticket by id',
     summary: `Find a ticket - Scope : ${Resources.TICKETS}:${Actions.UPDATED_ONE}`,
