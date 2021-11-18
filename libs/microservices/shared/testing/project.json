@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/testing",
+  "sourceRoot": "libs/microservices/shared/testing/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/testing/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/testing"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/testing/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:testing", "platform:server"]
+}

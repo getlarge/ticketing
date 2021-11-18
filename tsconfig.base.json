@@ -21,6 +21,9 @@
       "@ticketing/microservices/shared/env": [
         "libs/microservices/shared/env/src/index.ts"
       ],
+      "@ticketing/microservices/shared/events": [
+        "libs/microservices/shared/events/src/index.ts"
+      ],
       "@ticketing/microservices/shared/fastify-passport": [
         "libs/microservices/shared/fastify-passport/src/index.ts"
       ],
@@ -35,6 +38,9 @@
       ],
       "@ticketing/microservices/shared/pipes": [
         "libs/microservices/shared/pipes/src/index.ts"
+      ],
+      "@ticketing/microservices/shared/testing": [
+        "libs/microservices/shared/testing/src/index.ts"
       ],
       "@ticketing/shared/constants": ["libs/shared/constants/src/index.ts"],
       "@ticketing/shared/errors": ["libs/shared/errors/src/index.ts"],
