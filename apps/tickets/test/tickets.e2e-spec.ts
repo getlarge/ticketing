@@ -9,8 +9,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
+import { Patterns } from '@ticketing/microservices/shared/events';
 import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { MockClient } from '@ticketing/microservices/shared/testing';
 import { CreateTicket } from '@ticketing/shared/models';
 import { randomBytes } from 'crypto';
 import fastifyPassport from 'fastify-passport';
@@ -31,6 +34,7 @@ const defaultUserEmail = 'test@test.com';
 describe('TicketsController (e2e)', () => {
   let app: NestFastifyApplication;
   let ticketModel: TicketModel;
+  let natsClient: MockClient;
   const envVariables = loadEnv(envFilePath, true);
 
   beforeAll(async () => {
@@ -52,7 +56,10 @@ describe('TicketsController (e2e)', () => {
           useClass: HttpErrorFilter,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(Publisher)
+      .useValue(new MockClient())
+      .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
 
@@ -68,6 +75,7 @@ describe('TicketsController (e2e)', () => {
     app.register(fastifyPassport.secureSession());
 
     ticketModel = app.get<TicketModel>(getModelToken(TicketSchema.name));
+    natsClient = app.get(Publisher);
     await app.init();
   });
 
@@ -125,7 +133,7 @@ describe('TicketsController (e2e)', () => {
       expect(statusCode).toBe(400);
     });
 
-    it('should create a ticket with valid input', async () => {
+    it('should create a ticket with valid input and publish an event', async () => {
       const userId = 'fake_user_id';
       const session = createSigninSession(app, {
         email: defaultUserEmail,
@@ -152,6 +160,7 @@ describe('TicketsController (e2e)', () => {
 
       tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
+      expect(natsClient.emit).toBeCalledWith(Patterns.TicketCreated, body);
     });
   });
 
@@ -292,7 +301,7 @@ describe('TicketsController (e2e)', () => {
       expect(body.errors).toEqual(expectedErrors);
     });
 
-    it('should update and return the ticket when it exists and user is owner', async () => {
+    it('should update and return the ticket and publish an event when it exists and user is owner', async () => {
       const userId = new Types.ObjectId().toHexString();
       const session = createSigninSession(app, {
         email: defaultUserEmail,
@@ -316,6 +325,7 @@ describe('TicketsController (e2e)', () => {
       expect(body.id).toEqual(id);
       expect(body.title).toEqual(ticketUpdate.title);
       expect(body.price).toEqual(ticketUpdate.price);
+      expect(natsClient.emit).toBeCalledWith(Patterns.TicketUpdated, body);
     });
   });
 });
