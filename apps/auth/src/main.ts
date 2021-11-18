@@ -13,10 +13,13 @@ import { Environment, Resources } from '@ticketing/shared/constants';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
+import { existsSync, writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
+import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
+import { APP_FOLDER } from './app/shared/constants';
 
 const globalPrefix = 'api';
 const devEnvironments = [
@@ -50,6 +53,7 @@ async function bootstrap(): Promise<void> {
   //   prefix: '/',
   // });
 
+  // Fastify
   app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
@@ -70,6 +74,7 @@ async function bootstrap(): Promise<void> {
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
 
+  // SwaggerUI
   const config = new DocumentBuilder()
     .setTitle('Auth API')
     .setDescription('Ticketing auth API description')
@@ -88,6 +93,13 @@ async function bootstrap(): Promise<void> {
   };
   SwaggerModule.setup(swaggerUiPrefix, app, document, customOptions);
 
+  // Save OpenAPI specs
+  const openApiPath = resolve(APP_FOLDER, 'openapi.json');
+  if (existsSync(APP_FOLDER)) {
+    writeFileSync(openApiPath, JSON.stringify(document, null, 2));
+  }
+
+  // Init
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
     logger.log(

@@ -1,0 +1,170 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/sign-up": {
+      "post": {
+        "operationId": "UsersController_signUp",
+        "summary": "Register a user - Scope : users:create_one",
+        "description": "Request creation of a user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCredentialsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/sign-in": {
+      "post": {
+        "operationId": "UsersController_signIn",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCredentialsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "description": "JWT token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/sign-out": {
+      "post": {
+        "operationId": "UsersController_signOut",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/current-user": {
+      "get": {
+        "operationId": "UsersController_getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Auth API",
+    "description": "Ticketing auth API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "UserCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "format": "password",
+            "minLength": 4,
+            "maxLength": 20
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "format": "email"
+          }
+        },
+        "required": [
+          "password",
+          "email"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "format": "email"
+          },
+          "id": {
+            "type": "string",
+            "description": "User id"
+          }
+        },
+        "required": [
+          "email",
+          "id"
+        ]
+      }
+    }
+  }
+}

@@ -16,7 +16,7 @@ import { pseudoRandomBytes } from 'crypto';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
-import { writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
 import { resolve } from 'path';
 
@@ -110,10 +110,11 @@ async function bootstrap(): Promise<void> {
   };
   SwaggerModule.setup(swaggerUiPrefix, app, document, customOptions);
 
-  writeFileSync(
-    resolve(APP_FOLDER, 'openapi.json'),
-    JSON.stringify(document, null, 2)
-  );
+  // Save OpenAPI specs
+  const openApiPath = resolve(APP_FOLDER, 'openapi.json');
+  if (existsSync(APP_FOLDER)) {
+    writeFileSync(openApiPath, JSON.stringify(document, null, 2));
+  }
 
   // Init
   await microService.init();

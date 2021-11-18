@@ -1,0 +1,202 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets": {
+      "post": {
+        "operationId": "TicketsController_createTicket",
+        "summary": "Create a ticket - Scope : tickets:create_one",
+        "description": "Request creation of a ticket",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_findTickets",
+        "summary": "Find tickets - Scope : tickets:read_many",
+        "description": "Request tickets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Tickets found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TicketDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_findTicketById",
+        "summary": "Find a ticket - Scope : tickets:read_one",
+        "description": "Request a ticket by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      },
+      "put": {
+        "operationId": "TicketsController_updateTicketById",
+        "summary": "Find a ticket - Scope : tickets:updated_one",
+        "description": "Request a ticket by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Tickets API",
+    "description": "Ticketing tickets API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "tickets",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "CreateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title",
+          "price"
+        ]
+      },
+      "TicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title",
+          "price"
+        ]
+      }
+    }
+  }
+}
