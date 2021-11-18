@@ -79,6 +79,12 @@ async function bootstrap(): Promise<void> {
     .setTitle('Auth API')
     .setDescription('Ticketing auth API description')
     .setVersion('1.0')
+    .addSecurity('bearer', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
+    .addSecurityRequirements('bearer')
     .addTag(Resources.USERS)
     .build();
 
