@@ -6,6 +6,7 @@
     "@nestjs/config": "^1.1.0",
     "@nestjs/core": "^8.1.2",
     "@nestjs/jwt": "^8.0.0",
+    "@nestjs/microservices": "^8.2.0",
     "@nestjs/mongoose": "^9.0.1",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-fastify": "^8.1.2",
