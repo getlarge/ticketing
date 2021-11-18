@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { CustomStrategy } from '@nestjs/microservices';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -9,14 +10,19 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { Environment, Resources } from '@ticketing/shared/constants';
+import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { Environment, Resources, Services } from '@ticketing/shared/constants';
+import { pseudoRandomBytes } from 'crypto';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
+import { writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
+import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
+import { APP_FOLDER } from './app/shared/constants';
 
 const globalPrefix = 'api';
 const devEnvironments = [
@@ -46,6 +52,7 @@ async function bootstrap(): Promise<void> {
   app.useLogger(logger);
   app.setGlobalPrefix(globalPrefix);
 
+  // Fastify
   app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
@@ -66,6 +73,27 @@ async function bootstrap(): Promise<void> {
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
 
+  // NATS
+  const options: CustomStrategy = {
+    strategy: new Listener(
+      configService.get('NATS_CLUSTER_ID'),
+      `${configService.get('NATS_CLIENT_ID')}_${pseudoRandomBytes(2).toString(
+        'hex'
+      )}`,
+      `${Services.TICKETS_SERVICE}_GROUP`,
+      {
+        url: configService.get('NATS_URL'),
+      },
+      {
+        durableName: `${Resources.TICKETS}_subscriptions`,
+        manualAckMode: true,
+        deliverAllAvailable: true,
+      }
+    ),
+  };
+  const microService = app.connectMicroservice(options);
+
+  // Swagger UI
   const config = new DocumentBuilder()
     .setTitle('Tickets API')
     .setDescription('Ticketing tickets API description')
@@ -82,12 +110,21 @@ async function bootstrap(): Promise<void> {
   };
   SwaggerModule.setup(swaggerUiPrefix, app, document, customOptions);
 
+  writeFileSync(
+    resolve(APP_FOLDER, 'openapi.json'),
+    JSON.stringify(document, null, 2)
+  );
+
+  // Init
+  await microService.init();
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
     logger.log(
       `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
     );
   });
+
+  // TODO: add graceful shutdown process
 }
 
 bootstrap();

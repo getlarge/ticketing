@@ -3,18 +3,22 @@ import {
   BaseEnvironmentVariables,
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
+  NatsEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
+import { Services } from '@ticketing/shared/constants';
 import { Exclude } from 'class-transformer';
+import { pseudoRandomBytes } from 'crypto';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Mixin } from 'ts-mixer';
 
-export type AppConfigService = ConfigService<EnvironmentVariables>;
+export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
   JWTEnvironmentVariables,
-  MongoEnvironmentVariables
+  MongoEnvironmentVariables,
+  NatsEnvironmentVariables
 ) {
   @Exclude()
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
@@ -23,4 +27,8 @@ export class EnvironmentVariables extends Mixin(
   APP_NAME?: string = 'tickets';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
+
+  NATS_CLIENT_ID?: string = `${Services.TICKETS_SERVICE}_${pseudoRandomBytes(
+    4
+  ).toString('hex')}`;
 }
