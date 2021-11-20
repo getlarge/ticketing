@@ -19,15 +19,12 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
-import {
-  CreateTicketDto,
-  TicketDto,
-} from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { CreateTicket, Ticket, User } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 
+import { CreateTicket, CreateTicketDto, Ticket, TicketDto } from './models';
 import { TicketsService } from './tickets.service';
 
 @Controller(Resources.TICKETS)
@@ -103,8 +100,8 @@ export class TicketsController {
   )
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Request a ticket by id',
-    summary: `Find a ticket - Scope : ${Resources.TICKETS}:${Actions.UPDATED_ONE}`,
+    description: 'Update a ticket by id',
+    summary: `Update a ticket - Scope : ${Resources.TICKETS}:${Actions.UPDATE_ONE}`,
   })
   @ApiBody({ type: CreateTicketDto })
   @ApiResponse({

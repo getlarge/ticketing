@@ -1,15 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  Ticket as TicketAttrs,
-  ticketContraints,
-} from '@ticketing/shared/models';
 import { omit } from 'lodash';
 import { Document, Model } from 'mongoose';
 
+import { Ticket as TicketAttrs, ticketContraints } from '../models';
 @Schema({
   toJSON: {
-    transform(doc, ret) {
+    transform(doc, ret: TicketAttrs) {
       ret.id = doc._id.toString();
+      ret.version = doc.__v.toString();
       return omit(ret, ['_id', '__v']);
     },
   },
@@ -29,6 +27,9 @@ export class Ticket implements TicketAttrs {
 
   @Prop({ type: Number, required: true, min: ticketContraints.price.min })
   price: number;
+
+  @Prop({ type: Number, virtual: true })
+  version: number;
 
   @Prop({
     type: String,

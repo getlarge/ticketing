@@ -12,29 +12,28 @@ import {
   TicketCreatedEvent,
   TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
-import * as models from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
+import { Model } from 'mongoose';
 
-import { Ticket as TicketSchema, TicketModel } from './schemas/ticket.schema';
+import { CreateTicket, Ticket } from './models';
+import { Ticket as TicketSchema, TicketDocument } from './schemas';
 
 @Injectable()
 export class TicketsService {
   readonly logger = new Logger(TicketsService.name);
 
   constructor(
-    @InjectModel(TicketSchema.name) private ticketModel: TicketModel,
+    @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
     @Inject(Publisher) private publisher: Publisher
   ) {}
 
-  async create(
-    ticket: models.CreateTicket,
-    currentUser: models.User
-  ): Promise<models.Ticket> {
+  async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
     const newTicket = await this.ticketModel.create({
       ...ticket,
       userId: currentUser.id,
     });
-    const result = newTicket.toJSON<models.Ticket>();
+    const result = newTicket.toJSON<Ticket>();
     this.publisher
       .emit<TicketCreatedEvent['name'], TicketCreatedEvent['data']>(
         Patterns.TicketCreated,
@@ -47,24 +46,24 @@ export class TicketsService {
     return result;
   }
 
-  async find(): Promise<models.Ticket[]> {
+  async find(): Promise<Ticket[]> {
     const tickets = (await this.ticketModel.find()) || [];
-    return tickets.map((ticket) => ticket.toJSON<models.Ticket>());
+    return tickets.map((ticket) => ticket.toJSON<Ticket>());
   }
 
-  async findById(id: string): Promise<models.Ticket> {
+  async findById(id: string): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ _id: id });
     if (isEmpty(ticket)) {
       throw new NotFoundException(`Ticket ${id} not found`);
     }
-    return ticket.toJSON<models.Ticket>();
+    return ticket.toJSON<Ticket>();
   }
 
   async updateById(
     id: string,
-    update: models.CreateTicket,
-    currenUser: models.User
-  ): Promise<models.Ticket> {
+    update: CreateTicket,
+    currenUser: User
+  ): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ _id: id });
     if (isEmpty(ticket)) {
       throw new NotFoundException(`Ticket ${id} not found`);
@@ -75,7 +74,7 @@ export class TicketsService {
 
     ticket.set(update);
     await ticket.save();
-    const result = ticket.toJSON<models.Ticket>();
+    const result = ticket.toJSON<Ticket>();
     this.publisher.emit<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
       Patterns.TicketUpdated,
       result
