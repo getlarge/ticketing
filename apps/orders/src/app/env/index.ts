@@ -6,7 +6,8 @@ import {
   NatsEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Services } from '@ticketing/shared/constants';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { IsNumber, IsOptional } from 'class-validator';
 import { pseudoRandomBytes } from 'crypto';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -31,4 +32,9 @@ export class EnvironmentVariables extends Mixin(
   NATS_CLIENT_ID?: string = `${Services.ORDERS_SERVICE}_${pseudoRandomBytes(
     4
   ).toString('hex')}`;
+
+  @Expose()
+  @IsOptional()
+  @IsNumber()
+  EXPIRATION_WINDOW_SECONDS?: number = 15 * 60;
 }
