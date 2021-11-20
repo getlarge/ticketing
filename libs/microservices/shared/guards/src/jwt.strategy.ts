@@ -6,7 +6,7 @@ import {
 } from '@ticketing/microservices/shared/env';
 import { PassportStrategy } from '@ticketing/microservices/shared/fastify-passport';
 import { SESSION_ACCESS_TOKEN } from '@ticketing/shared/constants';
-import { UserResponse } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 import type { Session as FastifySession } from 'fastify-secure-session';
 import { Strategy, StrategyOptions } from 'passport-jwt';
@@ -42,7 +42,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     exp: number;
     aud: string;
     iss: string;
-  }): UserResponse {
+  }): User {
     // TODO: has user been banned ?
     return { id: payload.sub, email: payload.username };
   }
