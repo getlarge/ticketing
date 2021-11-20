@@ -1,10 +1,12 @@
 import { Expose } from 'class-transformer';
-import { IsMongoId } from 'class-validator';
+import { IsEmail, IsMongoId } from 'class-validator';
 
-import { UserCredentials } from './user-credentials';
-
-export class User extends UserCredentials {
+export class User {
   @Expose()
   @IsMongoId()
   id: string;
+
+  @Expose()
+  @IsEmail()
+  email: string;
 }

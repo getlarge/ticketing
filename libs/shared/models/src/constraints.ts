@@ -8,6 +8,8 @@ export const ticketContraints = {
   },
 };
 
+export const orderContraints = {};
+
 export const userConstraints = {
   password: {
     min: 4,
