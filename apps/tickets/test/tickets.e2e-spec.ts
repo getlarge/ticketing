@@ -13,21 +13,24 @@ import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
-import { MockClient } from '@ticketing/microservices/shared/testing';
-import { CreateTicket } from '@ticketing/shared/models';
+import {
+  createSigninSession,
+  MockClient,
+} from '@ticketing/microservices/shared/testing';
 import { randomBytes } from 'crypto';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 import { Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
+import { CreateTicket } from '../src/app/tickets/models';
 import {
   Ticket as TicketSchema,
   TicketModel,
 } from '../src/app/tickets/schemas/ticket.schema';
 import { TicketsModule } from '../src/app/tickets/tickets.module';
 import { envFilePath } from './constants';
-import { createSigninSession, createTicket } from './helpers';
+import { createTicket } from './helpers';
 
 const defaultUserEmail = 'test@test.com';
 
@@ -86,7 +89,7 @@ describe('TicketsController (e2e)', () => {
   describe('/tickets (POST)', () => {
     const url = '/tickets';
 
-    it('should have a tickets endpoint for POST requests', async () => {
+    it('should have a "tickets" endpoint for POST requests', async () => {
       const { statusCode } = await app.inject({
         method: 'POST',
         url,
