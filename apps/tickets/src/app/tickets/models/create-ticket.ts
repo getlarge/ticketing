@@ -1,18 +1,17 @@
+import { ticketConstraints } from '@ticketing/shared/models';
 import { Expose } from 'class-transformer';
 import { IsNumber, IsString, Length, Min } from 'class-validator';
-
-import { ticketContraints } from './ticket-constraints';
 
 export class CreateTicket {
   @Expose()
   @IsString({ message: 'title must be a string' })
-  @Length(ticketContraints.title.min, ticketContraints.title.max, {
-    message: `title must be a between ${ticketContraints.title.min} and ${ticketContraints.title.max} characters`,
+  @Length(ticketConstraints.title.min, ticketConstraints.title.max, {
+    message: `title must be a between ${ticketConstraints.title.min} and ${ticketConstraints.title.max} characters`,
   })
   title: string;
 
   @Expose()
   @IsNumber()
-  @Min(ticketContraints.price.min)
+  @Min(ticketConstraints.price.min)
   price: number;
 }
