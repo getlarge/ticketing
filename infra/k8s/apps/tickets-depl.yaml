@@ -25,10 +25,7 @@ spec:
             - name: PORT
               value: '3000'
             - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: tickets-service-secret
-                  key: MONGODB_URI
+              value: mongodb://tickets-mongo-srv:27017/tickets
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
@@ -51,7 +48,7 @@ spec:
           resources:
             limits:
               memory: '128Mi'
-              cpu: '500m'
+              cpu: '250m'
 ---
 apiVersion: v1
 kind: Service

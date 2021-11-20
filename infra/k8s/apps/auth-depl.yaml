@@ -25,10 +25,7 @@ spec:
             - name: PORT
               value: '3000'
             - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: auth-service-secret
-                  key: MONGODB_URI
+              value: mongodb://auth-mongo-srv:27017
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -47,7 +44,7 @@ spec:
           resources:
             limits:
               memory: '128Mi'
-              cpu: '500m'
+              cpu: '250m'
 ---
 apiVersion: v1
 kind: Service

@@ -18,8 +18,8 @@ spec:
           image: mongo
           resources:
             limits:
-              memory: '1024Mi'
-              cpu: '1000m'
+              memory: '512Mi'
+              cpu: '250m'
 
 ---
 apiVersion: v1
