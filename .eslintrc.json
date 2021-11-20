@@ -89,6 +89,10 @@
                 "onlyDependOnLibsWithTags": ["scope:shared", "scope:tickets"]
               },
               {
+                "sourceTag": "scope:orders",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:orders"]
+              },
+              {
                 "sourceTag": "platform:web",
                 "onlyDependOnLibsWithTags": ["platform:web", "platform:shared"]
               },

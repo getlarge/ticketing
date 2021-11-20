@@ -1,0 +1,31 @@
+{
+  "name": "orders",
+  "version": "0.0.1",
+  "dependencies": {
+    "@nestjs-plugins/nestjs-nats-streaming-transport": "^1.1.1",
+    "@nestjs/common": "^8.1.2",
+    "@nestjs/config": "^1.1.0",
+    "@nestjs/core": "^8.1.2",
+    "@nestjs/microservices": "^8.2.0",
+    "@nestjs/mongoose": "^9.0.1",
+    "@nestjs/platform-fastify": "^8.1.2",
+    "@nestjs/swagger": "^5.1.4",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
+    "fastify": "^3.22.0",
+    "fastify-helmet": "^5.3.2",
+    "fastify-passport": "^0.4.3",
+    "fastify-secure-session": "^3.0.0",
+    "fastify-swagger": "^4.12.6",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.0.12",
+    "nestjs-pino": "^2.3.0",
+    "pino-http": "^6.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "~7.4.0",
+    "ts-mixer": "^6.0.0"
+  },
+  "main": "main.js"
+}
