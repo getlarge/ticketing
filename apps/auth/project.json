@@ -27,7 +27,6 @@
         }
       }
     },
-
     "serve": {
       "executor": "@nrwl/node:execute",
       "options": {
@@ -68,7 +67,6 @@
         "detectOpenHandles": true
       }
     },
-
     "get-dependencies": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

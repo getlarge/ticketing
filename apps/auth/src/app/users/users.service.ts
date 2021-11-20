@@ -8,17 +8,19 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserCredentials, UserResponse } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
+import { Model } from 'mongoose';
 
 import { Password } from '../shared/password';
-import { User, UserModel } from './schemas/user.schema';
+import { UserCredentials, UserResponse } from './models';
+import { User as UserSchema, UserDocument } from './schemas';
 
 @Injectable()
 export class UsersService {
   readonly logger = new Logger(UsersService.name);
 
   constructor(
-    @InjectModel(User.name) private userModel: UserModel,
+    @InjectModel(UserSchema.name) private userModel: Model<UserDocument>,
     @Inject(JwtService) private jwtService: JwtService
   ) {}
 

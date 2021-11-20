@@ -20,19 +20,21 @@ import {
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
-  UserCredentialsDto,
-  UserDto,
-} from '@ticketing/microservices/shared/models';
-import {
   Actions,
   Resources,
   SESSION_ACCESS_TOKEN,
 } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { User, UserCredentials, UserResponse } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { LocalAuthGuard } from '../guards/local-auth.guard';
+import {
+  UserCredentials,
+  UserCredentialsDto,
+  UserDto,
+  UserResponse,
+} from './models';
 import { UsersService } from './users.service';
 
 @Controller(Resources.USERS)
