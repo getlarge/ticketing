@@ -17,7 +17,7 @@ function isHttpException(error: any): error is HttpException {
 export class HttpErrorFilter<T = unknown> implements ExceptionFilter<T> {
   protected logger = new Logger(HttpErrorFilter.name);
 
-  catch(exception: T, host: ArgumentsHost) {
+  catch(exception: T, host: ArgumentsHost): void {
     const context = host.switchToHttp();
     const response = context.getResponse<FastifyReply>();
     const request = context.getRequest<FastifyRequest>();
