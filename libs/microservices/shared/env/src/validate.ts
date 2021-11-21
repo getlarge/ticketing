@@ -1,4 +1,4 @@
-import { ClassConstructor, plainToClass } from 'class-transformer';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { omitBy } from 'lodash';
 
@@ -15,7 +15,7 @@ export const validate = (
       (val) => !val || val === 'null' || val === 'undefined'
     );
 
-    const validatedConfig = plainToClass(envClass, config, {
+    const validatedConfig = plainToInstance(envClass, config, {
       enableImplicitConversion: true,
       excludeExtraneousValues: true,
       exposeDefaultValues: true,
