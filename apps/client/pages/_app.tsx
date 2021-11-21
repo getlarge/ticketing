@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './styles.css';
 
 import { Resources } from '@ticketing/shared/constants';
-import { UserResponse } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 import { AxiosError } from 'axios';
 import App, { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
@@ -35,7 +35,7 @@ CustomApp.getInitialProps = async (appContext: AppContext) => {
   }
   try {
     const url = `/api/${Resources.USERS}/current-user`;
-    const { data } = await buildClient(appContext.ctx).get<UserResponse>(url);
+    const { data } = await buildClient(appContext.ctx).get<User>(url);
     appProps.pageProps = { ...pageProps, currentUser: data };
     return appProps;
   } catch (err) {

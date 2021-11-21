@@ -1,8 +1,8 @@
-import { UserResponse } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 
 import styles from './index.module.css';
 
-export function Index(props: { currentUser?: UserResponse }): JSX.Element {
+export function Index(props: { currentUser?: User }): JSX.Element {
   const { currentUser } = props;
   return (
     <div className={styles.page}>
