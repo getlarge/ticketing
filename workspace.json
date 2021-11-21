@@ -16,6 +16,19 @@
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
     "shared-models": "libs/shared/models",
-    "tickets": "apps/tickets"
+    "tickets": "apps/tickets",
+    "workspace": {
+      "root": ".",
+      "targets": {
+        "version": {
+          "executor": "@jscutlery/semver:version",
+          "options": {
+            "baseBranch": "main",
+            "syncVersions": true,
+            "trackDeps": true
+          }
+        }
+      }
+    }
   }
 }

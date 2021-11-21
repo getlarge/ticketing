@@ -32,7 +32,11 @@
     "nats:publish": "ts-node-dev --rs --notify false tools/nats-test/publisher.ts",
     "nats:listen": "ts-node-dev --rs --notify false tools/nats-test/listener.ts",
     "update": "nx migrate latest",
-    "dep-graph": "nx dep-graph"
+    "dep-graph": "nx dep-graph",
+    "bump:dry-run": "nx run workspace:version --dryRun",
+    "bump": "nx run workspace:version",
+    "cz": "cz",
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -76,6 +80,10 @@
     "tslib": "^2.0.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-angular": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
+    "@jscutlery/semver": "^2.13.1",
     "@nestjs/schematics": "^8.0.4",
     "@nestjs/testing": "^8.1.2",
     "@nrwl/cli": "13.1.2",
@@ -102,7 +110,9 @@
     "@typescript-eslint/eslint-plugin": "~4.33.0",
     "@typescript-eslint/parser": "~4.33.0",
     "babel-jest": "27.2.3",
+    "commitizen": "^4.2.4",
     "cypress": "^8.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.0",
     "eslint-config-prettier": "8.3.0",
@@ -117,6 +127,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-sonarjs": "0.10.0",
     "eslint-plugin-unused-imports": "^1.1.4",
+    "husky": "^7.0.4",
     "jest": "27.2.3",
     "prettier": "^2.3.1",
     "react-test-renderer": "17.0.2",
@@ -124,5 +135,10 @@
     "ts-node-dev": "^1.1.8",
     "typescript": "~4.3.5",
     "yargs": "^17.2.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }

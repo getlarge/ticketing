@@ -28,6 +28,12 @@
         "target": "build",
         "projects": "dependencies"
       }
+    ],
+    "version": [
+      {
+        "target": "version",
+        "projects": "dependencies"
+      }
     ]
   },
   "generators": {
