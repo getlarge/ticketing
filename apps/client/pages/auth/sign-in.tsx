@@ -40,7 +40,7 @@ export function SignIn(props: SignInProps): JSX.Element {
         ></input>
       </div>
       <div className="form-group">
-        <label>Passowrd</label>
+        <label>Password</label>
         <input
           value={password}
           onChange={(e) => setPassword(e.target.value)}
