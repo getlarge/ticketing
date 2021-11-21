@@ -7,9 +7,9 @@ import { Order, OrderDocument } from './order.schema';
 
 @Schema({
   toJSON: {
-    transform(doc, ret: TicketAttrs) {
+    transform(doc: TicketDocument, ret: TicketAttrs) {
       ret.id = doc._id.toString();
-      ret.version = doc.__v.toString();
+      ret.version = doc.__v;
       return omit(ret, ['_id', '__v']);
     },
   },
@@ -35,6 +35,7 @@ export class Ticket implements TicketAttrs {
 }
 
 export type TicketDocument = Ticket & Document;
+// export type TicketDocument = Ticket & Document<ObjectId>;
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
 
@@ -50,6 +51,5 @@ TicketSchema.methods.isReserved = async function (): Promise<boolean> {
       ],
     },
   });
-
   return !!existingOrder;
 };

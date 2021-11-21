@@ -7,14 +7,15 @@ import { TicketDocument } from './ticket.schema';
 
 @Schema({
   toJSON: {
-    transform(doc, ret: OrderAttrs) {
+    transform(doc: OrderDocument, ret: OrderAttrs) {
       ret.id = doc._id.toString();
+      ret.expiresAt = doc.expiresAt.toISOString();
       // ret.version = doc.__v.toString();
       return omit(ret, ['_id', '__v']);
     },
   },
 })
-export class Order implements OrderAttrs {
+export class Order implements Omit<OrderAttrs, 'expiresAt'> {
   @Prop({ type: String, virtual: true })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   id: any;
@@ -43,7 +44,7 @@ export class Order implements OrderAttrs {
     type: MongooseSchema.Types.Date,
     required: false,
   })
-  expiresAt?: string;
+  expiresAt?: Date;
 }
 
 export type OrderDocument = Order & Document;
