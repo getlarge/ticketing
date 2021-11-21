@@ -1,6 +1,8 @@
 const { getProjectGraph } = require('./get-project-graph');
 const minimatch = require('minimatch');
 
+const constantDependencies = ['package.json'];
+
 async function getProjectDependenciesFiles({
   context,
   exclude,
@@ -33,7 +35,7 @@ async function getProjectDependenciesFiles({
 
   const getNode = (target) => graph.nodes[target];
   const getFilesFromNode = ({ data, type }) => {
-    const { files, sourceRoot } = data;
+    const { files } = data;
     return files
       .filter(
         ({ file }) =>
@@ -47,7 +49,11 @@ async function getProjectDependenciesFiles({
   const libsDependenciesFiles = libsDependencies.flatMap((target) =>
     getFilesFromNode(getNode(target))
   );
-  const dependenciesFiles = [...appDependenciesFiles, ...libsDependenciesFiles];
+  const dependenciesFiles = [
+    ...constantDependencies,
+    ...appDependenciesFiles,
+    ...libsDependenciesFiles,
+  ];
 
   return context === '.'
     ? dependenciesFiles
