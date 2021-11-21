@@ -14,7 +14,7 @@
     },
     "/api/tickets": {
       "post": {
-        "operationId": "TicketsController_createTicket",
+        "operationId": "TicketsController_create",
         "summary": "Create a ticket - Scope : tickets:create_one",
         "description": "Request creation of a ticket",
         "parameters": [],
@@ -50,7 +50,7 @@
         ]
       },
       "get": {
-        "operationId": "TicketsController_findTickets",
+        "operationId": "TicketsController_find",
         "summary": "Find tickets - Scope : tickets:read_many",
         "description": "Request tickets",
         "parameters": [],
@@ -76,7 +76,7 @@
     },
     "/api/tickets/{id}": {
       "get": {
-        "operationId": "TicketsController_findTicketById",
+        "operationId": "TicketsController_findById",
         "summary": "Find a ticket - Scope : tickets:read_one",
         "description": "Request a ticket by id",
         "parameters": [
@@ -106,9 +106,9 @@
         ]
       },
       "put": {
-        "operationId": "TicketsController_updateTicketById",
-        "summary": "Find a ticket - Scope : tickets:updated_one",
-        "description": "Request a ticket by id",
+        "operationId": "TicketsController_updateById",
+        "summary": "Update a ticket - Scope : tickets:update_one",
+        "description": "Update a ticket by id",
         "parameters": [
           {
             "name": "id",
@@ -197,6 +197,10 @@
       "TicketDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ticket database identifier"
+          },
           "title": {
             "type": "string",
             "description": "Ticket title",
@@ -207,11 +211,22 @@
             "type": "number",
             "description": "Ticket price",
             "minimum": 0
+          },
+          "version": {
+            "type": "number",
+            "description": "Ticket version represented by a number incremented at each updated"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Ticket creator id"
           }
         },
         "required": [
+          "id",
           "title",
-          "price"
+          "price",
+          "version",
+          "userId"
         ]
       }
     }

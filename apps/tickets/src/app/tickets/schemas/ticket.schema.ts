@@ -5,9 +5,9 @@ import { Document, Model } from 'mongoose';
 import { Ticket as TicketAttrs, ticketContraints } from '../models';
 @Schema({
   toJSON: {
-    transform(doc, ret: TicketAttrs) {
+    transform(doc: TicketDocument, ret: TicketAttrs) {
       ret.id = doc._id.toString();
-      ret.version = doc.__v.toString();
+      ret.version = doc.__v;
       return omit(ret, ['_id', '__v']);
     },
   },

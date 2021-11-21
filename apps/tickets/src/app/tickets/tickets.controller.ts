@@ -53,7 +53,7 @@ export class TicketsController {
     type: TicketDto,
   })
   @Post('')
-  createTicket(
+  create(
     @Body() ticket: CreateTicket,
     @CurrentUser() currentUser: User
   ): Promise<Ticket> {
@@ -71,7 +71,7 @@ export class TicketsController {
     isArray: true,
   })
   @Get('')
-  findTickets(): Promise<Ticket[]> {
+  find(): Promise<Ticket[]> {
     return this.ticketsService.find();
   }
 
@@ -85,7 +85,7 @@ export class TicketsController {
     type: TicketDto,
   })
   @Get(':id')
-  findTicketById(@Param('id', ParseObjectId) id: string): Promise<Ticket> {
+  findById(@Param('id', ParseObjectId) id: string): Promise<Ticket> {
     return this.ticketsService.findById(id);
   }
 
@@ -110,7 +110,7 @@ export class TicketsController {
     type: TicketDto,
   })
   @Put(':id')
-  updateTicketById(
+  updateById(
     @Param('id', ParseObjectId) id: string,
     @Body() ticket: CreateTicket,
     @CurrentUser() user: User
