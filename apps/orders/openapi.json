@@ -1,0 +1,257 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "operationId": "OrdersController_create",
+        "summary": "Create an order - Scope : orders:create_one",
+        "description": "Request creation of an order",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "OrdersController_find",
+        "summary": "Find orders - Scope : orders:read_many",
+        "description": "Request user orders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Orders found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_findById",
+        "summary": "Find an order - Scope : orders:read_one",
+        "description": "Request an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ]
+      },
+      "delete": {
+        "operationId": "OrdersController_cancelById",
+        "summary": "Cancel an order - Scope : orders:delete_one",
+        "description": "Cancel an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Orders API",
+    "description": "Ticketing orders API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "orders",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "description": "Ticket to order"
+          }
+        },
+        "required": [
+          "ticketId"
+        ]
+      },
+      "TicketDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ticket database identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          },
+          "version": {
+            "type": "number",
+            "description": "Ticket version represented by a number incremented at each updated"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "price",
+          "version"
+        ]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": [
+          "created",
+          "cancelled",
+          "awaiting:payment",
+          "complete"
+        ]
+      },
+      "OrderDto": {
+        "type": "object",
+        "properties": {
+          "ticket": {
+            "description": "Ticket ordered reference",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketDto"
+              }
+            ]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User who created the order"
+          },
+          "status": {
+            "description": "Order status",
+            "example": "complete",
+            "default": "created",
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Order expiration date"
+          }
+        },
+        "required": [
+          "ticket",
+          "userId",
+          "status"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
+}
