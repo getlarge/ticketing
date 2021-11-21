@@ -54,7 +54,6 @@
         "lintFilePatterns": ["apps/client/**/*.{ts,tsx,js,jsx}"]
       }
     },
-
     "docker-build": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
@@ -64,7 +63,6 @@
         "parallel": false
       }
     },
-
     "docker-run": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
