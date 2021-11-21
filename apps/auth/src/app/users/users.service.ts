@@ -8,11 +8,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
 
 import { Password } from '../shared/password';
-import { UserCredentials, UserResponse } from './models';
+import { User, UserCredentials } from './models';
 import { User as UserSchema, UserDocument } from './schemas';
 
 @Injectable()
@@ -24,13 +23,15 @@ export class UsersService {
     @Inject(JwtService) private jwtService: JwtService
   ) {}
 
-  async signUp(user: UserCredentials): Promise<UserResponse> {
-    const existingUser = await this.userModel.findOne({ email: user.email });
+  async signUp(credentials: UserCredentials): Promise<User> {
+    const existingUser = await this.userModel.findOne({
+      email: credentials.email,
+    });
     if (existingUser) {
       throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
     }
-    const newUser = await this.userModel.create(user);
-    return newUser.toJSON<UserResponse>();
+    const newUser = await this.userModel.create(credentials);
+    return newUser.toJSON<User>();
   }
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -56,8 +57,8 @@ export class UsersService {
     }
   }
 
-  async signIn(user: User): Promise<{ token: string }> {
-    const payload = { username: user.email, sub: user.id };
+  async signIn(currentUser: User): Promise<{ token: string }> {
+    const payload = { username: currentUser.email, sub: currentUser.id };
     const token = await this.jwtService.signAsync(payload);
     return { token };
   }

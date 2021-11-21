@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { userConstraints } from './user-constraints';
-import { UserCredentials } from './user-credentials';
+import { userConstraints, UserCredentials } from '@ticketing/shared/models';
 
 export class UserCredentialsDto extends UserCredentials {
   @ApiProperty({

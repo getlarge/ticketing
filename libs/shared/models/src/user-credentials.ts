@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { IsEmail, IsString, Length } from 'class-validator';
 
-import { userConstraints } from './user-constraints';
+import { userConstraints } from './user';
 
 export class UserCredentials {
   @Expose()

@@ -25,15 +25,14 @@ import {
   SESSION_ACCESS_TOKEN,
 } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { User } from '@ticketing/shared/models';
 import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import {
+  User,
   UserCredentials,
   UserCredentialsDto,
   UserDto,
-  UserResponse,
 } from './models';
 import { UsersService } from './users.service';
 
@@ -60,8 +59,8 @@ export class UsersController {
     type: UserDto,
   })
   @Post('sign-up')
-  signUp(@Body() user: UserCredentials): Promise<UserResponse> {
-    return this.usersService.signUp(user);
+  signUp(@Body() credentials: UserCredentials): Promise<User> {
+    return this.usersService.signUp(credentials);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -89,7 +88,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @Post('sign-in')
   async signIn(
-    @Body() _user: UserCredentials,
+    @Body() _credentials: UserCredentials,
     @Session() session: FastifySession,
     @CurrentUser() user: User
   ): Promise<{ token: string }> {

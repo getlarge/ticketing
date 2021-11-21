@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { User as UserAttrs } from '@ticketing/shared/models';
 import { omit } from 'lodash';
 import { Document, Model } from 'mongoose';
+
+import { User as UserAttrs } from '../models';
 
 @Schema({
   toJSON: {
