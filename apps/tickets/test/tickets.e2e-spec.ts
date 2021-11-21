@@ -209,7 +209,7 @@ describe('TicketsController (e2e)', () => {
       const ticketToCreate = {
         title: 'title',
         price: 20,
-        userId: randomBytes(4).toString('hex'),
+        userId: new Types.ObjectId().toString('hex'),
       };
       await ticketModel.create(ticketToCreate);
       const ticket = await ticketModel.findOne({
