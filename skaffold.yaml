@@ -34,7 +34,18 @@ build:
       custom:
         buildCommand: npx nx run tickets:docker-build --conf=development --tag=dev
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p tickets      
+          command: node ./tools/nx/get-dependencies-cli.js -p tickets
+    # ORDERS
+    - image: ghcr.io/getlarge/ticketing-orders
+      context: .
+      sync:
+        manual:
+          - src: .
+            dest: .
+      custom:
+        buildCommand: npx nx run orders:docker-build --conf=development --tag=dev
+        dependencies:
+          command: node ./tools/nx/get-dependencies-cli.js -p orders          
     # CLIENT
     - image: ghcr.io/getlarge/ticketing-client
       context: .

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders
+  template:
+    metadata:
+      labels:
+        app: orders
+    spec:
+      imagePullSecrets:
+        - name: ghcr-cred
+      restartPolicy: Always
+      containers:
+        - name: orders
+          image: ghcr.io/getlarge/ticketing-orders
+          envFrom:
+            - configMapRef:
+                name: api-config
+          env:
+            - name: PORT
+              value: '3000'
+            - name: MONGODB_URI
+              value: mongodb://orders-mongo-srv:27017/orders
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PRIVATE_KEY
+            - name: JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_PUBLIC_KEY
+            - name: SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: SESSION_KEY
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '250m'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-srv
+spec:
+  selector:
+    app: orders
+  ports:
+    - name: orders
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
