@@ -33,7 +33,7 @@ export class UsersService {
     return newUser.toJSON<UserResponse>();
   }
 
-  async validateUser(email: string, password: string): Promise<UserResponse> {
+  async validateUser(email: string, password: string): Promise<User> {
     const existingUser = await this.userModel.findOne({ email });
     if (!existingUser) {
       throw new UnauthorizedException();

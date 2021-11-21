@@ -23,6 +23,7 @@ export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+// UserSchema.statics.build = (): UserDocument => {};
 export interface UserModel extends Model<UserDocument> {
   build(attr: UserAttrs): UserDocument;
 }
