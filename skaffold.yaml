@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta25
+apiVersion: skaffold/v2beta26
 kind: Config
 metadata:
   name: apps
@@ -9,6 +9,7 @@ deploy:
 build:
   local:
     push: false
+    concurrency: 0
   artifacts:
     # AUTH
     - image: ghcr.io/getlarge/ticketing-auth
@@ -23,7 +24,7 @@ build:
         buildCommand: npx nx run auth:docker-build --conf=development --tag=dev
         dependencies:
           command: node ./tools/nx/get-dependencies-cli.js -p auth
-    # # TICKETS
+    # TICKETS
     - image: ghcr.io/getlarge/ticketing-tickets
       context: .
       sync:
@@ -33,7 +34,7 @@ build:
       custom:
         buildCommand: npx nx run tickets:docker-build --conf=development --tag=dev
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p tickets
+          command: node ./tools/nx/get-dependencies-cli.js -p tickets      
     # CLIENT
     - image: ghcr.io/getlarge/ticketing-client
       context: .
@@ -50,7 +51,7 @@ build:
       template: dev
 
 ---
-apiVersion: skaffold/v2beta25
+apiVersion: skaffold/v2beta26
 kind: Config
 metadata:
   name: deps
