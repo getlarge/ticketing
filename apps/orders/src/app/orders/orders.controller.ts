@@ -53,7 +53,7 @@ export class OrdersController {
     type: OrderDto,
   })
   @Post('')
-  createTicket(
+  create(
     @Body() order: CreateOrder,
     @CurrentUser() currentUser: User
   ): Promise<Order> {
@@ -72,7 +72,7 @@ export class OrdersController {
     isArray: true,
   })
   @Get('')
-  findTickets(@CurrentUser() currentUser: User): Promise<Order[]> {
+  find(@CurrentUser() currentUser: User): Promise<Order[]> {
     return this.ordersService.find(currentUser);
   }
 
@@ -87,7 +87,7 @@ export class OrdersController {
     type: OrderDto,
   })
   @Get(':id')
-  findTicketById(
+  findById(
     @Param('id', ParseObjectId) id: string,
     @CurrentUser() currentUser: User
   ): Promise<Order> {
@@ -105,19 +105,19 @@ export class OrdersController {
   )
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Delete an order by id',
-    summary: `Delete an order - Scope : ${Resources.ORDERS}:${Actions.DELETE_ONE}`,
+    description: 'Cancel an order by id',
+    summary: `Cancel an order - Scope : ${Resources.ORDERS}:${Actions.DELETE_ONE}`,
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Order deleted',
+    description: 'Order cancelled',
     type: OrderDto,
   })
   @Delete(':id')
-  deleteOrderById(
+  cancelById(
     @Param('id', ParseObjectId) id: string,
     @CurrentUser() user: User
   ): Promise<Order> {
-    return this.ordersService.deleteById(id, user);
+    return this.ordersService.cancelById(id, user);
   }
 }

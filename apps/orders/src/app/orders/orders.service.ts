@@ -9,6 +9,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import {
+  OrderCancelledEvent,
+  OrderCreatedEvent,
+  Patterns,
+} from '@ticketing/microservices/shared/events';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
@@ -42,7 +47,7 @@ export class OrdersService {
   async create(orderRequest: CreateOrder, currentUser: User): Promise<Order> {
     // 1. find the ticket
     const { ticketId } = orderRequest;
-    const ticket = await this.ticketModel.findById(ticketId);
+    const ticket = await this.ticketModel.findOne({ _id: ticketId });
     if (!ticket) {
       throw new NotFoundException(`Ticket ${ticketId} not found`);
     }
@@ -54,7 +59,6 @@ export class OrdersService {
     // 3. Calclate expiration date
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + this.expirationWindow);
-
     // 4. Build the order and save it to DB
     const newOrder = await this.orderModel.create({
       ticket,
@@ -62,49 +66,71 @@ export class OrdersService {
       expiresAt,
       status: OrderStatus.Created,
     });
+    await newOrder.populate('ticket');
     const result = newOrder.toJSON<Order>();
 
     // 5. Publish an event
-    // this.publisher
-    //   .emit<TicketCreatedEvent['name'], TicketCreatedEvent['data']>(
-    //     Patterns.TicketCreated,
-    //     result
-    //   )
-    //   .subscribe({
-    //     next: (value) =>
-    //       this.logger.log(`Sent event ${Patterns.TicketCreated} ${value}`),
-    //   });
+    this.publisher
+      .emit<OrderCreatedEvent['name'], OrderCreatedEvent['data']>(
+        Patterns.OrderCreated,
+        result
+      )
+      .subscribe({
+        next: (value) =>
+          this.logger.log(`Sent event ${Patterns.OrderCreated} ${value}`),
+      });
     return result;
   }
 
   async find(currentUser: User): Promise<Order[]> {
-    const orders = (await this.orderModel.find()) || [];
-    return orders.map((order) => order.toJSON<Order>());
+    const orders = await this.orderModel
+      .find({ userId: currentUser.id })
+      .populate('ticket');
+    return orders?.length ? orders.map((order) => order.toJSON<Order>()) : [];
   }
 
-  async findById(id: string, currentUser: User): Promise<Order> {
-    const ticket = await this.orderModel.findOne({ _id: id });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Order ${id} not found`);
-    }
-    return ticket.toJSON<Order>();
-  }
-
-  async deleteById(id: string, currenUser: User): Promise<Order> {
-    const order = await this.orderModel.findOne({ _id: id });
+  orderExists(id: string, order: OrderDocument): void {
     if (isEmpty(order)) {
       throw new NotFoundException(`Order ${id} not found`);
     }
-    if (order.userId !== currenUser.id) {
-      throw new ForbiddenException();
-    }
+  }
 
-    await order.delete();
+  userIsOrderOwner(currentUser: User, order: OrderDocument): void {
+    if (order.userId !== currentUser.id) {
+      throw new ForbiddenException(
+        `Order ${order._id} does not belong to user ${currentUser.id}`
+      );
+    }
+  }
+
+  async findById(id: string, currentUser: User): Promise<Order> {
+    const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
+    this.orderExists(id, order);
+    this.userIsOrderOwner(currentUser, order);
+    if (order.userId !== currentUser.id) {
+      throw new ForbiddenException(
+        `Order ${id} does not belong to user ${currentUser.id}`
+      );
+    }
+    return order.toJSON<Order>();
+  }
+
+  async cancelById(id: string, currentUser: User): Promise<Order> {
+    const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
+    this.orderExists(id, order);
+    this.userIsOrderOwner(currentUser, order);
+    order.set({ status: OrderStatus.Cancelled });
+    await order.save();
     const result = order.toJSON<Order>();
-    // this.publisher.emit<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
-    //   Patterns.TicketUpdated,
-    //   result
-    // );
+    this.publisher
+      .emit<OrderCancelledEvent['name'], OrderCancelledEvent['data']>(
+        Patterns.OrderCancelled,
+        result
+      )
+      .subscribe({
+        next: (value) =>
+          this.logger.log(`Sent event ${Patterns.OrderCancelled} ${value}`),
+      });
     return result;
   }
 }
