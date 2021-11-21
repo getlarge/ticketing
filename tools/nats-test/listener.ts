@@ -1,3 +1,4 @@
+// run with: ts-node-dev --rs --notify false tools/nats-test/listener.ts
 import * as nats from 'node-nats-streaming';
 import { randomBytes } from 'crypto';
 

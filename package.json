@@ -29,8 +29,6 @@
     "k8s:stop:apps": "skaffold delete --module apps",
     "k8s:stop:deps": "skaffold delete --module deps",
     "k8s:log": "skaffold run --tail",
-    "nats:publish": "ts-node-dev --rs --notify false tools/nats-test/publisher.ts",
-    "nats:listen": "ts-node-dev --rs --notify false tools/nats-test/listener.ts",
     "update": "nx migrate latest",
     "dep-graph": "nx dep-graph",
     "bump:dry-run": "nx run workspace:version --dryRun",
