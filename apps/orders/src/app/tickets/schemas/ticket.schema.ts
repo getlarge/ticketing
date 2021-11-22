@@ -2,8 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { omit } from 'lodash';
 import { Document } from 'mongoose';
 
-import { OrderStatus, Ticket as TicketAttrs } from '../models';
-import { Order, OrderDocument } from './order.schema';
+import { OrderStatus } from '../../orders/models';
+import { Order, OrderDocument } from '../../orders/schemas';
+import { Ticket as TicketAttrs } from '../models';
 
 @Schema({
   toJSON: {
@@ -38,6 +39,11 @@ export type TicketDocument = Ticket & Document;
 // export type TicketDocument = Ticket & Document<ObjectId>;
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
+
+// TicketSchema.statics.build = (ticket: TicketAttrs): TicketDocument => {
+//   const ticketModel = model<TicketDocument>(Ticket.name);
+//   return new ticketModel({ ...ticket, _id: ticket.id });
+// };
 
 TicketSchema.methods.isReserved = async function (): Promise<boolean> {
   const orderModel = this.db.model<OrderDocument>(Order.name);

@@ -9,9 +9,10 @@ import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 import { pseudoRandomBytes } from 'crypto';
 
 import { AppConfigService } from '../env';
+import { Ticket, TicketSchema } from '../tickets/schemas';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { Order, OrderSchema, Ticket, TicketSchema } from './schemas';
+import { Order, OrderSchema } from './schemas';
 
 @Module({
   imports: [

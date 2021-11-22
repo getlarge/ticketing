@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { omit } from 'lodash';
 import { Document, Model, Schema as MongooseSchema } from 'mongoose';
 
+import { TicketDocument } from '../../tickets/schemas';
 import { Order as OrderAttrs, OrderStatus } from '../models';
-import { TicketDocument } from './ticket.schema';
 
 @Schema({
   toJSON: {

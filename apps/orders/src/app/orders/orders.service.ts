@@ -19,13 +19,9 @@ import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
 
 import { AppConfigService } from '../env';
+import { Ticket as TicketSchema, TicketDocument } from '../tickets/schemas';
 import { CreateOrder, Order, OrderStatus } from './models';
-import {
-  Order as OrderSchema,
-  OrderDocument,
-  Ticket as TicketSchema,
-  TicketDocument,
-} from './schemas';
+import { Order as OrderSchema, OrderDocument } from './schemas';
 
 @Injectable()
 export class OrdersService {

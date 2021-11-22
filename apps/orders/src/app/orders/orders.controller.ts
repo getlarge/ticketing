@@ -13,10 +13,12 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
@@ -41,7 +43,8 @@ export class OrdersController {
       whitelist: true,
     })
   )
-  @ApiBearerAuth()
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Request creation of an order',
     summary: `Create an order - Scope : ${Resources.ORDERS}:${Actions.CREATE_ONE}`,
@@ -61,6 +64,8 @@ export class OrdersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Request user orders',
     summary: `Find orders - Scope : ${Resources.ORDERS}:${Actions.READ_MANY}`,
@@ -77,6 +82,8 @@ export class OrdersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Request an order by id',
     summary: `Find an order - Scope : ${Resources.ORDERS}:${Actions.READ_ONE}`,
@@ -103,7 +110,8 @@ export class OrdersController {
       whitelist: true,
     })
   )
-  @ApiBearerAuth()
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Cancel an order by id',
     summary: `Cancel an order - Scope : ${Resources.ORDERS}:${Actions.DELETE_ONE}`,

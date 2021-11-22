@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Order, OrderStatus } from '@ticketing/shared/models';
 
-import { Ticket } from './ticket';
-import { TicketDto } from './ticket.dto';
+import { Ticket, TicketDto } from '../../tickets/models';
 
 export class OrderDto extends Order {
   @ApiProperty({
