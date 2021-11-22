@@ -13,10 +13,12 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
@@ -41,7 +43,8 @@ export class TicketsController {
       whitelist: true,
     })
   )
-  @ApiBearerAuth()
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Request creation of a ticket',
     summary: `Create a ticket - Scope : ${Resources.TICKETS}:${Actions.CREATE_ONE}`,
@@ -98,7 +101,8 @@ export class TicketsController {
       whitelist: true,
     })
   )
-  @ApiBearerAuth()
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
     description: 'Update a ticket by id',
     summary: `Update a ticket - Scope : ${Resources.TICKETS}:${Actions.UPDATE_ONE}`,

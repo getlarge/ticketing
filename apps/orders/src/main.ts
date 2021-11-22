@@ -11,6 +11,11 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import {
+  bearerSecurityScheme,
+  SecurityRequirements,
+  sessionSecurityScheme,
+} from '@ticketing/microservices/shared/constants';
 import { Environment, Resources, Services } from '@ticketing/shared/constants';
 import { pseudoRandomBytes } from 'crypto';
 import { fastifyHelmet } from 'fastify-helmet';
@@ -98,13 +103,12 @@ async function bootstrap(): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Orders API')
     .setDescription('Ticketing orders API description')
-    .setVersion('1.0')
-    .addSecurity('bearer', {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-    })
-    .addSecurityRequirements('bearer')
+    .setVersion(configService.get('APP_VERSION'))
+    .addSecurity(SecurityRequirements.Session, sessionSecurityScheme)
+    .addSecurity(SecurityRequirements.Bearer, bearerSecurityScheme)
+    .addSecurityRequirements(SecurityRequirements.Session)
+    .addSecurityRequirements(SecurityRequirements.Bearer)
+    .addServer(configService.get('SERVER_URL'))
     .addTag(Resources.ORDERS)
     .build();
 

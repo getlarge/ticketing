@@ -71,6 +71,7 @@ function createAuthGuard(type?: string | string[]): Type<IAuthGuard> {
             }
           }
         ) as any;
+        // TODO: fix handler type issue
         handler(request, response);
       });
 
@@ -85,14 +86,14 @@ function createAuthGuard(type?: string | string[]): Type<IAuthGuard> {
       return context.switchToHttp().getResponse();
     }
 
-    async logIn(request: FastifyRequest): Promise<void> {
+    logIn(request: FastifyRequest): Promise<void> {
       const options = {
         ...defaultOptions,
         ...this.options,
       };
       const user =
         request[this.options.assignProperty || defaultOptions.assignProperty];
-      return await request.logIn(user, {
+      return request.logIn(user, {
         session: options.session,
       });
     }
