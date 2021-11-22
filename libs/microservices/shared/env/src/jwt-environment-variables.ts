@@ -52,6 +52,10 @@ export class JWTEnvironmentVariables {
   JWT_EXPIRES_IN: string | number = 15;
 
   @decorate(Expose())
+  @decorate(IsString())
+  JWT_ISSUER: string;
+
+  @decorate(Expose())
   @decorate(
     Transform(({ value }) => (value ? Buffer.from(value, 'base64') : null), {
       toClassOnly: true,

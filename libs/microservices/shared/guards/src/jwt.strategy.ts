@@ -33,9 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
       ignoreExpiration: false,
       audience: '',
-      issuer: `${configService.get('APP_NAME')}.${configService.get(
-        'APP_VERSION'
-      )}.${configService.get('NODE_ENV')}`,
+      issuer: configService.get('JWT_ISSUER'),
       algorithms: [configService.get('JWT_ALGORITHM')],
       secretOrKey: configService.get('JWT_PUBLIC_KEY'),
     } as StrategyOptions);

@@ -13,5 +13,6 @@ data:
   DISK_STORAGE_TRESHOLD: '536870912000'
   JWT_ALGORITHM: ES256
   JWT_EXPIRES_IN: 60m
+  JWT_ISSUER: ticketing.dev
   NATS_URL: http://nats-srv:4222
   NATS_CLUSTER_ID: ticketing

@@ -38,13 +38,11 @@ import { UsersService } from './users.service';
     JwtModule.registerAsync({
       useFactory: (configService: AppConfigService) => ({
         privateKey: configService.get('JWT_PRIVATE_KEY'),
-        publicKey: configService.get('JWT_PUBLIC_KEY', { infer: true }),
+        publicKey: configService.get('JWT_PUBLIC_KEY'),
         signOptions: {
           expiresIn: configService.get('JWT_EXPIRES_IN'),
           algorithm: configService.get('JWT_ALGORITHM'),
-          issuer: `${configService.get('APP_NAME')}.${configService.get(
-            'APP_VERSION'
-          )}.${configService.get('NODE_ENV')}`,
+          issuer: configService.get('JWT_ISSUER'),
           audience: '',
         },
       }),
