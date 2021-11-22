@@ -15,6 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ticketing/microservices/shared/constants": [
+        "libs/microservices/shared/constants/src/index.ts"
+      ],
       "@ticketing/microservices/shared/decorators": [
         "libs/microservices/shared/decorators/src/index.ts"
       ],

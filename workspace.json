@@ -4,6 +4,7 @@
     "auth": "apps/auth",
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
+    "microservices-shared-constants": "libs/microservices/shared/constants",
     "microservices-shared-decorators": "libs/microservices/shared/decorators",
     "microservices-shared-env": "libs/microservices/shared/env",
     "microservices-shared-events": "libs/microservices/shared/events",

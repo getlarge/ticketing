@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/constants",
+  "sourceRoot": "libs/microservices/shared/constants/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/constants/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/constants"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/constants/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:constants", "platform:server"]
+}
