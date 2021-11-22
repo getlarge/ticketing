@@ -1,18 +1,24 @@
-import { randomBytes, scrypt, timingSafeEqual } from 'crypto';
+import { BinaryLike, randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
-const scryptAsync = promisify(scrypt);
+const scryptAsync: (
+  password: BinaryLike,
+  salt: BinaryLike,
+  keyLength: number
+) => Promise<Buffer> = promisify(scrypt);
 
 export class Password {
+  static keyLength = 64;
+
   static async toHash(password: string): Promise<string> {
     const salt = randomBytes(8).toString('hex');
-    const buffer = (await scryptAsync(password, salt, 64)) as Buffer;
+    const buffer = await scryptAsync(password, salt, this.keyLength);
     return `${buffer.toString('hex')}.${salt}`;
   }
 
   static async compare(stored: string, supplied: string): Promise<boolean> {
-    const salt = stored.split('.').pop();
-    const buffer = (await scryptAsync(supplied, salt, 64)) as Buffer;
-    return timingSafeEqual(buffer, Buffer.from(stored, 'hex'));
+    const [storedHash, salt] = stored.split('.');
+    const buffer = await scryptAsync(supplied, salt, this.keyLength);
+    return timingSafeEqual(buffer, Buffer.from(storedHash, 'hex'));
   }
 }
