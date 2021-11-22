@@ -13,10 +13,12 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
@@ -28,12 +30,7 @@ import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import {
-  User,
-  UserCredentials,
-  UserCredentialsDto,
-  UserDto,
-} from './models';
+import { User, UserCredentials, UserCredentialsDto, UserDto } from './models';
 import { UsersService } from './users.service';
 
 @Controller(Resources.USERS)
@@ -71,6 +68,10 @@ export class UsersController {
       forbidUnknownValues: true,
     })
   )
+  @ApiOperation({
+    description: 'Sign in as registered user',
+    summary: `Sign in - Scope : ${Resources.USERS}:${Actions.SIGN_IN}`,
+  })
   @ApiBody({ type: UserCredentialsDto })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -98,7 +99,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiOperation({
+    description: 'Sign out as signed in user',
+    summary: `Sign out - Scope : ${Resources.USERS}:${Actions.SIGN_OUT}`,
+  })
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @HttpCode(HttpStatus.OK)
   @Post('sign-out')
   signOut(@Session() session: FastifySession): Record<string, unknown> {
@@ -107,7 +113,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiOperation({
+    description: 'Get details about currently signed in user',
+    summary: `Get current user - Scope : ${Resources.USERS}:${Actions.READ_ONE}`,
+  })
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Current user logged in',
