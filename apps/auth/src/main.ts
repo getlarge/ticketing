@@ -11,10 +11,12 @@ import {
 } from '@nestjs/swagger';
 import {
   bearerSecurityScheme,
+  getCookieOptions,
+  GLOBAL_API_PREFIX,
   SecurityRequirements,
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
-import { Environment, Resources } from '@ticketing/shared/constants';
+import { Resources } from '@ticketing/shared/constants';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
@@ -25,13 +27,6 @@ import { resolve } from 'path';
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
 import { APP_FOLDER } from './app/shared/constants';
-
-const globalPrefix = 'api';
-const devEnvironments = [
-  Environment.Test,
-  Environment.Development,
-  Environment.DockerDevelopment,
-];
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -52,7 +47,7 @@ async function bootstrap(): Promise<void> {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(GLOBAL_API_PREFIX);
   // app.useStaticAssets({
   //   root: resolve(`dist/${APP_FOLDER}/public`),
   //   prefix: '/',
@@ -71,10 +66,7 @@ async function bootstrap(): Promise<void> {
   });
   app.register(fastifySecureSession, {
     key: configService.get('SESSION_KEY'),
-    cookie: {
-      secure: !devEnvironments.includes(environment),
-      signed: false,
-    },
+    cookie: getCookieOptions(environment),
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
@@ -93,7 +85,6 @@ async function bootstrap(): Promise<void> {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: {
       persistAuthorization: true,
@@ -111,7 +102,7 @@ async function bootstrap(): Promise<void> {
 
   // Init
   await app.listen(port, '0.0.0.0', () => {
-    logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
+    logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
     logger.log(
       `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
     );

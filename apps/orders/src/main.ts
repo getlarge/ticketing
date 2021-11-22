@@ -13,10 +13,12 @@ import {
 import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import {
   bearerSecurityScheme,
+  getCookieOptions,
+  GLOBAL_API_PREFIX,
   SecurityRequirements,
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
-import { Environment, Resources, Services } from '@ticketing/shared/constants';
+import { Resources, Services } from '@ticketing/shared/constants';
 import { pseudoRandomBytes } from 'crypto';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
@@ -28,13 +30,6 @@ import { resolve } from 'path';
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
 import { APP_FOLDER } from './app/shared/constants';
-
-const globalPrefix = 'api';
-const devEnvironments = [
-  Environment.Test,
-  Environment.Development,
-  Environment.DockerDevelopment,
-];
 
 // eslint-disable-next-line max-lines-per-function
 async function bootstrap(): Promise<void> {
@@ -56,7 +51,7 @@ async function bootstrap(): Promise<void> {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(GLOBAL_API_PREFIX);
 
   // Fastify
   app.register(fastifyHelmet, {
@@ -71,10 +66,7 @@ async function bootstrap(): Promise<void> {
   });
   app.register(fastifySecureSession, {
     key: configService.get('SESSION_KEY'),
-    cookie: {
-      secure: !devEnvironments.includes(environment),
-      signed: false,
-    },
+    cookie: getCookieOptions(environment),
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
@@ -87,9 +79,7 @@ async function bootstrap(): Promise<void> {
         'hex'
       )}`,
       `${Services.ORDERS_SERVICE}_GROUP`,
-      {
-        url: configService.get('NATS_URL'),
-      },
+      { url: configService.get('NATS_URL') },
       {
         durableName: `${Resources.ORDERS}_subscriptions`,
         manualAckMode: true,
@@ -113,7 +103,6 @@ async function bootstrap(): Promise<void> {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: {
       persistAuthorization: true,
@@ -130,7 +119,7 @@ async function bootstrap(): Promise<void> {
   // Init
   await microService.init();
   await app.listen(port, '0.0.0.0', () => {
-    logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
+    logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
     logger.log(
       `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
     );
