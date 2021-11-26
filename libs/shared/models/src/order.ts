@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmptyObject,
+  IsNumber,
   IsOptional,
 } from 'class-validator';
 
@@ -31,6 +32,10 @@ export class Order {
   @Expose()
   @IsEnum(OrderStatus)
   status: OrderStatus;
+
+  @Expose()
+  @IsNumber()
+  version: number;
 
   @Expose()
   @IsDateString()

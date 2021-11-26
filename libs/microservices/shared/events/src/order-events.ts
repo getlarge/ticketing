@@ -12,7 +12,7 @@ export interface OrderCreatedEvent extends Event {
 
 export interface OrderCancelledEvent extends Event {
   subject: Patterns.OrderCancelled;
-  data: Pick<Order, 'id'> & {
+  data: Omit<Order, 'ticket'> & {
     ticket: { id: string };
   };
 }
