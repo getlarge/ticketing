@@ -9,7 +9,7 @@ deploy:
 build:
   local:
     push: false
-    concurrency: 0
+    concurrency: 3
   artifacts:
     # AUTH
     - image: ghcr.io/getlarge/ticketing-auth
@@ -45,7 +45,7 @@ build:
       custom:
         buildCommand: npx nx run orders:docker-build --conf=development --tag=dev
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p orders          
+          command: node ./tools/nx/get-dependencies-cli.js -p orders
     # CLIENT
     - image: ghcr.io/getlarge/ticketing-client
       context: .
@@ -70,3 +70,20 @@ deploy:
   kubectl:
     manifests:
       - './infra/k8s/deps/*'
+
+portForward:
+  - resourceType: service
+    resourceName: auth-mongo-srv
+    namespace: default
+    port: 27017
+    localPort: 27017
+  - resourceType: service
+    resourceName: orders-mongo-srv
+    namespace: default
+    port: 27017
+    localPort: 27018
+  - resourceType: service
+    resourceName: tickets-mongo-srv
+    namespace: default
+    port: 27017
+    localPort: 27019
