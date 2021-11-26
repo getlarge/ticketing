@@ -1,17 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
-      "get": {
-        "operationId": "AppController_getData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/tickets": {
       "post": {
         "operationId": "TicketsController_create",
@@ -44,6 +33,9 @@
           "tickets"
         ],
         "security": [
+          {
+            "session": []
+          },
           {
             "bearer": []
           }
@@ -146,6 +138,9 @@
         ],
         "security": [
           {
+            "session": []
+          },
+          {
             "bearer": []
           }
         ]
@@ -155,7 +150,7 @@
   "info": {
     "title": "Tickets API",
     "description": "Ticketing tickets API description",
-    "version": "1.0",
+    "version": "0.1.0",
     "contact": {}
   },
   "tags": [
@@ -164,9 +159,18 @@
       "description": ""
     }
   ],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3030"
+    }
+  ],
   "components": {
     "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      },
       "bearer": {
         "type": "http",
         "scheme": "bearer",
@@ -232,6 +236,9 @@
     }
   },
   "security": [
+    {
+      "session": []
+    },
     {
       "bearer": []
     }

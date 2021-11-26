@@ -1,17 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
-      "get": {
-        "operationId": "AppController_getData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/orders": {
       "post": {
         "operationId": "OrdersController_create",
@@ -45,6 +34,9 @@
         ],
         "security": [
           {
+            "session": []
+          },
+          {
             "bearer": []
           }
         ]
@@ -71,6 +63,14 @@
         },
         "tags": [
           "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -103,6 +103,14 @@
         },
         "tags": [
           "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
         ]
       },
       "delete": {
@@ -136,6 +144,9 @@
         ],
         "security": [
           {
+            "session": []
+          },
+          {
             "bearer": []
           }
         ]
@@ -145,7 +156,7 @@
   "info": {
     "title": "Orders API",
     "description": "Ticketing orders API description",
-    "version": "1.0",
+    "version": "0.1.0",
     "contact": {}
   },
   "tags": [
@@ -154,9 +165,18 @@
       "description": ""
     }
   ],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3020"
+    }
+  ],
   "components": {
     "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      },
       "bearer": {
         "type": "http",
         "scheme": "bearer",
@@ -250,6 +270,9 @@
     }
   },
   "security": [
+    {
+      "session": []
+    },
     {
       "bearer": []
     }

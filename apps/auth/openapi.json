@@ -1,17 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
-      "get": {
-        "operationId": "AppController_getData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/users/sign-up": {
       "post": {
         "operationId": "UsersController_signUp",
@@ -48,6 +37,8 @@
     "/api/users/sign-in": {
       "post": {
         "operationId": "UsersController_signIn",
+        "summary": "Sign in - Scope : users:sign_in",
+        "description": "Sign in as registered user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -85,6 +76,8 @@
     "/api/users/sign-out": {
       "post": {
         "operationId": "UsersController_signOut",
+        "summary": "Sign out - Scope : users:sign_out",
+        "description": "Sign out as signed in user",
         "parameters": [],
         "responses": {
           "200": {
@@ -96,6 +89,9 @@
         ],
         "security": [
           {
+            "session": []
+          },
+          {
             "bearer": []
           }
         ]
@@ -104,6 +100,8 @@
     "/api/users/current-user": {
       "get": {
         "operationId": "UsersController_getCurrentUser",
+        "summary": "Get current user - Scope : users:read_one",
+        "description": "Get details about currently signed in user",
         "parameters": [],
         "responses": {
           "201": {
@@ -122,6 +120,9 @@
         ],
         "security": [
           {
+            "session": []
+          },
+          {
             "bearer": []
           }
         ]
@@ -131,7 +132,7 @@
   "info": {
     "title": "Auth API",
     "description": "Ticketing auth API description",
-    "version": "1.0",
+    "version": "0.1.0",
     "contact": {}
   },
   "tags": [
@@ -140,9 +141,18 @@
       "description": ""
     }
   ],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3010"
+    }
+  ],
   "components": {
     "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      },
       "bearer": {
         "type": "http",
         "scheme": "bearer",
@@ -192,6 +202,9 @@
     }
   },
   "security": [
+    {
+      "session": []
+    },
     {
       "bearer": []
     }
