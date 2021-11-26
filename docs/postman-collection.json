@@ -1,0 +1,1206 @@
+{
+  "item": [
+    {
+      "id": "bb222680-51a4-4dfc-999e-d99af204de54",
+      "name": "api",
+      "item": [
+        {
+          "id": "e8051971-5616-41b9-ad42-628a3f82e761",
+          "name": "users",
+          "item": [
+            {
+              "id": "d226130a-8ebe-490c-9fe3-55fc3594aafe",
+              "name": "Register a user - Scope : users:create_one",
+              "request": {
+                "name": "Register a user - Scope : users:create_one",
+                "description": {
+                  "content": "Request creation of a user",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "sign-up"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "90227924-6a74-4d54-8083-c35b85b6bb13",
+                  "name": "User created",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "users",
+                        "sign-up"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n \"email\": \"dAGaA3@WXQNYAkhjd.zt\",\n \"id\": \"nisi\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "17217b0f-0636-48c7-862e-4f91db62f6b7",
+              "name": "Sign in - Scope : users:sign_in",
+              "request": {
+                "name": "Sign in - Scope : users:sign_in",
+                "description": {
+                  "content": "Sign in as registered user",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "sign-in"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "2ed1516d-5392-4ba7-836d-7262871b8d9f",
+                  "name": "JWT Token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "users",
+                        "sign-in"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n \"token\": \"sunt sint non\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "6f8aab87-80d5-49b9-8b09-eb2949860cd4",
+              "name": "Sign out - Scope : users:sign_out",
+              "request": {
+                "name": "Sign out - Scope : users:sign_out",
+                "description": {
+                  "content": "Sign out as signed in user",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "sign-out"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "session"
+                    },
+                    {
+                      "key": "value",
+                      "value": "<API Key>"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "fee60ecc-4af4-47ab-b753-42a450979b29",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "users",
+                        "sign-out"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {}
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "body": "",
+                  "cookie": [],
+                  "_postman_previewlanguage": "text"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "c5f5b1d6-e02b-4278-afe6-bfa6bc382788",
+              "name": "Get current user - Scope : users:read_one",
+              "request": {
+                "name": "Get current user - Scope : users:read_one",
+                "description": {
+                  "content": "Get details about currently signed in user",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "current-user"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET",
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "session"
+                    },
+                    {
+                      "key": "value",
+                      "value": "<API Key>"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "4892e54b-46df-4cc6-aece-69f6c625d9b4",
+                  "name": "Current user logged in",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "users",
+                        "current-user"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n \"email\": \"dAGaA3@WXQNYAkhjd.zt\",\n \"id\": \"nisi\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        {
+          "id": "5eb9658e-a8a3-4a0a-a450-ecd8e0687abe",
+          "name": "tickets",
+          "item": [
+            {
+              "id": "e43e86c2-1cb2-42e4-a9bd-7fb070174e77",
+              "name": "Create a ticket - Scope : tickets:create_one",
+              "request": {
+                "name": "Create a ticket - Scope : tickets:create_one",
+                "description": {
+                  "content": "Request creation of a ticket",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "tickets"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "session"
+                    },
+                    {
+                      "key": "value",
+                      "value": "<API Key>"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "fe173fe8-8458-4ad2-8b1c-7d15fceb2359",
+                  "name": "Ticket created",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "tickets"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n \"id\": \"exercitation fugiat nisi ut quis\",\n \"title\": \"dolor irure magna elit\",\n \"price\": 48846894.629696354,\n \"version\": -87341108.3482221,\n \"userId\": \"Dui\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "367ac6f3-d117-45c2-81fd-d117bde26b3f",
+              "name": "Find tickets - Scope : tickets:read_many",
+              "request": {
+                "name": "Find tickets - Scope : tickets:read_many",
+                "description": {
+                  "content": "Request tickets",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "tickets"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET",
+                "auth": null
+              },
+              "response": [
+                {
+                  "id": "7ad0601b-2b4e-4157-9329-bf9fe14e99ff",
+                  "name": "Tickets found",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "tickets"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "[\n {\n  \"id\": \"enim ut\",\n  \"title\": \"ut anim veniam\",\n  \"price\": 48294434.84945173,\n  \"version\": -61087764.54766427,\n  \"userId\": \"consectetur culpa est\"\n },\n {\n  \"id\": \"ullamco officia occaecat\",\n  \"title\": \"Duis\",\n  \"price\": 93249098.60761043,\n  \"version\": 46576467.120648324,\n  \"userId\": \"adipisicing commodo\"\n }\n]",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "dafca6c4-33dd-4dad-9527-c8ecefdd7309",
+              "name": "{id}",
+              "item": [
+                {
+                  "id": "03e9ac09-fe1d-48c4-9b37-e54b644eb40e",
+                  "name": "Find a ticket - Scope : tickets:read_one",
+                  "request": {
+                    "name": "Find a ticket - Scope : tickets:read_one",
+                    "description": {
+                      "content": "Request a ticket by id",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "tickets",
+                        ":id"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "id",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "auth": null
+                  },
+                  "response": [
+                    {
+                      "id": "ae532790-4996-4a7f-89df-65a259269d00",
+                      "name": "Ticket found",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "tickets",
+                            ":id"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "id",
+                              "description": "(Required) "
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: apikey",
+                              "type": "text/plain"
+                            },
+                            "key": "session",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n \"id\": \"exercitation fugiat nisi ut quis\",\n \"title\": \"dolor irure magna elit\",\n \"price\": 48846894.629696354,\n \"version\": -87341108.3482221,\n \"userId\": \"Dui\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": []
+                },
+                {
+                  "id": "a7e1bffa-6ffc-406b-a70d-60dc5dd40480",
+                  "name": "Update a ticket - Scope : tickets:update_one",
+                  "request": {
+                    "name": "Update a ticket - Scope : tickets:update_one",
+                    "description": {
+                      "content": "Update a ticket by id",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "tickets",
+                        ":id"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "id",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PUT",
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "session"
+                        },
+                        {
+                          "key": "value",
+                          "value": "<API Key>"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header"
+                        }
+                      ]
+                    },
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "883eeebe-5eff-4c41-b852-708a5f93a064",
+                      "name": "Ticket updated",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "tickets",
+                            ":id"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "id",
+                              "description": "(Required) "
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: apikey",
+                              "type": "text/plain"
+                            },
+                            "key": "session",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "method": "PUT",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n \"id\": \"exercitation fugiat nisi ut quis\",\n \"title\": \"dolor irure magna elit\",\n \"price\": 48846894.629696354,\n \"version\": -87341108.3482221,\n \"userId\": \"Dui\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": []
+                }
+              ],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        {
+          "id": "d57dda54-bb2c-42f3-837a-328db4c8763d",
+          "name": "orders",
+          "item": [
+            {
+              "id": "8eb72469-9537-4e30-a117-0aad224c1f40",
+              "name": "Create an order - Scope : orders:create_one",
+              "request": {
+                "name": "Create an order - Scope : orders:create_one",
+                "description": {
+                  "content": "Request creation of an order",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "session"
+                    },
+                    {
+                      "key": "value",
+                      "value": "<API Key>"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"ticketId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "97edd319-03c0-4e27-a60e-0ca6bf31722a",
+                  "name": "Order created",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "orders"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"ticketId\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n \"ticket\": {\n  \"id\": \"in labore dolore in in\",\n  \"title\": \"sunt ullamco\",\n  \"price\": 17050917.87087847,\n  \"version\": 61378842.64203787\n },\n \"userId\": \"dolore dolor commodo su\",\n \"status\": \"complete\",\n \"expiresAt\": \"consequat labore tempor ad deserunt\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "32006acc-a763-44d4-8b86-487bbc79d036",
+              "name": "Find orders - Scope : orders:read_many",
+              "request": {
+                "name": "Find orders - Scope : orders:read_many",
+                "description": {
+                  "content": "Request user orders",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET",
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "session"
+                    },
+                    {
+                      "key": "value",
+                      "value": "<API Key>"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "2975e9ab-46ab-4ac4-a1e4-6cbba53ff5cf",
+                  "name": "Orders found",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "orders"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "[\n {\n  \"ticket\": {\n   \"id\": \"in Ut consectetur pariatur\",\n   \"title\": \"sunt nulla\",\n   \"price\": 62919680.422154345,\n   \"version\": 24531019.701531425\n  },\n  \"userId\": \"in esse deserunt elit\",\n  \"status\": \"complete\",\n  \"expiresAt\": \"tempor cillum\"\n },\n {\n  \"ticket\": {\n   \"id\": \"do cillum ea quis\",\n   \"title\": \"ut incididunt adipisicing\",\n   \"price\": 13587268.14968334,\n   \"version\": 7223397.992843911\n  },\n  \"userId\": \"cupidatat reprehe\",\n  \"status\": \"complete\",\n  \"expiresAt\": \"cillum sit\"\n }\n]",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": []
+            },
+            {
+              "id": "97f51fdb-c746-4624-b5ef-421a410a3767",
+              "name": "{id}",
+              "item": [
+                {
+                  "id": "7270bd37-66eb-41d2-ab7a-10b719ce7237",
+                  "name": "Find an order - Scope : orders:read_one",
+                  "request": {
+                    "name": "Find an order - Scope : orders:read_one",
+                    "description": {
+                      "content": "Request an order by id",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "orders",
+                        ":id"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "id",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "session"
+                        },
+                        {
+                          "key": "value",
+                          "value": "<API Key>"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "e15cbff8-3702-460b-b9e1-6e3341591110",
+                      "name": "Order found",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "orders",
+                            ":id"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "id",
+                              "description": "(Required) "
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: apikey",
+                              "type": "text/plain"
+                            },
+                            "key": "session",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n \"ticket\": {\n  \"id\": \"in labore dolore in in\",\n  \"title\": \"sunt ullamco\",\n  \"price\": 17050917.87087847,\n  \"version\": 61378842.64203787\n },\n \"userId\": \"dolore dolor commodo su\",\n \"status\": \"complete\",\n \"expiresAt\": \"consequat labore tempor ad deserunt\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": []
+                },
+                {
+                  "id": "f7f709bd-2b73-4944-9ae7-697dfb864cb9",
+                  "name": "Cancel an order - Scope : orders:delete_one",
+                  "request": {
+                    "name": "Cancel an order - Scope : orders:delete_one",
+                    "description": {
+                      "content": "Cancel an order by id",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "orders",
+                        ":id"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "id",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "session"
+                        },
+                        {
+                          "key": "value",
+                          "value": "<API Key>"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "af508103-da4d-4634-95b6-bc8a5e578be0",
+                      "name": "Order cancelled",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "orders",
+                            ":id"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "id",
+                              "description": "(Required) "
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: apikey",
+                              "type": "text/plain"
+                            },
+                            "key": "session",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n \"ticket\": {\n  \"id\": \"in labore dolore in in\",\n  \"title\": \"sunt ullamco\",\n  \"price\": 17050917.87087847,\n  \"version\": 61378842.64203787\n },\n \"userId\": \"dolore dolor commodo su\",\n \"status\": \"complete\",\n \"expiresAt\": \"consequat labore tempor ad deserunt\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": []
+                }
+              ],
+              "event": []
+            }
+          ],
+          "event": []
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "http://ticketing.dev",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "session"
+      },
+      {
+        "key": "value",
+        "value": "<API Key>"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5bd44758-f5a0-46ea-890d-73f2fcefc903",
+    "name": "Ticketing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Microservices bundled APIs",
+      "type": "text/plain"
+    }
+  }
+}
