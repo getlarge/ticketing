@@ -21,19 +21,14 @@ import fastifySecureSession from 'fastify-secure-session';
 import { Model, Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
-import {
-  CreateOrder,
-  Order,
-  OrderStatus,
-  Ticket,
-} from '../src/app/orders/models';
+import { CreateOrder, Order, OrderStatus } from '../src/app/orders/models';
 import { OrdersModule } from '../src/app/orders/orders.module';
+import { Order as OrderSchema, OrderDocument } from '../src/app/orders/schemas';
+import { Ticket } from '../src/app/tickets/models';
 import {
-  Order as OrderSchema,
-  OrderDocument,
   Ticket as TicketSchema,
   TicketDocument,
-} from '../src/app/orders/schemas';
+} from '../src/app/tickets/schemas';
 import { envFilePath } from './constants';
 
 const defaultUserEmail = 'test@test.com';
