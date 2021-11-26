@@ -35,10 +35,7 @@ export class TicketsService {
     });
     const result = newTicket.toJSON<Ticket>();
     this.publisher
-      .emit<TicketCreatedEvent['name'], TicketCreatedEvent['data']>(
-        Patterns.TicketCreated,
-        result
-      )
+      .emit<string, TicketCreatedEvent['data']>(Patterns.TicketCreated, result)
       .subscribe({
         next: (value) =>
           this.logger.log(`Sent event ${Patterns.TicketCreated} ${value}`),
@@ -75,10 +72,11 @@ export class TicketsService {
     ticket.set(update);
     await ticket.save();
     const result = ticket.toJSON<Ticket>();
-    this.publisher.emit<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
-      Patterns.TicketUpdated,
-      result
-    );
+    this.publisher
+      .emit<string, TicketUpdatedEvent['data']>(Patterns.TicketUpdated, result)
+      .subscribe({
+        next: () => this.logger.log(`Sent event ${Patterns.TicketUpdated}`),
+      });
     return result;
   }
 }

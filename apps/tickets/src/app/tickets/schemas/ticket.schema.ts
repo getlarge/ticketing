@@ -7,10 +7,10 @@ import { Ticket as TicketAttrs, ticketContraints } from '../models';
   toJSON: {
     transform(doc: TicketDocument, ret: TicketAttrs) {
       ret.id = doc._id.toString();
-      ret.version = doc.__v;
-      return omit(ret, ['_id', '__v']);
+      return omit(ret, ['_id']);
     },
   },
+  versionKey: 'version',
 })
 export class Ticket implements TicketAttrs {
   @Prop({ type: String, virtual: true })

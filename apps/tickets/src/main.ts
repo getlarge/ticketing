@@ -19,7 +19,6 @@ import {
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
 import { Resources, Services } from '@ticketing/shared/constants';
-import { pseudoRandomBytes } from 'crypto';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
@@ -75,15 +74,14 @@ async function bootstrap(): Promise<void> {
   const options: CustomStrategy = {
     strategy: new Listener(
       configService.get('NATS_CLUSTER_ID'),
-      `${configService.get('NATS_CLIENT_ID')}_${pseudoRandomBytes(2).toString(
-        'hex'
-      )}`,
+      configService.get('NATS_CLIENT_ID'),
       `${Services.TICKETS_SERVICE}_GROUP`,
       { url: configService.get('NATS_URL') },
       {
         durableName: `${Resources.TICKETS}_subscriptions`,
         manualAckMode: true,
         deliverAllAvailable: true,
+        ackWait: 5 * 1000,
       }
     ),
   };
@@ -117,7 +115,7 @@ async function bootstrap(): Promise<void> {
   }
 
   // Init
-  await microService.init();
+  await microService.listen();
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
     logger.log(
