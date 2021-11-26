@@ -1,0 +1,14 @@
+lint:
+  extends:
+    - recommended # This is the default (and built in) configuration. If it is too strict, try `minimal`.
+
+  rules:
+    no-sibling-refs:
+      severity: error
+
+    no-unused-components:
+      severity: error
+
+    boolean-parameter-prefixes:
+      severity: error
+      prefixes: ['should', 'is', 'has']
