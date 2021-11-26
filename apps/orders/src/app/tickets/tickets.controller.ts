@@ -1,5 +1,11 @@
-import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
-import { Ctx, EventPattern, Payload } from '@nestjs/microservices';
+import {
+  Controller,
+  Inject,
+  Logger,
+  UseFilters,
+  ValidationPipe,
+} from '@nestjs/common';
+import { Ctx, EventPattern, Payload, Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { NatsStreamingContext } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import {
@@ -7,6 +13,7 @@ import {
   TicketCreatedEvent,
   TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
+import { NatsStreamErrorFilter } from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 
 import { TicketsService } from './tickets.service';
@@ -19,8 +26,9 @@ export class TicketsController {
     @Inject(TicketsService) private readonly ticketsService: TicketsService
   ) {}
 
+  @UseFilters(NatsStreamErrorFilter)
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketCreated)
+  @EventPattern(Patterns.TicketCreated, Transport.NATS)
   async onCreated(
     @Payload(
       new ValidationPipe({
@@ -34,20 +42,16 @@ export class TicketsController {
     data: TicketCreatedEvent['data'],
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
-    this.logger.log(`received message on ${context.getArgByIndex(0)}`, {
+    this.logger.log(`received message on ${context.message.getSubject()}`, {
       data,
     });
-    try {
-      await this.ticketsService.create(data);
-    } catch (err) {
-      this.logger.error(err);
-    } finally {
-      context.message.ack();
-    }
+    await this.ticketsService.create(data);
+    context.message.ack();
   }
 
+  @UseFilters(NatsStreamErrorFilter)
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketUpdated)
+  @EventPattern(Patterns.TicketUpdated, Transport.NATS)
   async onUpdated(
     @Payload(
       new ValidationPipe({
@@ -61,15 +65,10 @@ export class TicketsController {
     data: TicketUpdatedEvent['data'],
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
-    this.logger.log(`received message on ${context.getArgByIndex(0)}`, {
+    this.logger.log(`received message on ${context.message.getSubject()}`, {
       data,
     });
-    try {
-      await this.ticketsService.updateById(data.id, data);
-    } catch (err) {
-      this.logger.error(err);
-    } finally {
-      context.message.ack();
-    }
+    await this.ticketsService.updateById(data.id, data);
+    context.message.ack();
   }
 }
