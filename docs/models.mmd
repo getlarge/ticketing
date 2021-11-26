@@ -1,0 +1,38 @@
+classDiagram
+direction RL
+class User {
+    <<interface>>
+    +id : int
+    +email : string
+    -password : string
+}
+
+class Ticket {
+    <<interface>>
+		+id : string
+    +title : string
+    +price : float
+    +version : int
+    +userId : User
+}
+
+class Order {
+    <<interface>>
+		+id : string
+    +title : string
+    +status : OrderStatus
+    +version : int
+		+ticketId : Ticket
+    +userId : User
+}
+
+class OrderStatus{
+    <<enumeration>>
+    Created
+		Cancelled
+}
+
+User "1" --> "*" Ticket
+User "1" --> "*" Order
+Ticket "1" --> "1" Order
+Order ..> OrderStatus
