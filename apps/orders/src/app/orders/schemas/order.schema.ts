@@ -10,10 +10,10 @@ import { Order as OrderAttrs, OrderStatus } from '../models';
     transform(doc: OrderDocument, ret: OrderAttrs) {
       ret.id = doc._id.toString();
       ret.expiresAt = doc.expiresAt.toISOString();
-      // ret.version = doc.__v.toString();
       return omit(ret, ['_id', '__v']);
     },
   },
+  versionKey: 'version',
 })
 export class Order implements Omit<OrderAttrs, 'expiresAt'> {
   @Prop({ type: String, virtual: true })
@@ -39,6 +39,9 @@ export class Order implements Omit<OrderAttrs, 'expiresAt'> {
     default: OrderStatus.Created,
   })
   status: OrderStatus;
+
+  @Prop({ type: Number, virtual: true })
+  version: number;
 
   @Prop({
     type: MongooseSchema.Types.Date,

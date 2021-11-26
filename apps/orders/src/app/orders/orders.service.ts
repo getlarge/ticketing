@@ -67,10 +67,7 @@ export class OrdersService {
 
     // 5. Publish an event
     this.publisher
-      .emit<OrderCreatedEvent['name'], OrderCreatedEvent['data']>(
-        Patterns.OrderCreated,
-        result
-      )
+      .emit<string, OrderCreatedEvent['data']>(Patterns.OrderCreated, result)
       .subscribe({
         next: (value) =>
           this.logger.log(`Sent event ${Patterns.OrderCreated} ${value}`),
@@ -119,7 +116,7 @@ export class OrdersService {
     await order.save();
     const result = order.toJSON<Order>();
     this.publisher
-      .emit<OrderCancelledEvent['name'], OrderCancelledEvent['data']>(
+      .emit<string, OrderCancelledEvent['data']>(
         Patterns.OrderCancelled,
         result
       )

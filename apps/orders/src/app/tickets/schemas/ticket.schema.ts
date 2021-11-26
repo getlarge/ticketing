@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { omit } from 'lodash';
-import { Document } from 'mongoose';
+import { Document, Model } from 'mongoose';
 
 import { OrderStatus } from '../../orders/models';
 import { Order, OrderDocument } from '../../orders/schemas';
@@ -10,7 +10,6 @@ import { Ticket as TicketAttrs } from '../models';
   toJSON: {
     transform(doc: TicketDocument, ret: TicketAttrs) {
       ret.id = doc._id.toString();
-      ret.version = doc.__v;
       return omit(ret, ['_id', '__v']);
     },
   },
@@ -29,7 +28,7 @@ export class Ticket implements TicketAttrs {
   @Prop({ type: Number, required: true, min: 0 })
   price: number;
 
-  @Prop({ type: Number, virtual: true })
+  @Prop({ type: Number, required: true })
   version: number;
 
   isReserved: () => Promise<boolean>;
@@ -40,11 +39,7 @@ export type TicketDocument = Ticket & Document;
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
 
-// TicketSchema.statics.build = (ticket: TicketAttrs): TicketDocument => {
-//   const ticketModel = model<TicketDocument>(Ticket.name);
-//   return new ticketModel({ ...ticket, _id: ticket.id });
-// };
-
+export type TicketModel = Model<TicketDocument>;
 TicketSchema.methods.isReserved = async function (): Promise<boolean> {
   const orderModel = this.db.model<OrderDocument>(Order.name);
   const existingOrder = await orderModel.findOne({
