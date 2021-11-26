@@ -1,0 +1,1179 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Ticketing API",
+    "description": "Microservices bundled APIs",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "http://ticketing.dev"
+    },
+    {
+      "url": "http://localhost"
+    }
+  ],
+  "externalDocs": {
+    "description": "Ticketings docs",
+    "url": "https://github.com/getlarge/ticketing"
+  },
+  "security": [
+    {
+      "session": []
+    },
+    {
+      "bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": ""
+    },
+    {
+      "name": "tickets",
+      "description": ""
+    },
+    {
+      "name": "orders",
+      "description": ""
+    }
+  ],
+  "paths": {
+    "/api/users/sign-up": {
+      "post": {
+        "operationId": "UsersController_signUp",
+        "summary": "Register a user - Scope : users:create_one",
+        "description": "Request creation of a user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "User password",
+                    "format": "password",
+                    "minLength": 4,
+                    "maxLength": 20
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "User email address",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "password",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "description": "User email address",
+                      "format": "email"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "User id"
+                    }
+                  },
+                  "required": [
+                    "email",
+                    "id"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/sign-in": {
+      "post": {
+        "operationId": "UsersController_signIn",
+        "summary": "Sign in - Scope : users:sign_in",
+        "description": "Sign in as registered user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "User password",
+                    "format": "password",
+                    "minLength": 4,
+                    "maxLength": 20
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "User email address",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "password",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "description": "JWT token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/sign-out": {
+      "post": {
+        "operationId": "UsersController_signOut",
+        "summary": "Sign out - Scope : users:sign_out",
+        "description": "Sign out as signed in user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/users/current-user": {
+      "get": {
+        "operationId": "UsersController_getCurrentUser",
+        "summary": "Get current user - Scope : users:read_one",
+        "description": "Get details about currently signed in user",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Current user logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "description": "User email address",
+                      "format": "email"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "User id"
+                    }
+                  },
+                  "required": [
+                    "email",
+                    "id"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tickets": {
+      "post": {
+        "operationId": "TicketsController_create",
+        "summary": "Create a ticket - Scope : tickets:create_one",
+        "description": "Request creation of a ticket",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Ticket title",
+                    "minLength": 3,
+                    "maxLength": 56
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Ticket price",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "title",
+                  "price"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Ticket database identifier"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Ticket title",
+                      "minLength": 3,
+                      "maxLength": 56
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Ticket price",
+                      "minimum": 0
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Ticket version represented by a number incremented at each updated"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Ticket creator id"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_find",
+        "summary": "Find tickets - Scope : tickets:read_many",
+        "description": "Request tickets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Tickets found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Ticket database identifier"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Ticket title",
+                        "minLength": 3,
+                        "maxLength": 56
+                      },
+                      "price": {
+                        "type": "number",
+                        "description": "Ticket price",
+                        "minimum": 0
+                      },
+                      "version": {
+                        "type": "number",
+                        "description": "Ticket version represented by a number incremented at each updated"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "description": "Ticket creator id"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "price",
+                      "version",
+                      "userId"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_findById",
+        "summary": "Find a ticket - Scope : tickets:read_one",
+        "description": "Request a ticket by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Ticket database identifier"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Ticket title",
+                      "minLength": 3,
+                      "maxLength": 56
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Ticket price",
+                      "minimum": 0
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Ticket version represented by a number incremented at each updated"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Ticket creator id"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      },
+      "put": {
+        "operationId": "TicketsController_updateById",
+        "summary": "Update a ticket - Scope : tickets:update_one",
+        "description": "Update a ticket by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Ticket title",
+                    "minLength": 3,
+                    "maxLength": 56
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Ticket price",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "title",
+                  "price"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Ticket database identifier"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Ticket title",
+                      "minLength": 3,
+                      "maxLength": 56
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Ticket price",
+                      "minimum": 0
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Ticket version represented by a number incremented at each updated"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Ticket creator id"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "operationId": "OrdersController_create",
+        "summary": "Create an order - Scope : orders:create_one",
+        "description": "Request creation of an order",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ticketId": {
+                    "type": "string",
+                    "description": "Ticket to order"
+                  }
+                },
+                "required": [
+                  "ticketId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ticket": {
+                      "description": "Ticket ordered reference",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Ticket database identifier"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Ticket title",
+                              "minLength": 3,
+                              "maxLength": 56
+                            },
+                            "price": {
+                              "type": "number",
+                              "description": "Ticket price",
+                              "minimum": 0
+                            },
+                            "version": {
+                              "type": "number",
+                              "description": "Ticket version represented by a number incremented at each updated"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "price",
+                            "version"
+                          ]
+                        }
+                      ]
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "User who created the order"
+                    },
+                    "status": {
+                      "description": "Order status",
+                      "example": "complete",
+                      "default": "created",
+                      "type": "string",
+                      "enum": [
+                        "created",
+                        "cancelled",
+                        "awaiting:payment",
+                        "complete"
+                      ]
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "description": "Order expiration date"
+                    }
+                  },
+                  "required": [
+                    "ticket",
+                    "userId",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "OrdersController_find",
+        "summary": "Find orders - Scope : orders:read_many",
+        "description": "Request user orders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Orders found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ticket": {
+                        "description": "Ticket ordered reference",
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Ticket database identifier"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "Ticket title",
+                                "minLength": 3,
+                                "maxLength": 56
+                              },
+                              "price": {
+                                "type": "number",
+                                "description": "Ticket price",
+                                "minimum": 0
+                              },
+                              "version": {
+                                "type": "number",
+                                "description": "Ticket version represented by a number incremented at each updated"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "title",
+                              "price",
+                              "version"
+                            ]
+                          }
+                        ]
+                      },
+                      "userId": {
+                        "type": "string",
+                        "description": "User who created the order"
+                      },
+                      "status": {
+                        "description": "Order status",
+                        "example": "complete",
+                        "default": "created",
+                        "type": "string",
+                        "enum": [
+                          "created",
+                          "cancelled",
+                          "awaiting:payment",
+                          "complete"
+                        ]
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "description": "Order expiration date"
+                      }
+                    },
+                    "required": [
+                      "ticket",
+                      "userId",
+                      "status"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_findById",
+        "summary": "Find an order - Scope : orders:read_one",
+        "description": "Request an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ticket": {
+                      "description": "Ticket ordered reference",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Ticket database identifier"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Ticket title",
+                              "minLength": 3,
+                              "maxLength": 56
+                            },
+                            "price": {
+                              "type": "number",
+                              "description": "Ticket price",
+                              "minimum": 0
+                            },
+                            "version": {
+                              "type": "number",
+                              "description": "Ticket version represented by a number incremented at each updated"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "price",
+                            "version"
+                          ]
+                        }
+                      ]
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "User who created the order"
+                    },
+                    "status": {
+                      "description": "Order status",
+                      "example": "complete",
+                      "default": "created",
+                      "type": "string",
+                      "enum": [
+                        "created",
+                        "cancelled",
+                        "awaiting:payment",
+                        "complete"
+                      ]
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "description": "Order expiration date"
+                    }
+                  },
+                  "required": [
+                    "ticket",
+                    "userId",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "OrdersController_cancelById",
+        "summary": "Cancel an order - Scope : orders:delete_one",
+        "description": "Cancel an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ticket": {
+                      "description": "Ticket ordered reference",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Ticket database identifier"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Ticket title",
+                              "minLength": 3,
+                              "maxLength": 56
+                            },
+                            "price": {
+                              "type": "number",
+                              "description": "Ticket price",
+                              "minimum": 0
+                            },
+                            "version": {
+                              "type": "number",
+                              "description": "Ticket version represented by a number incremented at each updated"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "price",
+                            "version"
+                          ]
+                        }
+                      ]
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "User who created the order"
+                    },
+                    "status": {
+                      "description": "Order status",
+                      "example": "complete",
+                      "default": "created",
+                      "type": "string",
+                      "enum": [
+                        "created",
+                        "cancelled",
+                        "awaiting:payment",
+                        "complete"
+                      ]
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "description": "Order expiration date"
+                    }
+                  },
+                  "required": [
+                    "ticket",
+                    "userId",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "orders"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "format": "password",
+            "minLength": 4,
+            "maxLength": 20
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "format": "email"
+          }
+        },
+        "required": [
+          "password",
+          "email"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "format": "email"
+          },
+          "id": {
+            "type": "string",
+            "description": "User id"
+          }
+        },
+        "required": [
+          "email",
+          "id"
+        ]
+      },
+      "CreateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "title",
+          "price"
+        ]
+      },
+      "TicketDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ticket database identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          },
+          "version": {
+            "type": "number",
+            "description": "Ticket version represented by a number incremented at each updated"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Ticket creator id"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "price",
+          "version",
+          "userId"
+        ]
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "description": "Ticket to order"
+          }
+        },
+        "required": [
+          "ticketId"
+        ]
+      },
+      "TicketDto1": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ticket database identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          },
+          "version": {
+            "type": "number",
+            "description": "Ticket version represented by a number incremented at each updated"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "price",
+          "version"
+        ]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": [
+          "created",
+          "cancelled",
+          "awaiting:payment",
+          "complete"
+        ]
+      },
+      "OrderDto": {
+        "type": "object",
+        "properties": {
+          "ticket": {
+            "description": "Ticket ordered reference",
+            "allOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Ticket database identifier"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Ticket title",
+                    "minLength": 3,
+                    "maxLength": 56
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Ticket price",
+                    "minimum": 0
+                  },
+                  "version": {
+                    "type": "number",
+                    "description": "Ticket version represented by a number incremented at each updated"
+                  }
+                },
+                "required": [
+                  "id",
+                  "title",
+                  "price",
+                  "version"
+                ]
+              }
+            ]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User who created the order"
+          },
+          "status": {
+            "description": "Order status",
+            "example": "complete",
+            "default": "created",
+            "type": "string",
+            "enum": [
+              "created",
+              "cancelled",
+              "awaiting:payment",
+              "complete"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Order expiration date"
+          }
+        },
+        "required": [
+          "ticket",
+          "userId",
+          "status"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      },
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
