@@ -17,13 +17,12 @@ import {
   createSigninSession,
   MockClient,
 } from '@ticketing/microservices/shared/testing';
-import { randomBytes } from 'crypto';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 import { Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
-import { CreateTicket } from '../src/app/tickets/models';
+import { CreateTicket, UpdateTicket } from '../src/app/tickets/models';
 import {
   Ticket as TicketSchema,
   TicketModel,
@@ -280,10 +279,34 @@ describe('TicketsController (e2e)', () => {
       expect(ticket.price).toEqual(price);
     });
 
+    it('should return a 400 if the ticket is reserved', async () => {
+      const session = createSigninSession(app, { email: defaultUserEmail });
+      const { id } = await createTicket(
+        { orderId: new Types.ObjectId().toHexString() },
+        ticketModel
+      );
+      const invalidTicket: UpdateTicket = { title: 'updated title' };
+      const expectedErrors = [
+        {
+          message: `Ticket ${id} is currently reserved`,
+        },
+      ];
+      //
+      const { payload, statusCode } = await app.inject({
+        method: 'PUT',
+        url: `${baseUrl}/${id}`,
+        cookies: { session },
+        payload: invalidTicket,
+      });
+      expect(statusCode).toBe(400);
+      const body = JSON.parse(payload);
+      expect(body.errors).toEqual(expectedErrors);
+    });
+
     it('should return a 400 if an invalid price or title is provided', async () => {
       const session = createSigninSession(app, { email: defaultUserEmail });
       const { id } = await createTicket({}, ticketModel);
-      const invalidTicket: CreateTicket = { title: '', price: -10 };
+      const invalidTicket: UpdateTicket = { title: '', price: -10 };
       const expectedErrors = [
         {
           message: 'title must be a between 3 and 56 characters',
@@ -311,7 +334,7 @@ describe('TicketsController (e2e)', () => {
         id: userId,
       });
       const { id } = await createTicket({ userId }, ticketModel);
-      const ticketUpdate: CreateTicket = {
+      const ticketUpdate: UpdateTicket = {
         title: 'title-updated',
         price: 19,
       };
