@@ -8,6 +8,7 @@ export async function createTicket(
     title?: string;
     price?: number;
     userId?: string;
+    orderId?: string;
   },
   ticketModel: Model<TicketDocument>
 ): Promise<Ticket> {
@@ -15,6 +16,7 @@ export async function createTicket(
     title: options?.title || 'title',
     price: options?.price || 20,
     userId: options?.userId || new Types.ObjectId().toHexString(),
+    orderId: options?.orderId || undefined,
   };
   const ticket = await ticketModel.create(ticketToCreate);
   return ticket.toJSON<Ticket>();
