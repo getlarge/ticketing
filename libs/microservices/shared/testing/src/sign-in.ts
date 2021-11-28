@@ -19,9 +19,18 @@ export function createSigninSession(
     id?: string;
   }
 ): string {
-  const jwtService = app.get<JwtService>(JwtService);
   const configService =
     app.get<ConfigService<JWTEnvironmentVariables>>(ConfigService);
+  const jwtService = new JwtService({
+    privateKey: configService.get('JWT_PRIVATE_KEY'),
+    publicKey: configService.get('JWT_PUBLIC_KEY'),
+    signOptions: {
+      expiresIn: configService.get('JWT_EXPIRES_IN'),
+      algorithm: configService.get('JWT_ALGORITHM'),
+      issuer: configService.get('JWT_ISSUER'),
+      audience: '',
+    },
+  });
   const payload = {
     username: user.email,
     sub: user.id || new Types.ObjectId().toHexString(),
