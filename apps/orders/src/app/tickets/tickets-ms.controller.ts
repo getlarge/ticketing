@@ -1,32 +1,21 @@
-import {
-  Controller,
-  Inject,
-  Logger,
-  UseFilters,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { NatsStreamingContext } from '@nestjs-plugins/nestjs-nats-streaming-transport';
-import {
-  Patterns,
-  TicketCreatedEvent,
-  TicketUpdatedEvent,
-} from '@ticketing/microservices/shared/events';
-import { NatsStreamErrorFilter } from '@ticketing/microservices/shared/filters';
+import { Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { Ticket } from '@ticketing/shared/models';
 
 import { TicketsService } from './tickets.service';
 
 @Controller()
-export class TicketsController {
-  readonly logger = new Logger(TicketsController.name);
+export class TicketsMSController {
+  readonly logger = new Logger(TicketsMSController.name);
 
   constructor(
     @Inject(TicketsService) private readonly ticketsService: TicketsService
   ) {}
 
-  @UseFilters(NatsStreamErrorFilter)
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.TicketCreated, Transport.NATS)
   async onCreated(
@@ -39,7 +28,7 @@ export class TicketsController {
         whitelist: true,
       })
     )
-    data: TicketCreatedEvent['data'],
+    data: Ticket,
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
     this.logger.log(`received message on ${context.message.getSubject()}`, {
@@ -49,7 +38,6 @@ export class TicketsController {
     context.message.ack();
   }
 
-  @UseFilters(NatsStreamErrorFilter)
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.TicketUpdated, Transport.NATS)
   async onUpdated(
@@ -62,7 +50,7 @@ export class TicketsController {
         whitelist: true,
       })
     )
-    data: TicketUpdatedEvent['data'],
+    data: Ticket,
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
     this.logger.log(`received message on ${context.message.getSubject()}`, {

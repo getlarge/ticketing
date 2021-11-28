@@ -1,5 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import {
+  TicketCreatedEvent,
+  TicketUpdatedEvent,
+} from '@ticketing/microservices/shared/events';
 
 import { Ticket } from './models';
 import { Ticket as TicketSchema, TicketDocument, TicketModel } from './schemas';
@@ -12,7 +16,7 @@ export class TicketsService {
     @InjectModel(TicketSchema.name) private ticketModel: TicketModel
   ) {}
 
-  async create(ticket: Ticket): Promise<Ticket> {
+  async create(ticket: TicketCreatedEvent['data']): Promise<Ticket> {
     const newTicket = await this.ticketModel.create({
       ...ticket,
       _id: ticket.id,
@@ -28,23 +32,31 @@ export class TicketsService {
     return ticket.toJSON<Ticket>();
   }
 
-  findByEventVersion(event: {
+  async findByEventVersion(event: {
     id: string;
     version: number;
   }): Promise<TicketDocument> {
-    return this.ticketModel
+    const { id } = event;
+    const version = event.version - 1;
+    const ticket = await this.ticketModel
       .findOne({
-        _id: event.id,
-        version: event.version - 1,
+        _id: id,
+        version,
       })
       .exec();
+    if (!ticket) {
+      throw new NotFoundException(
+        `Ticket ${id} with version ${version} not found`
+      );
+    }
+    return ticket;
   }
 
-  async updateById(id: string, update: Ticket): Promise<Ticket> {
+  async updateById(
+    id: string,
+    update: TicketUpdatedEvent['data']
+  ): Promise<Ticket> {
     const ticket = await this.findByEventVersion(update);
-    if (!ticket) {
-      throw new NotFoundException(`Ticket ${id} not found`);
-    }
     const { title, price } = update;
     ticket.set({ title, price });
     await ticket.save();

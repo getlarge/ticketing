@@ -28,7 +28,7 @@ export class Ticket implements TicketAttrs {
   @Prop({ type: Number, required: true, min: 0 })
   price: number;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: true, default: 0 })
   version: number;
 
   isReserved: () => Promise<boolean>;
