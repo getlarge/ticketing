@@ -16,36 +16,41 @@ import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
 
+const MongooseFeatures = MongooseModule.forFeatureAsync([
+  {
+    name: Ticket.name,
+    useFactory: () => {
+      const schema = TicketSchema;
+      schema.plugin(updateIfCurrentPlugin);
+      return schema;
+    },
+    inject: [ConfigService],
+  },
+]);
+
+const NatsPublisher = NatsStreamingTransport.registerAsync({
+  useFactory: (configService: AppConfigService) => ({
+    clientId: configService.get('NATS_CLIENT_ID'),
+    clusterId: configService.get('NATS_CLUSTER_ID'),
+    connectOptions: {
+      url: configService.get('NATS_URL'),
+      name: `${Services.TICKETS_SERVICE}_${Resources.TICKETS}`,
+    },
+  }),
+  inject: [ConfigService],
+});
+
 @Module({
   imports: [
-    MongooseModule.forFeatureAsync([
-      {
-        name: Ticket.name,
-        useFactory: () => {
-          const schema = TicketSchema;
-          schema.plugin(updateIfCurrentPlugin);
-          return schema;
-        },
-        inject: [ConfigService],
-      },
-    ]),
+    MongooseFeatures,
     PassportModule.register({
       assignProperty: CURRENT_USER_KEY,
       session: true,
     }),
-    NatsStreamingTransport.registerAsync({
-      useFactory: (configService: AppConfigService) => ({
-        clientId: configService.get('NATS_CLIENT_ID'),
-        clusterId: configService.get('NATS_CLUSTER_ID'),
-        connectOptions: {
-          url: configService.get('NATS_URL'),
-          name: `${Services.TICKETS_SERVICE}_${Resources.TICKETS}`,
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    NatsPublisher,
   ],
   controllers: [TicketsController],
   providers: [TicketsService, JwtStrategy],
+  exports: [MongooseFeatures, NatsPublisher, TicketsService],
 })
 export class TicketsModule {}

@@ -9,6 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigService, EnvironmentVariables } from './env';
+import { OrdersModule } from './orders/orders.module';
 import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
@@ -27,14 +28,16 @@ import { TicketsModule } from './tickets/tickets.module';
       inject: [ConfigService],
     }),
     TicketsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_FILTER,
-      useClass: HttpErrorFilter,
+      useExisting: HttpErrorFilter,
     },
+    HttpErrorFilter,
   ],
 })
 export class AppModule {}

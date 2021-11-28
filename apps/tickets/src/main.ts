@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { CustomStrategy } from '@nestjs/microservices';
+import { CustomStrategy, Transport } from '@nestjs/microservices';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -71,19 +71,21 @@ async function bootstrap(): Promise<void> {
   app.register(fastifyPassport.secureSession());
 
   // NATS
+  const natsListener = new Listener(
+    configService.get('NATS_CLUSTER_ID'),
+    configService.get('NATS_CLIENT_ID'),
+    `${Services.TICKETS_SERVICE}_GROUP`,
+    { url: configService.get('NATS_URL'), name: Services.TICKETS_SERVICE },
+    {
+      durableName: `${Resources.TICKETS}_subscriptions`,
+      manualAckMode: true,
+      deliverAllAvailable: true,
+      ackWait: 5 * 1000,
+    }
+  );
+  natsListener.transportId = Transport.NATS;
   const options: CustomStrategy = {
-    strategy: new Listener(
-      configService.get('NATS_CLUSTER_ID'),
-      configService.get('NATS_CLIENT_ID'),
-      `${Services.TICKETS_SERVICE}_GROUP`,
-      { url: configService.get('NATS_URL') },
-      {
-        durableName: `${Resources.TICKETS}_subscriptions`,
-        manualAckMode: true,
-        deliverAllAvailable: true,
-        ackWait: 5 * 1000,
-      }
-    ),
+    strategy: natsListener,
   };
   const microService = app.connectMicroservice(options);
 
