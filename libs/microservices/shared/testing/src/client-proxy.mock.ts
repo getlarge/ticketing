@@ -27,3 +27,9 @@ export function createNatsContext(): NatsStreamingContext {
   const message = new NatsStreamingMessage();
   return new NatsStreamingContext([message]);
 }
+
+export class MockPublisher extends MockClient {
+  onApplicationBootstrap = jest.fn();
+  connect = jest.fn();
+  close = jest.fn();
+}
