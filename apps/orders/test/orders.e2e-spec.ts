@@ -193,7 +193,7 @@ describe('OrdersController (e2e)', () => {
       expect(body.userId).toBe(userId);
       expect(body.status).toBe(OrderStatus.Created);
       expect(body).toHaveProperty('ticket');
-      expect(body.ticket).toBe(ticketId);
+      expect(body.ticket).toEqual(expect.objectContaining({ id: ticketId }));
       orders = await orderModel.find({ ticket });
       expect(orders.length).toBe(1);
       expect(natsClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
@@ -348,7 +348,9 @@ describe('OrdersController (e2e)', () => {
       expect(body.userId).toBe(userId);
       expect(body.status).toBe(OrderStatus.Cancelled);
       expect(body).toHaveProperty('ticket');
-      expect(body.ticket).toEqual(ticket._id.toString());
+      expect(body.ticket).toEqual(
+        expect.objectContaining({ id: ticket._id.toString() })
+      );
       expect(natsClient.emit).toBeCalledWith(Patterns.OrderCancelled, body);
     });
   });
