@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -6,7 +6,13 @@ import {
   IsNotEmptyObject,
   IsNumber,
   IsOptional,
+  IsString,
+  Length,
+  Min,
+  ValidateNested,
 } from 'class-validator';
+
+import { ticketConstraints } from './ticket';
 
 export const orderConstraints = {};
 
@@ -17,13 +23,37 @@ export enum OrderStatus {
   Complete = 'complete',
 }
 
-export class Order {
+export class OrderTicket {
+  @Expose()
+  @IsMongoId()
   id: string;
 
   @Expose()
+  @IsString({ message: 'title must be a string' })
+  @Length(ticketConstraints.title.min, ticketConstraints.title.max)
+  title: string;
+
+  @Expose()
+  @IsNumber()
+  @Min(ticketConstraints.price.min)
+  price: number;
+
+  @Expose()
+  @IsNumber()
+  @IsOptional()
+  version: number;
+}
+
+export class Order {
+  @Expose()
+  @IsMongoId()
+  id: string;
+
+  @Expose()
+  @Type(() => OrderTicket)
+  @ValidateNested()
   @IsNotEmptyObject()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ticket: Record<string, any>;
+  ticket: OrderTicket;
 
   @Expose()
   @IsMongoId()

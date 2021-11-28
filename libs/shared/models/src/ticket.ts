@@ -1,5 +1,12 @@
 import { Expose } from 'class-transformer';
-import { IsNumber, IsString, Length, Min } from 'class-validator';
+import {
+  IsMongoId,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Min,
+} from 'class-validator';
 
 export const ticketConstraints = {
   title: {
@@ -12,6 +19,8 @@ export const ticketConstraints = {
 };
 
 export class Ticket {
+  @Expose()
+  @IsMongoId()
   id: string;
 
   @Expose()
@@ -28,6 +37,12 @@ export class Ticket {
   @IsNumber()
   version: number;
 
-  // @IsMongoId()
+  @Expose()
+  @IsMongoId()
   userId: string;
+
+  @Expose()
+  @IsOptional()
+  @IsMongoId()
+  orderId?: string;
 }
