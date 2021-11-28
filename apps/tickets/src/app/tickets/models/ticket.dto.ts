@@ -35,4 +35,10 @@ export class TicketDto extends Ticket {
     required: true,
   })
   userId: string;
+
+  @ApiProperty({
+    description: 'Ticket reservation order id',
+    required: false,
+  })
+  orderId?: string;
 }

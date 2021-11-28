@@ -26,7 +26,14 @@ import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 
-import { CreateTicket, CreateTicketDto, Ticket, TicketDto } from './models';
+import {
+  CreateTicket,
+  CreateTicketDto,
+  Ticket,
+  TicketDto,
+  UpdateTicket,
+  UpdateTicketDto,
+} from './models';
 import { TicketsService } from './tickets.service';
 
 @Controller(Resources.TICKETS)
@@ -107,7 +114,7 @@ export class TicketsController {
     description: 'Update a ticket by id',
     summary: `Update a ticket - Scope : ${Resources.TICKETS}:${Actions.UPDATE_ONE}`,
   })
-  @ApiBody({ type: CreateTicketDto })
+  @ApiBody({ type: UpdateTicketDto })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Ticket updated',
@@ -116,7 +123,7 @@ export class TicketsController {
   @Put(':id')
   updateById(
     @Param('id', ParseObjectId) id: string,
-    @Body() ticket: CreateTicket,
+    @Body() ticket: UpdateTicket,
     @CurrentUser() user: User
   ): Promise<Ticket> {
     return this.ticketsService.updateById(id, ticket, user);

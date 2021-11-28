@@ -28,7 +28,7 @@ export class Ticket implements TicketAttrs {
   @Prop({ type: Number, required: true, min: ticketContraints.price.min })
   price: number;
 
-  @Prop({ type: Number, virtual: true })
+  @Prop({ type: Number, virtual: true, default: 0 })
   version: number;
 
   @Prop({
@@ -36,6 +36,12 @@ export class Ticket implements TicketAttrs {
     required: true,
   })
   userId: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  orderId?: string;
 }
 
 export type TicketDocument = Ticket & Document;
