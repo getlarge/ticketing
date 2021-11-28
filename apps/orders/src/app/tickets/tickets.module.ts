@@ -1,38 +1,22 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+import { APP_FILTER } from '@nestjs/core';
+import { NatsStreamErrorFilter } from '@ticketing/microservices/shared/filters';
 
-import { Order, OrderSchema } from '../orders/schemas';
-import { Ticket, TicketSchema } from './schemas';
-import { TicketsController } from './tickets.controller';
+import { MongooseFeatures } from '../shared/mongoose.module';
 import { TicketsService } from './tickets.service';
-
-const MongooseFeatures = MongooseModule.forFeatureAsync([
-  {
-    name: Order.name,
-    useFactory: () => {
-      const schema = OrderSchema;
-      schema.plugin(updateIfCurrentPlugin);
-      return schema;
-    },
-    inject: [ConfigService],
-  },
-  {
-    name: Ticket.name,
-    useFactory: () => {
-      const schema = TicketSchema;
-      schema.plugin(updateIfCurrentPlugin);
-      return schema;
-    },
-    inject: [ConfigService],
-  },
-]);
+import { TicketsMSController } from './tickets-ms.controller';
 
 @Module({
   imports: [MongooseFeatures],
-  controllers: [TicketsController],
-  providers: [TicketsService],
+  controllers: [TicketsMSController],
+  providers: [
+    TicketsService,
+    {
+      provide: APP_FILTER,
+      useExisting: NatsStreamErrorFilter,
+    },
+    NatsStreamErrorFilter,
+  ],
   exports: [MongooseFeatures, TicketsService],
 })
 export class TicketsModule {}
