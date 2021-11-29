@@ -39,6 +39,9 @@
       "@ticketing/microservices/shared/pipes": [
         "libs/microservices/shared/pipes/src/index.ts"
       ],
+      "@ticketing/microservices/shared/redis": [
+        "libs/microservices/shared/redis/src/index.ts"
+      ],
       "@ticketing/microservices/shared/testing": [
         "libs/microservices/shared/testing/src/index.ts"
       ],
