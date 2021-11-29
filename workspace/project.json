@@ -1,0 +1,13 @@
+{
+  "root": ".",
+  "targets": {
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "baseBranch": "main",
+        "syncVersions": true,
+        "trackDeps": true
+      }
+    }
+  }
+}
