@@ -4,6 +4,7 @@
     "auth": "apps/auth",
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
+    "expiration": "apps/expiration",
     "microservices-shared-constants": "libs/microservices/shared/constants",
     "microservices-shared-decorators": "libs/microservices/shared/decorators",
     "microservices-shared-env": "libs/microservices/shared/env",
@@ -12,24 +13,13 @@
     "microservices-shared-filters": "libs/microservices/shared/filters",
     "microservices-shared-guards": "libs/microservices/shared/guards",
     "microservices-shared-pipes": "libs/microservices/shared/pipes",
+    "microservices-shared-redis": "libs/microservices/shared/redis",
     "microservices-shared-testing": "libs/microservices/shared/testing",
     "orders": "apps/orders",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
     "shared-models": "libs/shared/models",
     "tickets": "apps/tickets",
-    "workspace": {
-      "root": ".",
-      "targets": {
-        "version": {
-          "executor": "@jscutlery/semver:version",
-          "options": {
-            "baseBranch": "main",
-            "syncVersions": true,
-            "trackDeps": true
-          }
-        }
-      }
-    }
+    "workspace": "workspace"
   }
 }

@@ -1,13 +1,15 @@
 export enum Services {
   AUTH_SERVICE = 'AUTH_SERVICE',
-  TICKETS_SERVICE = 'TICKETS_SERVICE',
+  EXPIRATION_SERVICE = 'EXPIRATION_SERVICE',
   ORDERS_SERVICE = 'ORDERS_SERVICE',
+  TICKETS_SERVICE = 'TICKETS_SERVICE',
 }
 
 export enum Resources {
   HEALTH = 'health',
   USERS = 'users',
   TICKETS = 'tickets',
+  EXPIRATION = 'expiration',
   ORDERS = 'orders',
 }
 
