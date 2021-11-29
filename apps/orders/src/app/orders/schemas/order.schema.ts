@@ -40,7 +40,7 @@ export class Order implements Omit<OrderAttrs, 'expiresAt'> {
   })
   status: OrderStatus;
 
-  @Prop({ type: Number, virtual: true })
+  @Prop({ type: Number })
   version: number;
 
   @Prop({

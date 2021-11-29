@@ -57,8 +57,8 @@ export class TicketsService {
     update: TicketUpdatedEvent['data']
   ): Promise<Ticket> {
     const ticket = await this.findByEventVersion(update);
-    const { title, price } = update;
-    ticket.set({ title, price });
+    const { title, price, version } = update;
+    ticket.set({ title, price, version });
     await ticket.save();
     return ticket.toJSON<Ticket>();
   }

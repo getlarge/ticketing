@@ -17,11 +17,7 @@ export const MongooseFeatures = MongooseModule.forFeatureAsync([
   },
   {
     name: Ticket.name,
-    useFactory: () => {
-      const schema = TicketSchema;
-      schema.plugin(updateIfCurrentPlugin);
-      return schema;
-    },
+    useFactory: () => TicketSchema,
     inject: [ConfigService],
   },
 ]);
