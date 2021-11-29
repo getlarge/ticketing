@@ -85,13 +85,17 @@
                 "onlyDependOnLibsWithTags": ["scope:shared", "scope:client"]
               },
               {
-                "sourceTag": "scope:tickets",
-                "onlyDependOnLibsWithTags": ["scope:shared", "scope:tickets"]
+                "sourceTag": "scope:expiration",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:expiration"]
               },
               {
                 "sourceTag": "scope:orders",
                 "onlyDependOnLibsWithTags": ["scope:shared", "scope:orders"]
               },
+              {
+                "sourceTag": "scope:tickets",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:tickets"]
+              },              
               {
                 "sourceTag": "platform:web",
                 "onlyDependOnLibsWithTags": ["platform:web", "platform:shared"]
