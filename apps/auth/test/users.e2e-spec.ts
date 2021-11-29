@@ -10,7 +10,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
-import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { UserCredentials } from '@ticketing/shared/models';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
@@ -40,7 +40,7 @@ describe('UsersController (e2e)', () => {
       providers: [
         {
           provide: APP_FILTER,
-          useClass: HttpErrorFilter,
+          useClass: GlobalErrorFilter,
         },
       ],
     }).compile();

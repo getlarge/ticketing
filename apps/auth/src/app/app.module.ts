@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { validate } from '@ticketing/microservices/shared/env';
-import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
@@ -33,8 +33,9 @@ import { UsersModule } from './users/users.module';
     AppService,
     {
       provide: APP_FILTER,
-      useFactory: () => new HttpErrorFilter(),
+      useExisting: GlobalErrorFilter,
     },
+    GlobalErrorFilter,
   ],
 })
 export class AppModule {}
