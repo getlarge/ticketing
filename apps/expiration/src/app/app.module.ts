@@ -3,13 +3,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { validate } from '@ticketing/microservices/shared/env';
-import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { BullConfigService } from '@ticketing/microservices/shared/redis';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvironmentVariables } from './env';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -24,15 +25,16 @@ import { EnvironmentVariables } from './env';
       inject: [ConfigService],
       useClass: BullConfigService,
     }),
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_FILTER,
-      useExisting: HttpErrorFilter,
+      useExisting: GlobalErrorFilter,
     },
-    HttpErrorFilter,
+    GlobalErrorFilter,
   ],
 })
 export class AppModule {}
