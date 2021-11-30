@@ -25,13 +25,13 @@ sequenceDiagram
 		par NATS to Tickets service
         NATS->>Tickets service: Dispatch new order
         Note left of Tickets service: Tickets service needs to know<br>if a ticket has been reserved<br>to prevent its edition.	
-    and NATS to Payments service
+        and NATS to Payments service
         NATS->>Payments service: Dispatch new order
         Note left of Payments service: Payments service needs to know<br>there is a new order that a user<br>might submit a payment for.
-    and NATS to Expiration service
+        and NATS to Expiration service
         NATS->>Expiration service: Dispatch new order
         Note left of Expiration service: Expiration service needs to start<br>a timer to eventually time out<br>this order.
-    end
+        end
 	end		
 
 	
@@ -41,8 +41,26 @@ sequenceDiagram
 		par NATS to Tickets service
         NATS->>Tickets service: Dispatch cancelled order
         Note left of Tickets service: Tickets service should unreserve ticket<br>if the corresponding order has been<br>cancelled so this ticket can be <br>edited again
-    and NATS to Payments service
+        and NATS to Payments service
         NATS->>Payments service: Dispatch cancelled order
         Note left of Payments service: Payments service should know that<br>any incoming payments for this order<br>should be rejected
     end
-	end		
+	end	
+	
+	loop expiration:complete
+    %% event emitted by expiration service
+		Expiration service->>+NATS: Publish complete expiration
+		par NATS to Orders service
+        NATS->>Orders service: Dispatch expired order
+        Note left of Orders service: Orders service needs to knwow that an order<br>has gone over the 15 minutes time limit.<br>It is up to the order service to decide<br> wether or not to cancel the order.
+        end    
+	end	
+	
+	loop charge:created
+    %% event emitted by payments service
+		Payments service->>+NATS: Publish charge created
+		par NATS to Orders service
+        NATS->>Orders service: Dispatch charge created
+        Note left of Orders service: Orders service needs to knwow that an order<br>has been paid for.
+        end    
+	end	    	
