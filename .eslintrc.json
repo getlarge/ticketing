@@ -93,9 +93,13 @@
                 "onlyDependOnLibsWithTags": ["scope:shared", "scope:orders"]
               },
               {
+                "sourceTag": "scope:payments",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:payments"]
+              },
+              {
                 "sourceTag": "scope:tickets",
                 "onlyDependOnLibsWithTags": ["scope:shared", "scope:tickets"]
-              },              
+              },
               {
                 "sourceTag": "platform:web",
                 "onlyDependOnLibsWithTags": ["platform:web", "platform:shared"]

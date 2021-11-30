@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "lib": ["es2019"],
+    "emitDecoratorMetadata": true,
+    "types": ["jest", "node"],
+    "allowJs": true
+  },
+  "include": ["**/*.e2e-spec.ts", "**/*.spec.ts", "**/*.d.ts"]
+}

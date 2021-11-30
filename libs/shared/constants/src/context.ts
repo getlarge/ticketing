@@ -2,6 +2,7 @@ export enum Services {
   AUTH_SERVICE = 'AUTH_SERVICE',
   EXPIRATION_SERVICE = 'EXPIRATION_SERVICE',
   ORDERS_SERVICE = 'ORDERS_SERVICE',
+  PAYMENTS_SERVICE = 'PAYMENTS_SERVICE',
   TICKETS_SERVICE = 'TICKETS_SERVICE',
 }
 
@@ -11,6 +12,7 @@ export enum Resources {
   TICKETS = 'tickets',
   EXPIRATION = 'expiration',
   ORDERS = 'orders',
+  CHARGES = 'charges',
 }
 
 export enum Actions {
