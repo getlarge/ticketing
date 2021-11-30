@@ -16,6 +16,7 @@
     "microservices-shared-redis": "libs/microservices/shared/redis",
     "microservices-shared-testing": "libs/microservices/shared/testing",
     "orders": "apps/orders",
+    "payments": "apps/payments",
     "shared-constants": "libs/shared/constants",
     "shared-errors": "libs/shared/errors",
     "shared-models": "libs/shared/models",
