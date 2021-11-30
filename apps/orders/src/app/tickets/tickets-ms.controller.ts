@@ -31,7 +31,7 @@ export class TicketsMSController {
     data: Ticket,
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
-    this.logger.verbose(`received message on ${context.message.getSubject()}`, {
+    this.logger.debug(`received message on ${context.message.getSubject()}`, {
       data,
     });
     await this.ticketsService.create(data);
@@ -53,7 +53,7 @@ export class TicketsMSController {
     data: Ticket,
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
-    this.logger.verbose(`received message on ${context.message.getSubject()}`, {
+    this.logger.debug(`received message on ${context.message.getSubject()}`, {
       data,
     });
     await this.ticketsService.updateById(data.id, data);

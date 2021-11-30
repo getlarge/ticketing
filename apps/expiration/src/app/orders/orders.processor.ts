@@ -27,7 +27,7 @@ export class OrdersProcessor {
   @Process(ORDERS_EXPIRATION_JOB)
   async expireOrder(job: Job<OrdersProcessorData>): Promise<void> {
     const { data } = job;
-    this.logger.verbose(`Expire order ${data.id}`);
+    this.logger.debug(`Expire order ${data.id}`);
     await lastValueFrom(
       this.publisher
         .emit<string, ExpirationCompletedEvent['data']>(

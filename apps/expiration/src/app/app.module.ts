@@ -20,7 +20,7 @@ import { OrdersModule } from './orders/orders.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot({ pinoHttp: { level: 'debug' } }),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useClass: BullConfigService,

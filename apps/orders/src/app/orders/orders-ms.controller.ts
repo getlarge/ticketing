@@ -23,7 +23,7 @@ export class OrdersMSController {
     @Payload() data: ExpirationCompletedEvent['data'],
     @Ctx() context: NatsStreamingContext
   ): Promise<void> {
-    this.logger.verbose(`received message on ${context.message.getSubject()}`, {
+    this.logger.debug(`received message on ${context.message.getSubject()}`, {
       data,
     });
     await this.ordersService.expireById(data.id);

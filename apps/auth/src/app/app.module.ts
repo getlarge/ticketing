@@ -19,7 +19,7 @@ import { UsersModule } from './users/users.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot({ pinoHttp: { level: 'debug' } }),
     MongooseModule.forRootAsync({
       useFactory: (configService: AppConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
