@@ -27,7 +27,7 @@ export class OrdersProcessor {
   @Process(ORDERS_EXPIRATION_JOB)
   async expireOrder(job: Job<OrdersProcessorData>): Promise<void> {
     const { data } = job;
-    this.logger.log(`Expire order ${data.id}`);
+    this.logger.verbose(`Expire order ${data.id}`);
     await lastValueFrom(
       this.publisher
         .emit<string, ExpirationCompletedEvent['data']>(
@@ -40,15 +40,13 @@ export class OrdersProcessor {
 
   @OnQueueCompleted({ name: ORDERS_EXPIRATION_JOB })
   onCompleted(job: Job): void {
-    this.logger.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data} is done`
-    );
+    this.logger.log(`Processing job ${job.id} of type ${job.name} is done`);
   }
 
   @OnQueueFailed({ name: ORDERS_EXPIRATION_JOB })
   onFailed(job: Job, error: Error): void {
     this.logger.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data} has failed with error ${error.message}`
+      `Processing job ${job.id} of type ${job.name} has failed with error ${error.message}`
     );
   }
 }

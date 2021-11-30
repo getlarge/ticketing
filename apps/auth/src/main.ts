@@ -26,7 +26,7 @@ import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
-import { APP_FOLDER } from './app/shared/constants';
+import { APP_FOLDER, DEFAULT_PORT } from './app/shared/constants';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -41,7 +41,7 @@ async function bootstrap(): Promise<void> {
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
-  const port = configService.get('PORT', 3333, { infer: true });
+  const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
 

@@ -24,6 +24,7 @@ export class OrderService {
       // job already created
       return;
     }
+
     const delay = new Date(order.expiresAt).getTime() - new Date().getTime();
     await this.expirationQueue.add(ORDERS_EXPIRATION_JOB, order, {
       jobId,

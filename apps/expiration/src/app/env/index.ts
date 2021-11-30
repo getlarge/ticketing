@@ -22,11 +22,11 @@ export class EnvironmentVariables extends Mixin(
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
     JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
 
-  APP_NAME?: string = 'tickets';
+  APP_NAME?: string = 'expiration';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
 
-  NATS_CLIENT_ID?: string = `${Services.TICKETS_SERVICE}_${pseudoRandomBytes(
+  NATS_CLIENT_ID?: string = `${Services.EXPIRATION_SERVICE}_${pseudoRandomBytes(
     4
   ).toString('hex')}`;
 }

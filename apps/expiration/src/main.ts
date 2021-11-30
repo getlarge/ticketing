@@ -5,27 +5,15 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import {
-  DocumentBuilder,
-  SwaggerCustomOptions,
-  SwaggerModule,
-} from '@nestjs/swagger';
 import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
-import {
-  bearerSecurityScheme,
-  GLOBAL_API_PREFIX,
-  SecurityRequirements,
-  sessionSecurityScheme,
-} from '@ticketing/microservices/shared/constants';
-import { Resources, Services } from '@ticketing/shared/constants';
+import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
+import { Services } from '@ticketing/shared/constants';
 import { fastifyHelmet } from 'fastify-helmet';
-import { existsSync, writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
-import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
-import { APP_FOLDER } from './app/shared/constants';
+import { DEFAULT_PORT } from './app/shared/constants';
 
 // eslint-disable-next-line max-lines-per-function
 async function bootstrap(): Promise<void> {
@@ -41,8 +29,7 @@ async function bootstrap(): Promise<void> {
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
-  const port = configService.get('PORT', 3030, { infer: true });
-  // const environment = configService.get('NODE_ENV', { infer: true });
+  const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
 
   const logger = app.get(Logger);
@@ -68,7 +55,7 @@ async function bootstrap(): Promise<void> {
     `${Services.EXPIRATION_SERVICE}_GROUP`,
     { url: configService.get('NATS_URL'), name: Services.EXPIRATION_SERVICE },
     {
-      durableName: `${Resources.EXPIRATION}_subscriptions`,
+      durableName: `${Services.EXPIRATION_SERVICE}_subscriptions`,
       manualAckMode: true,
       deliverAllAvailable: true,
       ackWait: 5 * 1000,
@@ -80,32 +67,6 @@ async function bootstrap(): Promise<void> {
   };
   const microService = app.connectMicroservice(options);
 
-  // Swagger UI
-  const config = new DocumentBuilder()
-    .setTitle('Expiration API')
-    .setDescription('Ticketing expiration API description')
-    .setVersion(configService.get('APP_VERSION'))
-    .addSecurity(SecurityRequirements.Session, sessionSecurityScheme)
-    .addSecurity(SecurityRequirements.Bearer, bearerSecurityScheme)
-    .addSecurityRequirements(SecurityRequirements.Session)
-    .addSecurityRequirements(SecurityRequirements.Bearer)
-    .addServer(configService.get('SERVER_URL'))
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  const customOptions: SwaggerCustomOptions = {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  };
-  SwaggerModule.setup(swaggerUiPrefix, app, document, customOptions);
-
-  // Save OpenAPI specs
-  const openApiPath = resolve(APP_FOLDER, 'openapi.json');
-  if (existsSync(APP_FOLDER)) {
-    writeFileSync(openApiPath, JSON.stringify(document, null, 2));
-  }
-
   // Init
   await microService.listen();
   await app.listen(port, '0.0.0.0', () => {
@@ -114,8 +75,6 @@ async function bootstrap(): Promise<void> {
       `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
     );
   });
-
-  // TODO: add graceful shutdown process
 }
 
 bootstrap();
