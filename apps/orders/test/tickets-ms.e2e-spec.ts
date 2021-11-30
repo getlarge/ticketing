@@ -15,7 +15,7 @@ import {
 } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
-import { NatsStreamErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { Resources, Services } from '@ticketing/shared/constants';
 import { Model, Types } from 'mongoose';
 import { delay } from 'rxjs';
@@ -34,7 +34,7 @@ describe('TicketsMSController (e2e)', () => {
   let ticketModel: Model<TicketDocument>;
   const envVariables = loadEnv(envFilePath, true);
 
-  const expectionFilter = new NatsStreamErrorFilter();
+  const expectionFilter = new GlobalErrorFilter();
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -50,7 +50,7 @@ describe('TicketsMSController (e2e)', () => {
         MongooseModule.forRoot(envVariables['MONGODB_URI']),
       ],
     })
-      .overrideProvider(NatsStreamErrorFilter)
+      .overrideProvider(GlobalErrorFilter)
       .useValue(expectionFilter)
       .compile();
 
@@ -107,7 +107,7 @@ describe('TicketsMSController (e2e)', () => {
       //
       natsPublisher
         .emit(Patterns.TicketCreated, ticket)
-        .pipe(delay(200))
+        .pipe(delay(1000))
         .subscribe({
           next: () => {
             expect(ticketsService.create).not.toBeCalled();
@@ -115,7 +115,7 @@ describe('TicketsMSController (e2e)', () => {
             done();
           },
         });
-    });
+    }, 8000);
 
     it('should create ticket when event data is valid', (done) => {
       const ticket = mockTicketEvent();
@@ -131,6 +131,6 @@ describe('TicketsMSController (e2e)', () => {
           // expect(createdTicket?._id?.toString()).toEqual(ticket.id);
           done();
         });
-    });
+    }, 6000);
   });
 });

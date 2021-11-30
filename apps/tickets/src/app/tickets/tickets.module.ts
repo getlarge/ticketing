@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import {
   CURRENT_USER_KEY,
@@ -50,7 +52,15 @@ const NatsPublisher = NatsStreamingTransport.registerAsync({
     NatsPublisher,
   ],
   controllers: [TicketsController],
-  providers: [TicketsService, JwtStrategy],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useExisting: GlobalErrorFilter,
+    },
+    GlobalErrorFilter,
+    TicketsService,
+    JwtStrategy,
+  ],
   exports: [MongooseFeatures, NatsPublisher, TicketsService],
 })
 export class TicketsModule {}

@@ -36,10 +36,7 @@ export class TicketsService {
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
     event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data']
   ): Observable<string> {
-    return this.publisher.emit<string, TicketUpdatedEvent['data']>(
-      pattern,
-      event
-    );
+    return this.publisher.emit<string, typeof event>(pattern, event);
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {

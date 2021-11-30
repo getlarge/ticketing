@@ -12,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
-import { HttpErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import {
   createSigninSession,
   MockClient,
@@ -55,7 +55,7 @@ describe('TicketsController (e2e)', () => {
       providers: [
         {
           provide: APP_FILTER,
-          useClass: HttpErrorFilter,
+          useClass: GlobalErrorFilter,
         },
       ],
     })

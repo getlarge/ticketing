@@ -15,7 +15,7 @@ import {
 } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
-import { NatsStreamErrorFilter } from '@ticketing/microservices/shared/filters';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { Resources, Services } from '@ticketing/shared/constants';
 import { Types } from 'mongoose';
 import { delay } from 'rxjs';
@@ -32,7 +32,7 @@ describe('OrdersMSController (e2e)', () => {
   let natsPublisher: Publisher;
   // let ticketModel: Model<TicketDocument>;
   const envVariables = loadEnv(envFilePath, true);
-  const expectionFilter = new NatsStreamErrorFilter();
+  const expectionFilter = new GlobalErrorFilter();
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,7 +48,7 @@ describe('OrdersMSController (e2e)', () => {
         MongooseModule.forRoot(envVariables['MONGODB_URI']),
       ],
     })
-      .overrideProvider(NatsStreamErrorFilter)
+      .overrideProvider(GlobalErrorFilter)
       .useValue(expectionFilter)
       .compile();
 
