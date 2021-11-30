@@ -31,4 +31,4 @@ spec:
           resources:
             limits:
               memory: '128Mi'
-              cpu: '250m'
+              cpu: '150m'

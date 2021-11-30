@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tickets-depl
+  name: payments-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tickets
+      app: payments
   template:
     metadata:
       labels:
-        app: tickets
+        app: payments
     spec:
       imagePullSecrets:
         - name: ghcr-cred
       restartPolicy: Always
       containers:
-        - name: tickets
-          image: ghcr.io/getlarge/ticketing-tickets
+        - name: payments
+          image: ghcr.io/getlarge/ticketing-payments
           envFrom:
             - configMapRef:
                 name: api-config
@@ -27,7 +27,7 @@ spec:
             - name: SERVER_URL
               value: 'https://ticketing.dev'
             - name: MONGODB_URI
-              value: mongodb://tickets-mongo-srv:27017/tickets
+              value: mongodb://payments-mongo-srv:27017/payments
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
@@ -55,12 +55,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tickets-srv
+  name: payments-srv
 spec:
   selector:
-    app: tickets
+    app: payments
   ports:
-    - name: tickets
+    - name: payments
       protocol: TCP
       port: 3000
       targetPort: 3000

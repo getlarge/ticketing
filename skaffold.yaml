@@ -56,7 +56,18 @@ build:
       custom:
         buildCommand: npx nx run expiration:docker-build --conf=development --tag=dev
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p expiration          
+          command: node ./tools/nx/get-dependencies-cli.js -p expiration
+    # PAYMENTS
+    - image: ghcr.io/getlarge/ticketing-payments
+      context: .
+      sync:
+        manual:
+          - src: .
+            dest: .
+      custom:
+        buildCommand: npx nx run payments:docker-build --conf=development --tag=dev
+        dependencies:
+          command: node ./tools/nx/get-dependencies-cli.js -p payments          
     # CLIENT
     - image: ghcr.io/getlarge/ticketing-client
       context: .
@@ -99,7 +110,12 @@ portForward:
     port: 27017
     localPort: 27019
   - resourceType: service
+    resourceName: payments-mongo-srv
+    namespace: default
+    port: 27017
+    localPort: 27020
+  - resourceType: service
     resourceName: expiration-redis-srv
     namespace: default
     port: 6379
-    localPort: 6379    
+    localPort: 6379
