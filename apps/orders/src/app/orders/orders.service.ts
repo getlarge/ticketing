@@ -17,6 +17,7 @@ import {
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
+import { Observable } from 'rxjs';
 
 import { AppConfigService } from '../env';
 import { Ticket as TicketSchema, TicketDocument } from '../tickets/schemas';
@@ -38,6 +39,13 @@ export class OrdersService {
       'EXPIRATION_WINDOW_SECONDS',
       { infer: true }
     );
+  }
+
+  emitEvent(
+    pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
+    event: OrderCreatedEvent['data'] | OrderCancelledEvent['data']
+  ): Observable<string> {
+    return this.publisher.emit<string, typeof event>(pattern, event);
   }
 
   async create(orderRequest: CreateOrder, currentUser: User): Promise<Order> {
@@ -66,12 +74,7 @@ export class OrdersService {
     const result = newOrder.toJSON<Order>();
 
     // 5. Publish an event
-    this.publisher
-      .emit<string, OrderCreatedEvent['data']>(Patterns.OrderCreated, result)
-      .subscribe({
-        next: (value) =>
-          this.logger.log(`Sent event ${Patterns.OrderCreated} ${value}`),
-      });
+    this.emitEvent(Patterns.OrderCreated, result);
     return result;
   }
 
@@ -115,15 +118,20 @@ export class OrdersService {
     order.set({ status: OrderStatus.Cancelled });
     await order.save();
     const result = order.toJSON<Order>();
-    this.publisher
-      .emit<string, OrderCancelledEvent['data']>(
-        Patterns.OrderCancelled,
-        result
-      )
-      .subscribe({
-        next: (value) =>
-          this.logger.log(`Sent event ${Patterns.OrderCancelled} ${value}`),
-      });
+    this.emitEvent(Patterns.OrderCancelled, result);
+    return result;
+  }
+
+  async expireById(id: string): Promise<Order> {
+    const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
+    this.orderExists(id, order);
+    if (order.status === OrderStatus.Complete) {
+      return order.toJSON<Order>();
+    }
+    order.set({ status: OrderStatus.Cancelled });
+    await order.save();
+    const result = order.toJSON<Order>();
+    this.emitEvent(Patterns.OrderCancelled, result);
     return result;
   }
 }

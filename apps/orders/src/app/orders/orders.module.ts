@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
+import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import {
   CURRENT_USER_KEY,
@@ -13,6 +15,7 @@ import { AppConfigService } from '../env';
 import { MongooseFeatures } from '../shared/mongoose.module';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
+import { OrdersMSController } from './orders-ms.controller';
 
 @Module({
   imports: [
@@ -33,7 +36,15 @@ import { OrdersService } from './orders.service';
       inject: [ConfigService],
     }),
   ],
-  controllers: [OrdersController],
-  providers: [OrdersService, JwtStrategy],
+  controllers: [OrdersController, OrdersMSController],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useExisting: GlobalErrorFilter,
+    },
+    GlobalErrorFilter,
+    OrdersService,
+    JwtStrategy,
+  ],
 })
 export class OrdersModule {}

@@ -28,7 +28,7 @@ import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
-import { APP_FOLDER } from './app/shared/constants';
+import { APP_FOLDER, DEFAULT_PORT } from './app/shared/constants';
 
 // eslint-disable-next-line max-lines-per-function
 async function bootstrap(): Promise<void> {
@@ -44,7 +44,7 @@ async function bootstrap(): Promise<void> {
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
-  const port = configService.get('PORT', 3333, { infer: true });
+  const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
 
@@ -77,7 +77,7 @@ async function bootstrap(): Promise<void> {
     `${Services.ORDERS_SERVICE}_GROUP`,
     { url: configService.get('NATS_URL'), name: Services.ORDERS_SERVICE },
     {
-      durableName: `${Resources.ORDERS}_subscriptions`,
+      durableName: `${Services.ORDERS_SERVICE}_subscriptions`,
       manualAckMode: true,
       deliverAllAvailable: true,
       ackWait: 5 * 1000,
@@ -124,8 +124,6 @@ async function bootstrap(): Promise<void> {
       `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
     );
   });
-
-  // TODO: add graceful shutdown process
 }
 
 bootstrap();
