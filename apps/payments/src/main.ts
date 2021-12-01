@@ -99,7 +99,7 @@ async function bootstrap(): Promise<void> {
     .addSecurityRequirements(SecurityRequirements.Session)
     .addSecurityRequirements(SecurityRequirements.Bearer)
     .addServer(configService.get('SERVER_URL'))
-    .addTag(Resources.CHARGES)
+    .addTag(Resources.PAYMENTS)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

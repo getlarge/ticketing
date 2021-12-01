@@ -12,7 +12,7 @@ export enum Resources {
   TICKETS = 'tickets',
   EXPIRATION = 'expiration',
   ORDERS = 'orders',
-  CHARGES = 'charges',
+  PAYMENTS = 'payments',
 }
 
 export enum Actions {
