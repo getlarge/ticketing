@@ -2,6 +2,22 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/getlarge/ticketing/compare/v0.1.0...v0.2.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* **auth:** update password comparison ([d477cd2](https://github.com/getlarge/ticketing/commit/d477cd298c8a95ecd6ad2580a5341e6debf63a14))
+* **auth:** use stable JWT issuer ([dabf703](https://github.com/getlarge/ticketing/commit/dabf703bde4cb9c2e08b069f68f1bb2036055da4))
+* set logger level to debug ([8d41564](https://github.com/getlarge/ticketing/commit/8d4156475bfc2b1b6e95d7eda567063569548b65))
+
+
+### Features
+
+* allow to authenticate via cookie or authorization header ([26a152e](https://github.com/getlarge/ticketing/commit/26a152e3309b8d6b10550feadc184873d215e1a1))
+
+
+
 # 0.1.0 (2021-11-21)
 
 

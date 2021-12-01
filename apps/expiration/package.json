@@ -1,6 +1,6 @@
 {
   "name": "expiration",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "dependencies": {
     "@nestjs-plugins/nestjs-nats-streaming-transport": "^1.1.1",
     "@nestjs/bull": "^0.4.2",

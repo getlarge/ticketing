@@ -2,6 +2,17 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/getlarge/ticketing/compare/v0.1.0...v0.2.0) (2021-12-01)
+
+
+### Features
+
+* **expiration:** init expiration app ([4325556](https://github.com/getlarge/ticketing/commit/43255561bb1e390d837279ad6cee4bf871894cb1))
+* **payments:** create payment models ([bde3833](https://github.com/getlarge/ticketing/commit/bde383325b779e4bb3e145d5e1351087ed3cb5c4))
+* **payments:** init payments service ([3535748](https://github.com/getlarge/ticketing/commit/35357489dd4c61f7af40df7efc2ce8f25b870011))
+
+
+
 # 0.1.0 (2021-11-21)
 
 

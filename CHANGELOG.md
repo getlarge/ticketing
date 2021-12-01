@@ -2,6 +2,59 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/getlarge/ticketing/compare/v0.1.0...v0.2.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* **auth:** update password comparison ([d477cd2](https://github.com/getlarge/ticketing/commit/d477cd298c8a95ecd6ad2580a5341e6debf63a14))
+* **auth:** use stable JWT issuer ([dabf703](https://github.com/getlarge/ticketing/commit/dabf703bde4cb9c2e08b069f68f1bb2036055da4))
+* **microservices-shared-events:** rename events patterns ([7af0c88](https://github.com/getlarge/ticketing/commit/7af0c886b07af4a77ad51d3b07682a4b759c2121))
+* **microservices-shared-testing:** create JWTservice instead of getting from app ([68d7351](https://github.com/getlarge/ticketing/commit/68d73513a74c375177722943964f10d2c5986c14))
+* **orders:** cleanup and renaming ([7a02c51](https://github.com/getlarge/ticketing/commit/7a02c51b46a771cefe1cbaa24e2f64940c73fa7f))
+* **orders:** update ticket sync process ([6c36dde](https://github.com/getlarge/ticketing/commit/6c36ddefb2dc2358696cfe76797b96511b6ac46c))
+* **payments:** autofill payment version ([8fbaf9a](https://github.com/getlarge/ticketing/commit/8fbaf9adc0e6459ca494c5a42858e8e727e0fe37))
+* set logger level to debug ([8d41564](https://github.com/getlarge/ticketing/commit/8d4156475bfc2b1b6e95d7eda567063569548b65))
+* tweak skaffold port forward config ([e4ab986](https://github.com/getlarge/ticketing/commit/e4ab986653878256bda6fb1b573e9f011364e12a))
+
+
+### Features
+
+* add tool to generate bundled OpenAPI specs ([1724d02](https://github.com/getlarge/ticketing/commit/1724d022a65f483af1fc45e24acb39762120ffd9))
+* add tool to generate Postman collection from OpenAPI specs ([8d8e1ad](https://github.com/getlarge/ticketing/commit/8d8e1adc89b8fa632ed03c6cafe892fe088bc3fb))
+* allow to authenticate via cookie or authorization header ([26a152e](https://github.com/getlarge/ticketing/commit/26a152e3309b8d6b10550feadc184873d215e1a1))
+* **expiration:** create orders events listener ([a1396e3](https://github.com/getlarge/ticketing/commit/a1396e3a6ee176d9b873539a51efcf7984fd3032))
+* **expiration:** create queue processor ([2d8fbfc](https://github.com/getlarge/ticketing/commit/2d8fbfc601caad68538a9e83118a7744d7c567b1))
+* **expiration:** init expiration app ([4325556](https://github.com/getlarge/ticketing/commit/43255561bb1e390d837279ad6cee4bf871894cb1))
+* **microservices-shared-constants:** add shared cookie options ([eaf2abe](https://github.com/getlarge/ticketing/commit/eaf2abe843fd548d31a6b5bbffb22eb0bf355b0c))
+* **microservices-shared-constants:** create constants lib for backend apps ([05eefa1](https://github.com/getlarge/ticketing/commit/05eefa1d13145e7dd2b6666a971b8d6ddf1b1aeb))
+* **microservices-shared-env:** create Stripe env variables ([05f0d22](https://github.com/getlarge/ticketing/commit/05f0d22cd4bbaf9199ae66345c25eee010a9ca47))
+* **microservices-shared-events:** add payment:created event ([43ffced](https://github.com/getlarge/ticketing/commit/43ffced665ae19324328997bc79fd56b3e05e907))
+* **microservices-shared-events:** create expiration completed event ([a4761ea](https://github.com/getlarge/ticketing/commit/a4761ea008098be47f66844c3c42c5c6cc52cf91))
+* **microservices-shared-filters:** create combined exceptions filter ([8ebee8f](https://github.com/getlarge/ticketing/commit/8ebee8fad614b37ad60e2b8ba13542515e5af0e5))
+* **microservices-shared-filters:** create NATS streaming error filter ([386a402](https://github.com/getlarge/ticketing/commit/386a40265de916ec35bf90f590e29c48d8acb87d))
+* **microservices-shared-redis:** create shared redis configs lib ([afe0410](https://github.com/getlarge/ticketing/commit/afe041014b75f430862ab28c05c63fb09789348f))
+* **microservices-shared-testing:** add Mongoose Model mock ([cdb7a9d](https://github.com/getlarge/ticketing/commit/cdb7a9d5e4704f06e1436880b5abb4deed1fe7e1))
+* **microservices-shared-testing:** add NATSStraming context mock ([66cb176](https://github.com/getlarge/ticketing/commit/66cb17653ea62694db2a3050002e5d9db7524b70))
+* **microservices-shared-testing:** create Publisher mocking class ([e8abc16](https://github.com/getlarge/ticketing/commit/e8abc16b4739d5d6b19b36eedb9c4f4d142142a8))
+* **orders:** add concurrency control on tickets/orders update ([ba56d20](https://github.com/getlarge/ticketing/commit/ba56d206cff42b26aacd664adbc74dc94cf19d4a))
+* **orders:** create distinct TicketsModule ([ca83810](https://github.com/getlarge/ticketing/commit/ca83810783de2422dfbfdcab1bf32aa49e465265))
+* **orders:** implement expiration process ([b0031db](https://github.com/getlarge/ticketing/commit/b0031dbab1877e80935dac3b7e40810bd6e81914))
+* **orders:** integrate RPC error filter ([766643b](https://github.com/getlarge/ticketing/commit/766643bbcd6a1a366f124df80bad0b2044019319))
+* **orders:** listen and react to payment:created event ([b076826](https://github.com/getlarge/ticketing/commit/b0768261dd0edca359648c38dc74ce7ddc94b7fe))
+* **payments:** allow to create payments with Stripe ([c470c86](https://github.com/getlarge/ticketing/commit/c470c86d7347dbcfc7d7b37bc26f3511b7c0233a))
+* **payments:** create payment models ([bde3833](https://github.com/getlarge/ticketing/commit/bde383325b779e4bb3e145d5e1351087ed3cb5c4))
+* **payments:** init orders listeners ([36145a1](https://github.com/getlarge/ticketing/commit/36145a1af9a01005c78b3499dafeed85f5bc4bec))
+* **payments:** init payments service ([3535748](https://github.com/getlarge/ticketing/commit/35357489dd4c61f7af40df7efc2ce8f25b870011))
+* **payments:** publish payment:create event ([088c890](https://github.com/getlarge/ticketing/commit/088c89062b3f075e43e5a68d0cc3f12d1376cb3c))
+* **shared-models:** add validators for ticket and order ([1066b0f](https://github.com/getlarge/ticketing/commit/1066b0f75592bac8597502e9d1c2bc63401f13be))
+* **tickets:** add concurrency control on tickets update ([ea3cd84](https://github.com/getlarge/ticketing/commit/ea3cd84c8cfe06f662dcdc7e74ab42faf3faef60))
+* **tickets:** create orders events listeners ([bb69eba](https://github.com/getlarge/ticketing/commit/bb69ebae6ebc8bce5f67bf50c50898428164044a))
+* **tickets:** improve ticket models ([6a91a11](https://github.com/getlarge/ticketing/commit/6a91a1141feb68a555884f4d76cb7d546c5de6ae))
+* use mermaid CLI to export diagrams to SVG ([768f32f](https://github.com/getlarge/ticketing/commit/768f32f4d59c1f8e1dadee582f0e235388493a9d))
+
+
+
 # 0.1.0 (2021-11-21)
 
 

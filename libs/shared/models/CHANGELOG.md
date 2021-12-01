@@ -2,6 +2,20 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/getlarge/ticketing/compare/v0.1.0...v0.2.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* **microservices-shared-events:** rename events patterns ([7af0c88](https://github.com/getlarge/ticketing/commit/7af0c886b07af4a77ad51d3b07682a4b759c2121))
+
+
+### Features
+
+* **shared-models:** add validators for ticket and order ([1066b0f](https://github.com/getlarge/ticketing/commit/1066b0f75592bac8597502e9d1c2bc63401f13be))
+
+
+
 # 0.1.0 (2021-11-21)
 
 

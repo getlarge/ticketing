@@ -2,6 +2,20 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/getlarge/ticketing/compare/v0.1.0...v0.2.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* **auth:** use stable JWT issuer ([dabf703](https://github.com/getlarge/ticketing/commit/dabf703bde4cb9c2e08b069f68f1bb2036055da4))
+
+
+### Features
+
+* **microservices-shared-env:** create Stripe env variables ([05f0d22](https://github.com/getlarge/ticketing/commit/05f0d22cd4bbaf9199ae66345c25eee010a9ca47))
+
+
+
 # 0.1.0 (2021-11-21)
 
 
