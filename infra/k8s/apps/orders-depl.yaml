@@ -26,6 +26,8 @@ spec:
               value: '3000'
             - name: SERVER_URL
               value: 'https://ticketing.dev'
+            - name: EXPIRATION_WINDOW_SECONDS
+              value: '900'
             - name: MONGODB_URI
               value: mongodb://orders-mongo-srv:27017/orders
             - name: NATS_CLIENT_ID
