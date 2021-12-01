@@ -13,6 +13,7 @@ import {
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,
+  PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
@@ -72,7 +73,6 @@ export class OrdersService {
     });
     await newOrder.populate('ticket');
     const result = newOrder.toJSON<Order>();
-
     // 5. Publish an event
     this.emitEvent(Patterns.OrderCreated, result);
     return result;
@@ -132,6 +132,17 @@ export class OrdersService {
     await order.save();
     const result = order.toJSON<Order>();
     this.emitEvent(Patterns.OrderCancelled, result);
+    return result;
+  }
+
+  async complete(data: PaymentCreatedEvent['data']): Promise<Order> {
+    const { orderId } = data;
+    const order = await this.orderModel.findOne({ _id: orderId });
+    this.orderExists(orderId, order);
+    order.set({ status: OrderStatus.Complete });
+    await order.save();
+    const result = order.toJSON<Order>();
+    //? TODO: this.emitEvent(Patterns.OrderComplete, result);
     return result;
   }
 }

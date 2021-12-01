@@ -1,4 +1,4 @@
-import { Controller, Inject, Logger } from '@nestjs/common';
+import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { NatsStreamingContext } from '@nestjs-plugins/nestjs-nats-streaming-transport';
@@ -6,6 +6,8 @@ import {
   ExpirationCompletedEvent,
   Patterns,
 } from '@ticketing/microservices/shared/events';
+import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { Payment } from '@ticketing/shared/models';
 
 import { OrdersService } from './orders.service';
 
@@ -27,6 +29,27 @@ export class OrdersMSController {
       data,
     });
     await this.ordersService.expireById(data.id);
+    context.message.ack();
+  }
+
+  @ApiExcludeEndpoint()
+  @EventPattern(Patterns.PaymentCreated, Transport.NATS)
+  async onPaymentCreated(
+    @Payload(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+        exceptionFactory: requestValidationErrorFactory,
+        forbidUnknownValues: true,
+      })
+    )
+    data: Payment,
+    @Ctx() context: NatsStreamingContext
+  ): Promise<void> {
+    this.logger.debug(`received message on ${context.message.getSubject()}`, {
+      data,
+    });
+    await this.ordersService.complete(data);
     context.message.ack();
   }
 }
