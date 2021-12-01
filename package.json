@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "start:backend": "nx run-many --target=serve --projects=auth,orders,tickets --parallel --maxParallel=3",
+    "start:backend": "nx run-many --target=serve --projects=auth,expiration,orders,payments,tickets --parallel --maxParallel=5",
     "build": "nx build",
     "build:docker:base": "docker build . -t getlarge/ticketing:nx-base",
     "build:docker": "nx run-many --target=docker-build",
@@ -87,6 +87,7 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "rxjs": "~7.4.0",
+    "stripe": "^8.191.0",
     "swr": "^1.0.1",
     "ts-mixer": "^6.0.0",
     "tslib": "^2.0.0"

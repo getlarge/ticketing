@@ -4,6 +4,7 @@ import {
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
   NatsEnvironmentVariables,
+  StripeEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Services } from '@ticketing/shared/constants';
 import { Exclude } from 'class-transformer';
@@ -18,7 +19,8 @@ export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
   JWTEnvironmentVariables,
   NatsEnvironmentVariables,
-  MongoEnvironmentVariables
+  MongoEnvironmentVariables,
+  StripeEnvironmentVariables
 ) {
   @Exclude()
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
