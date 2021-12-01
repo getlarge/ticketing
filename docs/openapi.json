@@ -38,6 +38,10 @@
     {
       "name": "orders",
       "description": ""
+    },
+    {
+      "name": "payments",
+      "description": ""
     }
   ],
   "paths": {
@@ -297,6 +301,10 @@
                     "userId": {
                       "type": "string",
                       "description": "Ticket creator id"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "Ticket reservation order id"
                     }
                   },
                   "required": [
@@ -360,6 +368,10 @@
                       "userId": {
                         "type": "string",
                         "description": "Ticket creator id"
+                      },
+                      "orderId": {
+                        "type": "string",
+                        "description": "Ticket reservation order id"
                       }
                     },
                     "required": [
@@ -425,6 +437,10 @@
                     "userId": {
                       "type": "string",
                       "description": "Ticket creator id"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "Ticket reservation order id"
                     }
                   },
                   "required": [
@@ -474,12 +490,12 @@
                     "type": "number",
                     "description": "Ticket price",
                     "minimum": 0
+                  },
+                  "orderId": {
+                    "type": "string",
+                    "description": "Ticket reservation order id"
                   }
-                },
-                "required": [
-                  "title",
-                  "price"
-                ]
+                }
               }
             }
           }
@@ -514,6 +530,10 @@
                     "userId": {
                       "type": "string",
                       "description": "Ticket creator id"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "Ticket reservation order id"
                     }
                   },
                   "required": [
@@ -948,6 +968,92 @@
           }
         ]
       }
+    },
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/payments": {
+      "post": {
+        "operationId": "PaymentsController_create",
+        "summary": "Create payment request - Scope : payments:create_one",
+        "description": "Attempt to charge for a ticket order",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "Order for which payment is attempted"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "Stripe token",
+                    "example": "tok_visa"
+                  }
+                },
+                "required": [
+                  "orderId",
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Charge created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Charge internal identifier"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "Reference to the order"
+                    },
+                    "stripeId": {
+                      "type": "string",
+                      "description": "Reference to the stripe charge"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "orderId",
+                    "stripeId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "payments"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1036,6 +1142,10 @@
           "userId": {
             "type": "string",
             "description": "Ticket creator id"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Ticket reservation order id"
           }
         },
         "required": [
@@ -1045,6 +1155,26 @@
           "version",
           "userId"
         ]
+      },
+      "UpdateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Ticket reservation order id"
+          }
+        }
       },
       "CreateOrderDto": {
         "type": "object",
@@ -1160,6 +1290,46 @@
           "ticket",
           "userId",
           "status"
+        ]
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order for which payment is attempted"
+          },
+          "token": {
+            "type": "string",
+            "description": "Stripe token",
+            "example": "tok_visa"
+          }
+        },
+        "required": [
+          "orderId",
+          "token"
+        ]
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Charge internal identifier"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Reference to the order"
+          },
+          "stripeId": {
+            "type": "string",
+            "description": "Reference to the stripe charge"
+          }
+        },
+        "required": [
+          "id",
+          "orderId",
+          "stripeId"
         ]
       }
     },

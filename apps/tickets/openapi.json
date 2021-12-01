@@ -116,7 +116,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTicketDto"
+                "$ref": "#/components/schemas/UpdateTicketDto"
               }
             }
           }
@@ -161,7 +161,7 @@
   ],
   "servers": [
     {
-      "url": "http://localhost:3030"
+      "url": "http://localhost:3010"
     }
   ],
   "components": {
@@ -223,6 +223,10 @@
           "userId": {
             "type": "string",
             "description": "Ticket creator id"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Ticket reservation order id"
           }
         },
         "required": [
@@ -232,6 +236,26 @@
           "version",
           "userId"
         ]
+      },
+      "UpdateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
+          },
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Ticket reservation order id"
+          }
+        }
       }
     }
   },

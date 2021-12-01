@@ -56,7 +56,6 @@
         "passWithNoTests": true
       }
     },
-
     "e2e": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/expiration-e2e"],
