@@ -32,7 +32,7 @@ export class Payment implements PaymentAttrs {
 
   @Prop({
     type: Number,
-    required: true,
+    required: false,
   })
   version: number;
 }

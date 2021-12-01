@@ -24,7 +24,11 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
   },
   {
     name: Payment.name,
-    useFactory: () => PaymentSchema,
+    useFactory: () => {
+      const schema = PaymentSchema;
+      schema.plugin(updateIfCurrentPlugin);
+      return schema;
+    },
   },
 ]);
 
