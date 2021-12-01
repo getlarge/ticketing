@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { Payment } from './payment';
+import { Payment } from '@ticketing/shared/models';
 
 export class PaymentDto extends Payment {
   @ApiProperty({
