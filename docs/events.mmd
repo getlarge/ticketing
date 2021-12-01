@@ -56,11 +56,11 @@ sequenceDiagram
         end    
 	end	
 	
-	loop charge:created
+	loop payment:created
     %% event emitted by payments service
-		Payments service->>+NATS: Publish charge created
+		Payments service->>+NATS: Publish payment created
 		par NATS to Orders service
-        NATS->>Orders service: Dispatch charge created
+        NATS->>Orders service: Dispatch payment created
         Note left of Orders service: Orders service needs to knwow that an order<br>has been paid for.
         end    
 	end	    	
