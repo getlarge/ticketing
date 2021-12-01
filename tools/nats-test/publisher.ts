@@ -1,4 +1,4 @@
-// run with: ts-node-dev --rs --notify false tools/nats-test/publisher.ts
+// run with: node_modules/.bin/ts-node-dev --rs --notify false tools/nats-test/publisher.ts
 import * as nats from 'node-nats-streaming';
 import { randomBytes } from 'crypto';
 

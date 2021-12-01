@@ -1,4 +1,4 @@
-// run with: ts-node-dev --rs --notify false tools/nats-test/listener.ts
+// run with: node_modules/.bin/ts-node-dev --rs --notify false tools/nats-test/listener.ts
 import * as nats from 'node-nats-streaming';
 import { randomBytes } from 'crypto';
 
@@ -6,7 +6,6 @@ import { randomBytes } from 'crypto';
   console.clear();
   const stan = nats.connect('ticketing', randomBytes(4).toString('hex'), {
     url: 'http://localhost:4222',
-    
   });
 
   await new Promise<void>((resolve, reject) => {
@@ -33,7 +32,7 @@ import { randomBytes } from 'crypto';
 
   // const subscription = stan.subscribe('ticket:create', options);
   const subscription = stan.subscribe(
-    'ticket:created',
+    'ticket:updated',
     'orders-queue-group',
     options
   );
