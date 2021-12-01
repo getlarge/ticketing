@@ -36,5 +36,5 @@ export class EnvironmentVariables extends Mixin(
   @Expose()
   @IsOptional()
   @IsNumber()
-  EXPIRATION_WINDOW_SECONDS?: number = 15 * 60;
+  EXPIRATION_WINDOW_SECONDS?: number = 1 * 60;
 }

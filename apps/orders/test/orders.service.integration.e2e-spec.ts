@@ -39,9 +39,7 @@ describe('OrdersService', () => {
       ],
     }).compile();
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ordersService = app.get(OrdersService);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     ticketModel = app.get<Model<TicketDocument>>(
       getModelToken(TicketSchema.name)
