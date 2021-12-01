@@ -7,6 +7,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import {
+  Patterns,
+  PaymentCreatedEvent,
+} from '@ticketing/microservices/shared/events';
 import { OrderStatus, User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
 
@@ -23,7 +28,8 @@ export class PaymentsService {
     @InjectModel(OrderSchema.name) private orderModel: Model<OrderDocument>,
     @InjectModel(PaymentSchema.name)
     private paymentModel: Model<PaymentDocument>,
-    @Inject(StripeService) private readonly stripeService: StripeService
+    @Inject(StripeService) private readonly stripeService: StripeService,
+    @Inject(Publisher) private publisher: Publisher
   ) {}
 
   async create(
@@ -54,12 +60,17 @@ export class PaymentsService {
       currency: 'eur',
       source: token,
     });
-
     // 6. Create charge instance in Mongo
     const payment = await this.paymentModel.create({
       orderId,
       stripeId: charge.id,
     });
-    return payment.toJSON<Payment>();
+    const result = payment.toJSON<Payment>();
+    // 7. emit payment:create event
+    this.publisher.emit<string, PaymentCreatedEvent['data']>(
+      Patterns.PaymentCreated,
+      result
+    );
+    return result;
   }
 }
