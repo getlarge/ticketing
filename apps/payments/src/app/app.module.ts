@@ -9,6 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigService, EnvironmentVariables } from './env';
+import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 
@@ -27,6 +28,7 @@ import { PaymentsModule } from './payments/payments.module';
       }),
       inject: [ConfigService],
     }),
+    HealthModule,
     OrdersModule,
     PaymentsModule,
   ],
