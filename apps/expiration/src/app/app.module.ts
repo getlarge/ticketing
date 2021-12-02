@@ -10,6 +10,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvironmentVariables } from './env';
+import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { OrdersModule } from './orders/orders.module';
       inject: [ConfigService],
       useClass: BullConfigService,
     }),
+    HealthModule,
     OrdersModule,
   ],
   controllers: [AppController],
