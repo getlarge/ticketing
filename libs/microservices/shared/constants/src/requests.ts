@@ -4,6 +4,8 @@ import { CookieSerializeOptions } from 'fastify-cookie';
 
 import { devEnvironments } from './env';
 
+export const GLOBAL_API_PREFIX = 'api';
+
 export enum SecurityRequirements {
   Session = 'session',
   Bearer = 'bearer',
@@ -29,5 +31,3 @@ export const getCookieOptions = (
   path: '/',
   maxAge: 60 * 60,
 });
-
-export const GLOBAL_API_PREFIX = 'api';
