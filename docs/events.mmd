@@ -52,7 +52,7 @@ sequenceDiagram
 		Expiration service->>+NATS: Publish complete expiration
 		par NATS to Orders service
         NATS->>Orders service: Dispatch expired order
-        Note left of Orders service: Orders service needs to knwow that an order<br>has gone over the 15 minutes time limit.<br>It is up to the order service to decide<br> wether or not to cancel the order.
+        Note left of Orders service: Orders service needs to know that an order<br>has gone over the 15 minutes time limit.<br>It is up to the order service to decide<br> wether or not to cancel the order.
         end    
 	end	
 	
@@ -61,6 +61,6 @@ sequenceDiagram
 		Payments service->>+NATS: Publish payment created
 		par NATS to Orders service
         NATS->>Orders service: Dispatch payment created
-        Note left of Orders service: Orders service needs to knwow that an order<br>has been paid for.
+        Note left of Orders service: Orders service needs to know that an order<br>has been paid for.
         end    
 	end	    	

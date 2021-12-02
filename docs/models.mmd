@@ -14,7 +14,7 @@ class Ticket {
     +price : float
     +version : int
     +userId : User
-    +orderId : Order
+    +orderId ?: Order
 }
 
 class Order {
@@ -31,9 +31,20 @@ class OrderStatus{
     <<enumeration>>
     Created
 		Cancelled
+		Complete
+    AwaitingPayment
+}
+
+class Payment {
+    <<interface>>
+		+id : string
+    +orderId : string
+    +stripeId : OrderStatus
+    +version : int
 }
 
 User "1" --> "*" Ticket
 User "1" --> "*" Order
 Ticket "1" --> "1" Order
 Order ..> OrderStatus
+Payment "1" --> "1" Order
