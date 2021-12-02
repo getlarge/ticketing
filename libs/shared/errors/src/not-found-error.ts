@@ -4,9 +4,13 @@ export class NotFoundError extends CustomError {
   statusCode = 404;
   reason = 'Not found';
 
-  constructor() {
+  constructor(public details: Record<string, unknown> = {}) {
     super('Route not found');
     Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+
+  getDetails(): Record<string, unknown> {
+    return this.details;
   }
 
   serializeErrors(): { message: string }[] {

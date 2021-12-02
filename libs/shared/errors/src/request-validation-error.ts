@@ -10,6 +10,10 @@ export class RequestValidationError extends CustomError {
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }
 
+  getDetails(): Record<string, unknown> {
+    return { errors: this.errors };
+  }
+
   serializeErrors(): { message: string }[] {
     const messages = extractValidationErrorField(this.errors);
     return messages.map((message) => ({ message }));

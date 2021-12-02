@@ -1,4 +1,10 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class ErrorResponse {
   @IsNumber()
@@ -12,4 +18,7 @@ export class ErrorResponse {
 
   @IsNotEmpty()
   errors: { message: string; field?: string }[];
+
+  @IsOptional()
+  details?: Record<string, unknown>;
 }

@@ -6,8 +6,10 @@ export abstract class CustomError extends Error {
     Object.setPrototypeOf(this, CustomError.prototype);
   }
 
+  abstract getDetails(): Record<string, unknown>;
+
   abstract serializeErrors(): { message: string; field?: string }[];
 }
 
-export const isCustomError = (error: Error): error is CustomError =>
+export const isCustomError = (error: unknown): error is CustomError =>
   error instanceof CustomError;
