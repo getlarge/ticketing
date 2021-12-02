@@ -15,16 +15,16 @@ This repository shows
 
 ## User story
 
-![Alt text](./docs/journey.svg)
+![user journey](./docs/journey.svg)
+
+## Architecture
+
+![architecture](./docs/architecture.svg)
 
 ## Models
 
-![Alt text](./docs/models.svg)
-
-## Services
-
-<!-- TODO -->
+![models definitions](./docs/models.svg)
 
 ## Events
 
-![Alt text](./docs/events.svg)
+![events](./docs/events.svg)

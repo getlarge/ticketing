@@ -1,6 +1,6 @@
 {
   "name": "ticketing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
@@ -31,10 +31,11 @@
     "k8s:stop:apps": "skaffold delete --module apps",
     "k8s:stop:deps": "skaffold delete --module deps",
     "k8s:log": "skaffold run --tail",
+    "docs:architecture": "mmdc -i docs/architecture.mmd -o docs/architecture.svg -t neutral -b white",
     "docs:events": "mmdc -i docs/events.mmd -o docs/events.svg -t neutral -b white",
     "docs:journey": "mmdc -i docs/journey.mmd -o docs/journey.svg -t neutral -b white",
     "docs:models": "mmdc -i docs/models.mmd -o docs/models.svg -t neutral -b white",
-    "docs:export-mmd": "npm run docs:events && npm run docs:journey && npm run docs:models",
+    "docs:export-mmd": "npm run docs:architecture && npm run docs:events && npm run docs:journey && npm run docs:models",
     "docs:openapi:generate": "ts-node --project tools/tsconfig.tools.json tools/open-api/build-openapi-specs.ts",
     "docs:openapi:lint": "redoc-cli lint docs/openapi.json",
     "docs:openapi:serve": "redoc-cli serve docs/openapi.json",
