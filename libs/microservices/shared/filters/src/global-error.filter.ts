@@ -24,6 +24,15 @@ function isRpcException(error: any): error is RpcException {
   );
 }
 
+function hasMessageProperty(error: unknown): error is { message: string } {
+  return typeof error === 'object' && 'message' in error;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function hasDetailsProperty(error: unknown): error is { details: any } {
+  return typeof error === 'object' && 'details' in error;
+}
+
 @Catch()
 export class GlobalErrorFilter<T = unknown, R = unknown> {
   protected logger = new Logger(GlobalErrorFilter.name);
@@ -43,11 +52,13 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     const request = context.getRequest<FastifyRequest>();
     const status = this.getExceptionStatus(exception);
     const message = this.getExceptionMessage(exception);
+    const details = this.getExceptionDetails(exception);
     const errorResponse: ErrorResponse = {
       statusCode: status,
       path: request.url,
       errors: message,
       timestamp: new Date().toISOString(),
+      details,
     };
     this.logger.error(errorResponse);
     if (response.sent) {
@@ -62,18 +73,19 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     const channel = ctx.message.getSubject();
     const status = this.getExceptionStatus(exception);
     const message = this.getExceptionMessage(exception);
+    const details = this.getExceptionDetails(exception);
     const errorResponse: ErrorResponse = {
       statusCode: status,
       path: channel,
       errors: message,
       timestamp: new Date().toISOString(),
+      details,
     };
     this.logger.error(errorResponse);
     return throwError(() => errorResponse);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getExceptionStatus(exception: any): HttpStatus {
+  getExceptionStatus(exception: T): HttpStatus {
     if (isCustomError(exception)) {
       return exception.statusCode;
     } else if (isHttpException(exception)) {
@@ -84,17 +96,30 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getExceptionMessage(exception: any): { message: string; field?: string }[] {
+  getExceptionMessage(exception: T): { message: string; field?: string }[] {
     if (isCustomError(exception)) {
       return exception.serializeErrors();
     } else if (isHttpException(exception)) {
       return [{ message: exception.message }];
     } else if (isRpcException(exception)) {
       return [{ message: exception.message }];
-    } else if (Object.prototype.hasOwnProperty.call(exception, 'message')) {
-      return [{ message: exception.message }];
+    } else if (hasMessageProperty(exception)) {
+      return [{ message: exception?.message }];
     }
     return [{ message: 'Internal Server Error' }];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getExceptionDetails(exception: T): any {
+    if (isCustomError(exception)) {
+      return exception.getDetails();
+    } else if (isHttpException(exception)) {
+      return exception.getResponse();
+    } else if (isRpcException(exception)) {
+      return exception.getError();
+    } else if (hasDetailsProperty(exception)) {
+      return exception.details;
+    }
+    return null;
   }
 }
