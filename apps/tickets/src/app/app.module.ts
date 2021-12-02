@@ -9,6 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigService, EnvironmentVariables } from './env';
+import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
 import { TicketsModule } from './tickets/tickets.module';
 
@@ -27,6 +28,7 @@ import { TicketsModule } from './tickets/tickets.module';
       }),
       inject: [ConfigService],
     }),
+    HealthModule,
     TicketsModule,
     OrdersModule,
   ],
