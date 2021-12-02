@@ -1,0 +1,23 @@
+{
+  "root": "libs/microservices/shared/nats-streaming",
+  "sourceRoot": "libs/microservices/shared/nats-streaming/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/nats-streaming/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/microservices/shared/nats-streaming"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/nats-streaming/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:utils", "platform:server"]
+}
