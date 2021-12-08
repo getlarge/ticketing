@@ -132,7 +132,7 @@
   "info": {
     "title": "Auth API",
     "description": "Ticketing auth API description",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "contact": {}
   },
   "tags": [

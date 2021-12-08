@@ -5,10 +5,9 @@ import {
   HealthIndicatorResult,
   TimeoutError,
 } from '@nestjs/terminus';
-import {
-  NatsStreamingPublishOptions,
-  Publisher,
-} from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { NatsStreamingPublishOptions } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+
+import { NatsStreamingPublisher } from './nats-streaming.publisher';
 
 export interface NatsStreamingHealthCheckOptions {
   options?: NatsStreamingPublishOptions;
@@ -42,20 +41,16 @@ export class NatsStreamingHealthCheck extends HealthIndicator {
           ),
         delay
       );
-      fn.then(() => {
-        clearTimeout(timeout);
-        resolve();
-      }).catch((e) => {
-        clearTimeout(timeout);
-        reject(e);
-      });
+      fn.then(() => resolve())
+        .catch((e) => reject(e))
+        .finally(() => clearTimeout(timeout));
     });
   }
 
   private async pingMicroservice(
     options: NatsStreamingHealthCheckOptions
   ): Promise<void> {
-    const client = new Publisher(options.options);
+    const client = new NatsStreamingPublisher(options.options);
     const checkConnection = async (): Promise<void> => {
       await client.connect();
       client.close();

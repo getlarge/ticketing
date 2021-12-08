@@ -57,7 +57,7 @@
   "info": {
     "title": "Payments API",
     "description": "Ticketing payments API description",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "contact": {}
   },
   "tags": [
