@@ -43,8 +43,11 @@
     "docs:postman": "ts-node --project tools/tsconfig.tools.json tools/open-api/build-postman-collection.ts",
     "update": "nx migrate latest",
     "dep-graph": "nx dep-graph",
+    "version": "node tools/utils/sync-versions",
     "bump:dry-run": "nx run workspace:version --dryRun",
     "bump": "nx run workspace:version",
+    "bump:patch": "npm version patch && nx run workspace:version --releaseAs=patch",
+    "bump:minor": "npm version minor && nx run workspace:version --releaseAs=minor",
     "cz": "cz",
     "prepare": "husky install"
   },

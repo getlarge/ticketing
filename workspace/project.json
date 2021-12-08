@@ -1,6 +1,28 @@
 {
   "root": ".",
   "targets": {
+    "apps": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/nx/get-projects-cli.js -t app -p"
+      },
+      "cwd": "."
+    },
+    "libs": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/nx/get-projects-cli.js -t lib -p"
+      },
+      "cwd": "."
+    },
+
+    "sync-versions": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/utils/sync-versions.js"
+      },
+      "cwd": "."
+    },
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
@@ -8,6 +30,39 @@
         "syncVersions": true,
         "trackDeps": true
       }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}",
+        "notesFile": "CHANGELOG.md"
+      }
+    },
+    "push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "git push --follow-tags origin main"
+      }
+    },
+    "release": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node tools/utils/generate-changelog.js | gh release create {args.tag} -F-"
+        ],
+        "parallel": false
+      },
+      "cwd": "."
+    },
+    "prerelease": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node tools/utils/generate-changelog.js | gh release create {args.tag} -F- -p"
+        ],
+        "parallel": false
+      },
+      "cwd": "."
     }
   }
 }
