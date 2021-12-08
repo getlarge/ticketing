@@ -7,10 +7,24 @@ ARG APP_NAME
 WORKDIR /app
 
 ENV NX_CLOUD_NO_TIMEOUTS=true
+ENV NODE_ENV=development
+ENV APP_NAME=$APP_NAME
+ENV APP_VERSION=0.0.1
+ENV PORT=3000
+ENV SERVER_URL=http://0.0.0.0:3000 
+ENV HEAP_USED_TRESHOLD=1073741824
+ENV MEMORY_RSS_TRESHOLD=3221225472
+ENV DISK_STORAGE_TRESHOLD=107374182400
+ENV GLOBAL_API_PREFIX=api
 
 COPY ./apps/${APP_NAME}/package*.json ./
 RUN npm ci --production --loglevel=error
 RUN npm install tslib
 # important to copy after installation for efficient deps caching
 COPY ./dist/apps/${APP_NAME} ./
+COPY tools/deploy/healthcheck.js ./
+
+# HEALTHCHECK --interval=60s --timeout=3s --retries=5 --start-period=10s \
+#   CMD node ./healthcheck.js http://0.0.0.0:$PORT/$GLOBAL_API_PREFIX/health 
+
 CMD ["node", "./main.js"]

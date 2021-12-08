@@ -16,6 +16,14 @@ spec:
         - name: orders-mongo
           imagePullPolicy: IfNotPresent
           image: mongo
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - mongo --port 27017 --eval "rs.status()" | grep -vq "REMOVED"
+            initialDelaySeconds: 45
+            timeoutSeconds: 5
           resources:
             limits:
               memory: '256Mi'

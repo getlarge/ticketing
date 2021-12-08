@@ -47,6 +47,18 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: SESSION_KEY
+          startupProbe:
+            exec:
+              command: ['pgrep', '-x', 'node']
+            failureThreshold: 20
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             limits:
               memory: '128Mi'

@@ -16,6 +16,14 @@ spec:
         - name: expiration-redis
           imagePullPolicy: IfNotPresent
           image: redis
+          readinessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: 6379
+          livenessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: 6379
           resources:
             limits:
               memory: '256Mi'
