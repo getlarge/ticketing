@@ -2,6 +2,7 @@ const {
   createPackageJson,
 } = require('@nrwl/workspace/src/utilities/create-package-json');
 const fs = require('fs');
+const prettier = require('prettier');
 const { getProjectGraph } = require('./get-project-graph');
 
 function sortDependencies(obj) {
@@ -38,7 +39,10 @@ function outputPackageJson(
   { output = 'stdout', outputPath = process.cwd() },
   packageJson = {}
 ) {
-  const serializedPackageJson = JSON.stringify(packageJson, null, 2);
+  const serializedPackageJson = prettier.format(
+    JSON.stringify(packageJson, null, 2),
+    { parser: 'json' }
+  );
   if (output === 'stdout') {
     console.log(serializedPackageJson);
   } else if (output === 'file') {
