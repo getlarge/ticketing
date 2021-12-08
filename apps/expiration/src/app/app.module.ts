@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { validate } from '@ticketing/microservices/shared/env';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { BullConfigService } from '@ticketing/microservices/shared/redis';
@@ -21,7 +22,12 @@ import { OrdersModule } from './orders/orders.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot({ pinoHttp: { level: 'debug' } }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'debug',
+        autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
+      },
+    }),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useClass: BullConfigService,

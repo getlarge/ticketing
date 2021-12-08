@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
+import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { validate } from '@ticketing/microservices/shared/env';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { LoggerModule } from 'nestjs-pino';
@@ -10,6 +11,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigService, EnvironmentVariables } from './env';
 import { HealthModule } from './health/health.module';
+import { OrdersController } from './orders/orders.controller';
 import { OrdersModule } from './orders/orders.module';
 import { TicketsModule } from './tickets/tickets.module';
 
@@ -21,7 +23,13 @@ import { TicketsModule } from './tickets/tickets.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot({ pinoHttp: { level: 'debug' } }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'debug',
+        autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
+      },
+      forRoutes: [OrdersController],
+    }),
     MongooseModule.forRootAsync({
       useFactory: (configService: AppConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
