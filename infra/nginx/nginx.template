@@ -1,0 +1,97 @@
+
+limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
+limit_req_log_level notice;
+limit_req_status 429;
+limit_req zone=one burst=20 nodelay;
+
+client_body_timeout 10s;
+client_header_timeout 10s;
+client_max_body_size 10M;
+
+upstream frontend {
+  server $FRONTEND:$FRONTEND_PORT;
+}
+
+upstream auth_service {
+  least_conn;
+  server $AUTH_SERVICE:$AUTH_SERVICE_PORT;
+}
+
+upstream orders_service {
+  least_conn;
+  server $ORDERS_SERVICE:$ORDERS_SERVICE_PORT;
+}
+
+upstream payments_service {
+  least_conn;
+  server $PAYMENTS_SERVICE:$PAYMENTS_SERVICE_PORT;
+}
+
+upstream tickets_service {
+  least_conn;
+  server $TICKETS_SERVICE:$TICKETS_SERVICE_PORT;
+}
+
+# set default version header to 0
+map $http_x_version $req_version {
+  default $http_x_version;
+  "" "0";
+}
+
+server {
+  listen $PORT;
+  listen [::]:$PORT ipv6only=on;
+  server_name _;
+
+  real_ip_header X-Forwarded-For;
+
+  # Auth Service
+  location /api/users {
+    proxy_pass http://auth_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $AUTH_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+    include /etc/nginx/snippets/cors.conf;
+  }
+
+  location /api/orders {
+    proxy_pass http://orders_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $ORDERS_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+    include /etc/nginx/snippets/cors.conf;
+  }
+
+  location /api/payments {
+    proxy_pass http://payments_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $PAYMENTS_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+    include /etc/nginx/snippets/cors.conf;
+  }
+
+  location /api/tickets {
+    proxy_pass http://tickets_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $TICKETS_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+    include /etc/nginx/snippets/cors.conf;
+  }
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
+
+  location / {
+    proxy_pass http://frontend;
+    include /etc/nginx/snippets/proxy.conf;
+  }
+
+  error_page 500 502 503 504 /50x.html;
+
+  location = /50x.html {
+    root /usr/share/nginx/html;
+  }
+
+}
+
