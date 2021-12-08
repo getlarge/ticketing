@@ -12,3 +12,10 @@ lint:
     boolean-parameter-prefixes:
       severity: error
       prefixes: ['should', 'is', 'has']
+
+  referenceDocs:
+    pagination: section
+    showConsole: true
+    theme:
+      menu:
+        backgroundColor: '#ffffff'
