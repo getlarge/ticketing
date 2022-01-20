@@ -1,17 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api": {
-      "get": {
-        "operationId": "AppController_getData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/payments": {
       "post": {
         "operationId": "PaymentsController_create",
