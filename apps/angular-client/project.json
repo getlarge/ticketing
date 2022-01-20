@@ -36,11 +36,46 @@
           ],
           "fileReplacements": [
             {
-              "replace": "apps/angular-client/src/environments/environment.ts",
-              "with": "apps/angular-client/src/environments/environment.prod.ts"
+              "replace": "libs/shared/env/src/lib/environment.ts",
+              "with": "libs/shared/env/src/lib/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
+        },
+        "staging": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "libs/shared/env/src/lib/environment.ts",
+              "with": "libs/shared/env/src/lib/environment.staging.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "local": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "fileReplacements": [
+            {
+              "replace": "libs/shared/env/src/lib/environment.ts",
+              "with": "libs/shared/env/src/lib/environment.local.ts"
+            }
+          ]
         },
         "development": {
           "buildOptimizer": false,
@@ -89,5 +124,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:frontend", "type:app", "platform:web"]
 }

@@ -1,0 +1,26 @@
+{
+  "projectType": "library",
+  "root": "libs/ng/env",
+  "sourceRoot": "libs/ng/env/src",
+  "prefix": "ticketing",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/ng/env"],
+      "options": {
+        "jestConfig": "libs/ng/env/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ng/env/src/**/*.ts",
+          "libs/ng/env/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": ["type:env", "scope:shared", "platform:shared"]
+}
