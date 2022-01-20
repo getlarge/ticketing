@@ -1,6 +1,6 @@
 import { Environment } from '@ticketing/shared/constants';
 import { config, parse } from 'dotenv';
-import * as dotenvExpand from 'dotenv-expand';
+import { expand } from 'dotenv-expand';
 import { existsSync, readFileSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 
@@ -32,7 +32,7 @@ export function getClusterEnabled(envFilePath?: string): boolean {
 export function getBrokerUrl(envFilePath?: string): string {
   const filePath = envFilePath || getEnvFilePath();
   const env = config({ path: pathResolve(process.cwd(), filePath) });
-  dotenvExpand(env);
+  expand(env);
   return process.env.BROKER_URL;
 }
 
@@ -58,7 +58,7 @@ export function loadEnv(
     envFilePath && typeof envFilePath === 'string'
       ? config({ path: pathResolve(envFilePath) })
       : config();
-  dotenvExpand(env);
+  expand(env);
   const { parsed, error } = env;
   const sourceEnv = error ? process.env : parsed;
   return overrideProcessEnv ? { ...sourceEnv, ...variables } : sourceEnv;
