@@ -3,6 +3,22 @@ const minimatch = require('minimatch');
 
 const constantDependencies = ['package.json'];
 
+async function getProjects(searchType = 'app') {
+  const supportedTypes = ['app', 'lib'];
+  if (!supportedTypes.includes(searchType)) {
+    throw new Error(`Supported project types are ${supportedTypes}`);
+  }
+  const graph = await getProjectGraph({
+    skipExternal: true,
+  });
+  return Object.keys(graph.nodes)
+    .map((name) => {
+      const { type } = graph.nodes[name];
+      return type === searchType ? name : null;
+    })
+    .filter((e) => !!e && e !== 'workspace');
+}
+
 async function getProjectDependenciesFiles({
   context,
   exclude,
@@ -62,4 +78,5 @@ async function getProjectDependenciesFiles({
 
 module.exports = {
   getProjectDependenciesFiles,
+  getProjects,
 };

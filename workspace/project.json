@@ -15,7 +15,6 @@
       },
       "cwd": "."
     },
-
     "sync-versions": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
