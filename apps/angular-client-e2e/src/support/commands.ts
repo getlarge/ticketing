@@ -18,6 +18,7 @@ declare namespace Cypress {
 //
 // -- This is a parent command --
 Cypress.Commands.add('login', (email, password) => {
+  // eslint-disable-next-line no-console
   console.log('Custom command example: Login', email, password);
 });
 //

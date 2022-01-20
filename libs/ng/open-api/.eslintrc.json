@@ -24,7 +24,9 @@
             "prefix": "ticketing",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@typescript-eslint/ban-tslint-comment": "off",
+        "simple-import-sort/exports": "off"
       }
     },
     {

@@ -58,7 +58,11 @@
               },
               {
                 "sourceTag": "type:util",
-                "onlyDependOnLibsWithTags": ["type:const", "type:util"]
+                "onlyDependOnLibsWithTags": [
+                  "type:const",
+                  "type:util",
+                  "type:env"
+                ]
               },
               {
                 "sourceTag": "type:const",

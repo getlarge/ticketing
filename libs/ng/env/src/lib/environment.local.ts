@@ -1,3 +1,4 @@
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import packageInfo from 'package.json';
 
 import { Environment, VersioningType } from './env.interface';
