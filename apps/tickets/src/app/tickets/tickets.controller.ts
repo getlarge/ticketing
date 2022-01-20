@@ -46,8 +46,8 @@ export class TicketsController {
     new ValidationPipe({
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
+      transformOptions: { enableImplicitConversion: true },
       forbidUnknownValues: true,
-      whitelist: true,
     })
   )
   @ApiBearerAuth(SecurityRequirements.Bearer)
@@ -104,8 +104,8 @@ export class TicketsController {
     new ValidationPipe({
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
+      transformOptions: { enableImplicitConversion: true },
       forbidUnknownValues: true,
-      whitelist: true,
     })
   )
   @ApiBearerAuth(SecurityRequirements.Bearer)
