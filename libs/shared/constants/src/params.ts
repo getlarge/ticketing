@@ -22,3 +22,7 @@ export enum MimeType {
   IMAGE_PNG = 'image/png',
   TEXT_HTML = 'text/html',
 }
+
+export const VERSION_HEADER_NAME = 'x-version';
+
+export const MAJOR_SEMVER_REGEX = new RegExp(/0|[1-9]\d*/);
