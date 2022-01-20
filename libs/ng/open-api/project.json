@@ -1,0 +1,26 @@
+{
+  "projectType": "library",
+  "root": "libs/ng/open-api",
+  "sourceRoot": "libs/ng/open-api/src",
+  "prefix": "ticketing",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/ng/open-api"],
+      "options": {
+        "jestConfig": "libs/ng/open-api/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ng/open-api/src/**/*.ts",
+          "libs/ng/open-api/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

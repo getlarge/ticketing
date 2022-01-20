@@ -18,6 +18,7 @@
     "microservices-shared-pipes": "libs/microservices/shared/pipes",
     "microservices-shared-redis": "libs/microservices/shared/redis",
     "microservices-shared-testing": "libs/microservices/shared/testing",
+    "ng-open-api": "libs/ng/open-api",
     "orders": "apps/orders",
     "payments": "apps/payments",
     "shared-constants": "libs/shared/constants",

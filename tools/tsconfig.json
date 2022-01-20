@@ -1,0 +1,31 @@
+{
+  "extends": "../tsconfig.base.json",
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      // compilerOptions specified here will override those declared below,
+      // but *only* in ts-node.  Useful if you want ts-node and tsc to use
+      // different options with a single tsconfig.json.
+      "module": "commonjs",
+      "target": "es2021",
+      "lib": ["es2021"],
+      "strict": true
+    }
+  },
+  "compilerOptions": {
+    "module": "commonjs",
+    "types": ["node"],
+    "target": "es2021",
+    "lib": ["es2021"],
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts"]
+}

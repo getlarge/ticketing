@@ -1,0 +1,30 @@
+[
+  {
+    "source": {
+      "type": "file",
+      "value": "apps/auth/openapi.json"
+    },
+    "output": "libs/ng/open-api/src/lib/generated/auth"
+  },
+  {
+    "source": {
+      "type": "file",
+      "value": "apps/orders/openapi.json"
+    },
+    "output": "libs/ng/open-api/src/lib/generated/orders"
+  },
+  {
+    "source": {
+      "type": "file",
+      "value": "apps/payments/openapi.json"
+    },
+    "output": "libs/ng/open-api/src/lib/generated/payments"
+  },
+  {
+    "source": {
+      "type": "file",
+      "value": "apps/tickets/openapi.json"
+    },
+    "output": "libs/ng/open-api/src/lib/generated/tickets"
+  }
+]
