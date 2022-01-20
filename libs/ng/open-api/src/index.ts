@@ -1,1 +1,6 @@
-export * from './lib/ng-open-api.module';
+export { AddVersionHeaderInterceptor } from './lib/add-version-header.interceptor';
+export { createApiBaseUrl } from './lib/create-api-base-url';
+export { ApiConfiguration as AuthApiConfiguration } from './lib/generated/auth/api-configuration';
+export { ApiConfiguration as OrdersApiConfiguration } from './lib/generated/orders/api-configuration';
+export { ApiConfiguration as PaymentsApiConfiguration } from './lib/generated/payments/api-configuration';
+export { ApiConfiguration as TicketsApiConfiguration } from './lib/generated/tickets/api-configuration';
