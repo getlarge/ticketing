@@ -12,7 +12,9 @@ export const environment: Environment = {
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
-  apiBaseDomain: 'ticketing.dev',
+  // apiBaseDomain: 'ticketing.dev',
+  apiBaseDomain: 'localhost:80',
+  useUnsafeConnection: true,
   environment: 'development',
 };
 
