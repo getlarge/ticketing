@@ -1,6 +1,8 @@
 {
   "version": 2,
   "projects": {
+    "angular-client": "apps/angular-client",
+    "angular-client-e2e": "apps/angular-client-e2e",
     "auth": "apps/auth",
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
