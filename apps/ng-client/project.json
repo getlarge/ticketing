@@ -1,23 +1,23 @@
 {
   "projectType": "application",
-  "root": "apps/angular-client",
-  "sourceRoot": "apps/angular-client/src",
+  "root": "apps/ng-client",
+  "sourceRoot": "apps/ng-client/src",
   "prefix": "ticketing",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/angular-client",
-        "index": "apps/angular-client/src/index.html",
-        "main": "apps/angular-client/src/main.ts",
-        "polyfills": "apps/angular-client/src/polyfills.ts",
-        "tsConfig": "apps/angular-client/tsconfig.app.json",
+        "outputPath": "dist/apps/ng-client",
+        "index": "apps/ng-client/src/index.html",
+        "main": "apps/ng-client/src/main.ts",
+        "polyfills": "apps/ng-client/src/polyfills.ts",
+        "tsConfig": "apps/ng-client/tsconfig.app.json",
         "assets": [
-          "apps/angular-client/src/favicon.ico",
-          "apps/angular-client/src/assets"
+          "apps/ng-client/src/favicon.ico",
+          "apps/ng-client/src/assets"
         ],
-        "styles": ["apps/angular-client/src/styles.css"],
+        "styles": ["apps/ng-client/src/styles.css"],
         "scripts": []
       },
       "configurations": {
@@ -90,12 +90,16 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "ng-client:build",
+        "proxyConfig": "apps/ng-client/proxy.conf.json"
+      },
       "configurations": {
         "production": {
-          "browserTarget": "angular-client:build:production"
+          "browserTarget": "ng-client:build:production"
         },
         "development": {
-          "browserTarget": "angular-client:build:development"
+          "browserTarget": "ng-client:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -103,26 +107,26 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "angular-client:build"
+        "browserTarget": "ng-client:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
-          "apps/angular-client/src/**/*.ts",
-          "apps/angular-client/src/**/*.html"
+          "apps/ng-client/src/**/*.ts",
+          "apps/ng-client/src/**/*.html"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/angular-client"],
+      "outputs": ["coverage/apps/ng-client"],
       "options": {
-        "jestConfig": "apps/angular-client/jest.config.js",
+        "jestConfig": "apps/ng-client/jest.config.js",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["scope:frontend", "type:app", "platform:web"]
+  "tags": ["scope:client", "type:app", "platform:web"]
 }
