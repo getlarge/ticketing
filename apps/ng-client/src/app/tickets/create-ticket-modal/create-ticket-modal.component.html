@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h4 class="modal-title">Create New Ticket</h4>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="form-row">
+    <div class="form-group col">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        name="title"
+        [(ngModel)]="newTicketTitle"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="modal-body">
+  <div class="form-row">
+    <div class="form-group col">
+      <label for="price">Price</label>
+      <input
+        type="number"
+        class="form-control"
+        name="price"
+        [(ngModel)]="newTicketPrice"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="create()">
+    Create Ticket
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    Cancel
+  </button>
+</div>
