@@ -29,12 +29,12 @@ import { RootStoreModule } from './store/root-store.module';
     AlertModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, canActivate: [AuthGuard] },
-      // {
-      //   path: 'tickets',
-      //   loadChildren: () =>
-      //     import('./tickets/tickets.module').then((x) => x.TicketsModule),
-      //   canActivate: [AuthGuard],
-      // },
+      {
+        path: 'tickets',
+        loadChildren: () =>
+          import('./tickets/tickets.module').then((x) => x.TicketsModule),
+        canActivate: [AuthGuard],
+      },
       {
         path: 'user',
         loadChildren: () =>
