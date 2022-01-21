@@ -1,0 +1,45 @@
+<form [formGroup]="form"  novalidate (ngSubmit)="updateFilter()">
+  <div class="form-row">
+    <div class="form-group col">
+      <label for="userId">Owner</label>
+      <select class="form-control" formControlName="userId">
+        <option value=""></option>
+        <option *ngFor="let user of users" [value]="user.id">
+          {{ user.email }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group col">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="title"
+        name="title"
+      />
+    </div>
+
+    <div class="form-group col">
+      <label for="price">Price below</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="price"
+        name="price"
+      />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col">
+      <button
+        class="btn btn-primary"
+        (click)="updateFilter()"
+        type="submit"
+        [disabled]="!form.valid"
+      >
+        Filter
+      </button>
+    </div>
+  </div>
+</form>
