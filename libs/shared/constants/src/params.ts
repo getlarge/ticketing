@@ -23,6 +23,7 @@ export enum MimeType {
   TEXT_HTML = 'text/html',
 }
 
-export const VERSION_HEADER_NAME = 'x-version';
+export const VERSION_HEADER_NAME = 'X-Version';
+export const AUTHORIZATION_HEADER_NAME = 'X-Access-Token';
 
 export const MAJOR_SEMVER_REGEX = new RegExp(/0|[1-9]\d*/);

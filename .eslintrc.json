@@ -19,6 +19,7 @@
                   "type:core",
                   "type:const",
                   "type:env",
+                  "type:ui",
                   "type:util",
                   "type:testing",
                   "scope:shared"

@@ -51,6 +51,7 @@
       "@ticketing/microservices/shared/testing": [
         "libs/microservices/shared/testing/src/index.ts"
       ],
+      "@ticketing/ng/alert": ["libs/ng/alert/src/index.ts"],
       "@ticketing/ng/env": ["libs/ng/env/src/index.ts"],
       "@ticketing/ng/open-api": ["libs/ng/open-api/src/index.ts"],
       "@ticketing/shared/constants": ["libs/shared/constants/src/index.ts"],

@@ -1,0 +1,26 @@
+{
+  "projectType": "library",
+  "root": "libs/ng/alert",
+  "sourceRoot": "libs/ng/alert/src",
+  "prefix": "ticketing",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/ng/alert"],
+      "options": {
+        "jestConfig": "libs/ng/alert/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ng/alert/src/**/*.ts",
+          "libs/ng/alert/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": ["type:ui", "scope:shared", "platform:web"]
+}

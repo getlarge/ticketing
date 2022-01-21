@@ -16,6 +16,7 @@
     "microservices-shared-pipes": "libs/microservices/shared/pipes",
     "microservices-shared-redis": "libs/microservices/shared/redis",
     "microservices-shared-testing": "libs/microservices/shared/testing",
+    "ng-alert": "libs/ng/alert",
     "ng-client": "apps/ng-client",
     "ng-client-e2e": "apps/ng-client-e2e",
     "ng-env": "libs/ng/env",
