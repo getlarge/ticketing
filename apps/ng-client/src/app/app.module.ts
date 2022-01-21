@@ -2,6 +2,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AlertModule } from '@ticketing/ng/alert';
 import { environment } from '@ticketing/ng/env';
 import {
   AddVersionHeaderInterceptor,
@@ -15,18 +17,22 @@ import {
 import { AppComponent } from './app.component';
 import { AuthGuard, ErrorInterceptor, JwtInterceptor } from './helpers';
 import { HomeComponent } from './home';
+import { RootStoreModule } from './store/root-store.module';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, HomeComponent],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    NgbModule,
+    RootStoreModule,
+    AlertModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, canActivate: [AuthGuard] },
-      // TODO: {
+      // {
       //   path: 'tickets',
-      //   loadChildren: import('./tickets/tickets.module').then(
-      //     (x) => x.TicketsModule
-      //   ),
+      //   loadChildren: () =>
+      //     import('./tickets/tickets.module').then((x) => x.TicketsModule),
       //   canActivate: [AuthGuard],
       // },
       {
@@ -36,7 +42,6 @@ import { HomeComponent } from './home';
       },
       { path: '**', redirectTo: '' },
     ]),
-    HttpClientModule,
   ],
   providers: [
     {

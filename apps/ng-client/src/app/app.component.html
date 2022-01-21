@@ -1,5 +1,5 @@
 <!-- nav -->
-<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="user">
+<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="user$ | async">
   <div class="navbar-nav">
     <a
       class="nav-item nav-link"
@@ -16,7 +16,16 @@
 </nav>
 
 <!-- main app container -->
-<div class="app-container" [ngClass]="{ 'bg-light': user }">
-  <!-- TODO: <alert></alert> -->
-  <router-outlet></router-outlet>
+<div class="app-container" [ngClass]="{ 'bg-light': user$ | async }">
+  <div class="row mb-3">
+    <div class="col-12 error">
+      <alert></alert>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </div>
