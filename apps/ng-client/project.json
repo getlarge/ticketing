@@ -99,7 +99,9 @@
           "browserTarget": "ng-client:build:production"
         },
         "development": {
-          "browserTarget": "ng-client:build:development"
+          "browserTarget": "ng-client:build:development",
+          "disableHostCheck": true,
+          "host": "localhost"
         }
       },
       "defaultConfiguration": "development"
@@ -125,6 +127,27 @@
       "options": {
         "jestConfig": "apps/ng-client/jest.config.js",
         "passWithNoTests": true
+      }
+    },
+    "docker-build": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node ./tools/deploy/build-docker.js -p ng-client -c {args.conf} -t {args.tag} -f {args.file}"
+        ],
+        "parallel": false
+      }
+    },
+    "docker-run": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker run -it --rm -p 4200:4200/tcp --name ticketing-ng-client ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
+      }
+    },
+    "docker-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "docker push ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
       }
     }
   },
