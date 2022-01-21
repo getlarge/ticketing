@@ -1,0 +1,38 @@
+<div *ngIf="isLoading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<table *ngIf="!isLoading" class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th></th>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let ticket of tickets">
+      <td>
+        <button class="btn btn-secondary" (click)="view.emit(ticket.id)">
+          View
+        </button>
+        <button class="btn btn-secondary" (click)="update.emit(ticket.id)">
+          Update
+        </button>
+        <button
+          class="btn btn-secondary"
+          *ngIf="readyToOrder(ticket)"
+          (click)="order.emit(ticket.id)"
+        >
+          Order ticket
+        </button>
+      </td>
+      <td>{{ ticket.id }}</td>
+      <td>{{ ticket.title }}</td>
+      <td>{{ ticket.price }}</td>
+    </tr>
+  </tbody>
+</table>
