@@ -5,26 +5,30 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
+import { State } from '@ngrx/store';
 
-import { UserStateService } from '../services';
+import { RootStoreState } from '../store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private userService: UserStateService) {}
+  constructor(
+    private router: Router,
+    private state: State<RootStoreState.RootState>
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    const user = this.userService.userValue;
-    if (user?.email) {
+    const currentState = this.state.getValue() as RootStoreState.RootState;
+    if (currentState?.users?.currentUser?.email) {
       // authorised so return true
       return true;
     }
 
     // not logged in so redirect to login page with the return url
     this.router.navigate(['/user/sign-in'], {
-      queryParams: { returnUrl: state.url },
+      queryParams: { returnUrl: state.url || '/' },
     });
     return false;
   }

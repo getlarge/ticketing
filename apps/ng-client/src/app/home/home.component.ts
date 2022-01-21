@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { User } from '@ticketing/shared/models';
+import { Observable } from 'rxjs';
 
-import { UserStateService } from '../services';
+import { RootState } from '../store/root-state';
+import { UserStoreSelectors } from '../store/user-store';
 
 @Component({ templateUrl: 'home.component.html' })
 export class HomeComponent {
-  user: User | null;
+  user$!: Observable<User | null>;
 
-  constructor(private userService: UserStateService) {
-    this.user = this.userService.userValue;
+  constructor(private store: Store<RootState>) {
+    this.user$ = this.store.select(UserStoreSelectors.selectCurrentUser);
   }
 }

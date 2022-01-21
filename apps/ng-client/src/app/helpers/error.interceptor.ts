@@ -5,14 +5,15 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { UserStateService } from '../services';
+import { RootStoreState } from '../store';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private userService: UserStateService) {}
+  constructor(private store: Store<RootStoreState.RootState>) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -22,11 +23,11 @@ export class ErrorInterceptor implements HttpInterceptor {
       catchError((err) => {
         if (err.status === 401) {
           // auto logout if 401 response returned from api
-          this.userService.logout();
+          // this.store.dispatch(new UserStoreActions.SignOutAction());
         }
 
-        const error = err.error.message || err.statusText;
-        return throwError(() => error);
+        // const error = err.error.message || err.statusText;
+        return throwError(() => err);
       })
     );
   }

@@ -32,9 +32,9 @@
         </div>
       </div>
       <div class="form-group">
-        <button [disabled]="loading" class="btn btn-primary">
+        <button [disabled]="isLoading$ | async" class="btn btn-primary">
           <span
-            *ngIf="loading"
+            *ngIf="isLoading$ | async"
             class="spinner-border spinner-border-sm mr-1"
           ></span>
           Sign up

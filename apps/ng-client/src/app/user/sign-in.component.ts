@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -6,26 +6,34 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { ofType } from '@ngrx/effects';
+import { ActionsSubject, State, Store } from '@ngrx/store';
+import { AlertService } from '@ticketing/ng/alert';
+import { Observable, Subscription } from 'rxjs';
 
-import { AlertService, UserStateService } from '../services';
+import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
 
 @Component({ templateUrl: 'sign-in.component.html' })
-export class SignInComponent implements OnInit {
+export class SignInComponent implements OnInit, OnDestroy {
   form!: FormGroup;
-  loading = false;
+  isLoading$!: Observable<boolean>;
   submitted = false;
   returnUrl!: string;
+  signInSubscription?: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private userStateService: UserStateService,
+    private actionsSubj: ActionsSubject,
+    private store: Store<RootStoreState.RootState>,
+    private state: State<RootStoreState.RootState>,
     private alertService: AlertService
   ) {
     // redirect to home if already logged in
-    if (this.userStateService.userValue) {
+    if (
+      (this.state.getValue() as RootStoreState.RootState)?.users?.currentUser
+    ) {
       this.router.navigate(['/']);
     }
   }
@@ -35,9 +43,23 @@ export class SignInComponent implements OnInit {
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
+    this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
 
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+
+    this.signInSubscription = this.actionsSubj
+      .pipe(ofType(UserStoreActions.ActionTypes.SIGN_IN_SUCCESS))
+      .subscribe({
+        next: () => {
+          this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
+          this.router.navigate([this.returnUrl]);
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.signInSubscription?.unsubscribe();
   }
 
   // convenience getter for easy access to form fields
@@ -47,27 +69,16 @@ export class SignInComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-
     // reset alerts on submit
     this.alertService.clear();
-
     // stop here if form is invalid
     if (this.form.invalid) {
       return;
     }
-
-    this.loading = true;
-    this.userStateService
-      .login(this.f['email'].value, this.f['password'].value)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          this.router.navigate([this.returnUrl]);
-        },
-        error: (error) => {
-          this.alertService.error(error);
-          this.loading = false;
-        },
-      });
+    this.store.dispatch(
+      new UserStoreActions.SignInAction({
+        credentials: this.form.value,
+      })
+    );
   }
 }
