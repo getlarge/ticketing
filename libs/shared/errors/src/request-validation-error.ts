@@ -59,7 +59,7 @@ export function extractValidationErrorField(
   return errors
     .flatMap((error) => mapChildrenToValidationErrors(error))
     .filter((item) => !!item.constraints)
-    .flatMap((item) => Object.values(item.constraints));
+    .flatMap((item) => Object.values(item.constraints || {}));
 }
 
 export function requestValidationErrorFactory(

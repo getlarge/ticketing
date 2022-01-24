@@ -6,7 +6,7 @@ export class BodyParserError extends CustomError {
   constructor(
     public statusCode: HttpStatus,
     public reason: string,
-    public details?: Record<string, unknown>
+    public details: Record<string, unknown> = {}
   ) {
     super('Failed to parse request body');
     Object.setPrototypeOf(this, BodyParserError.prototype);
