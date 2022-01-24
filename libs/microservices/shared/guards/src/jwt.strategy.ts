@@ -7,7 +7,10 @@ import {
   JWTEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { PassportStrategy } from '@ticketing/microservices/shared/fastify-passport';
-import { SESSION_ACCESS_TOKEN } from '@ticketing/shared/constants';
+import {
+  AUTHORIZATION_HEADER_NAME,
+  SESSION_ACCESS_TOKEN,
+} from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 import { Strategy, StrategyOptions } from 'passport-jwt';
@@ -26,8 +29,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const { headers, session } = request;
         if (session?.get(SESSION_ACCESS_TOKEN)) {
           return session.get(SESSION_ACCESS_TOKEN);
-        } else if (headers?.authorization) {
-          return headers.authorization.replace(/bearer/gi, '').trim();
+        } else if (headers[AUTHORIZATION_HEADER_NAME]) {
+          const jwtHeader = headers[AUTHORIZATION_HEADER_NAME] as string;
+          return jwtHeader?.replace(/bearer/gi, '').trim();
         }
         return null;
       },
