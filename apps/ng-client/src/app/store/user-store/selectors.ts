@@ -6,9 +6,10 @@ import {
 } from '@ngrx/store';
 import { User } from '@ticketing/shared/models';
 
+import { USERS_STORE } from '../constants';
 import { featureAdapter, State } from './state';
 
-export const selectUserState = createFeatureSelector<State>('users');
+export const selectUserState = createFeatureSelector<State>(USERS_STORE);
 
 export const selectAllUsers: (state: object) => User[] =
   featureAdapter.getSelectors(selectUserState).selectAll;

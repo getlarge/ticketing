@@ -7,9 +7,10 @@ import {
 import { Ticket } from '@ticketing/shared/models';
 
 import { TicketFilter } from '../../models';
+import { TICKETS_STORE } from '../constants';
 import { featureAdapter, State } from './state';
 
-export const selectTicketState = createFeatureSelector<State>('tickets');
+export const selectTicketState = createFeatureSelector<State>(TICKETS_STORE);
 
 export const selectAllTicketItems: (state: object) => Ticket[] =
   featureAdapter.getSelectors(selectTicketState).selectAll;

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
+import { USERS_STORE } from '../constants';
 import { UserStoreEffects } from './effects';
 import { featureReducer } from './reducer';
 
@@ -10,8 +11,8 @@ import { featureReducer } from './reducer';
   declarations: [],
   imports: [
     CommonModule,
-    StoreModule.forFeature('users', featureReducer),
-    EffectsModule.forFeature([UserStoreEffects])
-  ]
+    StoreModule.forFeature(USERS_STORE, featureReducer),
+    EffectsModule.forFeature([UserStoreEffects]),
+  ],
 })
 export class UserStoreModule {}
