@@ -4,7 +4,7 @@ import { UsersService } from '@ticketing/ng/open-api';
 import { of as observableOf } from 'rxjs';
 import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
 
-import { serializeError } from '../../utils/serialize-error';
+import { transformError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class UserStoreEffects {
           catchError((error) =>
             observableOf(
               new featureActions.SignUpFailureAction({
-                error: serializeError(error).message,
+                error: transformError(error),
               })
             )
           )
@@ -40,7 +40,7 @@ export class UserStoreEffects {
           catchError((error) =>
             observableOf(
               new featureActions.SignInFailureAction({
-                error: serializeError(error).message,
+                error: transformError(error),
               })
             )
           )
@@ -60,7 +60,7 @@ export class UserStoreEffects {
           catchError((error) =>
             observableOf(
               new featureActions.SignOutFailureAction({
-                error: serializeError(error).message,
+                error: transformError(error),
               })
             )
           )
@@ -82,7 +82,7 @@ export class UserStoreEffects {
           catchError((error) =>
             observableOf(
               new featureActions.LoadCurrentUserFailureAction({
-                error: serializeError(error).message,
+                error: transformError(error),
               })
             )
           )

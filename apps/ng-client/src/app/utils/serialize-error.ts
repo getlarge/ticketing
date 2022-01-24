@@ -1,3 +1,5 @@
+import { isErrorResponse } from '@ticketing/shared/errors';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function destroyCircular(from: any | any[], seen: any): any {
   const to: any = Array.isArray(from) ? [] : {};
@@ -22,14 +24,20 @@ function destroyCircular(from: any | any[], seen: any): any {
     to[key] = '[Circular]';
   }
 
-  const commonProperties = ['name', 'message', 'stack', 'code'];
+  const commonProperties = [
+    'name',
+    'message',
+    'stack',
+    'code',
+    'errors',
+    'details',
+  ];
 
   for (const property of commonProperties) {
     if (typeof from[property] === 'string') {
       to[property] = from[property];
     }
   }
-
   return to;
 }
 
@@ -45,4 +53,14 @@ export function serializeError(value: unknown): any {
   }
 
   return value;
+}
+
+export function transformError(value: unknown): string {
+  if (value && typeof value === 'object' && isErrorResponse(value)) {
+    return value.errors.map(({ message }) => message).join('\n');
+  }
+  const error = serializeError(value);
+  return error && typeof error === 'object' && 'message' in error
+    ? error.message
+    : error;
 }
