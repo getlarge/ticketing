@@ -4,22 +4,27 @@ import './styles.css';
 import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import { AxiosError } from 'axios';
-import App, { AppContext, AppProps } from 'next/app';
+import App, { AppContext } from 'next/app';
 import Head from 'next/head';
 
 import buildClient from '../api/build-client';
 import Header from '../components/header/header';
+import { CustomAppProps, GetInitialProps, InitialProps } from '../types/props';
 
-function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
+function CustomApp({
+  Component,
+  pageProps,
+  currentUser,
+}: CustomAppProps): JSX.Element {
   return (
     <>
       <Head>
         <title>Ticketing</title>
       </Head>
       <div className="app">
-        <Header {...pageProps} />
-        <main>
-          <Component {...pageProps} />
+        <Header currentUser={currentUser} />
+        <main className="container">
+          <Component currentUser={currentUser} {...pageProps} />
         </main>
       </div>
     </>
@@ -28,16 +33,12 @@ function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
 
 // Currently getServerSideProps is not working in Custom App
 CustomApp.getInitialProps = async (appContext: AppContext) => {
-  const appProps = await App.getInitialProps(appContext);
-  let pageProps: Record<string, unknown>;
-  if (typeof appContext.Component.getInitialProps === 'function') {
-    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
-  }
+  const appProps: InitialProps = await App.getInitialProps(appContext);
+  const url = `/api/${Resources.USERS}/current-user`;
+  const client = buildClient(appContext.ctx);
   try {
-    const url = `/api/${Resources.USERS}/current-user`;
-    const { data } = await buildClient(appContext.ctx).get<User>(url);
-    appProps.pageProps = { ...pageProps, currentUser: data };
-    return appProps;
+    const { data } = await client.get<User>(url);
+    appProps.currentUser = data;
   } catch (err) {
     if ('isAxiosError' in err) {
       const error = err as AxiosError;
@@ -45,9 +46,21 @@ CustomApp.getInitialProps = async (appContext: AppContext) => {
     } else {
       console.error(err.message);
     }
-    appProps.pageProps = { ...pageProps, currentUser: null };
-    return appProps;
+    appProps.currentUser = null;
   }
+  // let pageProps: Record<string, unknown>;
+  if (typeof appContext.Component.getInitialProps === 'function') {
+    const getInitialProps = appContext.Component
+      .getInitialProps as GetInitialProps;
+
+    appProps.pageProps = await getInitialProps(
+      appContext.ctx,
+      client,
+      appProps.currentUser
+    );
+  }
+
+  return appProps;
 };
 
 export default CustomApp;
