@@ -13,6 +13,7 @@ export class TicketListGridComponent {
   @Output() view = new EventEmitter<string>();
   @Output() update = new EventEmitter<string>();
   @Output() order = new EventEmitter<string>();
+  @Output() cancel = new EventEmitter<string>();
 
   readyToOrder(ticket: Ticket): boolean {
     return !ticket.orderId;

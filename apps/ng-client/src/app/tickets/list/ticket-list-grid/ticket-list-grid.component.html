@@ -29,6 +29,13 @@
         >
           Order ticket
         </button>
+        <button
+          class="btn btn-secondary"
+          *ngIf="!readyToOrder(ticket)"
+          (click)="cancel.emit(ticket.orderId)"
+        >
+          Cancel ticket
+        </button>
       </td>
       <td>{{ ticket.id }}</td>
       <td>{{ ticket.title }}</td>
