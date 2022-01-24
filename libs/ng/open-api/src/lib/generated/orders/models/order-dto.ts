@@ -10,6 +10,11 @@ export interface OrderDto {
   expiresAt?: string;
 
   /**
+   * Order database identifier
+   */
+  id: string;
+
+  /**
    * Order status
    */
   status: OrderStatus;
@@ -23,4 +28,9 @@ export interface OrderDto {
    * User who created the order
    */
   userId: string;
+
+  /**
+   * Order version represented by a number incremented at each updated
+   */
+  version: number;
 }
