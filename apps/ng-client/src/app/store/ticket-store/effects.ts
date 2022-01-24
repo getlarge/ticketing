@@ -1,24 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
+import { Action } from '@ngrx/store';
 import { TicketsService } from '@ticketing/ng/open-api';
 import { Observable, of as observableOf } from 'rxjs';
 import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
 
 import { serializeError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
-import { State } from './state';
 
 @Injectable()
 export class TicketStoreEffects {
   constructor(
     private actions$: Actions,
-    private ticketService: TicketsService,
-    private store: Store<State>
+    private ticketService: TicketsService
   ) {}
 
-  loadTicketsEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  loadTicketsEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.LoadTicketsAction>(
         featureActions.ActionTypes.LOAD_TICKETS
       ),
@@ -37,11 +35,11 @@ export class TicketStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 
-  addTicketEffect$: Observable<Action> = createEffect(() => {
-    return this.actions$.pipe(
+  addTicketEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.AddTicketAction>(
         featureActions.ActionTypes.ADD_TICKET
       ),
@@ -60,11 +58,11 @@ export class TicketStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 
-  updateTicketEffect$: Observable<Action> = createEffect(() => {
-    return this.actions$.pipe(
+  updateTicketEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.UpdateTicketAction>(
         featureActions.ActionTypes.UPDATE_TICKET
       ),
@@ -88,6 +86,6 @@ export class TicketStoreEffects {
             )
           )
       )
-    );
-  });
+    )
+  );
 }

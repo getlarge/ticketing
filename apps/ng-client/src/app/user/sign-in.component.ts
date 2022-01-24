@@ -7,9 +7,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ofType } from '@ngrx/effects';
-import { ActionsSubject, State, Store } from '@ngrx/store';
-import { AlertService } from '@ticketing/ng/alert';
-import { Observable, Subscription } from 'rxjs';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { first, Observable, Subject, takeUntil } from 'rxjs';
 
 import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
 
@@ -19,24 +18,15 @@ export class SignInComponent implements OnInit, OnDestroy {
   isLoading$!: Observable<boolean>;
   submitted = false;
   returnUrl!: string;
-  signInSubscription?: Subscription;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private actionsSubj: ActionsSubject,
-    private store: Store<RootStoreState.RootState>,
-    private state: State<RootStoreState.RootState>,
-    private alertService: AlertService
-  ) {
-    // redirect to home if already logged in
-    if (
-      (this.state.getValue() as RootStoreState.RootState)?.users?.currentUser
-    ) {
-      this.router.navigate(['/']);
-    }
-  }
+    private store: Store<RootStoreState.RootState>
+  ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -44,12 +34,21 @@ export class SignInComponent implements OnInit, OnDestroy {
       password: ['', Validators.required],
     });
     this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
-
+    // redirect to home if already logged in
+    this.store
+      .select((st) => st.users?.currentUser)
+      .pipe(takeUntil(this.destroy$), first())
+      .subscribe({
+        next: (user) => (user ? this.router.navigate(['/']) : null),
+      });
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-    this.signInSubscription = this.actionsSubj
-      .pipe(ofType(UserStoreActions.ActionTypes.SIGN_IN_SUCCESS))
+    this.actionsSubj
+      .pipe(
+        takeUntil(this.destroy$),
+        ofType(UserStoreActions.ActionTypes.SIGN_IN_SUCCESS)
+      )
       .subscribe({
         next: () => {
           this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
@@ -59,7 +58,8 @@ export class SignInComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.signInSubscription?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   // convenience getter for easy access to form fields
@@ -69,8 +69,6 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.submitted = true;
-    // reset alerts on submit
-    this.alertService.clear();
     // stop here if form is invalid
     if (this.form.invalid) {
       return;

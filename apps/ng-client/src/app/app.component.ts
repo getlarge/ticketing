@@ -19,7 +19,7 @@ import { RootState } from './store/root-state';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'angular-client';
+  title = 'ng-client';
   error$!: Observable<string>;
   isLoading$!: Observable<boolean>;
   user$!: Observable<User | null>;
@@ -37,15 +37,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
     this.user$ = this.store.select(UserStoreSelectors.selectCurrentUser);
     this.store.dispatch(new TicketStoreActions.LoadTicketsAction());
-
+    this.alertService.clear();
     this.error$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (error) => {
-        this.alertService.error(error);
+        this.alertService.error(error, { autoClose: true });
       },
     });
   }
 
   ngOnDestroy(): void {
+    this.alertService.clear();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

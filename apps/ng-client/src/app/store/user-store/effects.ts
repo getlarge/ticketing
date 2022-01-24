@@ -1,24 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { UsersService } from '@ticketing/ng/open-api';
 import { of as observableOf } from 'rxjs';
 import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
 
 import { serializeError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
-import { State } from './state';
 
 @Injectable()
 export class UserStoreEffects {
-  constructor(
-    private actions$: Actions,
-    private userService: UsersService,
-    private store: Store<State>
-  ) {}
+  constructor(private actions$: Actions, private userService: UsersService) {}
 
-  signUpEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  signUpEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.SignUpAction>(featureActions.ActionTypes.SIGN_UP),
       map((action) => action.payload),
       concatMap(({ credentials }) =>
@@ -33,11 +27,11 @@ export class UserStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 
-  signInEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  signInEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.SignInAction>(featureActions.ActionTypes.SIGN_IN),
       map((action) => action.payload),
       concatMap(({ credentials }) =>
@@ -52,11 +46,11 @@ export class UserStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 
-  signOutEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  signOutEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.LoadCurrentUserAction>(
         featureActions.ActionTypes.SIGN_OUT
       ),
@@ -72,11 +66,11 @@ export class UserStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 
-  loadCurrentUserEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  loadCurrentUserEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.LoadCurrentUserAction>(
         featureActions.ActionTypes.LOAD_CURRENT_USER
       ),
@@ -94,6 +88,6 @@ export class UserStoreEffects {
           )
         )
       )
-    );
-  });
+    )
+  );
 }
