@@ -1,7 +1,12 @@
 <div class="p-4">
-  <div class="container" >
-    <h1>Hi {{ (user$ | async)?.email }}!</h1>
+  <div class="container" *ngIf="user$ | async as user; else guest">
+    <h1>Hi {{ user?.email }}!</h1>
     <p>You're logged in</p>
     <p><a routerLink="/tickets">Manage Tickets</a></p>
   </div>
 </div>
+
+<ng-template #guest>
+  <div class="container"></div>
+  <p><a routerLink="/tickets">Available Tickets</a></p>
+</ng-template>

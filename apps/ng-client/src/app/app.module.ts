@@ -28,13 +28,19 @@ import { RootStoreModule } from './store/root-store.module';
     RootStoreModule,
     AlertModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+      { path: '', component: HomeComponent },
       {
         path: 'tickets',
         loadChildren: () =>
           import('./tickets/tickets.module').then((x) => x.TicketsModule),
         canActivate: [AuthGuard],
       },
+      // {
+      //   path: 'orders',
+      //   loadChildren: () =>
+      //     import('./orders/orders.module').then((x) => x.OrdersModule),
+      //   canActivate: [AuthGuard],
+      // },
       {
         path: 'user',
         loadChildren: () =>
