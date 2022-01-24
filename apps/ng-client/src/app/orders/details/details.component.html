@@ -1,0 +1,39 @@
+<div *ngIf="order$ | async as order; else loading">
+  <div class="row">
+    <div class="col">
+      <h2>Purchasing {{ order.ticket.title }}</h2>
+      <br />
+      You have {{ expiresIn(order) }} to pay ticket
+      <br />
+      Status: {{ order.status }}
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col">
+      <button
+        class="btn btn-primary"
+        [disabled]="isCreated(order)"
+        (click)="payOrder(order)"
+      >
+        Pay
+      </button>
+      <button
+        class="btn btn-primary"
+        [disabled]="isCreated(order)"
+        (click)="cancelOrder(order)"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <a [routerLink]="['/{{ Resources.ORDERS }}']">Back to List</a>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div>Loading Order...</div>
+</ng-template>
