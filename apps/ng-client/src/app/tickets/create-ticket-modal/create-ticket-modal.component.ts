@@ -26,7 +26,7 @@ export class CreateTicketModalComponent {
     };
 
     this.store.dispatch(
-      new TicketStoreActions.AddTicketAction({
+      new TicketStoreActions.CreateTicketAction({
         newTicket,
       })
     );

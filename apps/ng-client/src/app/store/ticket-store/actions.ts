@@ -1,7 +1,7 @@
 import { Update } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
 import { CreateTicketDto, UpdateTicketDto } from '@ticketing/ng/open-api';
-import { Order, Ticket } from '@ticketing/shared/models';
+import { Ticket } from '@ticketing/shared/models';
 
 import { TicketFilter } from '../../models';
 
@@ -10,19 +10,15 @@ export enum ActionTypes {
   LOAD_TICKETS_SUCCESS = '[Ticket API] Load Tickets Success',
   LOAD_TICKETS_FAILURE = '[Ticket API] Load Tickets Failure',
 
-  ADD_TICKET = '[List Screen] Add Ticket',
-  ADD_TICKET_SUCCESS = '[Ticket API] Add Ticket Success',
-  ADD_TICKET_FAILURE = '[Ticket API] Add Ticket Failure',
-
-  FILTER_TICKETS = '[List Screen] Filter Tickets',
+  CREATE_TICKET = '[List Screen] Create Ticket',
+  CREATE_TICKET_SUCCESS = '[Ticket API] Create Ticket Success',
+  CREATE_TICKET_FAILURE = '[Ticket API] Create Ticket Failure',
 
   UPDATE_TICKET = '[Details Screen] Update Ticket',
   UPDATE_TICKET_SUCCESS = '[Details Screen] Update Ticket Success',
   UPDATE_TICKET_FAILURE = '[Details Screen] Update Ticket Failure',
 
-  ORDER_TICKET = '[Details Screen] Order Ticket',
-  ORDER_TICKET_SUCCESS = '[Details Screen] Order Ticket Success',
-  ORDER_TICKET_FAILURE = '[Details Screen] Order Ticket Failure',
+  FILTER_TICKETS = '[List Screen] Filter Tickets',
 
   SELECT_TICKET = '[List Screen] Select Ticket',
 }
@@ -41,18 +37,18 @@ export class LoadTicketsFailureAction implements Action {
   constructor(public payload: { error: string }) {}
 }
 
-export class AddTicketAction implements Action {
-  readonly type = ActionTypes.ADD_TICKET;
+export class CreateTicketAction implements Action {
+  readonly type = ActionTypes.CREATE_TICKET;
   constructor(public payload: { newTicket: CreateTicketDto }) {}
 }
 
-export class AddTicketSuccessAction implements Action {
-  readonly type = ActionTypes.ADD_TICKET_SUCCESS;
+export class CreateTicketSuccessAction implements Action {
+  readonly type = ActionTypes.CREATE_TICKET_SUCCESS;
   constructor(public payload: { ticket: Ticket }) {}
 }
 
-export class AddTicketFailureAction implements Action {
-  readonly type = ActionTypes.ADD_TICKET_FAILURE;
+export class CreateTicketFailureAction implements Action {
+  readonly type = ActionTypes.CREATE_TICKET_FAILURE;
   constructor(public payload: { error: string }) {}
 }
 
@@ -76,21 +72,6 @@ export class UpdateTicketFailureAction implements Action {
   constructor(public payload: { error: string }) {}
 }
 
-export class OrderTicketAction implements Action {
-  readonly type = ActionTypes.ORDER_TICKET;
-  constructor(public payload: { ticketId: string }) {}
-}
-
-export class OrderTicketSuccessAction implements Action {
-  readonly type = ActionTypes.ORDER_TICKET_SUCCESS;
-  constructor(public payload: { ticket: Update<Ticket>, order: Order }) {}
-}
-
-export class OrderTicketFailureAction implements Action {
-  readonly type = ActionTypes.ORDER_TICKET_FAILURE;
-  constructor(public payload: { error: string }) {}
-}
-
 export class SelectTicketAction implements Action {
   readonly type = ActionTypes.SELECT_TICKET;
   constructor(public payload: { ticketId: string }) {}
@@ -100,14 +81,11 @@ export type ActionsUnion =
   | LoadTicketsAction
   | LoadTicketsFailureAction
   | LoadTicketsSuccessAction
-  | AddTicketAction
-  | AddTicketSuccessAction
-  | AddTicketFailureAction
+  | CreateTicketAction
+  | CreateTicketSuccessAction
+  | CreateTicketFailureAction
   | FilterTicketsAction
   | UpdateTicketAction
   | UpdateTicketSuccessAction
   | UpdateTicketFailureAction
-  | OrderTicketAction
-  | OrderTicketSuccessAction
-  | OrderTicketFailureAction
   | SelectTicketAction;

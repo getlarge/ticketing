@@ -28,21 +28,21 @@ export function featureReducer(
         error: action.payload?.error,
       };
     }
-    case ActionTypes.ADD_TICKET: {
+    case ActionTypes.CREATE_TICKET: {
       return {
         ...state,
         isLoading: true,
         error: null,
       };
     }
-    case ActionTypes.ADD_TICKET_SUCCESS: {
+    case ActionTypes.CREATE_TICKET_SUCCESS: {
       return featureAdapter.addOne(action.payload.ticket, {
         ...state,
         isLoading: false,
         error: null,
       });
     }
-    case ActionTypes.ADD_TICKET_FAILURE: {
+    case ActionTypes.CREATE_TICKET_FAILURE: {
       return {
         ...state,
         isLoading: false,
@@ -64,27 +64,6 @@ export function featureReducer(
       });
     }
     case ActionTypes.UPDATE_TICKET_FAILURE: {
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload.error,
-      };
-    }
-    case ActionTypes.ORDER_TICKET: {
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
-      };
-    }
-    case ActionTypes.ORDER_TICKET_SUCCESS: {
-      return featureAdapter.updateOne(action.payload.ticket, {
-        ...state,
-        isLoading: false,
-        error: null,
-      });
-    }
-    case ActionTypes.ORDER_TICKET_FAILURE: {
       return {
         ...state,
         isLoading: false,

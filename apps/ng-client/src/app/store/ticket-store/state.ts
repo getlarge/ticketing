@@ -21,6 +21,8 @@ export const initialState: State = featureAdapter.getInitialState({
     userId: null,
     price: null,
     title: null,
+    onlyMine: false,
+    onlyOthers: false,
   },
   currentTicketId: null,
 });

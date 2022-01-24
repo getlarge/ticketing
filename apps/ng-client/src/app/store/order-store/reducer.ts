@@ -7,6 +7,48 @@ export function featureReducer(
   action: ActionsUnion
 ): State {
   switch (action.type) {
+    case ActionTypes.CREATE_ORDER: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    }
+    case ActionTypes.CREATE_ORDER_SUCCESS: {
+      return featureAdapter.addOne(action.payload.order, {
+        ...state,
+        isLoading: false,
+        error: null,
+      });
+    }
+    case ActionTypes.CREATE_ORDER_FAILURE: {
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload?.error,
+      };
+    }
+    case ActionTypes.CANCEL_ORDER: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    }
+    case ActionTypes.CANCEL_ORDER_SUCCESS: {
+      return featureAdapter.updateOne(action.payload.order, {
+        ...state,
+        isLoading: false,
+        error: null,
+      });
+    }
+    case ActionTypes.CANCEL_ORDER_FAILURE: {
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload?.error,
+      };
+    }
     case ActionTypes.LOAD_ORDERS: {
       return {
         ...state,

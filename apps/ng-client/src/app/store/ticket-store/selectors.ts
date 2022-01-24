@@ -52,6 +52,10 @@ export const selectFilteredTicketItems = createSelector(
       );
     // .filter(
     //   (item) =>
+    //     currentFilter.onlyMine == null || item.userId === currentUser.id
+    // );
+    // .filter(
+    //   (item) =>
     //     currentFilter.price == null ||
     //     item.price === currentFilter.price
     // );

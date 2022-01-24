@@ -1,16 +1,55 @@
+import { Update } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
 import { Order } from '@ticketing/shared/models';
 
 import { OrderFilter } from '../../models';
 
 export enum ActionTypes {
-  LOAD_ORDERS = '[Tickets] Load Orders',
-  LOAD_ORDERS_SUCCESS = '[Ticket API] Load Orders Success',
-  LOAD_ORDERS_FAILURE = '[Ticket API] Load Orders Failure',
+  CREATE_ORDER = '[Order] Create Order',
+  CREATE_ORDER_SUCCESS = '[Order API] Create Order Success',
+  CREATE_ORDER_FAILURE = '[Order API] Create Order Failure',
+
+  CANCEL_ORDER = '[Order] Cancel Order',
+  CANCEL_ORDER_SUCCESS = '[Order API] Cancel Order Success',
+  CANCEL_ORDER_FAILURE = '[Order API] Cancel Order Failure',
+
+  LOAD_ORDERS = '[Orders] Load Orders',
+  LOAD_ORDERS_SUCCESS = '[Order API] Load Orders Success',
+  LOAD_ORDERS_FAILURE = '[Order API] Load Orders Failure',
 
   FILTER_ORDERS = '[List Screen] Filter Orders',
 
   SELECT_ORDER = '[List Screen] Select Order',
+}
+
+export class CreateOrderAction implements Action {
+  readonly type = ActionTypes.CREATE_ORDER;
+  constructor(public payload: { ticketId: string }) {}
+}
+
+export class CreateOrderSuccessAction implements Action {
+  readonly type = ActionTypes.CREATE_ORDER_SUCCESS;
+  constructor(public payload: { order: Order }) {}
+}
+
+export class CreateOrderFailureAction implements Action {
+  readonly type = ActionTypes.CREATE_ORDER_FAILURE;
+  constructor(public payload: { error: string }) {}
+}
+
+export class CancelOrderAction implements Action {
+  readonly type = ActionTypes.CANCEL_ORDER;
+  constructor(public payload: { orderId: string }) {}
+}
+
+export class CancelOrderSuccessAction implements Action {
+  readonly type = ActionTypes.CANCEL_ORDER_SUCCESS;
+  constructor(public payload: { order: Update<Order> }) {}
+}
+
+export class CancelOrderFailureAction implements Action {
+  readonly type = ActionTypes.CANCEL_ORDER_FAILURE;
+  constructor(public payload: { error: string }) {}
 }
 
 export class LoadOrdersAction implements Action {
@@ -38,6 +77,12 @@ export class SelectOrderAction implements Action {
 }
 
 export type ActionsUnion =
+  | CreateOrderAction
+  | CreateOrderFailureAction
+  | CreateOrderSuccessAction
+  | CancelOrderAction
+  | CancelOrderFailureAction
+  | CancelOrderSuccessAction
   | LoadOrdersAction
   | LoadOrdersFailureAction
   | LoadOrdersSuccessAction
