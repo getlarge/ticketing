@@ -1,0 +1,24 @@
+{
+  "name": "ng-client",
+  "version": "0.0.1",
+  "dependencies": {
+    "@angular/animations": "~13.1.0",
+    "@angular/common": "~13.1.0",
+    "@angular/compiler": "~13.1.0",
+    "@angular/core": "~13.1.0",
+    "@angular/forms": "~13.1.0",
+    "@angular/platform-browser": "~13.1.0",
+    "@angular/platform-browser-dynamic": "~13.1.0",
+    "@angular/router": "~13.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^11.0.0",
+    "@ngrx/effects": "^13.0.2",
+    "@ngrx/entity": "^13.0.2",
+    "@ngrx/store": "^13.0.2",
+    "@ngrx/store-devtools": "^13.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "rxjs": "~7.4.0",
+    "zone.js": "~0.11.4"
+  },
+  "main": "main.js"
+}
