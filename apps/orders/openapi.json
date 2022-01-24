@@ -238,6 +238,10 @@
       "OrderDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order database identifier"
+          },
           "ticket": {
             "description": "Ticket ordered reference",
             "allOf": [
@@ -259,12 +263,18 @@
           "expiresAt": {
             "type": "string",
             "description": "Order expiration date"
+          },
+          "version": {
+            "type": "number",
+            "description": "Order version represented by a number incremented at each updated"
           }
         },
         "required": [
+          "id",
           "ticket",
           "userId",
-          "status"
+          "status",
+          "version"
         ]
       }
     }

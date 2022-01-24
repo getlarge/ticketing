@@ -5,6 +5,12 @@ import { Ticket, TicketDto } from '../../tickets/models';
 
 export class OrderDto extends Order {
   @ApiProperty({
+    description: 'Order database identifier',
+    required: true,
+  })
+  id: string;
+
+  @ApiProperty({
     description: 'Ticket ordered reference',
     type: TicketDto,
     required: true,
@@ -32,4 +38,11 @@ export class OrderDto extends Order {
     required: false,
   })
   expiresAt?: string;
+
+  @ApiProperty({
+    description:
+      'Order version represented by a number incremented at each updated',
+    required: true,
+  })
+  version: number;
 }
