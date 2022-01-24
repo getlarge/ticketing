@@ -2,7 +2,7 @@ import { User } from '@ticketing/shared/models';
 
 import styles from './index.module.css';
 
-export function Index(props: { currentUser?: User }): JSX.Element {
+function Index(props: { currentUser?: User }): JSX.Element {
   const { currentUser } = props;
   return (
     <div className={styles.page}>
@@ -14,5 +14,9 @@ export function Index(props: { currentUser?: User }): JSX.Element {
     </div>
   );
 }
+
+// Index.getInitialProps = async () => {
+//   return {};
+// };
 
 export default Index;

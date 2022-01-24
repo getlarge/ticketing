@@ -22,7 +22,7 @@ export function useRequest<
         url,
         data: body,
       });
-      if (onSuccess) {
+      if (typeof onSuccess === 'function') {
         await onSuccess(data);
       }
       return data;
@@ -40,7 +40,7 @@ export function useRequest<
           </ul>
         </div>
       );
-      if (onFailure) {
+      if (typeof onFailure === 'function') {
         await onFailure(err);
       }
     }
