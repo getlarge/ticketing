@@ -1,16 +1,26 @@
-<div class="row" *ngIf="ticket$ | async as ticket; else loading">
-  <div class="col">
-    <h2>ID: {{ ticket.id }}</h2>
-    <br />
-    Title: {{ ticket.title }}<br />
-    Price: {{ ticket.price }}<br />
-    User: {{ ticket.userId }}
+<div *ngIf="ticket$ | async as ticket; else loading">
+  <div class="row">
+    <div class="col">
+      <h2>Title: {{ ticket.title }}</h2>
+      <br />
+      Price: {{ ticket.price }}
+      <br />
+      User: {{ ticket.userId }}
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col">
+      <button class="btn btn-primary" (click)="purchaseTicket(ticket)">
+        Purchase
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col"><a [routerLink]="['/tickets']">Back to List</a></div>
   </div>
 </div>
-<hr />
-<div class="row">
-  <div class="col"><a [routerLink]="['/tickets']">Back to List</a></div>
-</div>
+
 <ng-template #loading>
   <div>Loading Ticket...</div>
 </ng-template>

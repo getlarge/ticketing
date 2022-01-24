@@ -1,7 +1,7 @@
 import { Update } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
 import { CreateTicketDto, UpdateTicketDto } from '@ticketing/ng/open-api';
-import { Ticket } from '@ticketing/shared/models';
+import { Order, Ticket } from '@ticketing/shared/models';
 
 import { TicketFilter } from '../../models';
 
@@ -19,6 +19,10 @@ export enum ActionTypes {
   UPDATE_TICKET = '[Details Screen] Update Ticket',
   UPDATE_TICKET_SUCCESS = '[Details Screen] Update Ticket Success',
   UPDATE_TICKET_FAILURE = '[Details Screen] Update Ticket Failure',
+
+  ORDER_TICKET = '[Details Screen] Order Ticket',
+  ORDER_TICKET_SUCCESS = '[Details Screen] Order Ticket Success',
+  ORDER_TICKET_FAILURE = '[Details Screen] Order Ticket Failure',
 
   SELECT_TICKET = '[List Screen] Select Ticket',
 }
@@ -72,6 +76,21 @@ export class UpdateTicketFailureAction implements Action {
   constructor(public payload: { error: string }) {}
 }
 
+export class OrderTicketAction implements Action {
+  readonly type = ActionTypes.ORDER_TICKET;
+  constructor(public payload: { ticketId: string }) {}
+}
+
+export class OrderTicketSuccessAction implements Action {
+  readonly type = ActionTypes.ORDER_TICKET_SUCCESS;
+  constructor(public payload: { ticket: Update<Ticket>, order: Order }) {}
+}
+
+export class OrderTicketFailureAction implements Action {
+  readonly type = ActionTypes.ORDER_TICKET_FAILURE;
+  constructor(public payload: { error: string }) {}
+}
+
 export class SelectTicketAction implements Action {
   readonly type = ActionTypes.SELECT_TICKET;
   constructor(public payload: { ticketId: string }) {}
@@ -88,4 +107,7 @@ export type ActionsUnion =
   | UpdateTicketAction
   | UpdateTicketSuccessAction
   | UpdateTicketFailureAction
+  | OrderTicketAction
+  | OrderTicketSuccessAction
+  | OrderTicketFailureAction
   | SelectTicketAction;

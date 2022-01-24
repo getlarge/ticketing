@@ -32,12 +32,13 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.alertService.clear();
     this.error$ = this.store.select(RootStoreSelectors.selectError);
     this.isLoading$ = this.store.select(RootStoreSelectors.selectIsLoading);
+    // TODO: only dispatch LoadCurrentUserAction if !!currentToken
     this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
     this.user$ = this.store.select(UserStoreSelectors.selectCurrentUser);
     this.store.dispatch(new TicketStoreActions.LoadTicketsAction());
-    this.alertService.clear();
     this.error$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (error) => {
         this.alertService.error(error, { autoClose: true });

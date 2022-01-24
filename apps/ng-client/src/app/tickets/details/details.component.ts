@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { ofType } from '@ngrx/effects';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { AlertService } from '@ticketing/ng/alert';
 import { Ticket } from '@ticketing/shared/models';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 import {
   TicketStoreActions,
@@ -15,12 +17,15 @@ import {
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css'],
 })
-export class TicketDetailsComponent implements OnInit {
+export class TicketDetailsComponent implements OnInit, OnDestroy {
   ticket$!: Observable<Ticket | undefined>;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private store: Store<TicketStoreState.State>,
-    private route: ActivatedRoute
+    private actionsSubj: ActionsSubject,
+    private route: ActivatedRoute,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -34,5 +39,30 @@ export class TicketDetailsComponent implements OnInit {
         new TicketStoreActions.SelectTicketAction({ ticketId })
       );
     }
+
+    this.actionsSubj
+      .pipe(
+        takeUntil(this.destroy$),
+        ofType(TicketStoreActions.ActionTypes.ORDER_TICKET_SUCCESS)
+      )
+      .subscribe({
+        next: () => {
+          this.alertService.success('Order created', {
+            keepAfterRouteChange: true,
+            autoClose: true,
+          });
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
+
+  purchaseTicket(ticket: Ticket): void {
+    this.store.dispatch(
+      new TicketStoreActions.OrderTicketAction({ ticketId: ticket.id })
+    );
   }
 }

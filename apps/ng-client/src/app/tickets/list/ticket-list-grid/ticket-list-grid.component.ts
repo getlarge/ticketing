@@ -15,6 +15,6 @@ export class TicketListGridComponent {
   @Output() order = new EventEmitter<string>();
 
   readyToOrder(ticket: Ticket): boolean {
-    return !!ticket.orderId;
+    return !ticket.orderId;
   }
 }

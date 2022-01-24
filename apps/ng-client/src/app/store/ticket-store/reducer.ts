@@ -70,6 +70,27 @@ export function featureReducer(
         error: action.payload.error,
       };
     }
+    case ActionTypes.ORDER_TICKET: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    }
+    case ActionTypes.ORDER_TICKET_SUCCESS: {
+      return featureAdapter.updateOne(action.payload.ticket, {
+        ...state,
+        isLoading: false,
+        error: null,
+      });
+    }
+    case ActionTypes.ORDER_TICKET_FAILURE: {
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload.error,
+      };
+    }
     case ActionTypes.SELECT_TICKET: {
       return {
         ...state,

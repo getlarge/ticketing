@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { TicketsService } from '@ticketing/ng/open-api';
+import { OrdersService, TicketsService } from '@ticketing/ng/open-api';
 import { Observable, of as observableOf } from 'rxjs';
 import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
 
@@ -12,7 +12,8 @@ import * as featureActions from './actions';
 export class TicketStoreEffects {
   constructor(
     private actions$: Actions,
-    private ticketService: TicketsService
+    private ticketService: TicketsService,
+    private ordersService: OrdersService
   ) {}
 
   loadTicketsEffect$ = createEffect(() =>
@@ -72,9 +73,9 @@ export class TicketStoreEffects {
           .ticketsControllerUpdateById({ id: ticketId, body: ticket })
           .pipe(
             map(
-              (assignedTicket) =>
+              (updatedTicket) =>
                 new featureActions.UpdateTicketSuccessAction({
-                  ticket: { changes: assignedTicket, id: assignedTicket.id },
+                  ticket: { changes: updatedTicket, id: updatedTicket.id },
                 })
             ),
             catchError((error) =>
@@ -85,6 +86,36 @@ export class TicketStoreEffects {
               )
             )
           )
+      )
+    )
+  );
+
+  orderTicketEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<featureActions.OrderTicketAction>(
+        featureActions.ActionTypes.ORDER_TICKET
+      ),
+      map((action) => action.payload),
+      concatMap(({ ticketId }) =>
+        this.ordersService.ordersControllerCreate({ body: { ticketId } }).pipe(
+          map(
+            (order) =>
+              new featureActions.OrderTicketSuccessAction({
+                ticket: {
+                  changes: { ...order.ticket, orderId: order.id },
+                  id: order.ticket.id,
+                },
+                order,
+              })
+          ),
+          catchError((error) =>
+            observableOf(
+              new featureActions.OrderTicketFailureAction({
+                error: serializeError(error).message,
+              })
+            )
+          )
+        )
       )
     )
   );

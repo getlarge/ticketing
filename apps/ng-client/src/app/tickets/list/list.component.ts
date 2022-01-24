@@ -21,7 +21,7 @@ import { CreateTicketModalComponent } from '../create-ticket-modal/create-ticket
 })
 export class TicketListComponent implements OnInit {
   users$!: Observable<User[]>;
-  tickets$!: Observable<Ticket[] >;
+  tickets$!: Observable<Ticket[]>;
   currentFilter$!: Observable<TicketFilter>;
   isLoading$!: Observable<boolean>;
 
@@ -40,7 +40,7 @@ export class TicketListComponent implements OnInit {
     );
     this.isLoading$ = this.store.select(RootStoreSelectors.selectIsLoading);
     // this.users$ = this.store.select(UserStoreSelectors.selectAllUserItems);
-    this.users$ = of([])
+    this.users$ = of([]);
   }
 
   createTicket(): void {
@@ -57,9 +57,8 @@ export class TicketListComponent implements OnInit {
     // modalRef.componentInstance.ticketId = ticketId;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onOrderTicket(ticketId: string): void {
-    // this.store.dispatch(new TicketStoreActions.OrderTicketAction({ ticketId }));
+    this.store.dispatch(new TicketStoreActions.OrderTicketAction({ ticketId }));
   }
 
   onFilterTickets(filter: TicketFilter): void {
