@@ -1,0 +1,35 @@
+<div *ngIf="isLoading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<table *ngIf="!isLoading" class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th></th>
+      <th>ID</th>
+      <th>Expires At</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let order of orders">
+      <td>
+        <button class="btn btn-secondary" (click)="view.emit(order.id)">
+          View
+        </button>
+        <button
+          class="btn btn-secondary"
+          *ngIf="isCreated(order)"
+          (click)="cancel.emit(order.id)"
+        >
+          Cancel order
+        </button>
+      </td>
+      <td>{{ order.id }}</td>
+      <td>{{ order.expiresAt }}</td>
+      <td>{{ order.status }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,10 @@
+<div class="row">
+  <div class="col">
+    <ticketing-order-list-grid
+      [orders]="orders$ | async"
+      [isLoading]="isLoading$ | async"
+      (view)="onViewOrder($event)"
+      (cancel)="onCancelOrder($event)"
+    ></ticketing-order-list-grid>
+  </div>
+</div>
