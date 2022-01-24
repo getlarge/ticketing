@@ -68,17 +68,29 @@ build:
         buildCommand: npx nx run payments:docker-build --conf=development --tag=dev
         dependencies:
           command: node ./tools/nx/get-dependencies-cli.js -p payments          
-    # CLIENT
-    - image: ghcr.io/getlarge/ticketing-client
+    # CLIENT - NEXTJS
+    # - image: ghcr.io/getlarge/ticketing-client
+    #   context: .
+    #   sync:
+    #     manual:
+    #       - src: .
+    #         dest: .
+    #   custom:
+    #     buildCommand: npx nx run client:docker-build --conf=development --tag=dev --file=apps/client/Dockerfile
+    #     dependencies:
+    #       command: node ./tools/nx/get-dependencies-cli.js -p client
+    # CLIENT - ANGULAR
+    - image: ghcr.io/getlarge/ticketing-ng-client
       context: .
       sync:
         manual:
           - src: .
             dest: .
       custom:
-        buildCommand: npx nx run client:docker-build --conf=development --tag=dev --file=apps/client/Dockerfile
+        buildCommand: npx nx run ng-client:docker-build --conf=development --tag=dev --file=infra/docker/Dockerfile.frontend
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p client
+          command: node ./tools/nx/get-dependencies-cli.js -p ng-client
+
   tagPolicy:
     envTemplate:
       template: dev

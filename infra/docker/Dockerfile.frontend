@@ -1,0 +1,8 @@
+FROM nginx:latest
+
+ARG APP_NAME=ng-client
+
+COPY ./dist/apps/$APP_NAME /usr/share/nginx/html
+COPY ./infra/nginx/angular.conf  /etc/nginx/conf.d/default.conf
+
+EXPOSE 3000

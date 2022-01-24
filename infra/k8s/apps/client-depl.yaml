@@ -17,7 +17,8 @@ spec:
       restartPolicy: Always    
       containers:
         - name: client
-          image: ghcr.io/getlarge/ticketing-client
+          # image: ghcr.io/getlarge/ticketing-client # NextJS
+          image: ghcr.io/getlarge/ticketing-ng-client # Angular
           envFrom:
             - configMapRef:
                 name: client-config

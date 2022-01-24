@@ -4,5 +4,5 @@ metadata:
   name: client-config
 data:
   NODE_ENV: 'development'
-  NEXT_PUBLIC_SERVER_URL: http://ticekting.dev
+  NEXT_PUBLIC_SERVER_URL: http://ticketing.dev
   SERVER_URL: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local
