@@ -7,10 +7,11 @@ const version = packageInfo.version;
 const apiVersion = getApiVersion(version);
 
 export const environment: Environment = {
+  environment: 'staging',
   production: true,
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
   apiBaseDomain: 'app.s1seven.dev',
-  environment: 'staging',
+  stripePublishableKey: '',
 };

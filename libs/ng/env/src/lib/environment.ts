@@ -8,6 +8,7 @@ const version = packageInfo.version;
 const apiVersion = getApiVersion(version);
 
 export const environment: Environment = {
+  environment: 'development',
   production: false,
   version,
   apiVersion,
@@ -15,7 +16,8 @@ export const environment: Environment = {
   apiBaseDomain: 'ticketing.dev',
   // apiBaseDomain: 'localhost:80',
   useUnsafeConnection: true,
-  environment: 'development',
+  stripePublishableKey:
+    'pk_test_51K1a5gClKuHW3hMKM2xeLcKBYBfmOdSTLlh7SzYqwZdnlcYQcF0GjcJ9Ir0lenzYOKEW4cNSLPB7mqWsEH6Wh88T00DI4YsWHv',
 };
 
 /*

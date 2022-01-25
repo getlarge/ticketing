@@ -9,11 +9,12 @@ const apiVersion = getApiVersion(version);
 
 export const environment: Environment = {
   production: false,
+  environment: 'development',
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
   apiBaseDomain: 'localhost:80',
   // apiBaseDomain: 'ticketing.dev',
   useUnsafeConnection: true,
-  environment: 'development',
+  stripePublishableKey: '',
 };

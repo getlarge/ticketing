@@ -5,11 +5,12 @@ export enum VersioningType {
   HEADER = 'header',
 }
 export interface Environment {
+  environment: `${EnvironmentName}`;
   production: boolean;
   version: string;
   versioningType: VersioningType;
   apiVersion: string;
   apiBaseDomain: string;
   useUnsafeConnection?: boolean;
-  environment: `${EnvironmentName}`;
+  stripePublishableKey: string;
 }
