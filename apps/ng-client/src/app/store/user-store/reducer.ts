@@ -1,4 +1,3 @@
-import { LocalStorageService } from '../../services';
 import { ActionsUnion, ActionTypes } from './actions';
 import { featureAdapter, initialState, State } from './state';
 
@@ -37,7 +36,6 @@ export function featureReducer(
       };
     }
     case ActionTypes.SIGN_IN_SUCCESS: {
-      LocalStorageService.set('token', action.payload.token);
       return {
         ...state,
         isLoading: false,
@@ -60,8 +58,6 @@ export function featureReducer(
       };
     }
     case ActionTypes.SIGN_OUT_SUCCESS: {
-      LocalStorageService.remove('token');
-      LocalStorageService.remove('user');
       return featureAdapter.removeOne(state.currentUser?.id as string, {
         ...state,
         isLoading: true,
@@ -71,8 +67,6 @@ export function featureReducer(
       });
     }
     case ActionTypes.SIGN_OUT_FAILURE: {
-      LocalStorageService.remove('token');
-      LocalStorageService.remove('user');
       return {
         ...state,
         isLoading: false,
@@ -89,7 +83,6 @@ export function featureReducer(
       };
     }
     case ActionTypes.LOAD_CURRENT_USER_SUCCESS: {
-      LocalStorageService.setObject('token', action.payload.user);
       return {
         ...state,
         isLoading: false,

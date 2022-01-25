@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UsersService } from '@ticketing/ng/open-api';
-import { of as observableOf } from 'rxjs';
-import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, exhaustMap, map } from 'rxjs/operators';
 
+import { LocalStorageService } from '../../services';
 import { transformError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
 
@@ -15,11 +16,11 @@ export class UserStoreEffects {
     this.actions$.pipe(
       ofType<featureActions.SignUpAction>(featureActions.ActionTypes.SIGN_UP),
       map((action) => action.payload),
-      concatMap(({ credentials }) =>
+      exhaustMap(({ credentials }) =>
         this.userService.usersControllerSignUp({ body: credentials }).pipe(
           map((user) => new featureActions.SignUpSuccessAction({ user })),
           catchError((error) =>
-            observableOf(
+            of(
               new featureActions.SignUpFailureAction({
                 error: transformError(error),
               })
@@ -34,11 +35,14 @@ export class UserStoreEffects {
     this.actions$.pipe(
       ofType<featureActions.SignInAction>(featureActions.ActionTypes.SIGN_IN),
       map((action) => action.payload),
-      concatMap(({ credentials }) =>
+      exhaustMap(({ credentials }) =>
         this.userService.usersControllerSignIn({ body: credentials }).pipe(
-          map(({ token }) => new featureActions.SignInSuccessAction({ token })),
+          map(({ token }) => {
+            LocalStorageService.set('token', token);
+            return new featureActions.SignInSuccessAction({ token });
+          }),
           catchError((error) =>
-            observableOf(
+            of(
               new featureActions.SignInFailureAction({
                 error: transformError(error),
               })
@@ -54,16 +58,22 @@ export class UserStoreEffects {
       ofType<featureActions.LoadCurrentUserAction>(
         featureActions.ActionTypes.SIGN_OUT
       ),
-      switchMap(() =>
+      exhaustMap(() =>
         this.userService.usersControllerSignOut().pipe(
-          map(() => new featureActions.SignOutSuccessAction()),
-          catchError((error) =>
-            observableOf(
+          map(() => {
+            LocalStorageService.remove('token');
+            LocalStorageService.remove('user');
+            return new featureActions.SignOutSuccessAction();
+          }),
+          catchError((error) => {
+            LocalStorageService.remove('token');
+            LocalStorageService.remove('user');
+            return of(
               new featureActions.SignOutFailureAction({
                 error: transformError(error),
               })
-            )
-          )
+            );
+          })
         )
       )
     )
@@ -74,13 +84,14 @@ export class UserStoreEffects {
       ofType<featureActions.LoadCurrentUserAction>(
         featureActions.ActionTypes.LOAD_CURRENT_USER
       ),
-      switchMap(() =>
+      exhaustMap(() =>
         this.userService.usersControllerGetCurrentUser().pipe(
-          map(
-            (user) => new featureActions.LoadCurrentUserSuccessAction({ user })
-          ),
+          map((user) => {
+            LocalStorageService.setObject('user', user);
+            return new featureActions.LoadCurrentUserSuccessAction({ user });
+          }),
           catchError((error) =>
-            observableOf(
+            of(
               new featureActions.LoadCurrentUserFailureAction({
                 error: transformError(error),
               })
