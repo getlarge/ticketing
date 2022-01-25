@@ -16,4 +16,9 @@ export interface PaymentDto {
    * Reference to the stripe charge
    */
   stripeId: string;
+
+  /**
+   * Payment version represented by a number incremented at each updated
+   */
+  version: number;
 }

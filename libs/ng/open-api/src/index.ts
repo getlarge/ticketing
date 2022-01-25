@@ -7,6 +7,8 @@ export { ApiConfiguration as OrdersApiConfiguration } from './lib/generated/orde
 export { CreateOrderDto, OrderDto } from './lib/generated/orders/models';
 export { OrdersService } from './lib/generated/orders/services';
 export { ApiConfiguration as PaymentsApiConfiguration } from './lib/generated/payments/api-configuration';
+export { PaymentsService } from './lib/generated/payments/services';
+export { CreatePaymentDto } from './lib/generated/payments/models';
 export { ApiConfiguration as TicketsApiConfiguration } from './lib/generated/tickets/api-configuration';
 export { TicketsService } from './lib/generated/tickets/services';
 export {
