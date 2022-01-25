@@ -8,8 +8,17 @@
       [routerLinkActiveOptions]="{ exact: true }"
       >Home</a
     >
-    <a class="nav-item nav-link" routerLink="/tickets" routerLinkActive="active"
+    <a
+      class="nav-item nav-link"
+      routerLink="/{{ Resources.TICKETS }}"
+      routerLinkActive="active"
       >Tickets</a
+    >
+    <a
+      class="nav-item nav-link"
+      routerLink="/{{ Resources.ORDERS }}"
+      routerLinkActive="active"
+      >My orders</a
     >
     <a class="nav-item nav-link" (click)="logout()">Logout</a>
   </div>

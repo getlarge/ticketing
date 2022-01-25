@@ -13,6 +13,8 @@ import {
   PaymentsApiConfiguration,
   TicketsApiConfiguration,
 } from '@ticketing/ng/open-api';
+import { Resources } from '@ticketing/shared/constants';
+import { NgxStripeModule } from 'ngx-stripe';
 
 import { AppComponent } from './app.component';
 import { AuthGuard, ErrorInterceptor, JwtInterceptor } from './helpers';
@@ -27,24 +29,26 @@ import { RootStoreModule } from './store/root-store.module';
     NgbModule,
     RootStoreModule,
     AlertModule,
+    NgxStripeModule.forRoot(environment.stripePublishableKey),
     RouterModule.forRoot([
       { path: '', component: HomeComponent },
-      {
-        path: 'tickets',
-        loadChildren: () =>
-          import('./tickets/tickets.module').then((x) => x.TicketsModule),
-        canActivate: [AuthGuard],
-      },
-      // {
-      //   path: 'orders',
-      //   loadChildren: () =>
-      //     import('./orders/orders.module').then((x) => x.OrdersModule),
-      //   canActivate: [AuthGuard],
-      // },
       {
         path: 'user',
         loadChildren: () =>
           import('./user/user.module').then((x) => x.UserModule),
+      },
+      {
+        path: Resources.TICKETS,
+        loadChildren: () =>
+          import('./tickets/tickets.module').then((x) => x.TicketsModule),
+        // TODO: make /tickets public
+        canActivate: [AuthGuard],
+      },
+      {
+        path: Resources.ORDERS,
+        loadChildren: () =>
+          import('./orders/orders.module').then((x) => x.OrdersModule),
+        canActivate: [AuthGuard],
       },
       { path: '**', redirectTo: '' },
     ]),
