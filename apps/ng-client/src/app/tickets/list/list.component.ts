@@ -9,7 +9,6 @@ import { Observable, of } from 'rxjs';
 import { TicketFilter } from '../../models';
 import {
   OrderStoreActions,
-  RootStoreSelectors,
   RootStoreState,
   TicketStoreActions,
   TicketStoreSelectors,
@@ -40,9 +39,11 @@ export class TicketListComponent implements OnInit {
     this.currentFilter$ = this.store.select(
       TicketStoreSelectors.selectTicketCurrentFilter
     );
-    this.isLoading$ = this.store.select(RootStoreSelectors.selectIsLoading);
-    // this.users$ = this.store.select(UserStoreSelectors.selectAllUserItems);
+    this.isLoading$ = this.store.select(
+      TicketStoreSelectors.selectTicketIsLoading
+    );
     this.users$ = of([]);
+    this.store.dispatch(new TicketStoreActions.LoadTicketsAction());
   }
 
   createTicket(): void {

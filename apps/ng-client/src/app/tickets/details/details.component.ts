@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { AlertService } from '@ticketing/ng/alert';
+import { Resources } from '@ticketing/shared/constants';
 import { Ticket } from '@ticketing/shared/models';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 import {
+  OrderStoreActions,
+  RootStoreState,
   TicketStoreActions,
   TicketStoreSelectors,
-  TicketStoreState,
 } from '../../store';
 
 @Component({
@@ -20,9 +22,11 @@ import {
 export class TicketDetailsComponent implements OnInit, OnDestroy {
   ticket$!: Observable<Ticket | undefined>;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  Resources = Resources;
 
   constructor(
-    private store: Store<TicketStoreState.State>,
+    private store: Store<RootStoreState.RootState>,
+    private router: Router,
     private actionsSubj: ActionsSubject,
     private route: ActivatedRoute,
     private alertService: AlertService
@@ -36,6 +40,7 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
     const ticketId = this.route.snapshot.paramMap.get('id');
     if (ticketId) {
       this.store.dispatch(
+        // new TicketStoreActions.LoadTicketAction({ ticketId })
         new TicketStoreActions.SelectTicketAction({ ticketId })
       );
     }
@@ -43,14 +48,17 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
     this.actionsSubj
       .pipe(
         takeUntil(this.destroy$),
-        ofType(TicketStoreActions.ActionTypes.ORDER_TICKET_SUCCESS)
+        ofType<OrderStoreActions.CreateOrderSuccessAction>(
+          OrderStoreActions.ActionTypes.CREATE_ORDER_SUCCESS
+        )
       )
       .subscribe({
-        next: () => {
+        next: ({ payload }) => {
           this.alertService.success('Order created', {
             keepAfterRouteChange: true,
             autoClose: true,
           });
+          this.router.navigate([`/${Resources.ORDERS}/`, payload.order.id]);
         },
       });
   }
@@ -62,7 +70,11 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
 
   purchaseTicket(ticket: Ticket): void {
     this.store.dispatch(
-      new TicketStoreActions.OrderTicketAction({ ticketId: ticket.id })
+      new OrderStoreActions.CreateOrderAction({ ticketId: ticket.id })
     );
+  }
+
+  isAvailable(ticket: Ticket): boolean {
+    return !ticket.orderId;
   }
 }
