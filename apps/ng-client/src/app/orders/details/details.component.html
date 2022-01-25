@@ -3,24 +3,27 @@
     <div class="col">
       <h2>Purchasing {{ order.ticket.title }}</h2>
       <br />
-      You have {{ expiresIn(order) }} to pay ticket
-      <br />
+      <p *ngIf="isCreated(order); else expired">
+        You have {{ expiresIn$ | async }} seconds until order expires
+      </p>
       Status: {{ order.status }}
     </div>
   </div>
   <hr />
   <div class="row">
-    <div class="col">
+    <div class="col-3">
       <button
         class="btn btn-primary"
-        [disabled]="isCreated(order)"
+        [disabled]="isComplete(order)"
         (click)="payOrder(order)"
       >
         Pay
       </button>
+    </div>
+    <div class="col-3">
       <button
         class="btn btn-primary"
-        [disabled]="isCreated(order)"
+        [disabled]="isCancelled(order)"
         (click)="cancelOrder(order)"
       >
         Cancel
@@ -29,11 +32,15 @@
   </div>
   <div class="row">
     <div class="col">
-      <a [routerLink]="['/{{ Resources.ORDERS }}']">Back to List</a>
+      <a routerLink="/{{ Resources.ORDERS }}">Back to List</a>
     </div>
   </div>
 </div>
 
 <ng-template #loading>
   <div>Loading Order...</div>
+</ng-template>
+
+<ng-template #expired>
+  <p>Order expired</p>
 </ng-template>
