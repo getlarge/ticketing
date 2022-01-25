@@ -3,7 +3,7 @@
   "info": {
     "title": "Ticketing API",
     "description": "Microservices bundled APIs",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "contact": {}
   },
   "servers": [
@@ -594,6 +594,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Order database identifier"
+                    },
                     "ticket": {
                       "description": "Ticket ordered reference",
                       "allOf": [
@@ -648,12 +652,18 @@
                     "expiresAt": {
                       "type": "string",
                       "description": "Order expiration date"
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Order version represented by a number incremented at each updated"
                     }
                   },
                   "required": [
+                    "id",
                     "ticket",
                     "userId",
-                    "status"
+                    "status",
+                    "version"
                   ]
                 }
               }
@@ -687,6 +697,10 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Order database identifier"
+                      },
                       "ticket": {
                         "description": "Ticket ordered reference",
                         "allOf": [
@@ -741,12 +755,18 @@
                       "expiresAt": {
                         "type": "string",
                         "description": "Order expiration date"
+                      },
+                      "version": {
+                        "type": "number",
+                        "description": "Order version represented by a number incremented at each updated"
                       }
                     },
                     "required": [
+                      "id",
                       "ticket",
                       "userId",
-                      "status"
+                      "status",
+                      "version"
                     ]
                   }
                 }
@@ -790,6 +810,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Order database identifier"
+                    },
                     "ticket": {
                       "description": "Ticket ordered reference",
                       "allOf": [
@@ -844,12 +868,18 @@
                     "expiresAt": {
                       "type": "string",
                       "description": "Order expiration date"
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Order version represented by a number incremented at each updated"
                     }
                   },
                   "required": [
+                    "id",
                     "ticket",
                     "userId",
-                    "status"
+                    "status",
+                    "version"
                   ]
                 }
               }
@@ -890,6 +920,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Order database identifier"
+                    },
                     "ticket": {
                       "description": "Ticket ordered reference",
                       "allOf": [
@@ -944,12 +978,18 @@
                     "expiresAt": {
                       "type": "string",
                       "description": "Order expiration date"
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Order version represented by a number incremented at each updated"
                     }
                   },
                   "required": [
+                    "id",
                     "ticket",
                     "userId",
-                    "status"
+                    "status",
+                    "version"
                   ]
                 }
               }
@@ -967,17 +1007,6 @@
             "bearer": []
           }
         ]
-      }
-    },
-    "/api": {
-      "get": {
-        "operationId": "AppController_getData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
       }
     },
     "/api/payments": {
@@ -1030,12 +1059,17 @@
                     "stripeId": {
                       "type": "string",
                       "description": "Reference to the stripe charge"
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Payment version represented by a number incremented at each updated"
                     }
                   },
                   "required": [
                     "id",
                     "orderId",
-                    "stripeId"
+                    "stripeId",
+                    "version"
                   ]
                 }
               }
@@ -1230,6 +1264,10 @@
       "OrderDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order database identifier"
+          },
           "ticket": {
             "description": "Ticket ordered reference",
             "allOf": [
@@ -1284,12 +1322,18 @@
           "expiresAt": {
             "type": "string",
             "description": "Order expiration date"
+          },
+          "version": {
+            "type": "number",
+            "description": "Order version represented by a number incremented at each updated"
           }
         },
         "required": [
+          "id",
           "ticket",
           "userId",
-          "status"
+          "status",
+          "version"
         ]
       },
       "CreatePaymentDto": {
@@ -1324,12 +1368,17 @@
           "stripeId": {
             "type": "string",
             "description": "Reference to the stripe charge"
+          },
+          "version": {
+            "type": "number",
+            "description": "Payment version represented by a number incremented at each updated"
           }
         },
         "required": [
           "id",
           "orderId",
-          "stripeId"
+          "stripeId",
+          "version"
         ]
       }
     },
