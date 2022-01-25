@@ -1,4 +1,4 @@
-import { validate as validateSpecs } from '@apidevtools/swagger-parser';
+import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPI } from 'openapi-types';
 import { Swagger } from 'atlassian-openapi';
 import { promises as fs } from 'fs';
@@ -30,7 +30,7 @@ async function mergeAPIs(openApis: Swagger.SwaggerV3[]): Promise<void> {
     },
   } as OpenAPI.Document;
 
-  const openApi = await validateSpecs(output, {
+  const openApi = await SwaggerParser.validate(output, {
     dereference: {
       circular: true,
     },
