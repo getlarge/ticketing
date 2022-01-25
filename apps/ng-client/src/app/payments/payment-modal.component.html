@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <h4 class="modal-title">Pay with Stripe</h4>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="form-row">
+    <div class="form-group col">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        name="name"
+        placeholder="Jane Doe"
+        [(ngModel)]="name"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="modal-body">
+  <div class="form-row">
+    <ngx-stripe-card
+      [options]="cardOptions"
+      [elementsOptions]="elementsOptions"
+    ></ngx-stripe-card>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="pay()">Pay</button>
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    Cancel
+  </button>
+</div>
