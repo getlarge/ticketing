@@ -18,7 +18,6 @@ export class OrderService {
 
   async createJob(order: OrderCreatedEvent['data']): Promise<void> {
     const jobId = `queue.${ORDERS_QUEUE}.${order.id}`;
-    this.expirationQueue.getJob;
     const job = await this.expirationQueue.getJob(jobId);
     if (job) {
       // job already created
