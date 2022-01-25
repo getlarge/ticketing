@@ -33,16 +33,16 @@ export class SignInComponent implements OnInit, OnDestroy {
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
+    // get return url from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
     // redirect to home if already logged in
     this.store
-      .select((st) => st.users?.currentUser)
+      .select(UserStoreSelectors.selectCurrentUser)
       .pipe(takeUntil(this.destroy$), first())
       .subscribe({
         next: (user) => (user ? this.router.navigate(['/']) : null),
       });
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     this.actionsSubj
       .pipe(

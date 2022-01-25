@@ -59,8 +59,6 @@ export class TicketListFilterFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.formValueSub) {
-      this.formValueSub.unsubscribe();
-    }
+    this.formValueSub?.unsubscribe();
   }
 }

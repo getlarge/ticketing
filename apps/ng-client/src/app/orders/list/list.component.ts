@@ -32,6 +32,7 @@ export class OrderListComponent implements OnInit {
     this.isLoading$ = this.store.select(
       OrderStoreSelectors.selectOrderIsLoading
     );
+    this.store.dispatch(new OrderStoreActions.LoadOrdersAction());
   }
 
   onViewOrder(orderId: string): void {

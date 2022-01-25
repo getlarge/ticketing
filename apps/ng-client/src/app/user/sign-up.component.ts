@@ -37,7 +37,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
     // redirect to home if already logged
     this.store
-      .select((st) => st.users?.currentUser)
+      .select(UserStoreSelectors.selectCurrentUser)
       .pipe(takeUntil(this.destroy$), first())
       .subscribe({
         next: (user) => {
