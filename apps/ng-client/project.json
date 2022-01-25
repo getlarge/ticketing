@@ -18,7 +18,8 @@
           "apps/ng-client/src/assets"
         ],
         "styles": ["apps/ng-client/src/styles.css"],
-        "scripts": []
+        "scripts": [],
+        "allowedCommonJsDependencies": ["validator"]
       },
       "configurations": {
         "production": {
