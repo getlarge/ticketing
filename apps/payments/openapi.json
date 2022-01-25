@@ -106,12 +106,17 @@
           "stripeId": {
             "type": "string",
             "description": "Reference to the stripe charge"
+          },
+          "version": {
+            "type": "number",
+            "description": "Payment version represented by a number incremented at each updated"
           }
         },
         "required": [
           "id",
           "orderId",
-          "stripeId"
+          "stripeId",
+          "version"
         ]
       }
     }

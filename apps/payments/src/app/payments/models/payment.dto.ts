@@ -19,4 +19,11 @@ export class PaymentDto extends Payment {
     required: true,
   })
   stripeId: string;
+
+  @ApiProperty({
+    description:
+      'Payment version represented by a number incremented at each updated',
+    required: true,
+  })
+  version: number;
 }
