@@ -70,6 +70,48 @@ export function featureReducer(
         error: action.payload?.error,
       };
     }
+    case ActionTypes.LOAD_ORDER: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    }
+    case ActionTypes.LOAD_ORDER_SUCCESS: {
+      return featureAdapter.addOne(action.payload.order, {
+        ...state,
+        isLoading: false,
+        error: null,
+      });
+    }
+    case ActionTypes.LOAD_ORDER_FAILURE: {
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload?.error,
+      };
+    }
+    case ActionTypes.PAY_ORDER: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    }
+    case ActionTypes.PAY_ORDER_SUCCESS: {
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+      };
+    }
+    case ActionTypes.PAY_ORDER_FAILURE: {
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload?.error,
+      };
+    }
     case ActionTypes.SELECT_ORDER: {
       return {
         ...state,

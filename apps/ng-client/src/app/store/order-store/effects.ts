@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { OrdersService } from '@ticketing/ng/open-api';
-import { debounceTime, Observable, of as observableOf } from 'rxjs';
-import { catchError, concatMap, map, switchMap } from 'rxjs/operators';
+import { OrdersService, PaymentsService } from '@ticketing/ng/open-api';
+import { Observable, of as observableOf } from 'rxjs';
+import { catchError, exhaustMap, map } from 'rxjs/operators';
 
 import { transformError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
@@ -12,7 +12,8 @@ import * as featureActions from './actions';
 export class OrderStoreEffects {
   constructor(
     private actions$: Actions,
-    private ordersService: OrdersService
+    private ordersService: OrdersService,
+    private paymentsService: PaymentsService
   ) {}
 
   createOrderEffect$: Observable<Action> = createEffect(() =>
@@ -21,7 +22,7 @@ export class OrderStoreEffects {
         featureActions.ActionTypes.CREATE_ORDER
       ),
       map((action) => action.payload),
-      concatMap(({ ticketId }) =>
+      exhaustMap(({ ticketId }) =>
         this.ordersService.ordersControllerCreate({ body: { ticketId } }).pipe(
           map(
             (order) => new featureActions.CreateOrderSuccessAction({ order })
@@ -45,7 +46,7 @@ export class OrderStoreEffects {
         featureActions.ActionTypes.CANCEL_ORDER
       ),
       map((action) => action.payload),
-      concatMap(({ orderId }) =>
+      exhaustMap(({ orderId }) =>
         this.ordersService.ordersControllerCancelById({ id: orderId }).pipe(
           map(
             (order) =>
@@ -70,8 +71,7 @@ export class OrderStoreEffects {
       ofType<featureActions.LoadOrdersAction>(
         featureActions.ActionTypes.LOAD_ORDERS
       ),
-      debounceTime(500),
-      switchMap(() =>
+      exhaustMap(() =>
         this.ordersService.ordersControllerFind().pipe(
           map(
             (orders) => new featureActions.LoadOrdersSuccessAction({ orders })
@@ -84,6 +84,52 @@ export class OrderStoreEffects {
             )
           )
         )
+      )
+    )
+  );
+
+  loadOrderEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<featureActions.LoadOrderAction>(
+        featureActions.ActionTypes.LOAD_ORDER
+      ),
+      map((action) => action.payload),
+      exhaustMap(({ orderId }) =>
+        this.ordersService.ordersControllerFindById({ id: orderId }).pipe(
+          map((order) => new featureActions.LoadOrderSuccessAction({ order })),
+          catchError((error) =>
+            observableOf(
+              new featureActions.LoadOrderFailureAction({
+                error: transformError(error),
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  payOrderEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<featureActions.PayOrderAction>(
+        featureActions.ActionTypes.PAY_ORDER
+      ),
+      map((action) => action.payload),
+      exhaustMap(({ orderId, token }) =>
+        this.paymentsService
+          .paymentsControllerCreate({ body: { orderId, token } })
+          .pipe(
+            map(
+              (payment) => new featureActions.PayOrderSuccessAction({ payment })
+            ),
+            catchError((error) =>
+              observableOf(
+                new featureActions.PayOrderFailureAction({
+                  error: transformError(error),
+                })
+              )
+            )
+          )
       )
     )
   );

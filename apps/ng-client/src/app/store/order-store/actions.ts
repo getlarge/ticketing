@@ -1,6 +1,6 @@
 import { Update } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
-import { Order } from '@ticketing/shared/models';
+import { Order, Payment } from '@ticketing/shared/models';
 
 import { OrderFilter } from '../../models';
 
@@ -16,6 +16,14 @@ export enum ActionTypes {
   LOAD_ORDERS = '[Orders] Load Orders',
   LOAD_ORDERS_SUCCESS = '[Order API] Load Orders Success',
   LOAD_ORDERS_FAILURE = '[Order API] Load Orders Failure',
+
+  LOAD_ORDER = '[Orders] Load Order',
+  LOAD_ORDER_SUCCESS = '[Order API] Load Order Success',
+  LOAD_ORDER_FAILURE = '[Order API] Load Order Failure',
+
+  PAY_ORDER = '[Orders] Pay Order',
+  PAY_ORDER_SUCCESS = '[Payment API] Pay Order Success',
+  PAY_ORDER_FAILURE = '[Payment API] Pay Order Failure',
 
   FILTER_ORDERS = '[List Screen] Filter Orders',
 
@@ -66,6 +74,36 @@ export class LoadOrdersFailureAction implements Action {
   constructor(public payload: { error: string }) {}
 }
 
+export class LoadOrderAction implements Action {
+  readonly type = ActionTypes.LOAD_ORDER;
+  constructor(public payload: { orderId: string }) {}
+}
+
+export class LoadOrderSuccessAction implements Action {
+  readonly type = ActionTypes.LOAD_ORDER_SUCCESS;
+  constructor(public payload: { order: Order }) {}
+}
+
+export class LoadOrderFailureAction implements Action {
+  readonly type = ActionTypes.LOAD_ORDER_FAILURE;
+  constructor(public payload: { error: string }) {}
+}
+
+export class PayOrderAction implements Action {
+  readonly type = ActionTypes.PAY_ORDER;
+  constructor(public payload: { orderId: string; token: string }) {}
+}
+
+export class PayOrderSuccessAction implements Action {
+  readonly type = ActionTypes.PAY_ORDER_SUCCESS;
+  constructor(public payload: { payment: Payment }) {}
+}
+
+export class PayOrderFailureAction implements Action {
+  readonly type = ActionTypes.PAY_ORDER_FAILURE;
+  constructor(public payload: { error: string }) {}
+}
+
 export class FilterOrdersAction implements Action {
   readonly type = ActionTypes.FILTER_ORDERS;
   constructor(public payload: { filter: OrderFilter }) {}
@@ -86,5 +124,11 @@ export type ActionsUnion =
   | LoadOrdersAction
   | LoadOrdersFailureAction
   | LoadOrdersSuccessAction
+  | LoadOrderAction
+  | LoadOrderFailureAction
+  | LoadOrderSuccessAction
+  | PayOrderAction
+  | PayOrderFailureAction
+  | PayOrderSuccessAction
   | FilterOrdersAction
   | SelectOrderAction;
