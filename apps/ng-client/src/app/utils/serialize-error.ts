@@ -55,12 +55,29 @@ export function serializeError(value: unknown): any {
   return value;
 }
 
+function isHTML(str: string): boolean {
+  const fragment = document.createRange().createContextualFragment(str);
+  // remove all non text nodes from fragment
+  fragment
+    .querySelectorAll('*')
+    .forEach((el) => el.parentNode?.removeChild(el));
+  // if there is textContent, then not a pure HTML
+  return !(fragment.textContent || '').trim();
+}
+
 export function transformError(value: unknown): string {
   if (value && typeof value === 'object' && isErrorResponse(value)) {
     return value.errors.map(({ message }) => message).join('\n');
   }
   const error = serializeError(value);
-  return error && typeof error === 'object' && 'message' in error
-    ? error.message
-    : error;
+  if (error && typeof error === 'object' && 'message' in error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string' && isHTML(error)) {
+    // TODO: parse HTML
+    return 'Unknown error';
+  }
+  console.error('Unsanitized error', error);
+  return error;
 }
