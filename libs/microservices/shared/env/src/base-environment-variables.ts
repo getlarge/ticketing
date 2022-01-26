@@ -58,21 +58,10 @@ export class BaseEnvironmentVariables {
   @decorate(Expose())
   @decorate(IsOptional())
   @decorate(
-    IsUrl({
-      protocols: ['http', 'https'],
-      require_tld: false,
-      require_protocol: true,
-      require_valid_protocol: true,
-    })
-  )
-  PROXY_SERVER_URL?: string = null;
-
-  @decorate(Expose())
-  @decorate(IsOptional())
-  @decorate(
-    Transform(({ value }) => (value ? JSON.parse(value) : []), {
-      toClassOnly: true,
-    })
+    Transform(
+      ({ value }) => (value ? value.split(',').map((v) => v.trim()) : []),
+      { toClassOnly: true }
+    )
   )
   @decorate(IsArray())
   @decorate(
