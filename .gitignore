@@ -47,5 +47,8 @@ Thumbs.db
 # apps/**/package-lock.json
 
 # storage for dev keys
-keys
+keys/*
+!keys/.env.sample
+
+# Angular cache
 .angular
