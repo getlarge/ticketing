@@ -10,6 +10,10 @@ export enum ActionTypes {
   LOAD_TICKETS_SUCCESS = '[Ticket API] Load Tickets Success',
   LOAD_TICKETS_FAILURE = '[Ticket API] Load Tickets Failure',
 
+  LOAD_TICKET = '[Tickets] Load Ticket',
+  LOAD_TICKET_SUCCESS = '[Ticket API] Load Ticket Success',
+  LOAD_TICKET_FAILURE = '[Ticket API] Load Ticket Failure',
+
   CREATE_TICKET = '[List Screen] Create Ticket',
   CREATE_TICKET_SUCCESS = '[Ticket API] Create Ticket Success',
   CREATE_TICKET_FAILURE = '[Ticket API] Create Ticket Failure',
@@ -34,6 +38,21 @@ export class LoadTicketsSuccessAction implements Action {
 
 export class LoadTicketsFailureAction implements Action {
   readonly type = ActionTypes.LOAD_TICKETS_FAILURE;
+  constructor(public payload: { error: string }) {}
+}
+
+export class LoadTicketAction implements Action {
+  readonly type = ActionTypes.LOAD_TICKET;
+  constructor(public payload: { ticketId: string }) {}
+}
+
+export class LoadTicketSuccessAction implements Action {
+  readonly type = ActionTypes.LOAD_TICKET_SUCCESS;
+  constructor(public payload: { ticket: Ticket }) {}
+}
+
+export class LoadTicketFailureAction implements Action {
+  readonly type = ActionTypes.LOAD_TICKET_FAILURE;
   constructor(public payload: { error: string }) {}
 }
 
@@ -81,6 +100,9 @@ export type ActionsUnion =
   | LoadTicketsAction
   | LoadTicketsFailureAction
   | LoadTicketsSuccessAction
+  | LoadTicketAction
+  | LoadTicketFailureAction
+  | LoadTicketSuccessAction
   | CreateTicketAction
   | CreateTicketSuccessAction
   | CreateTicketFailureAction
