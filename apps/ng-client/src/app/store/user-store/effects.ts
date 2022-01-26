@@ -31,31 +31,27 @@ export class UserStoreEffects {
     )
   );
 
-  // TODO: investigate issue with infinite loop in effect when returning featureActions.SignInSuccessAction
-  signInEffect$ = createEffect(() => {
-    return this.actions$.pipe(
+  signInEffect$ = createEffect(() =>
+    this.actions$.pipe(
       ofType<featureActions.SignInAction>(featureActions.ActionTypes.SIGN_IN),
       map((action) => action.payload),
-      switchMap(({ credentials }) => {
-        return this.userService
-          .usersControllerSignIn({ body: credentials })
-          .pipe(
-            map(({ token }) => {
-              LocalStorageService.set('token', token);
-              return new featureActions.LoadCurrentUserAction();
-              // return new featureActions.SignInSuccessAction({ token });
-            }),
-            catchError((error) =>
-              of(
-                new featureActions.SignInFailureAction({
-                  error: transformError(error),
-                })
-              )
+      switchMap(({ credentials }) =>
+        this.userService.usersControllerSignIn({ body: credentials }).pipe(
+          map(({ token }) => {
+            LocalStorageService.set('token', token);
+            return new featureActions.SignInSuccessAction({ token });
+          }),
+          catchError((error) =>
+            of(
+              new featureActions.SignInFailureAction({
+                error: transformError(error),
+              })
             )
-          );
-      })
-    );
-  });
+          )
+        )
+      )
+    )
+  );
 
   signOutEffect$ = createEffect(() =>
     this.actions$.pipe(

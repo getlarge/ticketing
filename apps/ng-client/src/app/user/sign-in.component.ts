@@ -6,10 +6,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { filter, Observable, Subject, takeUntil } from 'rxjs';
+import { ofType } from '@ngrx/effects';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
 
-import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
+import { UserStoreActions, UserStoreSelectors, UserStoreState } from '../store';
 
 @Component({ templateUrl: 'sign-in.component.html' })
 export class SignInComponent implements OnInit, OnDestroy {
@@ -23,7 +24,8 @@ export class SignInComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store<RootStoreState.RootState>
+    private store: Store<UserStoreState.State>,
+    private actionsSubj: ActionsSubject
   ) {}
 
   ngOnInit(): void {
@@ -34,7 +36,7 @@ export class SignInComponent implements OnInit, OnDestroy {
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
-    // redirect to "returnUrl" if logged in
+    // redirect to "returnUrl" if logged in and user loaded
     this.store
       .select(UserStoreSelectors.selectCurrentUser)
       .pipe(
@@ -42,7 +44,23 @@ export class SignInComponent implements OnInit, OnDestroy {
         filter((user) => !!user?.email)
       )
       .subscribe({
-        next: () => this.router.navigate([this.returnUrl]),
+        next: () => {
+          this.router.navigate([this.returnUrl]);
+        },
+      });
+
+    this.actionsSubj
+      .pipe(
+        takeUntil(this.destroy$),
+        ofType<UserStoreActions.SignInSuccessAction>(
+          UserStoreActions.ActionTypes.SIGN_IN_SUCCESS
+        ),
+        take(1)
+      )
+      .subscribe({
+        next: () => {
+          this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
+        },
       });
   }
 
