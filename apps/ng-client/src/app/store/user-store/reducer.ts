@@ -60,17 +60,18 @@ export function featureReducer(
     case ActionTypes.SIGN_OUT_SUCCESS: {
       return featureAdapter.removeOne(state.currentUser?.id as string, {
         ...state,
-        isLoading: true,
+        isLoading: false,
         error: null,
         currentToken: undefined,
         currentUser: null,
       });
     }
     case ActionTypes.SIGN_OUT_FAILURE: {
+      // do not show signout error
       return {
         ...state,
         isLoading: false,
-        error: action.payload.error,
+        error: null,
         currentToken: undefined,
         currentUser: null,
       };
@@ -78,7 +79,7 @@ export function featureReducer(
     case ActionTypes.LOAD_CURRENT_USER: {
       return {
         ...state,
-        isLoading: false,
+        isLoading: true,
         error: null,
       };
     }
@@ -91,10 +92,12 @@ export function featureReducer(
       };
     }
     case ActionTypes.LOAD_CURRENT_USER_FAILURE: {
+      // do not show current user loading error
+      // console.error(action.payload.error);
       return {
         ...state,
         isLoading: false,
-        error: action.payload.error,
+        error: null,
       };
     }
     default: {
