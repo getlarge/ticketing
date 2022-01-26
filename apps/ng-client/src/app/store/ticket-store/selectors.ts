@@ -36,6 +36,11 @@ export const selectTicketCurrentFilter = createSelector(
   (state: State): TicketFilter => state.currentFilter
 );
 
+export const selectAvailableTicketItems = createSelector(
+  selectAllTicketItems,
+  (items: Ticket[]): Ticket[] => items.filter((item) => !item.orderId)
+);
+
 export const selectFilteredTicketItems = createSelector(
   selectTicketCurrentFilter,
   selectAllTicketItems,

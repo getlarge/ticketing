@@ -33,6 +33,7 @@ export class TicketListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    //? TODO: only show available tickets with TicketStoreSelectors.selectAvailableTicketItems
     this.tickets$ = this.store.select(
       TicketStoreSelectors.selectAllTicketItems
     );

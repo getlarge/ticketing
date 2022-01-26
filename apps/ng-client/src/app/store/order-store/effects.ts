@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { OrdersService, PaymentsService } from '@ticketing/ng/open-api';
 import { Observable, of as observableOf } from 'rxjs';
-import { catchError, exhaustMap, map } from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap } from 'rxjs/operators';
 
 import { transformError } from '../../utils/serialize-error';
 import * as featureActions from './actions';
@@ -22,7 +22,7 @@ export class OrderStoreEffects {
         featureActions.ActionTypes.CREATE_ORDER
       ),
       map((action) => action.payload),
-      exhaustMap(({ ticketId }) =>
+      mergeMap(({ ticketId }) =>
         this.ordersService.ordersControllerCreate({ body: { ticketId } }).pipe(
           map(
             (order) => new featureActions.CreateOrderSuccessAction({ order })
@@ -46,7 +46,7 @@ export class OrderStoreEffects {
         featureActions.ActionTypes.CANCEL_ORDER
       ),
       map((action) => action.payload),
-      exhaustMap(({ orderId }) =>
+      mergeMap(({ orderId }) =>
         this.ordersService.ordersControllerCancelById({ id: orderId }).pipe(
           map(
             (order) =>
