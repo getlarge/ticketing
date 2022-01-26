@@ -6,9 +6,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ofType } from '@ngrx/effects';
-import { ActionsSubject, Store } from '@ngrx/store';
-import { first, Observable, Subject, takeUntil } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
 
 import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
 
@@ -24,7 +23,6 @@ export class SignInComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private actionsSubj: ActionsSubject,
     private store: Store<RootStoreState.RootState>
   ) {}
 
@@ -36,24 +34,15 @@ export class SignInComponent implements OnInit, OnDestroy {
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.isLoading$ = this.store.select(UserStoreSelectors.selectUserIsLoading);
-    // redirect to home if already logged in
+    // redirect to "returnUrl" if logged in
     this.store
       .select(UserStoreSelectors.selectCurrentUser)
-      .pipe(takeUntil(this.destroy$), first())
-      .subscribe({
-        next: (user) => (user ? this.router.navigate(['/']) : null),
-      });
-
-    this.actionsSubj
       .pipe(
         takeUntil(this.destroy$),
-        ofType(UserStoreActions.ActionTypes.SIGN_IN_SUCCESS)
+        filter((user) => !!user?.email)
       )
       .subscribe({
-        next: () => {
-          this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
-          this.router.navigate([this.returnUrl]);
-        },
+        next: () => this.router.navigate([this.returnUrl]),
       });
   }
 
@@ -69,7 +58,6 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.submitted = true;
-    // stop here if form is invalid
     if (this.form.invalid) {
       return;
     }

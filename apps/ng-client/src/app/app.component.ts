@@ -39,10 +39,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.user$ = this.store.select(UserStoreSelectors.selectCurrentUser);
     // TODO: only dispatch LoadCurrentUserAction if !!currentToken
     this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
-    // TODO: find better place to load tickets and orders
-    // TODO: requests get triggered many time after login why ?
-    // this.store.dispatch(new TicketStoreActions.LoadTicketsAction());
-    // this.store.dispatch(new OrderStoreActions.LoadOrdersAction());
     this.error$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (error) => {
         this.alertService.error(error, { autoClose: true });

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UsersService } from '@ticketing/ng/open-api';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
 
 import { LocalStorageService } from '../../services';
 import { transformError } from '../../utils/serialize-error';
@@ -31,33 +31,35 @@ export class UserStoreEffects {
     )
   );
 
-  signInEffect$ = createEffect(() =>
-    this.actions$.pipe(
+  // TODO: investigate issue with infinite loop in effect when returning featureActions.SignInSuccessAction
+  signInEffect$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType<featureActions.SignInAction>(featureActions.ActionTypes.SIGN_IN),
       map((action) => action.payload),
-      exhaustMap(({ credentials }) =>
-        this.userService.usersControllerSignIn({ body: credentials }).pipe(
-          map(({ token }) => {
-            LocalStorageService.set('token', token);
-            return new featureActions.SignInSuccessAction({ token });
-          }),
-          catchError((error) =>
-            of(
-              new featureActions.SignInFailureAction({
-                error: transformError(error),
-              })
+      switchMap(({ credentials }) => {
+        return this.userService
+          .usersControllerSignIn({ body: credentials })
+          .pipe(
+            map(({ token }) => {
+              LocalStorageService.set('token', token);
+              return new featureActions.LoadCurrentUserAction();
+              // return new featureActions.SignInSuccessAction({ token });
+            }),
+            catchError((error) =>
+              of(
+                new featureActions.SignInFailureAction({
+                  error: transformError(error),
+                })
+              )
             )
-          )
-        )
-      )
-    )
-  );
+          );
+      })
+    );
+  });
 
   signOutEffect$ = createEffect(() =>
     this.actions$.pipe(
-      ofType<featureActions.LoadCurrentUserAction>(
-        featureActions.ActionTypes.SIGN_OUT
-      ),
+      ofType<featureActions.SignOutAction>(featureActions.ActionTypes.SIGN_OUT),
       exhaustMap(() =>
         this.userService.usersControllerSignOut().pipe(
           map(() => {

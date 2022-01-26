@@ -10,7 +10,7 @@ export enum ActionTypes {
   SIGN_IN_SUCCESS = '[Auth API] SignIn Success',
   SIGN_IN_FAILURE = '[Auth API] SignIn Failure',
 
-  SIGN_OUT = '[Sign in] Logout User',
+  SIGN_OUT = '[Sign out] Logout User',
   SIGN_OUT_SUCCESS = '[Auth API] SignOut Success',
   SIGN_OUT_FAILURE = '[Auth API] SignOut Failure',
 
