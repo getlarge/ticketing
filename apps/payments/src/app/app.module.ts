@@ -22,17 +22,20 @@ import { PaymentsModule } from './payments/payments.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: 'debug',
-        autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
-      },
+    LoggerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        pinoHttp: {
+          level: configService.get('LOG_LEVEL'),
+          autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
+        },
+      }),
     }),
     MongooseModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
-      inject: [ConfigService],
     }),
     HealthModule,
     OrdersModule,

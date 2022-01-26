@@ -23,18 +23,21 @@ import { TicketsModule } from './tickets/tickets.module';
       expandVariables: true,
       validate: validate(EnvironmentVariables),
     }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: 'debug',
-        autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
-      },
-      forRoutes: [OrdersController],
+    LoggerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        pinoHttp: {
+          level: configService.get('LOG_LEVEL'),
+          autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
+        },
+        forRoutes: [OrdersController],
+      }),
     }),
     MongooseModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
-      inject: [ConfigService],
     }),
     HealthModule,
     OrdersModule,

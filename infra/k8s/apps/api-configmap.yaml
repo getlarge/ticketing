@@ -16,3 +16,4 @@ data:
   JWT_ISSUER: ticketing.dev
   NATS_URL: http://nats-srv:4222
   NATS_CLUSTER_ID: ticketing
+  LOG_LEVEL: info

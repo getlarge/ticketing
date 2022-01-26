@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Environment } from '@ticketing/shared/constants';
+import { Environment, LogLevel } from '@ticketing/shared/constants';
 import { Expose, Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -83,6 +83,7 @@ export class BaseEnvironmentVariables {
   @decorate(Type(() => Number))
   MAX_PAYLOAD_SIZE?: number = 10;
 
+  // API SPECS EXPLORERS
   @decorate(Expose())
   @decorate(IsOptional())
   @decorate(IsString())
@@ -131,6 +132,12 @@ export class BaseEnvironmentVariables {
   @decorate(IsNumber())
   @decorate(Type(() => Number))
   WEB_CONCURRENCY?: number;
+
+  // LOGS
+  @decorate(Expose())
+  @decorate(IsOptional())
+  @decorate(IsEnum(LogLevel))
+  LOG_LEVEL?: LogLevel = LogLevel.debug;
 
   // EXTERNAL LINKS
   @decorate(Expose())

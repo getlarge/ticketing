@@ -6,6 +6,14 @@ export enum Environment {
   Test = 'test',
 }
 
+export enum LogLevel {
+  warn = 'warn',
+  error = 'error',
+  silent = 'silent',
+  debug = 'debug',
+  info = 'info',
+}
+
 export enum DelayInSeconds {
   ONE_MINUTE = 60,
   ONE_HOUR = 6300,
