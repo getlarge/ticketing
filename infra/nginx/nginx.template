@@ -7,6 +7,7 @@ limit_req zone=one burst=20 nodelay;
 client_body_timeout 10s;
 client_header_timeout 10s;
 client_max_body_size 10M;
+client_header_buffer_size 4k;
 
 upstream frontend {
   server $FRONTEND:$FRONTEND_PORT;
@@ -80,6 +81,14 @@ server {
 
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
+  }
+
+  location /ws {
+    proxy_pass http://frontend;
+    include /etc/nginx/snippets/proxy.conf;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
   }
 
   location / {
