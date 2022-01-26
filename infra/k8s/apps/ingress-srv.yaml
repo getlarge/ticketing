@@ -8,10 +8,33 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: 5m
     nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
     nginx.ingress.kubernetes.io/large-client-header-buffers: '4 16k'
-    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    # nginx.ingress.kubernetes.io/enable-cors: 'true'
+    # nginx.ingress.kubernetes.io/cors-allow-origin: '*'
     # nginx.ingress.kubernetes.io/cors-allow-methods
     # nginx.ingress.kubernetes.io/cors-allow-headers
-    nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+    nginx.ingress.kubernetes.io/server-snippet: |
+      set $cors_credentials '';
+      set $cors_content_type '';
+      set $cors_content_length '';
+      if ($http_origin ~ '.+') {
+          set $cors_credentials 'true';
+      }
+      if ($request_method = OPTIONS) {
+          set $cors_content_type 'text/plain';
+          set $cors_content_length '0';
+      }
+      # empty header will not be added
+      add_header Access-Control-Allow-Origin $http_origin always;
+      add_header Access-Control-Allow-Credentials $cors_credentials always;
+      add_header Access-Control-Allow-Methods $http_access_control_request_method always;
+      add_header Access-Control-Allow-Headers $http_access_control_request_headers always;
+      add_header Content-Type $cors_content_type;
+      add_header Content-Length $cors_content_length;
+
+      if ($request_method = OPTIONS) {
+          return 204;
+      }
+
 spec:
   rules:
     - host: ticketing.dev
@@ -44,7 +67,7 @@ spec:
               service:
                 name: payments-srv
                 port:
-                  number: 3000                  
+                  number: 3000
           - path: /?(.*)
             pathType: Prefix
             backend:

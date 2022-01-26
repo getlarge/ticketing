@@ -4,6 +4,7 @@ metadata:
   name: api-config
 data:
   NODE_ENV: 'development'
+  PROXY_SERVER_URLS: 'http://ticketing.dev'
   FRONTEND_URL: 'http://ticketing.dev'
   MAX_PAYLOAD_SIZE: '5'
   SWAGGER_PATH: open-api
