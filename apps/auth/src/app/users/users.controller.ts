@@ -98,16 +98,27 @@ export class UsersController {
     return { token };
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({
     description: 'Sign out as signed in user',
     summary: `Sign out - Scope : ${Resources.USERS}:${Actions.SIGN_OUT}`,
   })
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      type: 'object',
+      properties: {
+        success: {
+          type: 'boolean',
+        },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   @Post('sign-out')
-  signOut(@Session() session: FastifySession): Record<string, unknown> {
+  signOut(@Session() session: FastifySession): { success: boolean } {
     session.delete();
     return this.usersService.signOut();
   }

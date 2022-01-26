@@ -177,19 +177,23 @@ export class UsersService extends BaseService {
    * This method doesn't expect any request body.
    */
   usersControllerSignOut$Response(params?: {
-  }): Observable<StrictHttpResponse<void>> {
+  }): Observable<StrictHttpResponse<{
+'success'?: boolean;
+}>> {
 
     const rb = new RequestBuilder(this.rootUrl, UsersService.UsersControllerSignOutPath, 'post');
     if (params) {
     }
 
     return this.http.request(rb.build({
-      responseType: 'text',
-      accept: '*/*'
+      responseType: 'json',
+      accept: 'application/json'
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+        return r as StrictHttpResponse<{
+        'success'?: boolean;
+        }>;
       })
     );
   }
@@ -205,10 +209,16 @@ export class UsersService extends BaseService {
    * This method doesn't expect any request body.
    */
   usersControllerSignOut(params?: {
-  }): Observable<void> {
+  }): Observable<{
+'success'?: boolean;
+}> {
 
     return this.usersControllerSignOut$Response(params).pipe(
-      map((r: StrictHttpResponse<void>) => r.body as void)
+      map((r: StrictHttpResponse<{
+'success'?: boolean;
+}>) => r.body as {
+'success'?: boolean;
+})
     );
   }
 

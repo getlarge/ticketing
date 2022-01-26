@@ -63,7 +63,7 @@ export class UsersService {
     return { token };
   }
 
-  signOut(): Record<string, unknown> {
-    return {};
+  signOut(): { success: boolean } {
+    return { success: true };
   }
 }
