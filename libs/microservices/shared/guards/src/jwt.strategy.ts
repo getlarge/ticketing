@@ -27,10 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: (req) => {
         const request = req as unknown as FastifyRequest;
         const { headers, session } = request;
+        const authHeader = AUTHORIZATION_HEADER_NAME.toLowerCase();
         if (session?.get(SESSION_ACCESS_TOKEN)) {
           return session.get(SESSION_ACCESS_TOKEN);
-        } else if (headers[AUTHORIZATION_HEADER_NAME]) {
-          const jwtHeader = headers[AUTHORIZATION_HEADER_NAME] as string;
+        } else if (headers[authHeader]) {
+          const jwtHeader = headers[authHeader] as string;
           return jwtHeader?.replace(/bearer/gi, '').trim();
         }
         return null;
