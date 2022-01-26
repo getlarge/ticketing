@@ -4,44 +4,47 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { environment } from '@ticketing/ng/env';
 import { AUTHORIZATION_HEADER_NAME } from '@ticketing/shared/constants';
-import { Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { Observable, switchMap, take } from 'rxjs';
 
-import { RootStoreState, UserStoreSelectors } from '../store';
+import { UserStoreSelectors, UserStoreState } from '../store';
 
 @Injectable()
-export class JwtInterceptor implements HttpInterceptor, OnDestroy {
-  destroy$: Subject<boolean> = new Subject<boolean>();
+export class JwtInterceptor implements HttpInterceptor {
+  constructor(private store: Store<UserStoreState.State>) {}
 
-  constructor(private store: Store<RootStoreState.RootState>) {}
-
+  // add auth header with jwt if user is logged in and request is to the api url
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    // add auth header with jwt if user is logged in and request is to the api url
+    //? Take token from LocalStorageService.get('token') instead ?
     return this.store.select(UserStoreSelectors.selectCurrentToken).pipe(
-      takeUntil(this.destroy$),
+      take(1),
       switchMap((token) => {
-        const isApiUrl = request.url.startsWith(environment.apiBaseDomain);
-        if (token && isApiUrl) {
-          // eslint-disable-next-line no-param-reassign
-          request = request.clone({
-            setHeaders: {
-              [AUTHORIZATION_HEADER_NAME]: `Bearer ${token}`,
-            },
-          });
-        }
+        // eslint-disable-next-line no-param-reassign
+        request = this.updateRequest(request, token);
         return next.handle(request);
       })
     );
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
+  updateRequest(
+    request: HttpRequest<unknown>,
+    token?: string
+  ): HttpRequest<unknown> {
+    const url = new URL(request.url);
+    const isApiUrl = url.host === environment.apiBaseDomain;
+    if (token && isApiUrl) {
+      return request.clone({
+        setHeaders: {
+          [AUTHORIZATION_HEADER_NAME]: `Bearer ${token}`,
+        },
+      });
+    }
+    return request;
   }
 }
