@@ -30,7 +30,6 @@ async function bootstrap(): Promise<void> {
 
   const configService = app.get<AppConfigService>(ConfigService);
   const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
-  const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
 
   const logger = app.get(Logger);
   app.useLogger(logger);
@@ -71,9 +70,6 @@ async function bootstrap(): Promise<void> {
   await microService.listen();
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
-    logger.log(
-      `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
-    );
   });
 }
 

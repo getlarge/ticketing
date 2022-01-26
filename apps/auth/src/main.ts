@@ -17,6 +17,7 @@ import {
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
 import { Resources } from '@ticketing/shared/constants';
+import fastifyCors from 'fastify-cors';
 import { fastifyHelmet } from 'fastify-helmet';
 import fastifyPassport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
@@ -44,6 +45,9 @@ async function bootstrap(): Promise<void> {
   const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
+  const proxyServerUrls = configService.get('PROXY_SERVER_URLS', {
+    infer: true,
+  });
 
   const logger = app.get(Logger);
   app.useLogger(logger);
@@ -70,9 +74,18 @@ async function bootstrap(): Promise<void> {
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
+  if (!proxyServerUrls.length) {
+    app.register(fastifyCors, {
+      origin: '*',
+      // allowedHeaders: ALLOWED_HEADERS,
+      // exposedHeaders: EXPOSED_HEADERS,
+      allowedHeaders: '*',
+      exposedHeaders: '*',
+    });
+  }
 
   // SwaggerUI
-  const config = new DocumentBuilder()
+  const documentBuilder = new DocumentBuilder()
     .setTitle('Auth API')
     .setDescription('Ticketing auth API description')
     .setVersion(configService.get('APP_VERSION'))
@@ -81,10 +94,15 @@ async function bootstrap(): Promise<void> {
     .addSecurityRequirements(SecurityRequirements.Session)
     .addSecurityRequirements(SecurityRequirements.Bearer)
     .addTag(Resources.USERS)
-    .addServer(configService.get('SERVER_URL'))
-    .build();
+    .addServer(configService.get('SERVER_URL'));
 
-  const document = SwaggerModule.createDocument(app, config);
+  if (proxyServerUrls.length) {
+    for (const serverUrl of proxyServerUrls) {
+      documentBuilder.addServer(serverUrl);
+    }
+  }
+
+  const document = SwaggerModule.createDocument(app, documentBuilder.build());
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: {
       persistAuthorization: true,

@@ -31,3 +31,27 @@ export const getCookieOptions = (
   path: '/',
   maxAge: 60 * 60,
 });
+
+export const ALLOWED_HEADERS = [
+  'X-Version',
+  'X-Access-Token',
+  'Refresh',
+  'Set-Cookie',
+  'DNT',
+  'User-Agent',
+  'X-Requested-With',
+  'If-Modified-Since',
+  'Cache-Control',
+  'Content-Type',
+  'Range',
+  'X-Scheme',
+  'X-Real-IP',
+  'X-Forwarded-Host',
+  'X-Forwarded-For',
+];
+
+export const EXPOSED_HEADERS = [
+  'Set-Cookie',
+  'Content-Length',
+  'Content-Range',
+];
