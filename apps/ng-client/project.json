@@ -37,8 +37,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "libs/shared/env/src/lib/environment.ts",
-              "with": "libs/shared/env/src/lib/environment.prod.ts"
+              "replace": "libs/ng/env/src/lib/environment.ts",
+              "with": "libs/ng/env/src/lib/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
@@ -58,8 +58,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "libs/shared/env/src/lib/environment.ts",
-              "with": "libs/shared/env/src/lib/environment.staging.ts"
+              "replace": "libs/ng/env/src/lib/environment.ts",
+              "with": "libs/ng/env/src/lib/environment.staging.ts"
             }
           ],
           "outputHashing": "all"
@@ -73,8 +73,8 @@
           "namedChunks": true,
           "fileReplacements": [
             {
-              "replace": "libs/shared/env/src/lib/environment.ts",
-              "with": "libs/shared/env/src/lib/environment.local.ts"
+              "replace": "libs/ng/env/src/lib/environment.ts",
+              "with": "libs/ng/env/src/lib/environment.local.ts"
             }
           ]
         },
@@ -141,7 +141,7 @@
     "docker-run": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "docker run -it --rm -p 4200:4200/tcp --name ticketing-ng-client ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
+        "command": "docker run -it --rm -p 4200:3000/tcp --name ticketing-ng-client ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
       }
     },
     "docker-push": {
