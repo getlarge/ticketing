@@ -343,7 +343,7 @@ services:
     networks:
       - apps
     ports:
-      - '${NGINX_HTTP_PORT:-80}:8080'
+      - '127.0.0.1:${NGINX_HTTP_PORT:-80}:8080'
     restart: always
     profiles:
       - 'services-only'
