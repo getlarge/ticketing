@@ -43,14 +43,16 @@ map $http_x_version $req_version {
 map $http_origin $cors_origin_header {
     default "";
     "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" "$http_origin";
-    # "~^https://test-.-dev.example.pl$" "$http_origin"; # https://test-7-dev.example.pl
-    "http://ticketing.dev" "$http_origin";
+    "(https?:\/\/)($DOMAIN)" "$http_origin";
+    # "~^https://test-.-dev.ticketing.dev$" "$http_origin"; # https://test-7-dev.ticketing.dev
+    # "(https?:\/\/)(ticketing.dev)" "$http_origin";
 }
 
 map $http_origin $cors_cred {
     default "";
     "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" "true";
-    "http://ticketing.dev" "true";
+    "(https?:\/\/)($DOMAIN)" "true";
+    # "(https?:\/\/)(ticketing.dev)" "true";
 }
 
 server {
