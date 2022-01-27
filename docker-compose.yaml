@@ -1,0 +1,350 @@
+version: '2.7'
+
+networks:
+  mongo:
+    driver: bridge
+  redis:
+    driver: bridge
+  nats-streaming:
+    driver: bridge
+  apps:
+    driver: bridge
+
+volumes:
+  mongo_volume:
+  redis_volume:
+  nats_volume:
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: ticketing-mongo
+    hostname: ticketing-mongo
+    # volumes:
+    #   - mongo_volume:/data/db
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: example=value
+    networks:
+      - mongo
+    ports:
+      - '${MONGO_PORT:-27017}:27017'
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'deps-only'
+      - 'dev'
+
+  redis:
+    image: redis:alpine
+    container_name: ticketing-redis
+    hostname: ticketing-redis
+    # volumes:
+    #   - redis_volume:/data
+    networks:
+      - redis
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'deps-only'
+      - 'dev'
+
+  nats-streaming:
+    image: nats-streaming:0.23.0
+    container_name: ticketing-nats
+    hostname: ticketing-nats
+    command:
+      [
+        --store,
+        MEMORY,
+        --port,
+        '4222',
+        --http_port,
+        '8222',
+        --hb_interval,
+        5s,
+        --hb_timeout,
+        5s,
+        --hb_fail_count,
+        '2',
+        --stan_debug,
+        --cluster_id,
+        ticketing,
+      ]
+    networks:
+      - nats-streaming
+    ports:
+      - '4222:4222'
+      - '8222:8222'
+    restart: always
+    profiles:
+      - 'deps-only'
+      - 'dev'
+
+  auth-service:
+    image: 'ghcr.io/getlarge/ticketing-auth:${AUTH_IMAGE_VERSION:-latest}'
+    container_name: auth-service
+    hostname: auth-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${AUTH_HTTP_PORT:-3000}
+      SERVER_URL: http://127.0.0.1:${AUTH_HTTP_PORT:-3000}
+      PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
+      FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-60m}
+      JWT_ISSUER: ${JWT_ISSUER:-ticketing.dev}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      SESSION_KEY: ${SESSION_KEY}
+      NATS_URL: http://ticketing-nats:4222
+      NATS_CLUSTER_ID: ticketing
+      MONGODB_URI: mongodb://ticketing-mongo:27017/auth
+    healthcheck:
+      test: node ./healthcheck.js http://0.0.0.0:${AUTH_HTTP_PORT:-3000}/$GLOBAL_API_PREFIX/health
+      interval: 60s
+      timeout: 3s
+      start_period: 10s
+      retries: 2
+    depends_on:
+      - mongo
+      - nats-streaming
+    ports:
+      - '${AUTH_HTTP_PORT:-3000}:${AUTH_HTTP_PORT:-3000}'
+    networks:
+      - mongo
+      - nats-streaming
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  expiration-service:
+    image: 'ghcr.io/getlarge/ticketing-expiration:${EXPIRATION_IMAGE_VERSION:-latest}'
+    container_name: expiration-service
+    hostname: expiration-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${EXPIRATION_HTTP_PORT:-3030}
+      SERVER_URL: http://127.0.0.1:${EXPIRATION_HTTP_PORT:-3030}
+      PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
+      NATS_URL: http://ticketing-nats:4222
+      NATS_CLUSTER_ID: ticketing
+      REDIS_URL: redis://ticketing-redis:6379
+    healthcheck:
+      test: node ./healthcheck.js http://0.0.0.0:${EXPIRATION_HTTP_PORT:-3000}/${GLOBAL_API_PREFIX:-api}/health
+      interval: 60s
+      timeout: 3s
+      start_period: 10s
+      retries: 2
+    depends_on:
+      - redis
+      - nats-streaming
+    ports:
+      - '${EXPIRATION_HTTP_PORT:-3030}:${EXPIRATION_HTTP_PORT:-3030}'
+    networks:
+      - redis
+      - nats-streaming
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  orders-service:
+    image: 'ghcr.io/getlarge/ticketing-orders:${ORDERS_IMAGE_VERSION:-latest}'
+    container_name: orders-service
+    hostname: orders-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${ORDERS_HTTP_PORT:-3020}
+      SERVER_URL: http://127.0.0.1:${ORDERS_HTTP_PORT:-3020}
+      PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
+      FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-60m}
+      JWT_ISSUER: ${JWT_ISSUER:-ticketing.dev}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      SESSION_KEY: ${SESSION_KEY}
+      NATS_URL: http://ticketing-nats:4222
+      NATS_CLUSTER_ID: ticketing
+      MONGODB_URI: mongodb://ticketing-mongo:27017/orders
+    healthcheck:
+      test: node ./healthcheck.js http://0.0.0.0:${ORDERS_HTTP_PORT:-3020}/${GLOBAL_API_PREFIX:-api}/health
+      interval: 60s
+      timeout: 3s
+      start_period: 10s
+      retries: 2
+    depends_on:
+      - mongo
+      - nats-streaming
+    ports:
+      - '${ORDERS_HTTP_PORT:-3020}:${ORDERS_HTTP_PORT:-3020}'
+    networks:
+      - mongo
+      - nats-streaming
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  payments-service:
+    image: 'ghcr.io/getlarge/ticketing-payments:${PAYMENTS_IMAGE_VERSION:-latest}'
+    container_name: payments-service
+    hostname: payments-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${PAYMENTS_HTTP_PORT:-3040}
+      SERVER_URL: http://127.0.0.1:${PAYMENTS_HTTP_PORT:-3040}
+      PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
+      FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-60m}
+      JWT_ISSUER: ${JWT_ISSUER:-ticketing.dev}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      SESSION_KEY: ${SESSION_KEY}
+      NATS_URL: http://ticketing-nats:4222
+      NATS_CLUSTER_ID: ticketing
+      MONGODB_URI: mongodb://ticketing-mongo:27017/payments
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_ENDPOINT_SECRET: ${STRIPE_ENDPOINT_SECRET}
+    healthcheck:
+      test: node ./healthcheck.js http://0.0.0.0:${PAYMENTS_HTTP_PORT:-3040}/${GLOBAL_API_PREFIX:-api}/health
+      interval: 60s
+      timeout: 3s
+      start_period: 10s
+      retries: 2
+    depends_on:
+      - mongo
+      - nats-streaming
+    ports:
+      - '${PAYMENTS_HTTP_PORT:-3040}:${PAYMENTS_HTTP_PORT:-3040}'
+    networks:
+      - mongo
+      - nats-streaming
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  tickets-service:
+    image: 'ghcr.io/getlarge/ticketing-tickets:${TICKETS_IMAGE_VERSION:-latest}'
+    container_name: tickets-service
+    hostname: tickets-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${TICKETS_HTTP_PORT:-3010}
+      SERVER_URL: http://127.0.0.1:${TICKETS_HTTP_PORT:-3010}
+      PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
+      FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-60m}
+      JWT_ISSUER: ${JWT_ISSUER:-ticketing.dev}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      SESSION_KEY: ${SESSION_KEY}
+      NATS_URL: http://ticketing-nats:4222
+      NATS_CLUSTER_ID: ticketing
+      MONGODB_URI: mongodb://ticketing-mongo:27017/tickets
+    healthcheck:
+      test: node ./healthcheck.js http://0.0.0.0:${TICKETS_HTTP_PORT:-3010}/${GLOBAL_API_PREFIX:-api}/health
+      interval: 60s
+      timeout: 3s
+      start_period: 10s
+      retries: 2
+    depends_on:
+      - mongo
+      - nats-streaming
+    ports:
+      - '${TICKETS_HTTP_PORT:-3010}:${TICKETS_HTTP_PORT:-3010}'
+    networks:
+      - mongo
+      - nats-streaming
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  ng-client:
+    image: 'ghcr.io/getlarge/ticketing-ng-client:${CLIENT_IMAGE_VERSION:-latest}'
+    container_name: ng-client
+    hostname: ng-client
+    healthcheck:
+      test: curl -f http://localhost:3000
+    ports:
+      - '4200:3000'
+    networks:
+      - apps
+    mem_limit: 256m
+    memswap_limit: 512m
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'
+
+  nginx:
+    container_name: ticketing-nginx
+    build:
+      context: infra/nginx
+      dockerfile: Dockerfile
+      args:
+        - TEMPLATE=nginx.template
+    environment:
+      - DOMAIN=${NGINX_DOMAIN:-ticketing.dev}
+      - PORT=8080
+      - FRONTEND_PORT=3000
+      - FRONTEND=ng-client
+      - AUTH_SERVICE=auth-service
+      - ORDERS_SERVICE=orders-service
+      - PAYMENTS_SERVICE=payments-service
+      - TICKETS_SERVICE=tickets-service
+      - AUTH_SERVICE_PORT=${AUTH_HTTP_PORT:-3000}
+      - ORDERS_SERVICE_PORT=${ORDERS_HTTP_PORT:-3020}
+      - PAYMENTS_SERVICE_PORT=${PAYMENTS_HTTP_PORT:-3040}
+      - TICKETS_SERVICE_PORT=${TICKETS_HTTP_PORT:-3010}
+    depends_on:
+      ng-client:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      orders-service:
+        condition: service_started
+      payments-service:
+        condition: service_started
+      tickets-service:
+        condition: service_started
+        # condition: service_healthy
+    networks:
+      - apps
+    ports:
+      - '${NGINX_HTTP_PORT:-80}:8080'
+    restart: always
+    profiles:
+      - 'services-only'
+      - 'dev'

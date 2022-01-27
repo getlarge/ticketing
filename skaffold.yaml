@@ -67,7 +67,7 @@ build:
       custom:
         buildCommand: npx nx run payments:docker-build --conf=development --tag=dev
         dependencies:
-          command: node ./tools/nx/get-dependencies-cli.js -p payments          
+          command: node ./tools/nx/get-dependencies-cli.js -p payments
     # CLIENT - NEXTJS
     # - image: ghcr.io/getlarge/ticketing-client
     #   context: .
