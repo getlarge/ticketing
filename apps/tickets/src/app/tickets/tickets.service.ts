@@ -15,9 +15,14 @@ import {
   TicketCreatedEvent,
   TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
+import {
+  NextPaginationDto,
+  PaginateDto,
+} from '@ticketing/microservices/shared/models';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
+import paginate from 'nestjs-keyset-paginator';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import { CreateTicket, Ticket, UpdateTicket } from './models';
@@ -49,9 +54,34 @@ export class TicketsService {
     return result;
   }
 
-  async find(): Promise<Ticket[]> {
-    const tickets = (await this.ticketModel.find()) || [];
-    return tickets.map((ticket) => ticket.toJSON<Ticket>());
+  async find(
+    params: PaginateDto = {}
+  ): Promise<{ results: Ticket[]; next: NextPaginationDto[] }> {
+    const {
+      skip = 0,
+      limit = 10,
+      start_key = undefined,
+      sort = undefined,
+      filter = undefined,
+      projection = undefined,
+    } = params;
+
+    // TODO: create a PR in nestjs-keyset-paginator to add document types
+    const { docs, next_key } = (await paginate(
+      this.ticketModel,
+      skip,
+      limit,
+      start_key,
+      sort?.field,
+      sort?.order,
+      filter,
+      projection
+    )) as {
+      docs: TicketDocument[];
+      next_key: { key: string; value: string }[];
+    };
+    const results = docs.map((ticket) => ticket.toJSON<Ticket>());
+    return { results, next: next_key };
   }
 
   async findById(id: string): Promise<Ticket> {

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -14,14 +15,27 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCookieAuth,
+  ApiExtraModels,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
-import { CurrentUser } from '@ticketing/microservices/shared/decorators';
+import {
+  ApiNestedQuery,
+  ApiPaginatedDto,
+  CurrentUser,
+} from '@ticketing/microservices/shared/decorators';
 import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
-import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
+import {
+  PaginatedDto,
+  PaginateDto,
+  PaginateQuery,
+} from '@ticketing/microservices/shared/models';
+import {
+  ParseObjectId,
+  ParseQuery,
+} from '@ticketing/microservices/shared/pipes';
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
@@ -38,6 +52,7 @@ import { TicketsService } from './tickets.service';
 
 @Controller(Resources.TICKETS)
 @ApiTags(Resources.TICKETS)
+@ApiExtraModels(PaginatedDto)
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
@@ -70,19 +85,25 @@ export class TicketsController {
     return this.ticketsService.create(ticket, currentUser);
   }
 
+  @UsePipes(
+    new ValidationPipe({
+      exceptionFactory: requestValidationErrorFactory,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      forbidUnknownValues: true,
+    })
+  )
   @ApiOperation({
-    description: 'Request tickets',
+    description: 'Filter tickets',
     summary: `Find tickets - Scope : ${Resources.TICKETS}:${Actions.READ_MANY}`,
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Tickets found',
-    type: TicketDto,
-    isArray: true,
-  })
+  @ApiNestedQuery(PaginateDto)
+  @ApiPaginatedDto(TicketDto, 'Tickets found')
   @Get('')
-  find(): Promise<Ticket[]> {
-    return this.ticketsService.find();
+  find(
+    @Query(ParseQuery) paginate: PaginateQuery
+  ): Promise<PaginatedDto<Ticket>> {
+    return this.ticketsService.find(paginate);
   }
 
   @ApiOperation({
