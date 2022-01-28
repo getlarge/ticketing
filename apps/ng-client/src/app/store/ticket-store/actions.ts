@@ -1,9 +1,13 @@
 import { Update } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
-import { CreateTicketDto, UpdateTicketDto } from '@ticketing/ng/open-api';
+import {
+  CreateTicketDto,
+  NextPaginationDto,
+  UpdateTicketDto,
+} from '@ticketing/ng/open-api';
 import { Ticket } from '@ticketing/shared/models';
 
-import { TicketFilter } from '../../models';
+import { Paginate, TicketFilter } from '../../models';
 
 export enum ActionTypes {
   LOAD_TICKETS = '[Tickets] Load Tickets',
@@ -29,11 +33,14 @@ export enum ActionTypes {
 
 export class LoadTicketsAction implements Action {
   readonly type = ActionTypes.LOAD_TICKETS;
+  constructor(public payload?: { paginate?: Paginate }) {}
 }
 
 export class LoadTicketsSuccessAction implements Action {
   readonly type = ActionTypes.LOAD_TICKETS_SUCCESS;
-  constructor(public payload: { tickets: Ticket[] }) {}
+  constructor(
+    public payload: { tickets: Ticket[]; next: NextPaginationDto[] }
+  ) {}
 }
 
 export class LoadTicketsFailureAction implements Action {

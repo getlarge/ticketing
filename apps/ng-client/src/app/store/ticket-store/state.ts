@@ -1,7 +1,8 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { NextPaginationDto } from '@ticketing/ng/open-api';
 import { Ticket } from '@ticketing/shared/models';
 
-import { TicketFilter } from '../../models';
+import { Paginate, TicketFilter } from '../../models';
 
 export const featureAdapter = createEntityAdapter<Ticket>({
   selectId: (model) => model.id,
@@ -9,14 +10,16 @@ export const featureAdapter = createEntityAdapter<Ticket>({
 
 export interface State extends EntityState<Ticket> {
   isLoading: boolean;
-  error: string | null;
+  error: string | undefined;
   currentFilter: TicketFilter;
-  currentTicketId: string | null;
+  pagination: Paginate | undefined;
+  nextPagination: NextPaginationDto[] | undefined;
+  currentTicketId: string | undefined;
 }
 
 export const initialState: State = featureAdapter.getInitialState({
   isLoading: false,
-  error: null,
+  error: undefined,
   currentFilter: {
     userId: null,
     price: null,
@@ -24,5 +27,7 @@ export const initialState: State = featureAdapter.getInitialState({
     onlyMine: false,
     onlyOthers: false,
   },
-  currentTicketId: null,
+  pagination: undefined,
+  nextPagination: undefined,
+  currentTicketId: undefined,
 });

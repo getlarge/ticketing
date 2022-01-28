@@ -20,11 +20,15 @@ export class TicketStoreEffects {
       ofType<featureActions.LoadTicketsAction>(
         featureActions.ActionTypes.LOAD_TICKETS
       ),
-      switchMap(() =>
-        this.ticketService.ticketsControllerFind().pipe(
+      map((action) => action.payload),
+      switchMap((payload) =>
+        this.ticketService.ticketsControllerFind(payload?.paginate).pipe(
           map(
-            (tickets) =>
-              new featureActions.LoadTicketsSuccessAction({ tickets })
+            ({ results, next }) =>
+              new featureActions.LoadTicketsSuccessAction({
+                tickets: results || [],
+                next,
+              })
           ),
           catchError((error) =>
             observableOf(

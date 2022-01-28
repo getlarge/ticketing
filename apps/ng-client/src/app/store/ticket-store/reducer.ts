@@ -11,14 +11,14 @@ export function featureReducer(
       return {
         ...state,
         isLoading: true,
-        error: null,
+        error: undefined,
       };
     }
     case ActionTypes.LOAD_TICKETS_SUCCESS: {
       return featureAdapter.addMany(action.payload.tickets, {
         ...state,
         isLoading: false,
-        error: null,
+        error: undefined,
       });
     }
     case ActionTypes.LOAD_TICKETS_FAILURE: {
@@ -32,14 +32,14 @@ export function featureReducer(
       return {
         ...state,
         isLoading: true,
-        error: null,
+        error: undefined,
       };
     }
     case ActionTypes.CREATE_TICKET_SUCCESS: {
       return featureAdapter.addOne(action.payload.ticket, {
         ...state,
         isLoading: false,
-        error: null,
+        error: undefined,
       });
     }
     case ActionTypes.CREATE_TICKET_FAILURE: {
@@ -53,14 +53,14 @@ export function featureReducer(
       return {
         ...state,
         isLoading: true,
-        error: null,
+        error: undefined,
       };
     }
     case ActionTypes.UPDATE_TICKET_SUCCESS: {
       return featureAdapter.updateOne(action.payload.ticket, {
         ...state,
         isLoading: false,
-        error: null,
+        error: undefined,
       });
     }
     case ActionTypes.UPDATE_TICKET_FAILURE: {
