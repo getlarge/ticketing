@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { startKeyDto } from 'nestjs-keyset-paginator';
 
-export class NextPaginationDto {
+export class NextPaginationDto extends startKeyDto {
   @ApiProperty()
   key: string;
 
@@ -18,7 +19,12 @@ export class PaginatedDto<TData> {
   // @ApiProperty()
   // offset: number;
 
-  @ApiProperty({ type: NextPaginationDto, isArray: true })
+  @ApiProperty({
+    type: NextPaginationDto,
+    isArray: true,
+    minItems: 1,
+    maxItems: 2,
+  })
   next: NextPaginationDto[];
 
   results: TData[];

@@ -120,6 +120,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^6.1.0",
     "mongoose-update-if-current": "^1.4.0",
+    "nestjs-keyset-paginator": "^3.0.2",
     "nestjs-pino": "^2.5.0",
     "next": "12.0.7",
     "ngx-stripe": "^13.0.0",
