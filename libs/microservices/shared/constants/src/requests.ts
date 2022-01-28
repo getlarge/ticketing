@@ -35,7 +35,7 @@ export const getCookieOptions = (
 export const ALLOWED_HEADERS = [
   'X-Version',
   'X-Access-Token',
-  'Refresh',
+  'X-Refresh-Token',
   'Set-Cookie',
   'DNT',
   'User-Agent',
@@ -43,6 +43,7 @@ export const ALLOWED_HEADERS = [
   'If-Modified-Since',
   'Cache-Control',
   'Content-Type',
+  'Accept',
   'Range',
   'X-Scheme',
   'X-Real-IP',
@@ -51,7 +52,12 @@ export const ALLOWED_HEADERS = [
 ];
 
 export const EXPOSED_HEADERS = [
+  'X-Version',
+  'X-Access-Token',
   'Set-Cookie',
   'Content-Length',
   'Content-Range',
+  'Content-Type',
+  'Accept',
+  'Range',
 ];
