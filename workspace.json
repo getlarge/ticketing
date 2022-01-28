@@ -12,6 +12,7 @@
     "microservices-shared-fastify-passport": "libs/microservices/shared/fastify-passport",
     "microservices-shared-filters": "libs/microservices/shared/filters",
     "microservices-shared-guards": "libs/microservices/shared/guards",
+    "microservices-shared-models": "libs/microservices/shared/models",
     "microservices-shared-nats-streaming": "libs/microservices/shared/nats-streaming",
     "microservices-shared-pipes": "libs/microservices/shared/pipes",
     "microservices-shared-redis": "libs/microservices/shared/redis",

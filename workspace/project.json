@@ -7,6 +7,12 @@
         "command": "echo 'nope'"
       }
     },
+    "lint": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "echo 'nope'"
+      }
+    },
     "apps": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

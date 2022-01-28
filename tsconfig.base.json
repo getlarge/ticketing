@@ -39,6 +39,9 @@
       "@ticketing/microservices/shared/guards": [
         "libs/microservices/shared/guards/src/index.ts"
       ],
+      "@ticketing/microservices/shared/models": [
+        "libs/microservices/shared/models/src/index.ts"
+      ],
       "@ticketing/microservices/shared/nats-streaming": [
         "libs/microservices/shared/nats-streaming/src/index.ts"
       ],
