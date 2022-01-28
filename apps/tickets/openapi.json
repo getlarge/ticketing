@@ -44,18 +44,95 @@
       "get": {
         "operationId": "TicketsController_find",
         "summary": "Find tickets - Scope : tickets:read_many",
-        "description": "Request tickets",
-        "parameters": [],
+        "description": "Filter tickets",
+        "parameters": [
+          {
+            "name": "start_key",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/StartKeyDto"
+              }
+            }
+          },
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortDto"
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FilterDto"
+              }
+            }
+          },
+          {
+            "name": "projection",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ProjectionDto"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Tickets found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TicketDto"
-                  }
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedDto"
+                    },
+                    {
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TicketDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -162,6 +239,12 @@
   "servers": [
     {
       "url": "http://localhost:3010"
+    },
+    {
+      "url": "http://localhost:80"
+    },
+    {
+      "url": "http://ticketing.dev"
     }
   ],
   "components": {
@@ -178,6 +261,44 @@
       }
     },
     "schemas": {
+      "NextPaginationDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "PaginatedDto": {
+        "type": "object",
+        "properties": {
+          "next": {
+            "minItems": 1,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NextPaginationDto"
+            }
+          }
+        },
+        "required": [
+          "next"
+        ]
+      },
       "CreateTicketDto": {
         "type": "object",
         "properties": {
@@ -235,6 +356,131 @@
           "price",
           "version",
           "userId"
+        ]
+      },
+      "StartKeyDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "SortDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "order": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "field",
+          "order"
+        ]
+      },
+      "FilterOperatorType": {
+        "type": "string",
+        "enum": [
+          "eq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "regex",
+          "in",
+          "nin"
+        ]
+      },
+      "FilterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "arr_value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "operator": {
+            "default": "eq",
+            "$ref": "#/components/schemas/FilterOperatorType"
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "enum": [
+                  "eq",
+                  "gt",
+                  "gte",
+                  "lt",
+                  "lte",
+                  "regex",
+                  "in",
+                  "nin"
+                ],
+                "default": "eq"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "operator"
+        ]
+      },
+      "ProjectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "mode": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "name",
+          "mode"
         ]
       },
       "UpdateTicketDto": {

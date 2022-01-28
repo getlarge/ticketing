@@ -10,6 +10,11 @@ import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 import { CreateTicketDto } from '../models/create-ticket-dto';
+import { FilterDto } from '../models/filter-dto';
+import { PaginatedDto } from '../models/paginated-dto';
+import { ProjectionDto } from '../models/projection-dto';
+import { SortDto } from '../models/sort-dto';
+import { StartKeyDto } from '../models/start-key-dto';
 import { TicketDto } from '../models/ticket-dto';
 import { UpdateTicketDto } from '../models/update-ticket-dto';
 
@@ -32,7 +37,7 @@ export class TicketsService extends BaseService {
   /**
    * Find tickets - Scope : tickets:read_many.
    *
-   * Request tickets
+   * Filter tickets
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `ticketsControllerFind()` instead.
@@ -40,10 +45,24 @@ export class TicketsService extends BaseService {
    * This method doesn't expect any request body.
    */
   ticketsControllerFind$Response(params?: {
-  }): Observable<StrictHttpResponse<Array<TicketDto>>> {
+    start_key?: Array<StartKeyDto>;
+    skip?: number;
+    limit?: number;
+    sort?: SortDto;
+    filter?: Array<FilterDto>;
+    projection?: Array<ProjectionDto>;
+  }): Observable<StrictHttpResponse<PaginatedDto & {
+'results'?: Array<TicketDto>;
+}>> {
 
     const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerFindPath, 'get');
     if (params) {
+      rb.query('start_key', params.start_key, {"style":"deepObject","explode":false});
+      rb.query('skip', params.skip, {});
+      rb.query('limit', params.limit, {});
+      rb.query('sort', params.sort, {"style":"deepObject","explode":false});
+      rb.query('filter', params.filter, {"style":"deepObject","explode":false});
+      rb.query('projection', params.projection, {"style":"deepObject","explode":false});
     }
 
     return this.http.request(rb.build({
@@ -52,7 +71,9 @@ export class TicketsService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<TicketDto>>;
+        return r as StrictHttpResponse<PaginatedDto & {
+        'results'?: Array<TicketDto>;
+        }>;
       })
     );
   }
@@ -60,7 +81,7 @@ export class TicketsService extends BaseService {
   /**
    * Find tickets - Scope : tickets:read_many.
    *
-   * Request tickets
+   * Filter tickets
    *
    * This method provides access to only to the response body.
    * To access the full response (for headers, for example), `ticketsControllerFind$Response()` instead.
@@ -68,10 +89,22 @@ export class TicketsService extends BaseService {
    * This method doesn't expect any request body.
    */
   ticketsControllerFind(params?: {
-  }): Observable<Array<TicketDto>> {
+    start_key?: Array<StartKeyDto>;
+    skip?: number;
+    limit?: number;
+    sort?: SortDto;
+    filter?: Array<FilterDto>;
+    projection?: Array<ProjectionDto>;
+  }): Observable<PaginatedDto & {
+'results'?: Array<TicketDto>;
+}> {
 
     return this.ticketsControllerFind$Response(params).pipe(
-      map((r: StrictHttpResponse<Array<TicketDto>>) => r.body as Array<TicketDto>)
+      map((r: StrictHttpResponse<PaginatedDto & {
+'results'?: Array<TicketDto>;
+}>) => r.body as PaginatedDto & {
+'results'?: Array<TicketDto>;
+})
     );
   }
 

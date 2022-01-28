@@ -176,7 +176,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -334,54 +346,273 @@
       "get": {
         "operationId": "TicketsController_find",
         "summary": "Find tickets - Scope : tickets:read_many",
-        "description": "Request tickets",
-        "parameters": [],
+        "description": "Filter tickets",
+        "parameters": [
+          {
+            "name": "start_key",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ]
+              }
+            }
+          },
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 20
+                },
+                "order": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "field",
+                "order"
+              ]
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 20
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20
+                  },
+                  "arr_value": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "operator": {
+                    "default": "eq",
+                    "type": "string",
+                    "enum": [
+                      "eq",
+                      "gt",
+                      "gte",
+                      "lt",
+                      "lte",
+                      "regex",
+                      "in",
+                      "nin"
+                    ]
+                  },
+                  "mode": {
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "eq",
+                          "gt",
+                          "gte",
+                          "lt",
+                          "lte",
+                          "regex",
+                          "in",
+                          "nin"
+                        ],
+                        "default": "eq"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "value",
+                  "operator"
+                ]
+              }
+            }
+          },
+          {
+            "name": "projection",
+            "required": false,
+            "in": "query",
+            "style": "deepObject",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 20
+                  },
+                  "mode": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "name",
+                  "mode"
+                ]
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Tickets found",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "description": "Ticket database identifier"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "next": {
+                          "minItems": 1,
+                          "maxItems": 2,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "value": {
+                                "oneOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "number"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "value"
+                            ]
+                          }
+                        }
                       },
-                      "title": {
-                        "type": "string",
-                        "description": "Ticket title",
-                        "minLength": 3,
-                        "maxLength": 56
-                      },
-                      "price": {
-                        "type": "number",
-                        "description": "Ticket price",
-                        "minimum": 0
-                      },
-                      "version": {
-                        "type": "number",
-                        "description": "Ticket version represented by a number incremented at each updated"
-                      },
-                      "userId": {
-                        "type": "string",
-                        "description": "Ticket creator id"
-                      },
-                      "orderId": {
-                        "type": "string",
-                        "description": "Ticket reservation order id"
-                      }
+                      "required": [
+                        "next"
+                      ]
                     },
-                    "required": [
-                      "id",
-                      "title",
-                      "price",
-                      "version",
-                      "userId"
-                    ]
-                  }
+                    {
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Ticket database identifier"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "Ticket title",
+                                "minLength": 3,
+                                "maxLength": 56
+                              },
+                              "price": {
+                                "type": "number",
+                                "description": "Ticket price",
+                                "minimum": 0
+                              },
+                              "version": {
+                                "type": "number",
+                                "description": "Ticket version represented by a number incremented at each updated"
+                              },
+                              "userId": {
+                                "type": "string",
+                                "description": "Ticket creator id"
+                              },
+                              "orderId": {
+                                "type": "string",
+                                "description": "Ticket reservation order id"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "title",
+                              "price",
+                              "version",
+                              "userId"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -1131,6 +1362,63 @@
           "id"
         ]
       },
+      "NextPaginationDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "PaginatedDto": {
+        "type": "object",
+        "properties": {
+          "next": {
+            "minItems": 1,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "value"
+              ]
+            }
+          }
+        },
+        "required": [
+          "next"
+        ]
+      },
       "CreateTicketDto": {
         "type": "object",
         "properties": {
@@ -1188,6 +1476,141 @@
           "price",
           "version",
           "userId"
+        ]
+      },
+      "StartKeyDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "SortDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "order": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "field",
+          "order"
+        ]
+      },
+      "FilterOperatorType": {
+        "type": "string",
+        "enum": [
+          "eq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "regex",
+          "in",
+          "nin"
+        ]
+      },
+      "FilterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "arr_value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "operator": {
+            "default": "eq",
+            "type": "string",
+            "enum": [
+              "eq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "regex",
+              "in",
+              "nin"
+            ]
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "enum": [
+                  "eq",
+                  "gt",
+                  "gte",
+                  "lt",
+                  "lte",
+                  "regex",
+                  "in",
+                  "nin"
+                ],
+                "default": "eq"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "operator"
+        ]
+      },
+      "ProjectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "mode": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "name",
+          "mode"
         ]
       },
       "UpdateTicketDto": {

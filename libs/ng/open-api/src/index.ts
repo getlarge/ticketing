@@ -13,5 +13,12 @@ export { ApiConfiguration as TicketsApiConfiguration } from './lib/generated/tic
 export { TicketsService } from './lib/generated/tickets/services';
 export {
   CreateTicketDto,
+  FilterDto,
+  FilterOperatorType,
+  NextPaginationDto,
+  PaginatedDto,
+  ProjectionDto,
+  SortDto,
+  StartKeyDto,
   UpdateTicketDto,
 } from './lib/generated/tickets/models';
