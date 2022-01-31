@@ -51,7 +51,7 @@
             "required": false,
             "in": "query",
             "style": "deepObject",
-            "explode": false,
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {
@@ -90,7 +90,7 @@
             "required": false,
             "in": "query",
             "style": "deepObject",
-            "explode": false,
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {
@@ -103,7 +103,7 @@
             "required": false,
             "in": "query",
             "style": "deepObject",
-            "explode": false,
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {

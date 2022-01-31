@@ -1,15 +1,15 @@
 {
   "item": [
     {
-      "id": "222b4b14-3d07-4489-bb97-d50d7b2c0fab",
+      "id": "361f8b2f-7457-43de-8208-118ebfa4476d",
       "name": "api",
       "item": [
         {
-          "id": "a92a46e1-1f9b-46a9-83c4-8be67dd86a95",
+          "id": "2bffb5af-9d4c-4e72-a0cf-4337623901e6",
           "name": "users",
           "item": [
             {
-              "id": "94a0e00e-c65a-453c-80cd-914d62359997",
+              "id": "0a35d5cc-39b8-488e-83f5-d28f33fc9e19",
               "name": "Register a user - Scope : users:create_one",
               "request": {
                 "name": "Register a user - Scope : users:create_one",
@@ -49,7 +49,7 @@
               },
               "response": [
                 {
-                  "id": "a1d17d84-dda0-4b34-83ad-7680beb7e34f",
+                  "id": "23fe1515-1b64-45ca-9c1d-4a44dd8ef72e",
                   "name": "User created",
                   "originalRequest": {
                     "url": {
@@ -93,7 +93,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"email\": \"YZPDDtvjsUuj3@foCygt.tc\",\n \"id\": \"proident fugiat\"\n}",
+                  "body": "{\n \"email\": \"9BEZ9Pd@a.nxao\",\n \"id\": \"minim esse sint sed non\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -101,7 +101,7 @@
               "event": []
             },
             {
-              "id": "2d0c80c4-ab31-4c88-9045-5dc7dffb44ef",
+              "id": "1051b786-f35d-4949-bcb6-69e92dedb95f",
               "name": "Sign in - Scope : users:sign_in",
               "request": {
                 "name": "Sign in - Scope : users:sign_in",
@@ -141,7 +141,7 @@
               },
               "response": [
                 {
-                  "id": "a94ea268-a6f8-46b7-8c0e-6ce95878b3df",
+                  "id": "93e42d3f-8cb0-4407-821c-0145ba08d221",
                   "name": "JWT Token",
                   "originalRequest": {
                     "url": {
@@ -185,7 +185,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"token\": \"non deserunt Ut ullamco\"\n}",
+                  "body": "{\n \"token\": \"proident eiusmod laboris deserunt\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -193,7 +193,7 @@
               "event": []
             },
             {
-              "id": "5b65054d-7c69-43a3-90c9-568b41523292",
+              "id": "2e211de7-3d1a-4092-88e2-6478a3eb5361",
               "name": "Sign out - Scope : users:sign_out",
               "request": {
                 "name": "Sign out - Scope : users:sign_out",
@@ -234,7 +234,7 @@
               },
               "response": [
                 {
-                  "id": "d52cae0d-90b4-4941-bba6-83b5a7a8ee00",
+                  "id": "0e601ed2-c45d-4b0a-ad87-c161024d3087",
                   "originalRequest": {
                     "url": {
                       "path": [
@@ -269,7 +269,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"success\": true\n}",
+                  "body": "{\n \"success\": false\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -277,7 +277,7 @@
               "event": []
             },
             {
-              "id": "f9d8d0ae-4c1e-4953-b772-9dac0e6fe3a0",
+              "id": "8c567d4a-c4e6-4c26-a87e-a301e43f377c",
               "name": "Get current user - Scope : users:read_one",
               "request": {
                 "name": "Get current user - Scope : users:read_one",
@@ -318,7 +318,7 @@
               },
               "response": [
                 {
-                  "id": "d121df00-55d8-4a6a-acc6-bef11bb63a32",
+                  "id": "3e8c9c97-8a54-4276-9be4-e34110565ad1",
                   "name": "Current user logged in",
                   "originalRequest": {
                     "url": {
@@ -354,7 +354,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"email\": \"YZPDDtvjsUuj3@foCygt.tc\",\n \"id\": \"proident fugiat\"\n}",
+                  "body": "{\n \"email\": \"9BEZ9Pd@a.nxao\",\n \"id\": \"minim esse sint sed non\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -365,11 +365,11 @@
           "event": []
         },
         {
-          "id": "cc80c466-aa99-4b18-af3e-ca0dece95687",
+          "id": "0b94df44-b3bf-46a0-8785-16421ff30dbd",
           "name": "tickets",
           "item": [
             {
-              "id": "5e53b1a9-3991-41a8-bc30-e0bca309ebd2",
+              "id": "7616d32e-68a5-4a6c-ba7a-1fa64ea4b3e7",
               "name": "Create a ticket - Scope : tickets:create_one",
               "request": {
                 "name": "Create a ticket - Scope : tickets:create_one",
@@ -424,7 +424,7 @@
               },
               "response": [
                 {
-                  "id": "7fa79610-e5cf-4b34-8522-1f4fe791dab0",
+                  "id": "0f6a355f-2d8f-46de-bdd3-9d5eb28f04ca",
                   "name": "Ticket created",
                   "originalRequest": {
                     "url": {
@@ -467,7 +467,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"id\": \"nisi c\",\n \"title\": \"aliqua\",\n \"price\": 87831323.85153338,\n \"version\": -59888025.39244147,\n \"userId\": \"nisi eu\",\n \"orderId\": \"in est ut\"\n}",
+                  "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -475,7 +475,7 @@
               "event": []
             },
             {
-              "id": "36f910a3-aa51-4dd3-9698-17a1b7ba606e",
+              "id": "e925fed0-2dd7-4dca-84e2-3dc2aeeea2d4",
               "name": "Find tickets - Scope : tickets:read_many",
               "request": {
                 "name": "Find tickets - Scope : tickets:read_many",
@@ -610,7 +610,7 @@
               },
               "response": [
                 {
-                  "id": "a812f7fb-8c70-4ac4-966d-a793e1e3756f",
+                  "id": "ac986db2-db2b-4ea5-b83c-0a88f057bd3b",
                   "name": "Tickets found",
                   "originalRequest": {
                     "url": {
@@ -734,7 +734,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"next\": [\n  {\n   \"key\": \"aute ut\",\n   \"value\": \"labore sint et Excepteur\"\n  }\n ],\n \"results\": [\n  {\n   \"id\": \"eiusmod dolore Ut\",\n   \"title\": \"et sint aute nulla sunt\",\n   \"price\": 82214534.46566598,\n   \"version\": -30337338.573628962,\n   \"userId\": \"consequat dolor proident magna\",\n   \"orderId\": \"labore Excepteur aliqua aliquip\"\n  },\n  {\n   \"id\": \"laborum cillum et\",\n   \"title\": \"pariatur in\",\n   \"price\": 80327155.73186012,\n   \"version\": 37157881.59024304,\n   \"userId\": \"laborum anim commodo qui\",\n   \"orderId\": \"enim\"\n  }\n ]\n}",
+                  "body": "{\n \"next\": [\n  {\n   \"key\": \"nostrud sunt culpa\",\n   \"value\": \"Ut deserunt magna et\"\n  }\n ],\n \"results\": [\n  {\n   \"id\": \"dolor pariatur dolore\",\n   \"title\": \"exercitation esse magna ea\",\n   \"price\": 13520002.741425619,\n   \"version\": -82958039.29203323,\n   \"userId\": \"commodo ea incididunt pariatur\",\n   \"orderId\": \"consequat id\"\n  },\n  {\n   \"id\": \"ut cillum eu velit\",\n   \"title\": \"non sunt\",\n   \"price\": 24237079.974064346,\n   \"version\": 75444848.84993735,\n   \"userId\": \"ullamco culpa\",\n   \"orderId\": \"est cupidatat officia\"\n  }\n ]\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -742,11 +742,11 @@
               "event": []
             },
             {
-              "id": "b71486af-06ee-41bb-b8dd-2fb63cec8072",
+              "id": "bb5f2eda-199c-4962-8a9e-6b7883a89077",
               "name": "{id}",
               "item": [
                 {
-                  "id": "f96ac817-defd-4d0a-a645-1bd5980c1a77",
+                  "id": "a88b04ba-7348-4c05-a238-8a8c974cc07b",
                   "name": "Find a ticket - Scope : tickets:read_one",
                   "request": {
                     "name": "Find a ticket - Scope : tickets:read_one",
@@ -779,7 +779,7 @@
                   },
                   "response": [
                     {
-                      "id": "f6cb903f-dbab-4ede-848f-91a5a6c3df88",
+                      "id": "8fcfcd4c-adcc-48d1-a0dd-10aa66bec99e",
                       "name": "Ticket found",
                       "originalRequest": {
                         "url": {
@@ -823,7 +823,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"nisi c\",\n \"title\": \"aliqua\",\n \"price\": 87831323.85153338,\n \"version\": -59888025.39244147,\n \"userId\": \"nisi eu\",\n \"orderId\": \"in est ut\"\n}",
+                      "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -831,7 +831,7 @@
                   "event": []
                 },
                 {
-                  "id": "df88deb2-1f51-43eb-9595-4d42d13ff593",
+                  "id": "5e03944f-4fd6-4942-8db3-bbf067fbca68",
                   "name": "Update a ticket - Scope : tickets:update_one",
                   "request": {
                     "name": "Update a ticket - Scope : tickets:update_one",
@@ -895,7 +895,7 @@
                   },
                   "response": [
                     {
-                      "id": "187f5e8d-da5e-4562-a632-c270fcd6d68e",
+                      "id": "f24ec3c2-5ab5-464b-9ceb-a58cda82b069",
                       "name": "Ticket updated",
                       "originalRequest": {
                         "url": {
@@ -947,7 +947,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"nisi c\",\n \"title\": \"aliqua\",\n \"price\": 87831323.85153338,\n \"version\": -59888025.39244147,\n \"userId\": \"nisi eu\",\n \"orderId\": \"in est ut\"\n}",
+                      "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -961,11 +961,11 @@
           "event": []
         },
         {
-          "id": "b1494164-59d6-4b87-98e5-8c3238d3fd27",
+          "id": "97a7292c-0a1e-42dc-ae56-a648eedc7561",
           "name": "orders",
           "item": [
             {
-              "id": "8b2dac30-051b-47f7-93fc-5cf1f24d306b",
+              "id": "9b1c97df-d2ab-4867-be0c-1ea1c38ae844",
               "name": "Create an order - Scope : orders:create_one",
               "request": {
                 "name": "Create an order - Scope : orders:create_one",
@@ -1020,7 +1020,7 @@
               },
               "response": [
                 {
-                  "id": "8dfa19e1-4185-4cb7-98c2-47337ae09869",
+                  "id": "4bbf36e1-765a-4fc9-bad3-5b4ef2804abb",
                   "name": "Order created",
                   "originalRequest": {
                     "url": {
@@ -1063,7 +1063,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"id\": \"nostrud\",\n \"ticket\": {\n  \"id\": \"cillum deserunt\",\n  \"title\": \"exadipisicing tempor\",\n  \"price\": 87034227.51666865,\n  \"version\": -33406944.660909146\n },\n \"userId\": \"in sit Excepteur incididunt\",\n \"status\": \"complete\",\n \"version\": 86248426.94967353,\n \"expiresAt\": \"sed\"\n}",
+                  "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -1071,7 +1071,7 @@
               "event": []
             },
             {
-              "id": "b36fc4a8-0001-44a6-84b1-4e22c7a2b7fe",
+              "id": "8559ffba-d113-45cf-8a4f-1a028107f224",
               "name": "Find orders - Scope : orders:read_many",
               "request": {
                 "name": "Find orders - Scope : orders:read_many",
@@ -1111,7 +1111,7 @@
               },
               "response": [
                 {
-                  "id": "277866b8-39a0-4edc-9baf-0ba6cb287f36",
+                  "id": "92d5cf58-c0f7-439b-b8bd-f0dc6d67addb",
                   "name": "Orders found",
                   "originalRequest": {
                     "url": {
@@ -1146,7 +1146,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "[\n {\n  \"id\": \"eiusmod ad Duis labore minim\",\n  \"ticket\": {\n   \"id\": \"mollit minim exercitatio\",\n   \"title\": \"dolore consectetur\",\n   \"price\": 45636482.43306666,\n   \"version\": -43690366.4590937\n  },\n  \"userId\": \"in nostrud consectetur pariatur dolor\",\n  \"status\": \"complete\",\n  \"version\": -19197068.469882652,\n  \"expiresAt\": \"ad est esse ut non\"\n },\n {\n  \"id\": \"consectetur exercitation veniam\",\n  \"ticket\": {\n   \"id\": \"exercitation aliquip\",\n   \"title\": \"qui eiusmod nisi ullamco\",\n   \"price\": 4495137.847878472,\n   \"version\": 60964275.37068346\n  },\n  \"userId\": \"sin\",\n  \"status\": \"complete\",\n  \"version\": -66067709.90411998,\n  \"expiresAt\": \"anim laboris sint\"\n }\n]",
+                  "body": "[\n {\n  \"id\": \"nisi eu do cupidatat ut\",\n  \"ticket\": {\n   \"id\": \"officia f\",\n   \"title\": \"velit\",\n   \"price\": 30385650.209955674,\n   \"version\": 17695729.51850687\n  },\n  \"userId\": \"sint Ut amet\",\n  \"status\": \"complete\",\n  \"version\": -97777034.24725673,\n  \"expiresAt\": \"cupidatat\"\n },\n {\n  \"id\": \"occaecat cupidatat aliqua\",\n  \"ticket\": {\n   \"id\": \"elit nulla voluptate ipsum ad\",\n   \"title\": \"Duis exercita\",\n   \"price\": 32435966.47544793,\n   \"version\": 97596215.6853571\n  },\n  \"userId\": \"eu nisi enim\",\n  \"status\": \"complete\",\n  \"version\": -3279667.4464767426,\n  \"expiresAt\": \"veniam minim aliquip et\"\n }\n]",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -1154,11 +1154,11 @@
               "event": []
             },
             {
-              "id": "f2e01003-5d2a-46ea-a632-696949ffb033",
+              "id": "cc1076bf-a575-45b2-89e2-c4a6d5afbdec",
               "name": "{id}",
               "item": [
                 {
-                  "id": "3bb47267-b012-4038-9997-d8d7df2ef583",
+                  "id": "e2e3d0bd-1adc-45bd-84a2-edc4617e7ee1",
                   "name": "Find an order - Scope : orders:read_one",
                   "request": {
                     "name": "Find an order - Scope : orders:read_one",
@@ -1207,7 +1207,7 @@
                   },
                   "response": [
                     {
-                      "id": "3effc125-538b-465e-b683-45c9d8922686",
+                      "id": "2c702365-eca1-44f1-884b-6edf3d083b27",
                       "name": "Order found",
                       "originalRequest": {
                         "url": {
@@ -1251,7 +1251,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"nostrud\",\n \"ticket\": {\n  \"id\": \"cillum deserunt\",\n  \"title\": \"exadipisicing tempor\",\n  \"price\": 87034227.51666865,\n  \"version\": -33406944.660909146\n },\n \"userId\": \"in sit Excepteur incididunt\",\n \"status\": \"complete\",\n \"version\": 86248426.94967353,\n \"expiresAt\": \"sed\"\n}",
+                      "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -1259,7 +1259,7 @@
                   "event": []
                 },
                 {
-                  "id": "4ed57278-5d21-48be-aca7-5e807babed30",
+                  "id": "472f2cff-6728-4ac2-b367-df9be78b6a39",
                   "name": "Cancel an order - Scope : orders:delete_one",
                   "request": {
                     "name": "Cancel an order - Scope : orders:delete_one",
@@ -1308,7 +1308,7 @@
                   },
                   "response": [
                     {
-                      "id": "6cc981a5-c5e0-45d4-b7a8-daf878112036",
+                      "id": "a9db92c4-6435-4ff4-8c92-513789fea258",
                       "name": "Order cancelled",
                       "originalRequest": {
                         "url": {
@@ -1352,7 +1352,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"nostrud\",\n \"ticket\": {\n  \"id\": \"cillum deserunt\",\n  \"title\": \"exadipisicing tempor\",\n  \"price\": 87034227.51666865,\n  \"version\": -33406944.660909146\n },\n \"userId\": \"in sit Excepteur incididunt\",\n \"status\": \"complete\",\n \"version\": 86248426.94967353,\n \"expiresAt\": \"sed\"\n}",
+                      "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -1366,7 +1366,7 @@
           "event": []
         },
         {
-          "id": "b360217d-c4e0-4c76-9a54-ae0022cc5591",
+          "id": "a30fbc17-1dfd-4ffa-9792-1d0d1e635eb5",
           "name": "Create payment request - Scope : payments:create_one",
           "request": {
             "name": "Create payment request - Scope : payments:create_one",
@@ -1421,7 +1421,7 @@
           },
           "response": [
             {
-              "id": "cee58f12-eb52-4837-825b-56d8a9824cc9",
+              "id": "c1ae5ab7-25f5-4dbc-ab12-47f8e3b18c50",
               "name": "Charge created",
               "originalRequest": {
                 "url": {
@@ -1464,7 +1464,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n \"id\": \"reprehenderit nulla tempor esse\",\n \"orderId\": \"sit dolore pariatur\",\n \"stripeId\": \"magna id nulla\",\n \"version\": -66648136.14196805\n}",
+              "body": "{\n \"id\": \"sit in\",\n \"orderId\": \"laboris\",\n \"stripeId\": \"labore Lorem\",\n \"version\": 10063007.855675772\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1501,7 +1501,7 @@
     ]
   },
   "info": {
-    "_postman_id": "17359007-7643-4d1d-8d43-cb8adc421068",
+    "_postman_id": "20f4d624-dff6-4ba7-97cb-ee5898cb8f97",
     "name": "Ticketing API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

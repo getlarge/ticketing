@@ -57,12 +57,12 @@ export class TicketsService extends BaseService {
 
     const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerFindPath, 'get');
     if (params) {
-      rb.query('start_key', params.start_key, {"style":"deepObject","explode":false});
+      rb.query('start_key', params.start_key, {"style":"deepObject","explode":true});
       rb.query('skip', params.skip, {});
       rb.query('limit', params.limit, {});
       rb.query('sort', params.sort, {"style":"deepObject","explode":false});
-      rb.query('filter', params.filter, {"style":"deepObject","explode":false});
-      rb.query('projection', params.projection, {"style":"deepObject","explode":false});
+      rb.query('filter', params.filter, {"style":"deepObject","explode":true});
+      rb.query('projection', params.projection, {"style":"deepObject","explode":true});
     }
 
     return this.http.request(rb.build({
