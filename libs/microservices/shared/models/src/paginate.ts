@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   IsNumber,
   IsString,
@@ -7,6 +7,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { fromPairs } from 'lodash';
 import {
   filterDto,
   PaginationDto,
@@ -35,17 +36,29 @@ export class Projection extends projectionDto {
   mode: number;
 }
 
+// parse JSON string or 'key=value,key1=value1,...'
+function parseQueryString(val: string): Record<string, unknown> {
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return fromPairs(val.split(',').map((s) => s.split('=')));
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformQueryArray(value: any): Record<string, unknown>[] {
   return Array.isArray(value)
-    ? value.map((v) => (typeof v === 'string' ? JSON.parse(v) : v))
+    ? value.map((v) => (typeof v === 'string' ? parseQueryString(v) : v))
     : typeof value === 'string'
-    ? [JSON.parse(value)]
+    ? [parseQueryString(value)]
     : value;
 }
 
 export class PaginateQuery extends PaginationDto {
-  @Transform(({ value }) => transformQueryArray(value))
+  @Transform(
+    ({ value }) => plainToInstance(startKeyDto, transformQueryArray(value)),
+    { toClassOnly: true }
+  )
   start_key: startKeyDto[] = undefined;
 
   @Type(() => Number)
@@ -58,9 +71,15 @@ export class PaginateQuery extends PaginationDto {
   @ValidateNested()
   sort: Sort = undefined;
 
-  @Transform(({ value }) => transformQueryArray(value))
+  @Transform(
+    ({ value }) => plainToInstance(filterDto, transformQueryArray(value)),
+    { toClassOnly: true }
+  )
   filter: filterDto[] = undefined;
 
-  @Transform(({ value }) => transformQueryArray(value))
+  @Transform(
+    ({ value }) => plainToInstance(Projection, transformQueryArray(value)),
+    { toClassOnly: true }
+  )
   projection: Projection[] = undefined;
 }

@@ -90,7 +90,7 @@ export class TicketsController {
       exceptionFactory: requestValidationErrorFactory,
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      forbidUnknownValues: true,
+      // forbidUnknownValues: true, //! FIX issue with query parsing process
     })
   )
   @ApiOperation({

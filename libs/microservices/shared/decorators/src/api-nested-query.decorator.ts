@@ -33,7 +33,7 @@ function getDecorators(fn: Function) {
         name: property,
         // type: 'object',
         style: 'deepObject',
-        explode: false,
+        explode: meta.isArray,
         schema: meta.isArray
           ? { type: 'array', items: { $ref: getSchemaPath(subClass) } }
           : { $ref: getSchemaPath(propertyType) },
