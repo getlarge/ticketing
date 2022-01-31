@@ -28,7 +28,7 @@ export const selectTicketIsLoading = createSelector(
 
 export const selectTicketCurrentTicketId = createSelector(
   selectTicketState,
-  (state: State): string | null => state.currentTicketId
+  (state: State): string | undefined => state.currentTicketId
 );
 
 export const selectTicketCurrentFilter = createSelector(
@@ -75,7 +75,7 @@ export const selectCurrentTicket = (): MemoizedSelector<
   createSelector(
     selectTicketCurrentTicketId,
     selectAllTicketItems,
-    (currentTicketId: string | null, items: Ticket[]): Ticket | undefined => {
+    (currentTicketId: string | undefined, items: Ticket[]): Ticket | undefined => {
       return items.find((i) => i.id === currentTicketId);
     }
   );

@@ -15,7 +15,7 @@ export function featureReducer(
       };
     }
     case ActionTypes.LOAD_TICKETS_SUCCESS: {
-      return featureAdapter.addMany(action.payload.tickets, {
+      return featureAdapter.setAll(action.payload.tickets, {
         ...state,
         isLoading: false,
         error: undefined,

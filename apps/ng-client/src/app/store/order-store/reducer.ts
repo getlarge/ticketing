@@ -57,7 +57,7 @@ export function featureReducer(
       };
     }
     case ActionTypes.LOAD_ORDERS_SUCCESS: {
-      return featureAdapter.addMany(action.payload.orders, {
+      return featureAdapter.setAll(action.payload.orders, {
         ...state,
         isLoading: false,
         error: null,
@@ -78,7 +78,7 @@ export function featureReducer(
       };
     }
     case ActionTypes.LOAD_ORDER_SUCCESS: {
-      return featureAdapter.addOne(action.payload.order, {
+      return featureAdapter.setOne(action.payload.order, {
         ...state,
         isLoading: false,
         error: null,
