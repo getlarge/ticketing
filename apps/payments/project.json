@@ -92,6 +92,22 @@
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-payments:{args.tag}"
       }
+    },
+    "dotenv-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["cd apps/payments && dotenv-cli push"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-pull": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["node tools/utils/dotenv-pull.js -p payments -v"]
+      },
+      "parallel": false,
+      "cwd": "."
     }
   },
   "tags": ["scope:payments", "type:app", "platform:server"]

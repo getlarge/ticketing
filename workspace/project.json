@@ -74,6 +74,22 @@
         "parallel": false
       },
       "cwd": "."
+    },
+    "dotenv-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["dotenv-cli push"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-pull": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["dotenv-cli pull"]
+      },
+      "parallel": false,
+      "cwd": "."
     }
   }
 }

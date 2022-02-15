@@ -93,6 +93,22 @@
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-tickets:{args.tag}"
       }
+    },
+    "dotenv-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["cd apps/tickets && dotenv-cli push"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-pull": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["node tools/utils/dotenv-pull.js -p tickets -v"]
+      },
+      "parallel": false,
+      "cwd": "."
     }
   },
   "tags": ["scope:tickets", "type:app", "platform:server"]

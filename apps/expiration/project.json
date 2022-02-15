@@ -92,6 +92,22 @@
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-expiration:{args.tag}"
       }
+    },
+    "dotenv-push": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["cd apps/expiration && dotenv-cli push"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-pull": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["node tools/utils/dotenv-pull.js -p expiration -v"]
+      },
+      "parallel": false,
+      "cwd": "."
     }
   },
   "tags": ["scope:expiration", "type:app", "platform:server"]
