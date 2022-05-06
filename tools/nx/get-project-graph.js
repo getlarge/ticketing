@@ -1,11 +1,13 @@
 const {
   createProjectGraphAsync,
   readCachedProjectGraph,
-  filterNodes,
-} = require('@nrwl/workspace/src/core/project-graph');
+} = require('nx/src/project-graph/project-graph');
+const { filterNodes } = require('nx/src/project-graph/operators');
 
 function projectExists(projects, projectToFind) {
-  return projects.find((project) => project.name === projectToFind) !== undefined;
+  return (
+    projects.find((project) => project.name === projectToFind) !== undefined
+  );
 }
 
 function hasPath(graph, target, node, visited) {
@@ -25,7 +27,8 @@ function filterGraph(graph, focus, exclude = [], skipExternal) {
   if (focus !== null) {
     filteredProjectNames = new Set();
     projectNames.forEach((p) => {
-      const isInPath = hasPath(graph, p, focus, []) || hasPath(graph, focus, p, []);
+      const isInPath =
+        hasPath(graph, p, focus, []) || hasPath(graph, focus, p, []);
       if (isInPath) {
         filteredProjectNames.add(p);
       }
@@ -56,7 +59,11 @@ function filterGraph(graph, focus, exclude = [], skipExternal) {
   return filteredGraph;
 }
 
-async function getProjectGraph({ exclude = [], focus = null, skipExternal = false } = {}) {
+async function getProjectGraph({
+  exclude = [],
+  focus = null,
+  skipExternal = false,
+} = {}) {
   let graph;
   try {
     graph = readCachedProjectGraph();
