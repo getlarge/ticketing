@@ -12,6 +12,6 @@ export const environment: Environment = {
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
-  apiBaseDomain: 'app.s1seven.dev',
+  apiBaseDomain: 'ticketing.dev',
   stripePublishableKey: '',
 };
