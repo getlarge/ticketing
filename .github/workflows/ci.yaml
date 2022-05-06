@@ -1,0 +1,547 @@
+name: 'ticketing CI'
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - docs/*.md
+      - '**/CHANGELOG.md'
+      # auto-generated
+      - 'apps/**/openapi.json'
+      - 'apps/**/package*.json'
+      - 'libs/ng/shared/data-access/src/lib/generated/**'
+  pull_request:
+    branches:
+      - main
+    types:
+      - ready_for_review
+      - opened
+      - reopened
+      - synchronize
+    paths-ignore:
+      - README.md
+      - docs/*.md
+      - '**/CHANGELOG.md'
+      # auto-generated
+      - 'apps/**/openapi.json'
+      - 'apps/**/package*.json'
+  release:
+    types:
+      - published
+      - edited
+
+env:
+  NODE_VERSION: 16.x
+  NODE_OPTIONS: --max_old_space_size=6144
+  CI_WORKFLOW: ci.yaml
+  CD_WORKFLOW: cd.yaml
+  BUILD_FOLDER: dist
+  BUILD_ARTIFACTS: build
+  COVERAGE_FOLDER: coverage
+  COVERAGE_ARTIFACTS: coverage
+  COVERAGE_APPS_UNIT_TESTS_ARTIFACTS: libs-unit-coverage
+  COVERAGE_APPS_E2E_TESTS_ARTIFACTS: apps-e2e-coverage
+  COVERAGE_LIBS_UNIT_TESTS_ARTIFACTS: apps-unit-coverage
+  COVERAGE_APPS_UNIT_TESTS_FOLDER: coverage/apps/unit
+  COVERAGE_APPS_E2E_TESTS_FOLDER: coverage/apps/e2e
+  COVERAGE_LIBS_UNIT_TESTS_FOLDER: coverage/libs
+  NX_CLOUD_DISTRIBUTED_EXECUTION: true
+  NX_DISTRIBUTED_TASK_EXECUTION: true
+  NX_VERBOSE_LOGGING: true
+  STEP_SET_FETCH_REF: 'Set fetch-ref'
+  STEP_SETUP_PROJECT: 'Setup node, checkout and install project dependencies'
+  # test jobs env. variables
+  NODE_ENV: ${{ secrets.NODE_ENV }}
+  LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+  GLOBAL_API_PREFIX: api
+  JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+  JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
+  JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+  JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+  JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+  SESSION_KEY: ${{ secrets.SESSION_KEY }}
+  STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  STRIPE_ENDPOINT_SECRET: ${{ secrets.STRIPE_ENDPOINT_SECRET }}
+  PROXY_SERVER_URLS: http://localhost
+  FRONTEND_URL: http://localhost
+  AUTH_HTTP_PORT: 3000
+  EXPIRATION_HTTP_PORT: 3030
+  ORDERS_HTTP_PORT: 3020
+  PAYMENTS_HTTP_PORT: 3040
+  TICKETS_HTTP_PORT: 3010
+  FRONTEND_PORT: 4200
+  NGINX_HTTP_PORT: 80
+  # NGINX_DOMAIN: localhost
+  NATS_URL: http://localhost:4222
+  NATS_CLUSTER_ID: ticketing
+  MONGODB_URI: mongodb://localhost:27017
+  REDIS_URL: redis://localhost:6379
+
+jobs:
+  # INIT
+  init:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || github.event_name == 'push' || !github.event.pull_request.draft
+    timeout-minutes: 10
+
+    steps:
+      - name: ${{ env.STEP_SET_FETCH_REF }}
+        id: fetch-ref
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: ${{ github.ref == 'refs/head/main' }}
+          if_true: ${{ github.ref }}
+          if_false: ${{ github.event.pull_request.head.ref }}
+
+      # Needed as long as we use local actions
+      - uses: actions/checkout@v3
+
+      # init dependencies cache so that next jobs can start faster
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ steps.fetch-ref.outputs.value }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v5
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        id: set-sha
+        uses: nrwl/nx-set-shas@v2
+
+      - name: Retrieve latest successful workflow run commit hash
+        id: last-successful-commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "::set-output name=commit-hash::$(npm run git:workflow-runs -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
+
+      - name: Get latest commmit sha
+        id: last-commit-sha
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: ${{ steps.last-successful-commit.outputs.commit-hash == 'undefined' }}
+          if_true: ${{ steps.set-sha.outputs.base }}
+          if_false: ${{ steps.last-successful-commit.outputs.commit-hash }}
+
+      - name: Check affected apps since previous worflow run
+        id: check-apps
+        run: echo "::set-output name=affected::$(npx nx affected:apps --exclude=workspace --base=${{ steps.last-commit-sha.outputs.value }} --plain)"
+
+      - name: Check affected libs since previous worflow run
+        id: check-libs
+        run: echo "::set-output name=affected::$(npx nx affected:libs --exclude=workspace --base=${{ steps.last-commit-sha.outputs.value }} --plain)"
+
+      - name: Check if any project was affected
+        id: check-projects
+        run: |
+          if [[ "${{ steps.check-apps.outputs.affected }}" == "" && "${{ steps.check-libs.outputs.affected }}" == "" ]]; then
+            echo "::set-output name=affected::false"
+          else
+            echo "::set-output name=affected::true"
+          fi
+
+      # Run comparisons between latest successful workflow commit and current commit
+      - name: Check if OpenAPI specs have changed
+        id: open-api
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
+
+      - name: Check if package.json has changed
+        id: package-json
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
+
+      - name: Check if regenerate job should be run
+        id: regenerate
+        run: |
+          if [[ ${{ steps.branch-name.outputs.current_branch }} != 'main' ]] && \
+            [[ ${{ steps.open-api.outputs.has-changed }} =~ "true" ]] || \
+            [[ ${{ steps.package-json.outputs.has-changed }} =~ "true" ]]; then
+            echo "::set-output name=should-run::true"
+          else
+            echo "::set-output name=should-run::false"
+          fi
+
+      - name: Show outputs
+        run: |
+          echo "event name: ${{ github.event_name }}"
+          echo "last-successful-commit: ${{ steps.last-commit-sha.outputs.value }}"
+          echo "affected apps: ${{ steps.check-apps.outputs.affected }}"
+          echo "affected libs: ${{ steps.check-libs.outputs.affected }}"
+          echo "current-branch: ${{ steps.branch-name.outputs.current_branch }}"
+          echo "should-update-models: ${{ steps.open-api.outputs.has-changed }}"
+          echo "should-update-packages: ${{ steps.package-json.outputs.has-changed }}"
+          echo "should-run-regenerate: ${{ steps.regenerate.outputs.should-run }}"
+
+    outputs:
+      fetch-ref: ${{ steps.fetch-ref.outputs.value }}
+      current-branch: ${{ steps.branch-name.outputs.current_branch }}
+      should-update-models: ${{ steps.open-api.outputs.has-changed }}
+      should-update-packages: ${{ steps.package-json.outputs.has-changed }}
+      should-run-regenerate: ${{ steps.regenerate.outputs.should-run }}
+      deps-cache-hit: ${{ steps.setup.outputs.cache-hit }}
+      last-successful-commit: ${{ steps.last-successful-commit.outputs.commit-hash }}
+      # since last successful commit, should be empty when opening PR (ready for review)
+      affected-apps: ${{ steps.check-apps.outputs.affected }}
+      affected-libs: ${{ steps.check-libs.outputs.affected }}
+      projects-affected: ${{ steps.check-projects.outputs.affected }}
+
+  # REGENERATE
+  regenerate:
+    needs: init
+    runs-on: ubuntu-latest
+    if: |
+      needs.init.outputs.should-run-regenerate == 'true'
+      && needs.init.outputs.current-branch != 'main'
+      && github.event_name != 'release'
+      && (github.event_name == 'push' || !github.event.pull_request.draft)
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+
+      - name: Regenerate backend apps package.json
+        if: needs.init.outputs.should-update-packages == 'true'
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run refresh-pkg-json
+
+      - name: Regenerate frontend models
+        if: needs.init.outputs.should-update-models == 'true'
+        run: npm run extract-api
+
+      - name: Run prettier
+        if: needs.init.outputs.should-update-models == 'true'
+        run: npm run format --projects=shared-ng-open-api
+
+      - name: Add, commit and push backend package.json
+        if: needs.init.outputs.should-update-packages == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore: regenerate backend package*.json [skip ci]'
+          file_pattern: 'apps/**/package*.json'
+          commit_options: '--no-verify'
+
+      - name: Add, commit and push generated models
+        if: needs.init.outputs.should-update-models == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore: regenerate frontend models [skip ci]'
+          file_pattern: 'libs/ng/shared/open-api/src/lib/generated/*'
+          commit_options: '--no-verify'
+
+      - name: Cancel workflow on failure
+        if: failure()
+        uses: andymckay/cancel-action@0.2
+
+  # AGENTS
+  agents:
+    runs-on: ubuntu-latest
+    needs: [init, regenerate]
+    if: |
+      !failure() && !cancelled() &&
+      needs.init.outputs.projects-affected == 'true' &&
+      (github.event_name == 'release' || github.event_name == 'push' || !github.event.pull_request.draft)
+    name: Agent
+    timeout-minutes: 15
+
+    services:
+      mongo:
+        image: mongo
+        ports:
+          - 27017:27017
+
+    strategy:
+      matrix:
+        agent: [1, 2, 3]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start Nx Agent ${{ matrix.agent }}
+        run: npx nx-cloud start-agent
+
+  # BUILD
+  build:
+    runs-on: ubuntu-latest
+    needs: [init, regenerate]
+    if: |
+      !failure() && !cancelled() &&
+      needs.init.outputs.projects-affected == 'true' &&
+      (github.event_name == 'release' || github.event_name == 'push' || !github.event.pull_request.draft)
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+
+      - run: npx nx-cloud start-ci-run
+
+      # - name: Scan backend services OpenAPI specs
+      #   run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run scan:openapi
+
+      - name: Run Affected lint
+        run: npm run affected:lint
+
+      - name: Run Affected build
+        if: github.event_name != 'release'
+        run: npx nx affected:build --exclude=$(npx nx affected:libs --plain) --parallel --maxParallel=3
+
+      - name: Run All build
+        if: github.event_name == 'release'
+        run: npx nx run-many --target=build --projects=$(npm run get:apps) --parallel=1 --maxParallel=1
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BUILD_ARTIFACTS }}
+          path: ${{ env.BUILD_FOLDER }}
+          retention-days: 1
+
+      - name: Cancel workflow on failure
+        if: failure()
+        uses: andymckay/cancel-action@0.2
+
+    outputs:
+      fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+
+  # TEST
+  test:
+    runs-on: ubuntu-latest
+    needs: [init, regenerate]
+    if: |
+      !failure() && !cancelled() &&
+      needs.init.outputs.projects-affected == 'true' &&
+      (github.event_name == 'release' || github.event_name == 'push' || !github.event.pull_request.draft)
+
+    services:
+      nats-streaming:
+        image: nats-streaming:0.23.0
+        options: >-
+          --entrypoint "/nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing"
+        ports:
+          - '4222:4222'
+          - '8222:8222'
+
+      auth-mongo:
+        image: mongo
+        ports:
+          - 27017:27017
+        
+      orders-mongo:
+        image: mongo
+        ports:
+          - 27018:27017
+
+      tickets-mongo:
+        image: mongo
+        ports:
+          - 27019:27017
+
+      payments-mongo:
+        image: mongo
+        ports:
+          - 27020:27017
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+
+      - run: npx nx-cloud start-ci-run
+
+      - name: Run Affected test
+        run: npx nx affected:test --parallel --maxParallel=3 --exclude=workspace
+
+      - name: Check libs coverage reports existence
+        id: check-libs-coverage
+        uses: andstor/file-existence-action@v1
+        with:
+          files: ${{ env.COVERAGE_LIBS_UNIT_TESTS_FOLDER }}
+
+      - name: Upload libs unit tests coverage reports
+        if: steps.check-libs-coverage.outputs.files_exists == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.COVERAGE_LIBS_UNIT_TESTS_ARTIFACTS }}
+          path: ${{ env.COVERAGE_LIBS_UNIT_TESTS_FOLDER }}
+          retention-days: 1
+
+      - name: Check apps coverage reports existence
+        id: check-apps-coverage
+        uses: andstor/file-existence-action@v1
+        with:
+          files: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
+
+      - name: Upload apps unit tests coverage reports
+        if: steps.check-apps-coverage.outputs.files_exists == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.COVERAGE_APPS_UNIT_TESTS_ARTIFACTS }}
+          path: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
+          retention-days: 1
+
+      - name: Cancel workflow on failure
+        if: failure()
+        uses: andymckay/cancel-action@0.2
+
+    outputs:
+      has-apps-coverage: ${{ steps.check-apps-coverage.outputs.files_exists }}
+      has-libs-coverage: ${{ steps.check-libs-coverage.outputs.files_exists }}
+      fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+
+  # E2E
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [init, regenerate]
+    if: |
+      !failure() && !cancelled() &&
+      needs.init.outputs.projects-affected == 'true' &&
+      (github.event_name == 'push' || !github.event.pull_request.draft)
+    timeout-minutes: 10
+    services:
+      nats-streaming:
+        image: nats-streaming:0.23.0
+        options: >-
+          --entrypoint "/nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing"
+        ports:
+          - '4222:4222'
+          - '8222:8222'
+
+      auth-mongo:
+        image: mongo
+        ports:
+          - 27017:27017
+        
+      orders-mongo:
+        image: mongo
+        ports:
+          - 27018:27017
+
+      tickets-mongo:
+        image: mongo
+        ports:
+          - 27019:27017
+
+      payments-mongo:
+        image: mongo
+        ports:
+          - 27020:27017
+
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+
+      # running e2e tests in parallel create conflicts in DB
+      - name: Run Affected Backend e2e tests
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run affected:e2e:backend
+
+      - name: Check coverage reports existence
+        uses: andstor/file-existence-action@v1
+        id: check-coverage
+        with:
+          files: ${{ env.COVERAGE_APPS_E2E_TESTS_FOLDER }}
+
+      - name: Upload apps e2e tests coverage reports
+        if: ${{ steps.check-coverage.outputs.files_exists == 'true' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.COVERAGE_APPS_E2E_TESTS_ARTIFACTS }}
+          path: ${{ env.COVERAGE_APPS_E2E_TESTS_FOLDER }}
+          retention-days: 1
+
+      - name: Cancel workflow on failure
+        if: failure()
+        uses: andymckay/cancel-action@0.2
+
+    outputs:
+      has-coverage: ${{ steps.check-coverage.outputs.files_exists }}
+      fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+
+  # CLOSE
+  close:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: |
+      always() &&
+      needs.init.outputs.projects-affected == 'true'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-npm
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.build.outputs.fetch-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: npx nx-cloud stop-all-agents

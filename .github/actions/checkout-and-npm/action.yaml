@@ -1,0 +1,55 @@
+name: 'Checkout and run npm install'
+description: 'This action checks out the commit, sets up Node and installs deps using npm.'
+author: 'getlarge'
+inputs:
+  fetch-depth:
+    required: false
+    description: 'Number of commits to fetch during checkout. 0 indicates all history for all branches and tags.'
+    default: '1'
+  fetch-ref:
+    required: false
+    description: 'Ref to fetch from'
+    default: 'refs/heads/main'
+  node-version:
+    required: true
+    description: 'Node version used for setup.'
+  token:
+    required: false
+    description: 'Personal access token (PAT) used to fetch the repository.'
+    default: ${{ github.token }}
+outputs:
+  cache-hit:
+    description: 'Indicates if modules cache was hit.'
+    value: ${{ steps.cache.outputs.cache-hit }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout the commit
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+        ref: ${{ inputs.fetch-ref }}
+        token: ${{ inputs.token }}
+
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+      # TODO: check if there are no native modules with nx/tools/utils/node-modules scripts
+    - name: Install dependencies
+      env:
+        HUSKY_SKIP_INSTALL: 'true'
+      run: npm ci --ignore-scripts
+      shell: bash
+
