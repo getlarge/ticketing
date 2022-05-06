@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import passport, { Authenticator } from 'fastify-passport';
+import passport, { Authenticator } from '@fastify/passport';
 
 import { Type } from '../interfaces';
 

@@ -1,3 +1,4 @@
+import { fastifyHelmet } from '@fastify/helmet';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { CustomStrategy, Transport } from '@nestjs/microservices';
@@ -8,7 +9,6 @@ import {
 import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { Services } from '@ticketing/shared/constants';
-import { fastifyHelmet } from 'fastify-helmet';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';

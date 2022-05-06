@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import passport from '@fastify/passport';
 import {
   CanActivate,
   ExecutionContext,
@@ -8,7 +9,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import passport from 'fastify-passport';
 
 import { Type } from './interfaces';
 import {

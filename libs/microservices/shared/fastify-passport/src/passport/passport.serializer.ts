@@ -1,5 +1,5 @@
+import passport, { Authenticator } from '@fastify/passport';
 import { FastifyRequest } from 'fastify';
-import passport, { Authenticator } from 'fastify-passport';
 
 export abstract class PassportSerializer {
   abstract serializeUser<User, StoredUser = any>(

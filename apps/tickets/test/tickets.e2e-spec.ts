@@ -1,6 +1,8 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
+import fastifyPassport from '@fastify/passport';
+import fastifySecureSession from '@fastify/secure-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
@@ -17,8 +19,6 @@ import {
   createSigninSession,
   MockClient,
 } from '@ticketing/microservices/shared/testing';
-import fastifyPassport from 'fastify-passport';
-import fastifySecureSession from 'fastify-secure-session';
 import { Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';

@@ -1,3 +1,4 @@
+import type { Session as FastifySession } from '@fastify/secure-session';
 import {
   Body,
   Controller,
@@ -27,7 +28,6 @@ import {
   SESSION_ACCESS_TOKEN,
 } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import type { Session as FastifySession } from 'fastify-secure-session';
 
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { User, UserCredentials, UserCredentialsDto, UserDto } from './models';

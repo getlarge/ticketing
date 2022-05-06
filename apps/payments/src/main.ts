@@ -1,3 +1,7 @@
+import fastifyCors from '@fastify/cors';
+import { fastifyHelmet } from '@fastify/helmet';
+import fastifyPassport from '@fastify/passport';
+import fastifySecureSession from '@fastify/secure-session';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { CustomStrategy, Transport } from '@nestjs/microservices';
@@ -19,10 +23,6 @@ import {
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
 import { Resources, Services } from '@ticketing/shared/constants';
-import fastifyCors from 'fastify-cors';
-import { fastifyHelmet } from 'fastify-helmet';
-import fastifyPassport from 'fastify-passport';
-import fastifySecureSession from 'fastify-secure-session';
 import { existsSync, writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
 import { resolve } from 'path';

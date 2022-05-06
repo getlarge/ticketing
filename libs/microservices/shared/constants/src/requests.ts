@@ -1,6 +1,6 @@
+import { CookieSerializeOptions } from '@fastify/cookie';
 import { SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { Environment } from '@ticketing/shared/constants';
-import { CookieSerializeOptions } from 'fastify-cookie';
 
 import { devEnvironments } from './env';
 

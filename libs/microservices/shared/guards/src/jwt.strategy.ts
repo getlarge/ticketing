@@ -1,4 +1,4 @@
-import 'fastify-secure-session';
+import '@fastify/secure-session';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
