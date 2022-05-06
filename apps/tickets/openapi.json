@@ -414,9 +414,21 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 20
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 20
+                }
+              },
+              {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 20
+              }
+            ]
           },
           "value": {
             "type": "string",

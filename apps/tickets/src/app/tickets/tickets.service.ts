@@ -22,7 +22,7 @@ import {
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
-import paginate from 'nestjs-keyset-paginator';
+import Paginator from 'nestjs-keyset-paginator';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import { CreateTicket, Ticket, UpdateTicket } from './models';
@@ -54,9 +54,10 @@ export class TicketsService {
     return result;
   }
 
-  async find(
-    params: PaginateDto = {}
-  ): Promise<{ results: Ticket[]; next: NextPaginationDto[] }> {
+  paginate(params: PaginateDto = {}): Promise<{
+    docs: TicketDocument[];
+    next_key: { key: string; value: string }[];
+  }> {
     const {
       skip = 0,
       limit = 10,
@@ -65,9 +66,8 @@ export class TicketsService {
       filter = undefined,
       projection = undefined,
     } = params;
-
     // TODO: create a PR in nestjs-keyset-paginator to add document types
-    const { docs, next_key } = (await paginate(
+    return new Paginator().paginate(
       this.ticketModel,
       skip,
       limit,
@@ -76,10 +76,13 @@ export class TicketsService {
       sort?.order,
       filter,
       projection
-    )) as {
-      docs: TicketDocument[];
-      next_key: { key: string; value: string }[];
-    };
+    );
+  }
+
+  async find(
+    params: PaginateDto = {}
+  ): Promise<{ results: Ticket[]; next: NextPaginationDto[] }> {
+    const { docs, next_key } = await this.paginate(params);
     const results = docs.map((ticket) => ticket.toJSON<Ticket>());
     return { results, next: next_key };
   }

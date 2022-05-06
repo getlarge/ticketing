@@ -26,8 +26,20 @@ export class SortDto {
 }
 
 export class FilterDto extends PartialType(filterDto) {
-  @ApiProperty({ minLength: 2, maxLength: 20 })
-  name: string;
+  @ApiProperty({
+    oneOf: [
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+          minLength: 2,
+          maxLength: 20,
+        },
+      },
+      { type: 'string', minLength: 2, maxLength: 20 },
+    ],
+  })
+  name: string | string[];
 
   @ApiProperty({ minLength: 1, maxLength: 20 })
   value: string;
@@ -66,7 +78,6 @@ export class ProjectionDto extends projectionDto {
   mode: number;
 }
 
-
 export class PaginateDto extends PartialType(PaginationDto) {
   @ApiPropertyOptional({
     type: () => StartKeyDto,
@@ -91,6 +102,3 @@ export class PaginateDto extends PartialType(PaginationDto) {
   @ApiPropertyOptional({ type: () => ProjectionDto, isArray: true })
   projection?: ProjectionDto[];
 }
-
-
-
