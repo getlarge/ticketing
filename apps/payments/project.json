@@ -93,6 +93,12 @@
         "command": "docker push ghcr.io/getlarge/ticketing-payments:{args.tag}"
       }
     },
+    "refresh-pkg-json": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/utils/regenerate-pkg-json-cli.js -p payments -v"
+      }
+    },
     "dotenv-push": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

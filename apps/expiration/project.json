@@ -93,6 +93,12 @@
         "command": "docker push ghcr.io/getlarge/ticketing-expiration:{args.tag}"
       }
     },
+    "refresh-pkg-json": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/utils/regenerate-pkg-json-cli.js -p expiration -v"
+      }
+    },
     "dotenv-push": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

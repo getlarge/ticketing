@@ -94,6 +94,12 @@
         "command": "docker push ghcr.io/getlarge/ticketing-tickets:{args.tag}"
       }
     },
+    "refresh-pkg-json": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/utils/regenerate-pkg-json-cli.js -p tickets -v"
+      }
+    },
     "dotenv-push": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
