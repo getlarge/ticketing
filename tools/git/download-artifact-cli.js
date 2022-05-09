@@ -8,16 +8,32 @@ const { getArtifacts, getWorkflowRuns } = require('./github-methods');
 const { stringIsUndefined } = require('../utils');
 
 // get latest workflow for this branch
-async function getLatestWorkflowRun({ branch, githubToken, org, verbose, workflowId }) {
+async function getLatestWorkflowRun({
+  branch,
+  githubToken,
+  org,
+  verbose,
+  workflowId,
+}) {
   if (verbose) {
     console.log(`Fetching workflow runs for ${org}/${name}:${branch}`);
   }
-  const [workflowRun] = await getWorkflowRuns({ branch, githubToken, limit: 1, org, workflowId });
+  const [workflowRun] = await getWorkflowRuns({
+    branch,
+    githubToken,
+    limit: 1,
+    org,
+    workflowId,
+  });
   return workflowRun;
 }
 
 // get workflow run artifacts and get latest build artifact
-async function getArtifact({ githubToken, org, verbose }, runId, artifactName = 'build') {
+async function getArtifact(
+  { githubToken, org, verbose },
+  runId,
+  artifactName = 'build'
+) {
   if (verbose) {
     console.log(`Fetching artifact ${artifactName} from workflow run ${runId}`);
   }
@@ -26,9 +42,14 @@ async function getArtifact({ githubToken, org, verbose }, runId, artifactName = 
 }
 
 // download build artifact archive
-async function downloadArtifact({ destinationPath = './dist', githubToken, verbose }, url) {
+async function downloadArtifact(
+  { destinationPath = './dist', githubToken, verbose },
+  url
+) {
   if (verbose) {
-    console.log(`Downloading artifact from ${url} in ${destinationPath} folder`);
+    console.log(
+      `Downloading artifact from ${url} in ${destinationPath} folder`
+    );
   }
   const { data } = await axios(url, {
     method: 'get',
@@ -49,6 +70,7 @@ async function downloadArtifact({ destinationPath = './dist', githubToken, verbo
         description: 'Github token to read private repo',
         demandOption: true,
         alias: 'g',
+        default: '',
         coerce: (value) => {
           if (stringIsUndefined(value) && !process.env['GITHUB_TOKEN']) {
             throw Error('Environment variable GITHUB_TOKEN is missing');
@@ -93,7 +115,9 @@ async function downloadArtifact({ destinationPath = './dist', githubToken, verbo
     }
     const artifact = await getArtifact(argv, workflowRun.id);
     if (!(artifact && artifact.archive_download_url)) {
-      throw new Error(`Artifact not available for workflow run ${workflowRun.id}`);
+      throw new Error(
+        `Artifact not available for workflow run ${workflowRun.id}`
+      );
     }
     await downloadArtifact(argv, artifact.archive_download_url);
     process.exit(0);

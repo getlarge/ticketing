@@ -13,6 +13,7 @@ const { stringIsUndefined } = require('../utils');
         description: 'Github token to read/write to repo',
         demandOption: true,
         alias: 'g',
+        default: '',
         coerce: (value) => {
           if (stringIsUndefined(value) && !process.env['GITHUB_TOKEN']) {
             throw Error('Environment variable GITHUB_TOKEN is missing');
@@ -32,11 +33,13 @@ const { stringIsUndefined } = require('../utils');
         alias: 'b',
       },
       conclusion: {
-        description: 'Filter workflows by conclusion status (success, completed...)',
+        description:
+          'Filter workflows by conclusion status (success, completed...)',
         alias: 'c',
       },
       workflowId: {
-        description: 'Filter workflows by workflow name (workflow must have name property)',
+        description:
+          'Filter workflows by workflow name (workflow must have name property)',
         alias: 'w',
         default: 'ci.yaml',
       },
@@ -71,7 +74,11 @@ const { stringIsUndefined } = require('../utils');
     ].filter(({ value }) => !!value);
 
     const filteredRuns = workflowRuns
-      .filter((run) => (filters.length ? filters.every(({ property, value }) => run[property] === value) : true))
+      .filter((run) =>
+        filters.length
+          ? filters.every(({ property, value }) => run[property] === value)
+          : true
+      )
       .map((run) => (path ? get(run, path) : run));
 
     const result = items ? filteredRuns.slice(0, items) : filteredRuns[0];

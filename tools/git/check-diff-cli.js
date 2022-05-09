@@ -5,22 +5,27 @@ const { stringIsUndefined } = require('../utils');
 
 (async function () {
   const argv = yargs(hideBin(process.argv))
-    .usage('Usage: $0 -g [token] -b [source_branch]')
+    .usage('Usage: $0 -b [source_branch]')
     .options({
       base: {
         description: 'Specify base ref',
         alias: 'b',
+        demandOption: true,
         default: 'main',
       },
       head: {
         description: 'Specify head ref, default to current branch',
         alias: 'h',
-        coerce: (value) => (stringIsUndefined(value) ? getCurrentBranch() : value),
+        demandOption: true,
+        default: getCurrentBranch(),
+        coerce: (value) =>
+          stringIsUndefined(value) ? getCurrentBranch() : value,
       },
       pattern: {
         description: 'Specify path pattern to search',
         alias: 'p',
-        default: '',
+        demandOption: true,
+        default: '.',
       },
     })
     .option('verbose', {
