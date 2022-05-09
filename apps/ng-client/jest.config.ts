@@ -1,6 +1,5 @@
 module.exports = {
   displayName: 'ng-client',
-
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -18,4 +17,5 @@ module.exports = {
     'jest-preset-angular/build/serializers/html-comment',
   ],
   preset: '../../jest.preset.ts',
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
 };
