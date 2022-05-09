@@ -38,10 +38,13 @@
     "dotenv-pull:all": "npx nx run-many --target=dotenv-pull --projects=auth,expiration,orders,tickets,payments",
     "dotenv-push": "node tools/utils/dotenv-push.js",
     "dotenv-push:all": "npx nx run-many --target=dotenv-push --projects=auth,expiration,orders,tickets,payments",
+    "docker:nats:build": "docker build infra/nats-streaming -f infra/nats-streaming/Dockerfile -t ghcr.io/getlarge/ticketing/nats-streaming",
+    "docker:nats:push": "docker push ghcr.io/getlarge/ticketing/nats-streaming:latest",
     "docker:proxy:build": "docker build infra/nginx --no-cache -f infra/nginx/Dockerfile -t ghcr.io/getlarge/ticketing/nginx-proxy --build-arg TEMPLATE=nginx.template",
     "docker:proxy:up": "docker run -d --rm --name nginx-proxy --env-file infra/nginx/.env -p 127.0.0.1:80:8080/tcp ghcr.io/getlarge/ticketing/nginx-proxy",
     "docker:proxy:down": "docker kill nginx-proxy",
     "docker:proxy:log": "docker logs -f --tail=100 nginx-proxy",
+    "docker:proxy:push": "docker push ghcr.io/getlarge/ticketing/nginx-proxy:latest",
     "docker:dev:up": "docker-compose -p ticketing --env-file .env --profile dev up -d",
     "docker:dev:down": "docker-compose -p ticketing --env-file .env --profile dev down",
     "docker:dev:log": "docker-compose -p ticketing logs -f --tail=100",
@@ -236,4 +239,3 @@
     }
   }
 }
-
