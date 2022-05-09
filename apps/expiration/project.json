@@ -55,16 +55,6 @@
         "passWithNoTests": true
       }
     },
-    "e2e": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/expiration-e2e"],
-      "options": {
-        "jestConfig": "apps/expiration/jest-e2e.config.js",
-        "passWithNoTests": true,
-        "codeCoverage": true,
-        "detectOpenHandles": true
-      }
-    },
     "get-dependencies": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
