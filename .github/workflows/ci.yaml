@@ -122,7 +122,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::set-output name=commit-hash::$(npm run git:workflow-runs -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
+          echo "::set-output name=commit-hash::$(npm run git:workflow-runs -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id' --silent)"
 
       - name: Get latest commmit sha
         id: last-commit-sha
@@ -152,11 +152,11 @@ jobs:
       # Run comparisons between latest successful workflow commit and current commit
       - name: Check if OpenAPI specs have changed
         id: open-api
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json'  --silent)"
 
       - name: Check if package.json has changed
         id: package-json
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json' --silent)"
 
       - name: Check if regenerate job should be run
         id: regenerate
@@ -324,7 +324,7 @@ jobs:
 
       - name: Run All build
         if: github.event_name == 'release'
-        run: npx nx run-many --target=build --projects=$(npm run get:apps) --parallel=1 --maxParallel=1
+        run: npx nx run-many --target=build --projects=$(npm run get:apps --silent) --parallel=1 --maxParallel=1
 
       - name: Upload build output
         uses: actions/upload-artifact@v3
@@ -362,7 +362,7 @@ jobs:
         image: mongo
         ports:
           - 27017:27017
-        
+
       orders-mongo:
         image: mongo
         ports:
@@ -457,7 +457,7 @@ jobs:
         image: mongo
         ports:
           - 27017:27017
-        
+
       orders-mongo:
         image: mongo
         ports:
