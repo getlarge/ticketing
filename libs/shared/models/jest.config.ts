@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'microservices-shared-redis',
-  preset: '../../../../jest.preset.js',
+  displayName: 'shared-models',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,6 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../../coverage/libs/microservices/shared/redis',
+  coverageDirectory: '../../../coverage/libs/shared/models',
+  preset: '../../../jest.preset.ts',
 };

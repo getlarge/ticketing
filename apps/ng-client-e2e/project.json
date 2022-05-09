@@ -1,5 +1,4 @@
 {
-  "root": "apps/ng-client-e2e",
   "sourceRoot": "apps/ng-client-e2e/src",
   "projectType": "application",
   "targets": {

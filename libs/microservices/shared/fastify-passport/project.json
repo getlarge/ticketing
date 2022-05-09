@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/fastify-passport",
   "sourceRoot": "libs/microservices/shared/fastify-passport/src",
   "projectType": "library",
   "targets": {
@@ -16,7 +15,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/fastify-passport"],
       "options": {
-        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.js",
+        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.ts",
         "passWithNoTests": true
       }
     }

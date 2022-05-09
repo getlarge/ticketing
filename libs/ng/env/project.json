@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "libs/ng/env",
   "sourceRoot": "libs/ng/env/src",
   "prefix": "ticketing",
   "targets": {
@@ -8,7 +7,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/ng/env"],
       "options": {
-        "jestConfig": "libs/ng/env/jest.config.js",
+        "jestConfig": "libs/ng/env/jest.config.ts",
         "passWithNoTests": true
       }
     },

@@ -1,5 +1,4 @@
 {
-  "root": "apps/expiration",
   "sourceRoot": "apps/expiration/src",
   "projectType": "application",
   "targets": {
@@ -52,7 +51,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/expiration"],
       "options": {
-        "jestConfig": "apps/expiration/jest.config.js",
+        "jestConfig": "apps/expiration/jest.config.ts",
         "passWithNoTests": true
       }
     },

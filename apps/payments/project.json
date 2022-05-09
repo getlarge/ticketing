@@ -1,5 +1,4 @@
 {
-  "root": "apps/payments",
   "sourceRoot": "apps/payments/src",
   "projectType": "application",
   "targets": {
@@ -52,7 +51,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/payments"],
       "options": {
-        "jestConfig": "apps/payments/jest.config.js",
+        "jestConfig": "apps/payments/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -60,7 +59,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/payments-e2e"],
       "options": {
-        "jestConfig": "apps/payments/jest-e2e.config.js",
+        "jestConfig": "apps/payments/jest-e2e.config.ts",
         "passWithNoTests": true,
         "codeCoverage": true,
         "detectOpenHandles": true

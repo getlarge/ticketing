@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'tickets',
-  preset: '../../jest.preset.js',
+  displayName: 'auth',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/tickets',
+  coverageDirectory: '../../coverage/apps/auth',
+  coverageReporters: ['json'],
+  preset: '../../jest.preset.ts',
 };

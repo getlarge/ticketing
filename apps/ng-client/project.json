@@ -1,6 +1,5 @@
 {
   "projectType": "application",
-  "root": "apps/ng-client",
   "sourceRoot": "apps/ng-client/src",
   "prefix": "ticketing",
   "targets": {
@@ -125,7 +124,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/ng-client"],
       "options": {
-        "jestConfig": "apps/ng-client/jest.config.js",
+        "jestConfig": "apps/ng-client/jest.config.ts",
         "passWithNoTests": true
       }
     },

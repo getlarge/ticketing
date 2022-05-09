@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/guards",
   "sourceRoot": "libs/microservices/shared/guards/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/guards"],
       "options": {
-        "jestConfig": "libs/microservices/shared/guards/jest.config.js",
+        "jestConfig": "libs/microservices/shared/guards/jest.config.ts",
         "passWithNoTests": true
       }
     }

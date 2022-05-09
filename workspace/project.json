@@ -1,5 +1,4 @@
 {
-  "root": ".",
   "targets": {
     "build": {
       "executor": "@nrwl/workspace:run-commands",

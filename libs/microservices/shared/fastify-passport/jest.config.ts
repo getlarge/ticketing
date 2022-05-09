@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'microservices-shared-filters',
-  preset: '../../../../jest.preset.js',
+  displayName: 'microservices-shared-fastify-passport',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../../coverage/libs/microservices/shared/filters',
+  coverageDirectory:
+    '../../../../coverage/libs/microservices/shared/fastify-passport',
+  preset: '../../../../jest.preset.ts',
 };

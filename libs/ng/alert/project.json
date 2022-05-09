@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "libs/ng/alert",
   "sourceRoot": "libs/ng/alert/src",
   "prefix": "ticketing",
   "targets": {
@@ -8,7 +7,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/ng/alert"],
       "options": {
-        "jestConfig": "libs/ng/alert/jest.config.js",
+        "jestConfig": "libs/ng/alert/jest.config.ts",
         "passWithNoTests": true
       }
     },

@@ -1,5 +1,4 @@
 {
-  "root": "apps/auth",
   "sourceRoot": "apps/auth/src",
   "projectType": "application",
   "targets": {
@@ -53,7 +52,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/auth"],
       "options": {
-        "jestConfig": "apps/auth/jest.config.js",
+        "jestConfig": "apps/auth/jest.config.ts",
         "passWithNoTests": true,
         "codeCoverage": true
       }
@@ -62,7 +61,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/auth-e2e"],
       "options": {
-        "jestConfig": "apps/auth/jest-e2e.config.js",
+        "jestConfig": "apps/auth/jest-e2e.config.ts",
         "codeCoverage": true,
         "detectOpenHandles": true
       }

@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/constants",
   "sourceRoot": "libs/microservices/shared/constants/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/constants"],
       "options": {
-        "jestConfig": "libs/microservices/shared/constants/jest.config.js",
+        "jestConfig": "libs/microservices/shared/constants/jest.config.ts",
         "passWithNoTests": true
       }
     }

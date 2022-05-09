@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/filters",
   "sourceRoot": "libs/microservices/shared/filters/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/filters"],
       "options": {
-        "jestConfig": "libs/microservices/shared/filters/jest.config.js",
+        "jestConfig": "libs/microservices/shared/filters/jest.config.ts",
         "passWithNoTests": true
       }
     }

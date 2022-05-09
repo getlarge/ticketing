@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/models",
   "sourceRoot": "libs/microservices/shared/models/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/models"],
       "options": {
-        "jestConfig": "libs/microservices/shared/models/jest.config.js",
+        "jestConfig": "libs/microservices/shared/models/jest.config.ts",
         "passWithNoTests": true
       }
     }

@@ -8,5 +8,5 @@
     "types": ["jest", "node"],
     "allowJs": true
   },
-  "include": ["**/*.e2e-spec.ts", "**/*.spec.ts", "**/*.d.ts"]
+  "include": ["**/*.e2e-spec.ts", "**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
 }

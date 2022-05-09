@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'microservices-shared-guards',
-  preset: '../../../../jest.preset.js',
+  displayName: 'microservices-shared-nats-streaming',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../../coverage/libs/microservices/shared/guards',
+  coverageDirectory:
+    '../../../../coverage/libs/microservices/shared/nats-streaming',
+  preset: '../../../../jest.preset.ts',
 };

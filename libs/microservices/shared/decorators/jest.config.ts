@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'microservices-shared-env',
-  preset: '../../../../jest.preset.js',
+  displayName: 'microservices-shared-decorators',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../../coverage/libs/microservices/shared/env',
+  coverageDirectory:
+    '../../../../coverage/libs/microservices/shared/decorators',
+  preset: '../../../../jest.preset.ts',
 };

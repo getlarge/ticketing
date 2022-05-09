@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "libs/ng/open-api",
   "sourceRoot": "libs/ng/open-api/src",
   "prefix": "ticketing",
   "targets": {
@@ -8,7 +7,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/ng/open-api"],
       "options": {
-        "jestConfig": "libs/ng/open-api/jest.config.js",
+        "jestConfig": "libs/ng/open-api/jest.config.ts",
         "passWithNoTests": true
       }
     },

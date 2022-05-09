@@ -1,6 +1,6 @@
 module.exports = {
   displayName: 'auth',
-  preset: '../../jest.preset.js',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -16,4 +16,5 @@ module.exports = {
   coverageDirectory: '../../coverage/apps/auth-e2e',
   coverageReporters: ['json'],
   testMatch: ['**/+(*.)+(e2e-spec|test).+(ts|js)?(x)'],
+  preset: '../../jest.preset.ts',
 };

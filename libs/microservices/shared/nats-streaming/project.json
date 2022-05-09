@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/nats-streaming",
   "sourceRoot": "libs/microservices/shared/nats-streaming/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/nats-streaming"],
       "options": {
-        "jestConfig": "libs/microservices/shared/nats-streaming/jest.config.js",
+        "jestConfig": "libs/microservices/shared/nats-streaming/jest.config.ts",
         "passWithNoTests": true
       }
     }

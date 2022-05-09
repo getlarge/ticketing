@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'expiration',
-  preset: '../../jest.preset.js',
+  displayName: 'orders',
+
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,6 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/expiration',
+  coverageDirectory: '../../coverage/apps/orders',
+  preset: '../../jest.preset.ts',
 };

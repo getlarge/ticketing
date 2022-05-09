@@ -1,5 +1,4 @@
 {
-  "root": "apps/tickets",
   "sourceRoot": "apps/tickets/src",
   "projectType": "application",
   "targets": {
@@ -52,7 +51,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/tickets"],
       "options": {
-        "jestConfig": "apps/tickets/jest.config.js",
+        "jestConfig": "apps/tickets/jest.config.ts",
         "passWithNoTests": true,
         "codeCoverage": true
       }
@@ -61,7 +60,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/tickets-e2e"],
       "options": {
-        "jestConfig": "apps/tickets/jest-e2e.config.js",
+        "jestConfig": "apps/tickets/jest-e2e.config.ts",
         "passWithNoTests": true,
         "codeCoverage": true,
         "detectOpenHandles": true

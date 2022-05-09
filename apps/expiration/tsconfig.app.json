@@ -8,6 +8,6 @@
     "emitDecoratorMetadata": true,
     "target": "es2015"
   },
-  "exclude": ["**/*.spec.ts", "**/*.e2e-spec.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.e2e-spec.ts", "jest.config.ts"],
   "include": ["**/*.ts"]
 }

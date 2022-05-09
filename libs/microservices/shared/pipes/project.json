@@ -1,5 +1,4 @@
 {
-  "root": "libs/microservices/shared/pipes",
   "sourceRoot": "libs/microservices/shared/pipes/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +13,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/microservices/shared/pipes"],
       "options": {
-        "jestConfig": "libs/microservices/shared/pipes/jest.config.js",
+        "jestConfig": "libs/microservices/shared/pipes/jest.config.ts",
         "passWithNoTests": true
       }
     }
