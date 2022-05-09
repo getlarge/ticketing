@@ -122,7 +122,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::set-output name=commit-hash::$(npm run git:workflow-runs -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id' --silent)"
+          echo "::set-output name=commit-hash::$(npm run git:workflow-runs --silent -- -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
 
       - name: Get latest commmit sha
         id: last-commit-sha
@@ -152,11 +152,11 @@ jobs:
       # Run comparisons between latest successful workflow commit and current commit
       - name: Check if OpenAPI specs have changed
         id: open-api
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json'  --silent)"
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
 
       - name: Check if package.json has changed
         id: package-json
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json' --silent)"
+        run: echo "::set-output name=has-changed::$(npm run git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
 
       - name: Check if regenerate job should be run
         id: regenerate
@@ -228,7 +228,7 @@ jobs:
 
       - name: Run prettier
         if: needs.init.outputs.should-update-models == 'true'
-        run: npm run format --projects=shared-ng-open-api
+        run: npx nx format:write --projects=shared-ng-open-api
 
       - name: Add, commit and push backend package.json
         if: needs.init.outputs.should-update-packages == 'true'
