@@ -18,7 +18,7 @@ import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { Resources, Services } from '@ticketing/shared/constants';
 import { Types } from 'mongoose';
-import { delay } from 'rxjs';
+import { delay, lastValueFrom } from 'rxjs';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
 import { OrdersModule } from '../src/app/orders/orders.module';
@@ -32,7 +32,8 @@ describe('OrdersMSController (e2e)', () => {
   let natsPublisher: Publisher;
   // let ticketModel: Model<TicketDocument>;
   const envVariables = loadEnv(envFilePath, true);
-  const expectionFilter = new GlobalErrorFilter();
+  const exceptionFilter = new GlobalErrorFilter();
+  exceptionFilter.catch = jest.fn();
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -49,7 +50,7 @@ describe('OrdersMSController (e2e)', () => {
       ],
     })
       .overrideProvider(GlobalErrorFilter)
-      .useValue(expectionFilter)
+      .useValue(exceptionFilter)
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
@@ -79,7 +80,6 @@ describe('OrdersMSController (e2e)', () => {
       ),
     };
     microservice = moduleFixture.createNestMicroservice(options);
-    // ticketModel = app.get<Model<TicketDocument>>(getModelToken(Ticket.name));
     await microservice.listen();
     await app.init();
   });
@@ -91,7 +91,7 @@ describe('OrdersMSController (e2e)', () => {
   });
 
   describe('order:created', () => {
-    it('should NOT set ticket orderId when event data is invalid', (done) => {
+    it('should NOT set ticket orderId when event data is invalid', async () => {
       const order = {
         id: new Types.ObjectId().toHexString(),
         userId: '',
@@ -104,48 +104,36 @@ describe('OrdersMSController (e2e)', () => {
       };
       const ticketsService = app.get(TicketsService);
       ticketsService.createOrder = jest.fn();
-      expectionFilter.catch = jest.fn();
       //
-      natsPublisher
-        .emit(Patterns.OrderCreated, order)
-        .pipe(delay(250))
-        .subscribe(() => {
-          expect(ticketsService.createOrder).not.toBeCalled();
-          expect(expectionFilter.catch).toBeCalled();
-          done();
-        });
+      await lastValueFrom(
+        natsPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250))
+      );
+      expect(ticketsService.createOrder).not.toBeCalled();
+      expect(exceptionFilter.catch).toBeCalled();
     }, 6000);
 
-    it('should set ticket orderId when event data is valid', (done) => {
+    it('should set ticket orderId when event data is valid', async () => {
       const order = mockOrderEvent();
-      //
       const ticketsService = app.get(TicketsService);
       ticketsService.createOrder = jest.fn();
-      natsPublisher
-        .emit(Patterns.OrderCreated, order)
-        .pipe(delay(250))
-        .subscribe(() => {
-          expect(ticketsService.createOrder).toBeCalled();
-          // const createdTicket = await ticketModel.findOne({ _id: ticket.id });
-          // expect(createdTicket._id.toString()).toEqual(ticket.id);
-          done();
-        });
+      //
+      await lastValueFrom(
+        natsPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250))
+      );
+      expect(ticketsService.createOrder).toBeCalled();
     }, 6000);
   });
 
   describe('order:cancelled', () => {
-    it('should unset ticket orderId when event data is valid', (done) => {
+    it('should unset ticket orderId when event data is valid', async () => {
       const order = mockOrderEvent();
-      //
       const ticketsService = app.get(TicketsService);
-      ticketsService.createOrder = jest.fn();
-      natsPublisher
-        .emit(Patterns.OrderCancelled, order)
-        .pipe(delay(250))
-        .subscribe(() => {
-          expect(ticketsService.cancelOrder).toBeCalled();
-          done();
-        });
+      ticketsService.cancelOrder = jest.fn();
+      //
+      await lastValueFrom(
+        natsPublisher.emit(Patterns.OrderCancelled, order).pipe(delay(250))
+      );
+      expect(ticketsService.cancelOrder).toBeCalled();
     }, 6000);
   });
 });
