@@ -353,7 +353,7 @@ jobs:
       nats-streaming:
         image: nats-streaming:0.23.0
         options: >-
-          --entrypoint "/nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing"
+          --entrypoint /nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing
         ports:
           - '4222:4222'
           - '8222:8222'
@@ -448,7 +448,7 @@ jobs:
       nats-streaming:
         image: nats-streaming:0.23.0
         options: >-
-          --entrypoint "/nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing"
+          --entrypoint /nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing
         ports:
           - '4222:4222'
           - '8222:8222'
