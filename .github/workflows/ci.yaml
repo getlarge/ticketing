@@ -351,9 +351,10 @@ jobs:
 
     services:
       nats-streaming:
-        image: nats-streaming:0.23.0
-        options: >-
-          --entrypoint /nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing
+        image: ghcr.io/getlarge/ticketing/nats-streaming:latest
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         ports:
           - '4222:4222'
           - '8222:8222'
@@ -446,9 +447,10 @@ jobs:
     timeout-minutes: 10
     services:
       nats-streaming:
-        image: nats-streaming:0.23.0
-        options: >-
-          --entrypoint /nats-streaming-server -st MEMORY -p 4222 -m 8222 -hbi 5s -hbt 5s -hbf 2 -SD -cid ticketing
+        image: ghcr.io/getlarge/ticketing/nats-streaming:latest
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         ports:
           - '4222:4222'
           - '8222:8222'
