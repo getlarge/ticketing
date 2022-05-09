@@ -1,4 +1,5 @@
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -7,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppController } from '../src/app/app.controller';
 import { AppService } from '../src/app/app.service';
+import { AppConfigService } from '../src/app/env';
 import { HealthModule } from '../src/app/health/health.module';
 import { envFilePath } from './constants';
 
@@ -20,6 +22,12 @@ describe('HealthController (e2e)', () => {
           isGlobal: true,
           expandVariables: true,
           envFilePath,
+        }),
+        MongooseModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (configService: AppConfigService) => ({
+            uri: configService.get<string>('MONGODB_URI'),
+          }),
         }),
         HealthModule,
       ],
