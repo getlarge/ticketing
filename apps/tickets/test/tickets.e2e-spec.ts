@@ -188,7 +188,7 @@ describe('TicketsController (e2e)', () => {
       //
       expect(statusCode).toBe(200);
       const body = JSON.parse(payload);
-      expect(body.length).toEqual(ticketsToCreate.length);
+      expect(body.results?.length).toEqual(ticketsToCreate.length);
     });
   });
 
@@ -280,9 +280,13 @@ describe('TicketsController (e2e)', () => {
     });
 
     it('should return a 400 if the ticket is reserved', async () => {
-      const session = createSigninSession(app, { email: defaultUserEmail });
+      const userId = 'fake_user_id';
+      const session = createSigninSession(app, {
+        email: defaultUserEmail,
+        id: userId,
+      });
       const { id } = await createTicket(
-        { orderId: new Types.ObjectId().toHexString() },
+        { orderId: new Types.ObjectId().toHexString(), userId },
         ticketModel
       );
       const invalidTicket: UpdateTicket = { title: 'updated title' };
