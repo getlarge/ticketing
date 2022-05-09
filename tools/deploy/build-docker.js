@@ -3,17 +3,17 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { getPackageJson, outputPackageJson } = require('../nx/get-package-json');
 const { stringIsUndefined } = require('../utils');
-const { name } = require('../../package.json');
+const { name: repoName } = require('../../package.json');
 
 async function buildApp({
   dockerfile = 'Dockerfile',
   org,
-  projectEnv,
+  config,
   projectName,
   root,
   tag,
 }) {
-  // const skipDev = projectEnv === 'production';
+  // const skipDev = config === 'production';
   const skipDev = true;
   const packageJson = await getPackageJson({
     projectName,
@@ -29,18 +29,18 @@ async function buildApp({
   });
 
   // TODO: allow skipping docker cache ? --no-cache
-  execSync(`npx nx run ${projectName}:build:${projectEnv}`, {
+  execSync(`npx nx run ${projectName}:build:${config}`, {
     stdio: 'inherit',
   });
   execSync(
-    `docker build -f ${dockerfile} --build-arg APP_NAME=${projectName} -t ${org}/${name}-${projectName}:${tag} .`,
+    `docker build -f ${dockerfile} --build-arg APP_NAME=${projectName} -t ${org}/${repoName}-${projectName}:${tag} .`,
     { stdio: 'inherit' }
   );
 
   // execSync(
   //   `docker build -f ./apps/${projectName}/${dockerfile} --build-arg APP_NAME=${projectName}\
-  //   --build-arg NODE_ENV=${projectEnv} --build-arg BUILD_FLAG=""\
-  //   --cache-from ${org}/${name}:nx-base -t ${org}/${name}-${projectName}:${tag} .`,
+  //   --build-arg NODE_ENV=${config} --build-arg BUILD_FLAG=""\
+  //   --cache-from ${org}/${name}:nx-base -t ${org}/${repoName}-${projectName}:${tag} .`,
   //   { stdio: 'inherit' }
   // );
 }
@@ -55,7 +55,7 @@ async function buildApp({
         example: 'auth',
         alias: 'p',
       },
-      projectEnv: {
+      config: {
         description: 'Project environment/configuration',
         demandOption: false,
         example: 'development',
