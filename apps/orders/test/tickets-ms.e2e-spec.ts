@@ -18,7 +18,7 @@ import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { Resources, Services } from '@ticketing/shared/constants';
 import { Model, Types } from 'mongoose';
-import { delay } from 'rxjs';
+import { delay, lastValueFrom } from 'rxjs';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
 import { Ticket, TicketDocument } from '../src/app/tickets/schemas';
@@ -34,7 +34,8 @@ describe('TicketsMSController (e2e)', () => {
   let ticketModel: Model<TicketDocument>;
   const envVariables = loadEnv(envFilePath, true);
 
-  const expectionFilter = new GlobalErrorFilter();
+  const exceptionFilter = new GlobalErrorFilter();
+  exceptionFilter.catch = jest.fn();
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -51,7 +52,7 @@ describe('TicketsMSController (e2e)', () => {
       ],
     })
       .overrideProvider(GlobalErrorFilter)
-      .useValue(expectionFilter)
+      .useValue(exceptionFilter)
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
@@ -83,6 +84,7 @@ describe('TicketsMSController (e2e)', () => {
     microservice = moduleFixture.createNestMicroservice(options);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ticketModel = app.get<Model<TicketDocument>>(getModelToken(Ticket.name));
+
     await microservice.listen();
     await app.init();
   });
@@ -94,43 +96,34 @@ describe('TicketsMSController (e2e)', () => {
   });
 
   describe('ticket:created', () => {
-    it('should NOT create ticket when event data is invalid', (done) => {
+    it('should NOT create ticket when event data is invalid', async () => {
       const ticket = {
         id: new Types.ObjectId().toHexString(),
         title: 3000,
         price: 'not a price',
         version: 'invalid version',
       };
-      expectionFilter.catch = jest.fn();
       const ticketsService = app.get(TicketsService);
       ticketsService.create = jest.fn();
       //
-      natsPublisher
-        .emit(Patterns.TicketCreated, ticket)
-        .pipe(delay(1000))
-        .subscribe({
-          next: () => {
-            expect(ticketsService.create).not.toBeCalled();
-            expect(expectionFilter.catch).toHaveBeenCalled();
-            done();
-          },
-        });
-    }, 8000);
+      await lastValueFrom(
+        natsPublisher.emit(Patterns.TicketCreated, ticket).pipe(delay(500))
+      );
+      expect(ticketsService.create).not.toBeCalled();
+      expect(exceptionFilter.catch).toHaveBeenCalled();
+    }, 6000);
 
-    it('should create ticket when event data is valid', (done) => {
+    it('should create ticket when event data is valid', async () => {
       const ticket = mockTicketEvent();
       const ticketsService = app.get(TicketsService);
       ticketsService.create = jest.fn();
       //
-      natsPublisher
-        .emit(Patterns.TicketCreated, ticket)
-        .pipe(delay(500))
-        .subscribe(async () => {
-          expect(ticketsService.create).toBeCalled();
-          // const createdTicket = await ticketModel.findOne({ _id: ticket.id });
-          // expect(createdTicket?._id?.toString()).toEqual(ticket.id);
-          done();
-        });
+      await lastValueFrom(
+        natsPublisher.emit(Patterns.TicketCreated, ticket).pipe(delay(500))
+      );
+      expect(ticketsService.create).toBeCalled();
+      // const createdTicket = await ticketModel.findOne({ _id: ticket.id });
+      // expect(createdTicket?._id?.toString()).toEqual(ticket.id);
     }, 6000);
   });
 });
