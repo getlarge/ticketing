@@ -4,7 +4,7 @@ import packageInfo from 'package.json';
 import { Environment, VersioningType } from './env.interface';
 import { getApiVersion } from './helpers';
 
-const version = packageInfo.version;
+const version = packageInfo?.version;
 const apiVersion = getApiVersion(version);
 
 export const environment: Environment = {
