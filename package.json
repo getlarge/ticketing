@@ -133,6 +133,7 @@
     "dotenv": "16.0.0",
     "dotenv-expand": "8.0.3",
     "fastify": "3.29.0",
+    "fastify-swagger": "5.2.0",
     "lodash": "^4.17.21",
     "mongoose": "^6.1.0",
     "mongoose-update-if-current": "^1.4.0",
