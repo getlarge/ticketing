@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nx serve",
     "start:frontend": "nx run ng-client:serve",
+    "start:frontend:local": "nx run ng-client:serve:local",
     "start:backend": "nx run-many --target=serve --projects=auth,expiration,orders,payments,tickets --parallel --maxParallel=5",
     "build": "nx build",
     "build:docker:base": "docker build . -t getlarge/ticketing:nx-base",
@@ -123,6 +124,7 @@
     "@ngrx/entity": "14.0.2",
     "@ngrx/store": "14.0.2",
     "@ngrx/store-devtools": "14.0.2",
+    "@popperjs/core": "^2.11.5",
     "@stripe/stripe-js": "1.34.0",
     "axios": "0.26.0",
     "bootstrap": "^5.1.3",

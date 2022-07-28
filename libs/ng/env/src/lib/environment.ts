@@ -13,8 +13,8 @@ export const environment: Environment = {
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
-  // apiBaseDomain: 'localhost:80',
-  apiBaseDomain: 'ticketing.dev',
+  apiBaseDomain: 'localhost:80',
+  // apiBaseDomain: 'ticketing.dev',
   useUnsafeConnection: true,
   // apiBaseDomain: 'local-ticketing.loca.lt', // when using default local tunneling
   // useUnsafeConnection: false,
