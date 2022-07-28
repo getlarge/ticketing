@@ -129,6 +129,14 @@ server {
     proxy_set_header Connection "upgrade";
   }
 
+  location /ng-cli-ws {
+    proxy_pass http://frontend;
+    include /etc/nginx/snippets/proxy.conf;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+  
   location / {
     proxy_pass http://frontend;
     include /etc/nginx/snippets/proxy.conf;
