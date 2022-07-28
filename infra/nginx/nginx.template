@@ -39,34 +39,48 @@ map $http_x_version $req_version {
   "" "0";
 }
 
-
-map $http_origin $cors_origin_header {
+map $http_origin $use_cors {
     default "";
-    "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" "$http_origin";
-    "(https?:\/\/)($DOMAIN)" "$http_origin";
-    # "~^https://test-.-dev.ticketing.dev$" "$http_origin"; # https://test-7-dev.ticketing.dev
-    # "(https?:\/\/)(ticketing.dev)" "$http_origin";
+    "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" 'true';
+    "(https?:\/\/)($DOMAIN)" 'true';
+    "~*(https?:\/\/)(.+\.)*($DOMAIN)" 'true';
+    "~*(^|^https?:\/\/)(.+\.)*(ticketing.(dev|ovh|com))" 'true';
 }
 
-map $http_origin $cors_cred {
-    default "";
-    "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" "true";
-    "(https?:\/\/)($DOMAIN)" "true";
-    # "(https?:\/\/)(ticketing.dev)" "true";
+map $use_cors $cors_cred {
+  default '';
+  'true' 'true';
+}
+
+map $use_cors $allow_origin {
+  'true' $http_origin;
+}
+
+map $use_cors $allow_methods {
+  'true' 'GET, POST, DELETE, PUT, PATCH, OPTIONS';
+}
+
+map $use_cors $allow_headers {
+  'true' 'X-Version,X-Access-Token,X-Refresh-Token,Authorization,Refresh,Set-Cookie,DNT,User-Agent,Keep-Alive,Content-Type,Pragma,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept,Range,Upgrade-Insecure-Requests';
+}
+
+map $use_cors $expose_headers {
+  'true' '*';
 }
 
 server {
   listen $PORT;
   listen [::]:$PORT ipv6only=on;
   server_name _;
-
+  
   real_ip_header X-Forwarded-For;
-  add_header Access-Control-Allow-Origin $cors_origin_header always;
+  add_header Access-Control-Allow-Origin $allow_origin always;
   add_header Access-Control-Allow-Credentials $cors_cred;
-  add_header Access-Control-Allow-Methods "GET, POST, DELETE, PUT, PATCH, OPTIONS";
-  add_header Access-Control-Allow-Headers "X-Version,X-Access-Token,X-Refresh-Token,Set-Cookie,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept,Range";
-  add_header Access-Control-Expose-Headers "X-Version,X-Access-Token,Set-Cookie,Content-Length,Content-Range,Content-Type,Accept,Range";
+  add_header Access-Control-Allow-Methods $allow_methods;
+  add_header Access-Control-Allow-Headers $allow_headers;
+  add_header Access-Control-Expose-Headers $expose_headers;
   add_header Vary 'Origin';
+
   # localtunnel specific header
   add_header Bypass-Tunnel-Reminder "yo";
 
