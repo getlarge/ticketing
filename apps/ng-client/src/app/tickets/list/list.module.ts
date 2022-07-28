@@ -9,18 +9,17 @@ import { TicketListFilterFormComponent } from './ticket-list-filter-form/ticket-
 import { TicketListGridComponent } from './ticket-list-grid/ticket-list-grid.component';
 
 @NgModule({
-  declarations: [
-    TicketListComponent,
-    TicketListFilterFormComponent,
-    TicketListGridComponent,
-    CreateTicketModalComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    RouterModule.forChild([{ path: '', component: TicketListComponent }]),
-  ],
-  entryComponents: [CreateTicketModalComponent],
+    declarations: [
+        TicketListComponent,
+        TicketListFilterFormComponent,
+        TicketListGridComponent,
+        CreateTicketModalComponent,
+    ],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FormsModule,
+        RouterModule.forChild([{ path: '', component: TicketListComponent }]),
+    ]
 })
 export class ListModule {}

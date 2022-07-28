@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,14 +14,14 @@ import { UserStoreActions, UserStoreSelectors, UserStoreState } from '../store';
 
 @Component({ templateUrl: 'sign-in.component.html' })
 export class SignInComponent implements OnInit, OnDestroy {
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   isLoading$!: Observable<boolean>;
   submitted = false;
   returnUrl!: string;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private store: Store<UserStoreState.State>,

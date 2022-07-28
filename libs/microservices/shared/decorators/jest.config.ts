@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'microservices-shared-decorators',
 
   globals: {
@@ -13,5 +13,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory:
     '../../../../coverage/libs/microservices/shared/decorators',
-  preset: '../../../../jest.preset.ts',
+  preset: '../../../../jest.preset.js',
 };

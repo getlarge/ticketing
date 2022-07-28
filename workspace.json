@@ -29,5 +29,6 @@
     "shared-models": "libs/shared/models",
     "tickets": "apps/tickets",
     "workspace": "workspace"
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }

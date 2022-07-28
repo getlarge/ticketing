@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'microservices-shared-fastify-passport',
 
   globals: {
@@ -13,5 +13,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory:
     '../../../../coverage/libs/microservices/shared/fastify-passport',
-  preset: '../../../../jest.preset.ts',
+  preset: '../../../../jest.preset.js',
 };

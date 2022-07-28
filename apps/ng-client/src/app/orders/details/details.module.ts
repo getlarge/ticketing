@@ -9,14 +9,13 @@ import { PaymentModalComponent } from '../../payments/payment-modal.component';
 import { OrderDetailsComponent } from './details.component';
 
 @NgModule({
-  declarations: [OrderDetailsComponent, PaymentModalComponent],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    NgxStripeModule.forChild(environment.stripePublishableKey),
-    RouterModule.forChild([{ path: '', component: OrderDetailsComponent }]),
-  ],
-  entryComponents: [PaymentModalComponent],
+    declarations: [OrderDetailsComponent, PaymentModalComponent],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FormsModule,
+        NgxStripeModule.forChild(environment.stripePublishableKey),
+        RouterModule.forChild([{ path: '', component: OrderDetailsComponent }]),
+    ]
 })
 export class DetailsModule {}

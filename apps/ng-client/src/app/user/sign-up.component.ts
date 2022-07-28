@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,13 +15,13 @@ import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
 
 @Component({ templateUrl: 'sign-up.component.html' })
 export class SignUpComponent implements OnInit, OnDestroy {
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   submitted = false;
   isLoading$!: Observable<boolean>;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private actionsSubj: ActionsSubject,

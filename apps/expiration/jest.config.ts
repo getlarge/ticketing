@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'expiration',
 
   globals: {
@@ -12,5 +12,5 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/expiration',
-  preset: '../../jest.preset.ts',
+  preset: '../../jest.preset.js',
 };

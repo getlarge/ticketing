@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'auth',
 
   globals: {
@@ -16,5 +16,5 @@ module.exports = {
   coverageDirectory: '../../coverage/apps/auth-e2e',
   coverageReporters: ['json'],
   testMatch: ['**/+(*.)+(e2e-spec|test).+(ts|js)?(x)'],
-  preset: '../../jest.preset.ts',
+  preset: '../../jest.preset.js',
 };

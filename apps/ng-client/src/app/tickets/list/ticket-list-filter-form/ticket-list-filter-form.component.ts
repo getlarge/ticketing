@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { User } from '@ticketing/shared/models';
 import { Subscription } from 'rxjs';
 
@@ -22,11 +22,11 @@ export class TicketListFilterFormComponent implements OnInit, OnDestroy {
   @Input() users!: User[];
   @Output() filter = new EventEmitter<TicketFilter>();
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   formValue!: TicketFilter;
   formValueSub!: Subscription;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
