@@ -140,7 +140,13 @@
         "simple-import-sort"
       ],
       "rules": {
-        "eqeqeq": ["error", "always", { "null": "never" }],
+        "eqeqeq": [
+          "error",
+          "always",
+          {
+            "null": "never"
+          }
+        ],
         "complexity": "error",
         "max-depth": "error",
         "max-lines": [
@@ -155,12 +161,19 @@
             "max": 100
           }
         ],
-        "max-nested-callbacks": ["error", { "max": 3 }],
+        "max-nested-callbacks": [
+          "error",
+          {
+            "max": 3
+          }
+        ],
         "max-params": ["error", 10],
         "max-params-no-constructor/max-params-no-constructor": ["error", 4],
         "no-console": [
           "error",
-          { "allow": ["error", "warn", "info", "table"] }
+          {
+            "allow": ["error", "warn", "info", "table"]
+          }
         ],
         "no-duplicate-imports": "error",
         "no-empty": "error",
@@ -184,7 +197,9 @@
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-inferrable-types": [
           "error",
-          { "ignoreParameters": true }
+          {
+            "ignoreParameters": true
+          }
         ],
         "@typescript-eslint/no-non-null-assertion": "error",
         "@typescript-eslint/no-unused-vars": "error",

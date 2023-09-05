@@ -1,4 +1,5 @@
 {
+  "name": "ng-open-api",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/ng/open-api/src",
@@ -6,7 +7,7 @@
   "targets": {
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/ng/open-api"],
+      "outputs": ["{workspaceRoot}/coverage/libs/ng/open-api"],
       "options": {
         "jestConfig": "libs/ng/open-api/jest.config.ts",
         "passWithNoTests": true

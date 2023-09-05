@@ -1,4 +1,5 @@
 {
+  "name": "microservices-shared-constants",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/microservices/shared/constants/src",
   "projectType": "library",
@@ -12,7 +13,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/microservices/shared/constants"],
+      "outputs": [
+        "{workspaceRoot}/coverage/libs/microservices/shared/constants"
+      ],
       "options": {
         "jestConfig": "libs/microservices/shared/constants/jest.config.ts",
         "passWithNoTests": true

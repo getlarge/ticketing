@@ -1,4 +1,5 @@
 {
+  "name": "microservices-shared-guards",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/microservices/shared/guards/src",
   "projectType": "library",
@@ -12,7 +13,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/microservices/shared/guards"],
+      "outputs": ["{workspaceRoot}/coverage/libs/microservices/shared/guards"],
       "options": {
         "jestConfig": "libs/microservices/shared/guards/jest.config.ts",
         "passWithNoTests": true

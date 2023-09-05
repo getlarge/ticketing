@@ -1,4 +1,5 @@
 {
+  "name": "ng-alert",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/ng/alert/src",
@@ -6,7 +7,7 @@
   "targets": {
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/ng/alert"],
+      "outputs": ["{workspaceRoot}/coverage/libs/ng/alert"],
       "options": {
         "jestConfig": "libs/ng/alert/jest.config.ts",
         "passWithNoTests": true

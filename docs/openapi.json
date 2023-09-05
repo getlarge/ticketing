@@ -71,10 +71,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "password",
-                  "email"
-                ]
+                "required": ["password", "email"]
               }
             }
           }
@@ -97,18 +94,13 @@
                       "description": "User id"
                     }
                   },
-                  "required": [
-                    "email",
-                    "id"
-                  ]
+                  "required": ["email", "id"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       }
     },
     "/api/users/sign-in": {
@@ -137,10 +129,7 @@
                     "format": "email"
                   }
                 },
-                "required": [
-                  "password",
-                  "email"
-                ]
+                "required": ["password", "email"]
               }
             }
           }
@@ -163,9 +152,7 @@
             }
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       }
     },
     "/api/users/sign-out": {
@@ -191,9 +178,7 @@
             }
           }
         },
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "session": []
@@ -228,18 +213,13 @@
                       "description": "User id"
                     }
                   },
-                  "required": [
-                    "email",
-                    "id"
-                  ]
+                  "required": ["email", "id"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "session": []
@@ -275,10 +255,7 @@
                     "minimum": 0
                   }
                 },
-                "required": [
-                  "title",
-                  "price"
-                ]
+                "required": ["title", "price"]
               }
             }
           }
@@ -319,21 +296,13 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": [
-                    "id",
-                    "title",
-                    "price",
-                    "version",
-                    "userId"
-                  ]
+                  "required": ["id", "title", "price", "version", "userId"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "tickets"
-        ],
+        "tags": ["tickets"],
         "security": [
           {
             "session": []
@@ -373,10 +342,7 @@
                     ]
                   }
                 },
-                "required": [
-                  "key",
-                  "value"
-                ]
+                "required": ["key", "value"]
               }
             }
           },
@@ -414,10 +380,7 @@
                   "type": "number"
                 }
               },
-              "required": [
-                "field",
-                "order"
-              ]
+              "required": ["field", "order"]
             }
           },
           {
@@ -432,9 +395,21 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "minLength": 2,
-                    "maxLength": 20
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 20
+                        }
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 20
+                      }
+                    ]
                   },
                   "value": {
                     "type": "string",
@@ -486,11 +461,7 @@
                     ]
                   }
                 },
-                "required": [
-                  "name",
-                  "value",
-                  "operator"
-                ]
+                "required": ["name", "value", "operator"]
               }
             }
           },
@@ -516,10 +487,7 @@
                     "maximum": 1
                   }
                 },
-                "required": [
-                  "name",
-                  "mode"
-                ]
+                "required": ["name", "mode"]
               }
             }
           }
@@ -555,16 +523,11 @@
                                 ]
                               }
                             },
-                            "required": [
-                              "key",
-                              "value"
-                            ]
+                            "required": ["key", "value"]
                           }
                         }
                       },
-                      "required": [
-                        "next"
-                      ]
+                      "required": ["next"]
                     },
                     {
                       "properties": {
@@ -618,9 +581,7 @@
             }
           }
         },
-        "tags": [
-          "tickets"
-        ]
+        "tags": ["tickets"]
       }
     },
     "/api/tickets/{id}": {
@@ -674,21 +635,13 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": [
-                    "id",
-                    "title",
-                    "price",
-                    "version",
-                    "userId"
-                  ]
+                  "required": ["id", "title", "price", "version", "userId"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "tickets"
-        ]
+        "tags": ["tickets"]
       },
       "put": {
         "operationId": "TicketsController_updateById",
@@ -767,21 +720,13 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": [
-                    "id",
-                    "title",
-                    "price",
-                    "version",
-                    "userId"
-                  ]
+                  "required": ["id", "title", "price", "version", "userId"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "tickets"
-        ],
+        "tags": ["tickets"],
         "security": [
           {
             "session": []
@@ -810,9 +755,7 @@
                     "description": "Ticket to order"
                   }
                 },
-                "required": [
-                  "ticketId"
-                ]
+                "required": ["ticketId"]
               }
             }
           }
@@ -855,12 +798,7 @@
                               "description": "Ticket version represented by a number incremented at each updated"
                             }
                           },
-                          "required": [
-                            "id",
-                            "title",
-                            "price",
-                            "version"
-                          ]
+                          "required": ["id", "title", "price", "version"]
                         }
                       ]
                     },
@@ -889,21 +827,13 @@
                       "description": "Order version represented by a number incremented at each updated"
                     }
                   },
-                  "required": [
-                    "id",
-                    "ticket",
-                    "userId",
-                    "status",
-                    "version"
-                  ]
+                  "required": ["id", "ticket", "userId", "status", "version"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "orders"
-        ],
+        "tags": ["orders"],
         "security": [
           {
             "session": []
@@ -958,12 +888,7 @@
                                 "description": "Ticket version represented by a number incremented at each updated"
                               }
                             },
-                            "required": [
-                              "id",
-                              "title",
-                              "price",
-                              "version"
-                            ]
+                            "required": ["id", "title", "price", "version"]
                           }
                         ]
                       },
@@ -992,22 +917,14 @@
                         "description": "Order version represented by a number incremented at each updated"
                       }
                     },
-                    "required": [
-                      "id",
-                      "ticket",
-                      "userId",
-                      "status",
-                      "version"
-                    ]
+                    "required": ["id", "ticket", "userId", "status", "version"]
                   }
                 }
               }
             }
           }
         },
-        "tags": [
-          "orders"
-        ],
+        "tags": ["orders"],
         "security": [
           {
             "session": []
@@ -1071,12 +988,7 @@
                               "description": "Ticket version represented by a number incremented at each updated"
                             }
                           },
-                          "required": [
-                            "id",
-                            "title",
-                            "price",
-                            "version"
-                          ]
+                          "required": ["id", "title", "price", "version"]
                         }
                       ]
                     },
@@ -1105,21 +1017,13 @@
                       "description": "Order version represented by a number incremented at each updated"
                     }
                   },
-                  "required": [
-                    "id",
-                    "ticket",
-                    "userId",
-                    "status",
-                    "version"
-                  ]
+                  "required": ["id", "ticket", "userId", "status", "version"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "orders"
-        ],
+        "tags": ["orders"],
         "security": [
           {
             "session": []
@@ -1181,12 +1085,7 @@
                               "description": "Ticket version represented by a number incremented at each updated"
                             }
                           },
-                          "required": [
-                            "id",
-                            "title",
-                            "price",
-                            "version"
-                          ]
+                          "required": ["id", "title", "price", "version"]
                         }
                       ]
                     },
@@ -1215,21 +1114,13 @@
                       "description": "Order version represented by a number incremented at each updated"
                     }
                   },
-                  "required": [
-                    "id",
-                    "ticket",
-                    "userId",
-                    "status",
-                    "version"
-                  ]
+                  "required": ["id", "ticket", "userId", "status", "version"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "orders"
-        ],
+        "tags": ["orders"],
         "security": [
           {
             "session": []
@@ -1263,10 +1154,7 @@
                     "example": "tok_visa"
                   }
                 },
-                "required": [
-                  "orderId",
-                  "token"
-                ]
+                "required": ["orderId", "token"]
               }
             }
           }
@@ -1296,20 +1184,13 @@
                       "description": "Payment version represented by a number incremented at each updated"
                     }
                   },
-                  "required": [
-                    "id",
-                    "orderId",
-                    "stripeId",
-                    "version"
-                  ]
+                  "required": ["id", "orderId", "stripeId", "version"]
                 }
               }
             }
           }
         },
-        "tags": [
-          "payments"
-        ],
+        "tags": ["payments"],
         "security": [
           {
             "session": []
@@ -1339,10 +1220,7 @@
             "format": "email"
           }
         },
-        "required": [
-          "password",
-          "email"
-        ]
+        "required": ["password", "email"]
       },
       "UserDto": {
         "type": "object",
@@ -1357,10 +1235,7 @@
             "description": "User id"
           }
         },
-        "required": [
-          "email",
-          "id"
-        ]
+        "required": ["email", "id"]
       },
       "NextPaginationDto": {
         "type": "object",
@@ -1379,10 +1254,7 @@
             ]
           }
         },
-        "required": [
-          "key",
-          "value"
-        ]
+        "required": ["key", "value"]
       },
       "PaginatedDto": {
         "type": "object",
@@ -1408,16 +1280,11 @@
                   ]
                 }
               },
-              "required": [
-                "key",
-                "value"
-              ]
+              "required": ["key", "value"]
             }
           }
         },
-        "required": [
-          "next"
-        ]
+        "required": ["next"]
       },
       "CreateTicketDto": {
         "type": "object",
@@ -1434,10 +1301,7 @@
             "minimum": 0
           }
         },
-        "required": [
-          "title",
-          "price"
-        ]
+        "required": ["title", "price"]
       },
       "TicketDto": {
         "type": "object",
@@ -1470,13 +1334,7 @@
             "description": "Ticket reservation order id"
           }
         },
-        "required": [
-          "id",
-          "title",
-          "price",
-          "version",
-          "userId"
-        ]
+        "required": ["id", "title", "price", "version", "userId"]
       },
       "StartKeyDto": {
         "type": "object",
@@ -1495,10 +1353,7 @@
             ]
           }
         },
-        "required": [
-          "key",
-          "value"
-        ]
+        "required": ["key", "value"]
       },
       "SortDto": {
         "type": "object",
@@ -1512,31 +1367,31 @@
             "type": "number"
           }
         },
-        "required": [
-          "field",
-          "order"
-        ]
+        "required": ["field", "order"]
       },
       "FilterOperatorType": {
         "type": "string",
-        "enum": [
-          "eq",
-          "gt",
-          "gte",
-          "lt",
-          "lte",
-          "regex",
-          "in",
-          "nin"
-        ]
+        "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"]
       },
       "FilterDto": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 20
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 20
+                }
+              },
+              {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 20
+              }
+            ]
           },
           "value": {
             "type": "string",
@@ -1556,30 +1411,12 @@
           "operator": {
             "default": "eq",
             "type": "string",
-            "enum": [
-              "eq",
-              "gt",
-              "gte",
-              "lt",
-              "lte",
-              "regex",
-              "in",
-              "nin"
-            ]
+            "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"]
           },
           "mode": {
             "oneOf": [
               {
-                "enum": [
-                  "eq",
-                  "gt",
-                  "gte",
-                  "lt",
-                  "lte",
-                  "regex",
-                  "in",
-                  "nin"
-                ],
+                "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"],
                 "default": "eq"
               },
               {
@@ -1588,11 +1425,7 @@
             ]
           }
         },
-        "required": [
-          "name",
-          "value",
-          "operator"
-        ]
+        "required": ["name", "value", "operator"]
       },
       "ProjectionDto": {
         "type": "object",
@@ -1608,10 +1441,7 @@
             "maximum": 1
           }
         },
-        "required": [
-          "name",
-          "mode"
-        ]
+        "required": ["name", "mode"]
       },
       "UpdateTicketDto": {
         "type": "object",
@@ -1641,9 +1471,7 @@
             "description": "Ticket to order"
           }
         },
-        "required": [
-          "ticketId"
-        ]
+        "required": ["ticketId"]
       },
       "TicketDto1": {
         "type": "object",
@@ -1668,21 +1496,11 @@
             "description": "Ticket version represented by a number incremented at each updated"
           }
         },
-        "required": [
-          "id",
-          "title",
-          "price",
-          "version"
-        ]
+        "required": ["id", "title", "price", "version"]
       },
       "OrderStatus": {
         "type": "string",
-        "enum": [
-          "created",
-          "cancelled",
-          "awaiting:payment",
-          "complete"
-        ]
+        "enum": ["created", "cancelled", "awaiting:payment", "complete"]
       },
       "OrderDto": {
         "type": "object",
@@ -1717,12 +1535,7 @@
                     "description": "Ticket version represented by a number incremented at each updated"
                   }
                 },
-                "required": [
-                  "id",
-                  "title",
-                  "price",
-                  "version"
-                ]
+                "required": ["id", "title", "price", "version"]
               }
             ]
           },
@@ -1735,12 +1548,7 @@
             "example": "complete",
             "default": "created",
             "type": "string",
-            "enum": [
-              "created",
-              "cancelled",
-              "awaiting:payment",
-              "complete"
-            ]
+            "enum": ["created", "cancelled", "awaiting:payment", "complete"]
           },
           "expiresAt": {
             "type": "string",
@@ -1751,13 +1559,7 @@
             "description": "Order version represented by a number incremented at each updated"
           }
         },
-        "required": [
-          "id",
-          "ticket",
-          "userId",
-          "status",
-          "version"
-        ]
+        "required": ["id", "ticket", "userId", "status", "version"]
       },
       "CreatePaymentDto": {
         "type": "object",
@@ -1772,10 +1574,7 @@
             "example": "tok_visa"
           }
         },
-        "required": [
-          "orderId",
-          "token"
-        ]
+        "required": ["orderId", "token"]
       },
       "PaymentDto": {
         "type": "object",
@@ -1797,12 +1596,7 @@
             "description": "Payment version represented by a number incremented at each updated"
           }
         },
-        "required": [
-          "id",
-          "orderId",
-          "stripeId",
-          "version"
-        ]
+        "required": ["id", "orderId", "stripeId", "version"]
       }
     },
     "securitySchemes": {

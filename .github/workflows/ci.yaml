@@ -122,7 +122,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::set-output name=commit-hash::$(npm run git:workflow-runs --silent -- -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
+          echo "::set-output name=commit-hash::$(yarn git:workflow-runs --silent -- -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
 
       - name: Get latest commmit sha
         id: last-commit-sha
@@ -152,11 +152,11 @@ jobs:
       # Run comparisons between latest successful workflow commit and current commit
       - name: Check if OpenAPI specs have changed
         id: open-api
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
+        run: echo "::set-output name=has-changed::$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
 
       - name: Check if package.json has changed
         id: package-json
-        run: echo "::set-output name=has-changed::$(npm run git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
+        run: echo "::set-output name=has-changed::$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
 
       - name: Check if regenerate job should be run
         id: regenerate
@@ -220,11 +220,11 @@ jobs:
 
       - name: Regenerate backend apps package.json
         if: needs.init.outputs.should-update-packages == 'true'
-        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run refresh-pkg-json
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn refresh-pkg-json
 
       - name: Regenerate frontend models
         if: needs.init.outputs.should-update-models == 'true'
-        run: npm run extract-api
+        run: yarn extract-api
 
       - name: Run prettier
         if: needs.init.outputs.should-update-models == 'true'
@@ -313,10 +313,10 @@ jobs:
       - run: npx nx-cloud start-ci-run
 
       # - name: Scan backend services OpenAPI specs
-      #   run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run scan:openapi
+      #   run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn scan:openapi
 
       - name: Run Affected lint
-        run: npm run affected:lint
+        run: yarn affected:lint
 
       - name: Run Affected build
         if: github.event_name != 'release'
@@ -324,7 +324,7 @@ jobs:
 
       - name: Run All build
         if: github.event_name == 'release'
-        run: npx nx run-many --target=build --projects=$(npm run get:apps --silent) --parallel=1 --maxParallel=1
+        run: npx nx run-many --target=build --projects=$(yarn get:apps --silent) --parallel=1 --maxParallel=1
 
       - name: Upload build output
         uses: actions/upload-artifact@v3
@@ -502,7 +502,7 @@ jobs:
 
       # running e2e tests in parallel create conflicts in DB
       - name: Run Affected Backend e2e tests
-        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npm run affected:e2e:backend
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend
 
       - name: Check coverage reports existence
         uses: andstor/file-existence-action@v1

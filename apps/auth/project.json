@@ -1,4 +1,5 @@
 {
+  "name": "auth",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/auth/src",
   "projectType": "application",
@@ -51,7 +52,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/auth"],
+      "outputs": ["{workspaceRoot}/coverage/apps/auth"],
       "options": {
         "jestConfig": "apps/auth/jest.config.ts",
         "passWithNoTests": true,
@@ -60,7 +61,7 @@
     },
     "e2e": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/auth-e2e"],
+      "outputs": ["{workspaceRoot}/coverage/apps/auth-e2e"],
       "options": {
         "jestConfig": "apps/auth/jest-e2e.config.ts",
         "codeCoverage": true,

@@ -1,5 +1,5 @@
+import { randomBytes } from 'node:crypto';
 import * as nats from 'node-nats-streaming';
-import * as shortid from 'shortid';
 
 export class NatsStreamingPublisher {
   connection: nats.Stan;
@@ -19,7 +19,7 @@ export class NatsStreamingPublisher {
   ): Promise<nats.Stan> {
     const nc = nats.connect(
       clusterID,
-      `${clientID}-${shortid.generate()}`,
+      `${clientID}-${randomBytes(8).toString('hex')}`,
       connectOptions
     );
     return new Promise((resolve, reject) => {

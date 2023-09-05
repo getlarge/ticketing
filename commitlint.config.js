@@ -1,4 +1,6 @@
-const fs = require('fs');
+const { execSync } = require('child_process');
+
+const projects = execSync('yarn nx show projects --json', { encoding: 'utf-8' });
 
 /*
  * Type-Enums and their documentation as reusable const.
@@ -95,9 +97,7 @@ const Configuration = {
     /*
      * Scope enums derived from projects registered in `workspace.json`
      */
-    'scope-enum': fs.promises.readFile('./workspace.json').then((rawContent) => {
-      return [2, 'always', Object.keys(JSON.parse(rawContent).projects)];
-    }),
+    'scope-enum': [2, 'always', Object.keys(JSON.parse(projects))]
   },
   /*
    * Prompt config for commit message support

@@ -1,4 +1,5 @@
 {
+  "name": "tickets",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/tickets/src",
   "projectType": "application",
@@ -50,7 +51,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/tickets"],
+      "outputs": ["{workspaceRoot}/coverage/apps/tickets"],
       "options": {
         "jestConfig": "apps/tickets/jest.config.ts",
         "passWithNoTests": true,
@@ -59,7 +60,7 @@
     },
     "e2e": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/tickets-e2e"],
+      "outputs": ["{workspaceRoot}/coverage/apps/tickets-e2e"],
       "options": {
         "jestConfig": "apps/tickets/jest-e2e.config.ts",
         "passWithNoTests": true,

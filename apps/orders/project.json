@@ -1,4 +1,5 @@
 {
+  "name": "orders",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/orders/src",
   "projectType": "application",
@@ -50,7 +51,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/orders"],
+      "outputs": ["{workspaceRoot}/coverage/apps/orders"],
       "options": {
         "jestConfig": "apps/orders/jest.config.ts",
         "passWithNoTests": true
@@ -58,7 +59,7 @@
     },
     "e2e": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/orders-e2e"],
+      "outputs": ["{workspaceRoot}/coverage/apps/orders-e2e"],
       "options": {
         "jestConfig": "apps/orders/jest-e2e.config.ts",
         "passWithNoTests": true,

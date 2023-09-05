@@ -1,4 +1,5 @@
 {
+  "name": "expiration",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/expiration/src",
   "projectType": "application",
@@ -50,7 +51,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/expiration"],
+      "outputs": ["{workspaceRoot}/coverage/apps/expiration"],
       "options": {
         "jestConfig": "apps/expiration/jest.config.ts",
         "passWithNoTests": true
