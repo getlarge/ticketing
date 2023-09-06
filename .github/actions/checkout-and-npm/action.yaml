@@ -1,4 +1,4 @@
-name: 'Checkout and run npm install'
+name: 'Checkout and run yarn install'
 description: 'This action checks out the commit, sets up Node and installs deps using npm.'
 author: 'getlarge'
 inputs:
@@ -37,19 +37,54 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Cache dependencies
-      id: cache
+    - name: Expose yarn config as "$GITHUB_OUTPUT"
+      id: yarn-config
+      shell: bash
+      env:
+        YARN_ENABLE_GLOBAL_CACHE: 'false'
+      run: |
+        echo "CACHE_FOLDER=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+        echo "CURRENT_NODE_VERSION="node-$(node --version)"" >> $GITHUB_OUTPUT
+        echo "CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's,/,-,g')" >> $GITHUB_OUTPUT
+
+    # follow advice in https://gist.github.com/belgattitude/042f9caf10d029badbde6cf9d43e400a
+    - name: Cache / restore yarn cache
+      id: yarn-cache
       uses: actions/cache@v3
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        path: ${{ steps.yarn-config.outputs.CACHE_FOLDER }}
+        key: yarn-cache-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ hashFiles('**/yarn.lock', '.yarnrc.yml') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          yarn-cache-
 
-      # TODO: check if there are no native modules with nx/tools/utils/node-modules scripts
+    - name: ♻️ Cache / restore yarn install state
+      id: yarn-install-state-cache
+      uses: actions/cache@v3
+      with:
+        path: .yarn/ci-cache/
+        key: yarn-install-state-cache-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
     - name: Install dependencies
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
       env:
+        YARN_ENABLE_GLOBAL_CACHE: 'false'
+        YARN_NM_MODE: 'hardlinks-local'
+        YARN_INSTALL_STATE_PATH: .yarn/ci-cache/install-state.gz
+        HUSKY: '0'
         HUSKY_SKIP_INSTALL: 'true'
-      run: npm ci --ignore-scripts
+      run: |
+        yarn install --immutable --inline-builds
       shell: bash
 
+    - name: Install dependencies with immutable cache
+      if: steps.yarn-cache.outputs.cache-hit == 'true'
+      env:
+        YARN_ENABLE_GLOBAL_CACHE: 'false'
+        YARN_NM_MODE: 'hardlinks-local'
+        YARN_INSTALL_STATE_PATH: .yarn/ci-cache/install-state.gz
+        HUSKY: '0'
+        HUSKY_SKIP_INSTALL: 'true'
+      run: |
+        echo "Yarn cache hit - use cache for dependencies installation"
+        yarn install --immutable --inline-builds --immutable-cache
+      shell: bash
