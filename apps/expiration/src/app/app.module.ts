@@ -30,7 +30,9 @@ import { OrdersModule } from './orders/orders.module';
       useFactory: (configService: AppConfigService) => ({
         pinoHttp: {
           level: configService.get('LOG_LEVEL'),
-          autoLogging: { ignorePaths: [`/${GLOBAL_API_PREFIX}/health`] },
+          autoLogging: {
+            ignore: (req) => [`/${GLOBAL_API_PREFIX}/health`].includes(req.url),
+          },
         },
       }),
     }),

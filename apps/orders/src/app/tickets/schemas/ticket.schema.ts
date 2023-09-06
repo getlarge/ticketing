@@ -41,7 +41,7 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket);
 
 export type TicketModel = Model<TicketDocument>;
 TicketSchema.methods.isReserved = async function (): Promise<boolean> {
-  const orderModel = this.db.model<OrderDocument>(Order.name);
+  const orderModel = this.db.model(Order.name) as Model<OrderDocument>;
   const existingOrder = await orderModel.findOne({
     ticket: this as TicketDocument,
     status: {

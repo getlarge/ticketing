@@ -106,6 +106,7 @@
     "@fastify/helmet": "11.0.0",
     "@fastify/passport": "2.3.0",
     "@fastify/secure-session": "7.1.0",
+    "@fastify/static": "^6.11.0",
     "@fastify/swagger": "8.10.0",
     "@nestjs-plugins/nestjs-nats-streaming-transport": "^1.2.0",
     "@nestjs/axios": "3.0.0",

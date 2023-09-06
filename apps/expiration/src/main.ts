@@ -25,7 +25,7 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true }
+    { bufferLogs: true, abortOnError: false }
   );
 
   const configService = app.get<AppConfigService>(ConfigService);

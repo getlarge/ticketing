@@ -38,7 +38,7 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true }
+    { bufferLogs: true, abortOnError: false }
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
@@ -114,7 +114,9 @@ async function bootstrap(): Promise<void> {
 
   // Save OpenAPI specs
   const openApiPath = resolve(APP_FOLDER, 'openapi.json');
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (existsSync(APP_FOLDER)) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     writeFileSync(openApiPath, JSON.stringify(document, null, 2));
   }
 

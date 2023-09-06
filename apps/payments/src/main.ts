@@ -41,7 +41,7 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true }
+    { bufferLogs: true, abortOnError: false }
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
@@ -112,9 +112,9 @@ async function bootstrap(): Promise<void> {
     .addSecurityRequirements(SecurityRequirements.Session)
     .addSecurityRequirements(SecurityRequirements.Bearer)
     .addServer(configService.get('SERVER_URL'))
-    .addTag(Resources.PAYMENTS)
+    .addTag(Resources.PAYMENTS);
 
-    if (proxyServerUrls.length) {
+  if (proxyServerUrls.length) {
     for (const serverUrl of proxyServerUrls) {
       documentBuilder.addServer(serverUrl);
     }

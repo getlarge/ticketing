@@ -1,6 +1,8 @@
 const { execSync } = require('child_process');
 
-const projects = execSync('yarn nx show projects --json', { encoding: 'utf-8' });
+const projects = execSync('yarn nx show projects --json', {
+  encoding: 'utf-8',
+});
 
 /*
  * Type-Enums and their documentation as reusable const.
@@ -28,7 +30,8 @@ const typeEnumDescription = {
     emoji: '💎',
   },
   styles: {
-    description: 'Changes that do affect the visual appearance of the code (css, scss, svg, icons, fonts, images)',
+    description:
+      'Changes that do affect the visual appearance of the code (css, scss, svg, icons, fonts, images)',
     title: 'Styling',
     emoji: '💅',
   },
@@ -43,7 +46,8 @@ const typeEnumDescription = {
     emoji: '🚀',
   },
   deprecate: {
-    description: 'A code change that deprecates APIs or is related to their deprecation',
+    description:
+      'A code change that deprecates APIs or is related to their deprecation',
     title: 'Code Deprecations',
     emoji: '🕸',
   },
@@ -53,7 +57,8 @@ const typeEnumDescription = {
     emoji: '🛂',
   },
   build: {
-    description: 'Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)',
+    description:
+      'Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)',
     title: 'Builds',
     emoji: '📦',
   },
@@ -97,7 +102,7 @@ const Configuration = {
     /*
      * Scope enums derived from projects registered in `workspace.json`
      */
-    'scope-enum': [2, 'always', Object.keys(JSON.parse(projects))]
+    'scope-enum': [2, 'always', JSON.parse(projects)],
   },
   /*
    * Prompt config for commit message support
@@ -113,7 +118,8 @@ const Configuration = {
           'What is the scope of this change based on workspace.json projects or choose empty if no scope is used (e.g. user-common-data, empty)',
       },
       subject: {
-        description: 'Write a short, imperative tense description of the change',
+        description:
+          'Write a short, imperative tense description of the change',
       },
       body: {
         description: 'Provide a longer description of the change',
@@ -122,7 +128,8 @@ const Configuration = {
         description: 'Are there any breaking changes?',
       },
       breakingBody: {
-        description: 'A BREAKING CHANGE commit requires a body. Please enter a longer description of the commit itself',
+        description:
+          'A BREAKING CHANGE commit requires a body. Please enter a longer description of the commit itself',
       },
       breaking: {
         description: 'Describe the breaking changes',
