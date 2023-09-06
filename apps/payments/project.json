@@ -5,13 +5,19 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/payments",
         "main": "apps/payments/src/main.ts",
         "tsConfig": "apps/payments/tsconfig.app.json",
-        "assets": ["apps/payments/src/assets"]
+        "assets": ["apps/payments/src/assets"],
+        "generatePackageJson": false,
+        "target": "node",
+        "compiler": "tsc",
+        "webpackConfig": "apps/payments/webpack.config.js",
+        "isolatedConfig": true,
+        "babelUpwardRootMode": true
       },
       "configurations": {
         "production": {
@@ -28,7 +34,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "payments:build"
       },

@@ -5,13 +5,19 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/orders",
         "main": "apps/orders/src/main.ts",
         "tsConfig": "apps/orders/tsconfig.app.json",
-        "assets": ["apps/orders/src/assets"]
+        "assets": ["apps/orders/src/assets"],
+        "generatePackageJson": true,
+        "target": "node",
+        "compiler": "tsc",
+        "webpackConfig": "apps/orders/webpack.config.js",
+        "isolatedConfig": true,
+        "babelUpwardRootMode": true
       },
       "configurations": {
         "production": {
@@ -28,7 +34,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "orders:build"
       },

@@ -5,13 +5,19 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/tickets",
         "main": "apps/tickets/src/main.ts",
         "tsConfig": "apps/tickets/tsconfig.app.json",
-        "assets": ["apps/tickets/src/assets"]
+        "assets": ["apps/tickets/src/assets"],
+        "generatePackageJson": false,
+        "target": "node",
+        "compiler": "tsc",
+        "webpackConfig": "apps/tickets/webpack.config.js",
+        "isolatedConfig": true,
+        "babelUpwardRootMode": true
       },
       "configurations": {
         "production": {
@@ -28,7 +34,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "tickets:build"
       },
