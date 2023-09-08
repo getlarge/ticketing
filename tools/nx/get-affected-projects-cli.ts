@@ -23,6 +23,20 @@ import { getAffectedProjects } from './get-affected-projects';
         type: 'boolean',
         default: true,
       },
+      base: {
+        description: 'Base branch to compare against (usually main)',
+        demandOption: false,
+        alias: 'b',
+        type: 'string',
+        default: 'main',
+      },
+      head: {
+        description: 'Head branch to compare against (usually HEAD)',
+        demandOption: false,
+        alias: 'h',
+        type: 'string',
+        default: 'HEAD',
+      },
     })
     .option('verbose', {
       alias: 'v',
@@ -31,8 +45,8 @@ import { getAffectedProjects } from './get-affected-projects';
     }).argv;
 
   try {
-    const { plain, type } = argv;
-    const projects = await getAffectedProjects(type);
+    const { base, head, plain, type } = argv;
+    const projects = await getAffectedProjects(type, base, head);
     if (plain) {
       console.log(projects);
     } else {
