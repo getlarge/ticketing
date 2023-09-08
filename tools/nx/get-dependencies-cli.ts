@@ -1,35 +1,41 @@
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const { getProjectDependenciesFiles } = require('./get-dependencies');
-const { stringToArray } = require('../utils');
+import { hideBin } from 'yargs/helpers';
+import yargs from 'yargs/yargs';
+
+import { getProjectDependenciesFiles } from './get-dependencies';
 
 (async function () {
-  const argv = yargs(hideBin(process.argv))
+  const argv = await yargs(hideBin(process.argv))
     .usage('Usage: $0 -p [projects]')
     .options({
       projectName: {
         description: 'Project name',
         demandOption: true,
         example: 'auth',
+        type: 'string',
         alias: 'p',
       },
       context: {
         description: 'context to define relative file paths.',
         demandOption: false,
         alias: 'c',
+        type: 'string',
         default: '.',
       },
       include: {
         description: 'File patterns to include.',
         demandOption: false,
         alias: 'i',
-        coerce: (value) => stringToArray(value, ['*.ts', '*.tsx', '*.css']),
+        type: 'string',
+        default: '',
+        coerce: (value) => stringToArray(value, ['*.ts']),
       },
       exclude: {
         description: 'File patterns to exclude.',
         demandOption: false,
         alias: 'e',
-        coerce: (value) => stringToArray(value, ['*spec.ts', '*spec.tsx']),
+        type: 'string',
+        default: '',
+        coerce: (value) => stringToArray(value, ['*spec.ts', 'jest*.ts']),
       },
     })
     .option('verbose', {

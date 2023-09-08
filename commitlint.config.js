@@ -102,7 +102,11 @@ const Configuration = {
     /*
      * Scope enums derived from projects registered in `workspace.json`
      */
-    'scope-enum': [2, 'always', JSON.parse(projects)],
+    'scope-enum': [
+      2,
+      'always',
+      [...JSON.parse(projects), 'tools', 'workspace'],
+    ],
   },
   /*
    * Prompt config for commit message support

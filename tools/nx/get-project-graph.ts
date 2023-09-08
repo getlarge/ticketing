@@ -1,30 +1,47 @@
-const {
-  createProjectGraphAsync,
-  readCachedProjectGraph,
-} = require('nx/src/project-graph/project-graph');
-const { filterNodes } = require('nx/src/project-graph/operators');
+import {
+  ProjectGraph,
+  ProjectGraphProjectNode,
+} from 'nx/src/config/project-graph';
+import { filterNodes } from 'nx/src/project-graph/operators';
+import { createProjectGraphAsync } from 'nx/src/project-graph/project-graph';
 
-function projectExists(projects, projectToFind) {
+function projectExists(
+  projects: ProjectGraphProjectNode[],
+  projectToFind: string
+): boolean {
   return (
     projects.find((project) => project.name === projectToFind) !== undefined
   );
 }
 
-function hasPath(graph, target, node, visited) {
+function hasPath(
+  graph: ProjectGraph,
+  target: string,
+  node: string,
+  visited?: string[]
+): boolean {
   if (target === node) return true;
-
-  for (let d of graph.dependencies[node] || []) {
+  for (const d of graph.dependencies[node] || []) {
     if (visited.indexOf(d.target) > -1) continue;
     visited.push(d.target);
-    if (hasPath(graph, target, d.target, visited)) return true;
+    if (hasPath(graph, target, d.target, visited)) {
+      return true;
+    }
   }
   return false;
 }
 
-function filterGraph(graph, focus, exclude = [], skipExternal) {
-  let projectNames = Object.values(graph.nodes).map((project) => project.name);
-  let filteredProjectNames;
-  if (focus !== null) {
+function filterGraph(
+  graph: ProjectGraph,
+  focus: string,
+  exclude: string[] = [],
+  skipExternal?: boolean
+): ProjectGraph {
+  const projectNames = Object.values(graph.nodes).map(
+    (project) => project.name
+  );
+  let filteredProjectNames: Set<string>;
+  if (focus) {
     filteredProjectNames = new Set();
     projectNames.forEach((p) => {
       const isInPath =
@@ -59,17 +76,24 @@ function filterGraph(graph, focus, exclude = [], skipExternal) {
   return filteredGraph;
 }
 
-async function getProjectGraph({
+export async function getProjectGraph({
   exclude = [],
   focus = null,
   skipExternal = false,
-} = {}) {
-  let graph;
-  try {
-    graph = readCachedProjectGraph();
-  } catch (e) {
-    graph = await createProjectGraphAsync();
-  }
+}: {
+  exclude?: string[];
+  focus?: string;
+  skipExternal?: boolean;
+} = {}): Promise<ProjectGraph> {
+  /* To ensure that graph is always up to date we avoided
+   * let graph;
+   * try {
+   *   graph = readCachedProjectGraph();
+   * } catch (e) {
+   *   graph = await createProjectGraphAsync();
+   * }
+   */
+  let graph = await createProjectGraphAsync();
   if (skipExternal) {
     graph = filterNodes()(graph);
   }
@@ -78,13 +102,9 @@ async function getProjectGraph({
   if (focus && !projectExists(projects, focus)) {
     throw new Error(`Project to focus ${focus} does not exist.`);
   }
-  if (focus !== null || exclude.length) {
+  if (focus || exclude.length) {
     graph = filterGraph(graph, focus, exclude, skipExternal);
   }
 
   return graph;
 }
-
-module.exports = {
-  getProjectGraph,
-};
