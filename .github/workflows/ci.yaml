@@ -121,8 +121,7 @@ jobs:
         id: last-successful-commit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "::set-output name=commit-hash::$(yarn git:workflow-runs --silent -- -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')"
+        run: echo "commit-hash=$(yarn git:workflow-runs --silent -- -b '${{ steps.branch-name.outputs.current_branch }}' -c success -p 'head_commit.id')" >> $GITHUB_OUTPUT
 
       - name: Get latest commmit sha
         id: last-commit-sha
@@ -134,29 +133,29 @@ jobs:
 
       - name: Check affected apps since previous worflow run
         id: check-apps
-        run: echo "::set-output name=affected::$(npx nx affected:apps --exclude=workspace --base=${{ steps.last-commit-sha.outputs.value }} --plain)"
+        run: echo "affected=$(yarn affected:apps --base=${{ steps.last-commit-sha.outputs.value }} --plain)" >> $GITHUB_OUTPUT
 
       - name: Check affected libs since previous worflow run
         id: check-libs
-        run: echo "::set-output name=affected::$(npx nx affected:libs --exclude=workspace --base=${{ steps.last-commit-sha.outputs.value }} --plain)"
+        run: echo "affected=$(yarn affected:libs --base=${{ steps.last-commit-sha.outputs.value }} --plain)" >> $GITHUB_OUTPUT
 
       - name: Check if any project was affected
         id: check-projects
         run: |
           if [[ "${{ steps.check-apps.outputs.affected }}" == "" && "${{ steps.check-libs.outputs.affected }}" == "" ]]; then
-            echo "::set-output name=affected::false"
+            echo "affected=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=affected::true"
+            echo "affected=true" >> $GITHUB_OUTPUT
           fi
 
       # Run comparisons between latest successful workflow commit and current commit
       - name: Check if OpenAPI specs have changed
         id: open-api
-        run: echo "::set-output name=has-changed::$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')"
+        run: echo "has-changed=$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'apps/**/openapi.json')" >> $GITHUB_OUTPUT
 
       - name: Check if package.json has changed
         id: package-json
-        run: echo "::set-output name=has-changed::$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')"
+        run: echo "has-changed=$(yarn git:check-diff --silent -- -b ${{ steps.last-commit-sha.outputs.value }} -p 'package.json')" >> $GITHUB_OUTPUT
 
       - name: Check if regenerate job should be run
         id: regenerate
@@ -164,9 +163,9 @@ jobs:
           if [[ ${{ steps.branch-name.outputs.current_branch }} != 'main' ]] && \
             [[ ${{ steps.open-api.outputs.has-changed }} =~ "true" ]] || \
             [[ ${{ steps.package-json.outputs.has-changed }} =~ "true" ]]; then
-            echo "::set-output name=should-run::true"
+            echo "should-run=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=should-run::false"
+            echo "should-run=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Show outputs
