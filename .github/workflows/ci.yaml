@@ -111,11 +111,11 @@ jobs:
 
       - name: Get branch names
         id: branch-name
-        uses: tj-actions/branch-names@v5
+        uses: tj-actions/branch-names@v7
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         id: set-sha
-        uses: nrwl/nx-set-shas@v2
+        uses: nrwl/nx-set-shas@v3
 
       - name: Retrieve latest successful workflow run commit hash
         id: last-successful-commit
@@ -215,7 +215,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v2
+        uses: nrwl/nx-set-shas@v3
 
       - name: Regenerate backend apps package.json
         if: needs.init.outputs.should-update-packages == 'true'
@@ -247,7 +247,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
   # AGENTS
   agents:
@@ -307,7 +307,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v2
+        uses: nrwl/nx-set-shas@v3
 
       - run: npx nx-cloud start-ci-run
 
@@ -334,7 +334,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
     outputs:
       fetch-ref: ${{ needs.init.outputs.fetch-ref }}
@@ -391,7 +391,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v2
+        uses: nrwl/nx-set-shas@v3
 
       - run: npx nx-cloud start-ci-run
 
@@ -400,7 +400,7 @@ jobs:
 
       - name: Check libs coverage reports existence
         id: check-libs-coverage
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: ${{ env.COVERAGE_LIBS_UNIT_TESTS_FOLDER }}
 
@@ -414,7 +414,7 @@ jobs:
 
       - name: Check apps coverage reports existence
         id: check-apps-coverage
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
 
@@ -428,7 +428,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
     outputs:
       has-apps-coverage: ${{ steps.check-apps-coverage.outputs.files_exists }}
@@ -497,14 +497,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v2
+        uses: nrwl/nx-set-shas@v3
 
       # running e2e tests in parallel create conflicts in DB
       - name: Run Affected Backend e2e tests
         run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend
 
       - name: Check coverage reports existence
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         id: check-coverage
         with:
           files: ${{ env.COVERAGE_APPS_E2E_TESTS_FOLDER }}
@@ -519,7 +519,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
     outputs:
       has-coverage: ${{ steps.check-coverage.outputs.files_exists }}
