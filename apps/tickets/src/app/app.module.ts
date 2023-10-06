@@ -26,6 +26,10 @@ import { TicketsModule } from './tickets/tickets.module';
       inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({
         pinoHttp: {
+          transport:
+            process.env.NODE_ENV !== 'production'
+              ? { target: 'pino-pretty' }
+              : undefined,
           level: configService.get('LOG_LEVEL'),
           autoLogging: {
             ignore: (req) => [`/${GLOBAL_API_PREFIX}/health`].includes(req.url),
