@@ -44,9 +44,12 @@
         },
         "development": {
           "buildTarget": "orders:build:development"
+        },
+        "local": {
+          "buildTarget": "orders:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "local"
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

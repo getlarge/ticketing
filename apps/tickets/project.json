@@ -44,9 +44,12 @@
         },
         "development": {
           "buildTarget": "tickets:build:development"
+        },
+        "local": {
+          "buildTarget": "tickets:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "local"
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

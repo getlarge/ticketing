@@ -44,9 +44,12 @@
         },
         "development": {
           "buildTarget": "payments:build:development"
+        },
+        "local": {
+          "buildTarget": "payments:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "local"
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
