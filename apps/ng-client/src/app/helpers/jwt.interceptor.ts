@@ -10,6 +10,7 @@ import { environment } from '@ticketing/ng/env';
 import { AUTHORIZATION_HEADER_NAME } from '@ticketing/shared/constants';
 import { Observable, switchMap, take } from 'rxjs';
 
+import { LocalStorageService } from '../services';
 import { UserStoreSelectors, UserStoreState } from '../store';
 
 @Injectable()
@@ -26,7 +27,10 @@ export class JwtInterceptor implements HttpInterceptor {
       take(1),
       switchMap((token) => {
         // eslint-disable-next-line no-param-reassign
-        request = this.updateRequest(request, token);
+        request = this.updateRequest(
+          request,
+          token || LocalStorageService.get('token')
+        );
         return next.handle(request);
       })
     );
@@ -37,7 +41,7 @@ export class JwtInterceptor implements HttpInterceptor {
     token?: string
   ): HttpRequest<unknown> {
     const url = new URL(request.url);
-    const isApiUrl = url.host === environment.apiBaseDomain;
+    const isApiUrl = url.hostname === environment.apiBaseDomain;
     if (token && isApiUrl) {
       return request.clone({
         setHeaders: {
