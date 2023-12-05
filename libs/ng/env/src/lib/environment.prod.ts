@@ -15,4 +15,5 @@ export const environment: Environment = {
   apiBaseDomain: 'ticketing.dev',
   stripePublishableKey:
     'pk_test_51K1a5gClKuHW3hMKM2xeLcKBYBfmOdSTLlh7SzYqwZdnlcYQcF0GjcJ9Ir0lenzYOKEW4cNSLPB7mqWsEH6Wh88T00DI4YsWHv',
+  oryBasePath: 'https://auth.ticketing.dev',
 };

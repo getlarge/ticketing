@@ -20,6 +20,7 @@ export const environment: Environment = {
   // useUnsafeConnection: false,
   stripePublishableKey:
     'pk_test_51K1a5gClKuHW3hMKM2xeLcKBYBfmOdSTLlh7SzYqwZdnlcYQcF0GjcJ9Ir0lenzYOKEW4cNSLPB7mqWsEH6Wh88T00DI4YsWHv',
+  oryBasePath: 'http://localhost:4000',
 };
 
 /*

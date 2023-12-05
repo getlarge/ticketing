@@ -13,4 +13,5 @@ export interface Environment {
   apiBaseDomain: string;
   useUnsafeConnection?: boolean;
   stripePublishableKey: string;
+  oryBasePath: string;
 }

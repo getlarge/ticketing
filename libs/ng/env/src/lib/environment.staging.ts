@@ -14,4 +14,5 @@ export const environment: Environment = {
   versioningType: VersioningType.HEADER,
   apiBaseDomain: 'ticketing.dev',
   stripePublishableKey: '',
+  oryBasePath: 'https://auth.ticketing.dev',
 };

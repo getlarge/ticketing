@@ -17,4 +17,5 @@ export const environment: Environment = {
   // apiBaseDomain: 'ticketing.dev',
   useUnsafeConnection: true,
   stripePublishableKey: '',
+  oryBasePath: 'http://localhost:4000',
 };
