@@ -3,33 +3,33 @@
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "targets": {
     "build": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "echo 'nope'"
       }
     },
     "lint": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "echo 'nope'"
       }
     },
     "apps": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node tools/nx/get-projects-cli.js -t app -p"
       },
       "cwd": "."
     },
     "libs": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node tools/nx/get-projects-cli.js -t lib -p"
       },
       "cwd": "."
     },
     "sync-versions": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node tools/utils/sync-versions.js"
       },
@@ -51,13 +51,13 @@
       }
     },
     "push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "git push --follow-tags origin main"
       }
     },
     "release": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node tools/utils/generate-changelog.js | gh release create {args.tag} -F-"
@@ -67,7 +67,7 @@
       "cwd": "."
     },
     "prerelease": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node tools/utils/generate-changelog.js | gh release create {args.tag} -F- -p"
@@ -77,7 +77,7 @@
       "cwd": "."
     },
     "dotenv-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["dotenv-cli push"]
       },
@@ -85,7 +85,7 @@
       "cwd": "."
     },
     "dotenv-pull": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["dotenv-cli pull"]
       },

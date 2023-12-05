@@ -77,13 +77,13 @@
       }
     },
     "get-dependencies": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node ./tools/nx/get-dependencies-cli.js -p auth"
       }
     },
     "docker-build": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node ./tools/deploy/build-docker.js -p auth -c {args.conf} -t {args.tag} -f {args.file}"
@@ -92,25 +92,25 @@
       }
     },
     "docker-run": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-auth ghcr.io/getlarge/ticketing-auth:{args.tag}"
       }
     },
     "docker-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-auth:{args.tag}"
       }
     },
     "refresh-pkg-json": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node tools/utils/regenerate-pkg-json-cli.js -p auth -v"
       }
     },
     "dotenv-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["cd apps/auth && dotenv-cli push"]
       },
@@ -118,7 +118,7 @@
       "cwd": "."
     },
     "dotenv-pull": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["node tools/utils/dotenv-pull.js -p auth -v"]
       },
