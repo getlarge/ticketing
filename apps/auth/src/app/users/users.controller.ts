@@ -1,4 +1,3 @@
-import type { Session as FastifySession } from '@fastify/secure-session';
 import {
   Body,
   Controller,
@@ -6,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Session,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -21,16 +19,15 @@ import {
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
-import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
-  Actions,
-  Resources,
-  SESSION_ACCESS_TOKEN,
-} from '@ticketing/shared/constants';
+  OryActionAuthGuard,
+  OryAuthGuard,
+} from '@ticketing/microservices/shared/guards';
+import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 
-import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { User, UserCredentials, UserCredentialsDto, UserDto } from './models';
+import { OnOrySignInDto, OnOrySignUpDto } from './models/ory-identity.dto';
 import { UsersService } from './users.service';
 
 @Controller(Resources.USERS)
@@ -38,6 +35,57 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(OryActionAuthGuard)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      exceptionFactory: requestValidationErrorFactory,
+      forbidUnknownValues: true,
+    })
+  )
+  @ApiOperation({
+    description: 'Triggered when a user is created in Ory',
+    summary: `Register a user - Scope : ${Resources.USERS}:${Actions.CREATE_ONE}`,
+  })
+  @ApiBody({ type: OnOrySignUpDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User created',
+    type: OnOrySignUpDto,
+  })
+  @Post('on-sign-up')
+  @HttpCode(HttpStatus.OK)
+  onSignUp(@Body() body: OnOrySignUpDto): Promise<OnOrySignUpDto> {
+    return this.usersService.onSignUp(body);
+  }
+
+  @UseGuards(OryActionAuthGuard)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      exceptionFactory: requestValidationErrorFactory,
+      forbidUnknownValues: true,
+    })
+  )
+  @ApiOperation({
+    description: 'Triggered when a user signed in via Ory',
+    summary: `Login a user - Scope : ${Resources.USERS}:${Actions.SIGN_IN}`,
+  })
+  @ApiBody({ type: OnOrySignInDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User logged in',
+    type: OnOrySignInDto,
+  })
+  @Post('on-sign-in')
+  @HttpCode(HttpStatus.OK)
+  onSignIn(@Body() body: OnOrySignInDto): Promise<OnOrySignInDto> {
+    return this.usersService.onSignIn(body);
+  }
+
+  /**
+   * @deprecated Account creation is now handled by Ory and the backend is only involved during the on-sign-up webhook
+   */
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -60,70 +108,7 @@ export class UsersController {
     return this.usersService.signUp(credentials);
   }
 
-  @UseGuards(LocalAuthGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      exceptionFactory: requestValidationErrorFactory,
-      forbidUnknownValues: true,
-    })
-  )
-  @ApiOperation({
-    description: 'Sign in as registered user',
-    summary: `Sign in - Scope : ${Resources.USERS}:${Actions.SIGN_IN}`,
-  })
-  @ApiBody({ type: UserCredentialsDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'JWT Token',
-    schema: {
-      type: 'object',
-      properties: {
-        token: {
-          description: 'JWT token',
-          type: 'string',
-        },
-      },
-    },
-  })
-  @HttpCode(HttpStatus.OK)
-  @Post('sign-in')
-  async signIn(
-    @Body() _credentials: UserCredentials,
-    @Session() session: FastifySession,
-    @CurrentUser() user: User
-  ): Promise<{ token: string }> {
-    const { token } = await this.usersService.signIn(user);
-    session.set(SESSION_ACCESS_TOKEN, token);
-    return { token };
-  }
-
-  // @UseGuards(JwtAuthGuard)
-  @ApiOperation({
-    description: 'Sign out as signed in user',
-    summary: `Sign out - Scope : ${Resources.USERS}:${Actions.SIGN_OUT}`,
-  })
-  @ApiBearerAuth(SecurityRequirements.Bearer)
-  @ApiCookieAuth(SecurityRequirements.Session)
-  @ApiResponse({
-    status: HttpStatus.OK,
-    schema: {
-      type: 'object',
-      properties: {
-        success: {
-          type: 'boolean',
-        },
-      },
-    },
-  })
-  @HttpCode(HttpStatus.OK)
-  @Post('sign-out')
-  signOut(@Session() session: FastifySession): { success: boolean } {
-    session.delete();
-    return this.usersService.signOut();
-  }
-
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @ApiOperation({
     description: 'Get details about currently signed in user',
     summary: `Get current user - Scope : ${Resources.USERS}:${Actions.READ_ONE}`,

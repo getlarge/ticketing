@@ -31,7 +31,7 @@ export function extractValidationErrorField(
     for (const key in error.constraints) {
       constraints[key] = `${parentPath}.${error.constraints[key]}`;
     }
-    return {...error, constraints};
+    return { ...error, constraints };
   }
 
   function mapChildrenToValidationErrors(

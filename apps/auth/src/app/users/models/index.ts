@@ -1,3 +1,4 @@
+export * from './ory-identity.dto';
 export * from './user.dto';
 export * from './user-credentials.dto';
 export {

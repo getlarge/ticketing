@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsMongoId } from 'class-validator';
+import { IsEmail, IsMongoId, IsUUID } from 'class-validator';
 
 export const userConstraints = {
   password: {
@@ -16,4 +16,8 @@ export class User {
   @Expose()
   @IsEmail()
   email: string;
+
+  @Expose()
+  @IsUUID()
+  identityId: string;
 }

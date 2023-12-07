@@ -1,6 +1,72 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/users/on-sign-up": {
+      "post": {
+        "operationId": "UsersController_onSignUp",
+        "summary": "Register a user - Scope : users:create_one",
+        "description": "Triggered when a user is created in Ory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnOrySignUpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnOrySignUpDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/on-sign-in": {
+      "post": {
+        "operationId": "UsersController_onSignIn",
+        "summary": "Login a user - Scope : users:sign_in",
+        "description": "Triggered when a user signed in via Ory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnOrySignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnOrySignInDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
     "/api/users/sign-up": {
       "post": {
         "operationId": "UsersController_signUp",
@@ -31,81 +97,6 @@
         },
         "tags": [
           "users"
-        ]
-      }
-    },
-    "/api/users/sign-in": {
-      "post": {
-        "operationId": "UsersController_signIn",
-        "summary": "Sign in - Scope : users:sign_in",
-        "description": "Sign in as registered user",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserCredentialsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "JWT Token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "description": "JWT token",
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "users"
-        ]
-      }
-    },
-    "/api/users/sign-out": {
-      "post": {
-        "operationId": "UsersController_signOut",
-        "summary": "Sign out - Scope : users:sign_out",
-        "description": "Sign out as signed in user",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "session": []
-          },
-          {
-            "bearer": []
-          }
         ]
       }
     },
@@ -178,6 +169,104 @@
       }
     },
     "schemas": {
+      "OryIdentityTraitDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "OryIdentityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "schema_id": {
+            "type": "string"
+          },
+          "schema_url": {
+            "type": "string"
+          },
+          "traits": {
+            "description": "The identity traits",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OryIdentityTraitDto"
+              }
+            ]
+          },
+          "state": {
+            "type": "object"
+          },
+          "recovery_addresses": {
+            "type": "object"
+          },
+          "verifiable_addresses": {
+            "type": "object"
+          },
+          "credentials": {
+            "type": "object"
+          },
+          "metadata_public": {
+            "type": "object"
+          },
+          "metadata_admin": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "state_changed_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "schema_id",
+          "schema_url",
+          "traits"
+        ]
+      },
+      "OnOrySignUpDto": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "description": "The identity created by Ory",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OryIdentityDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "identity"
+        ]
+      },
+      "OnOrySignInDto": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "description": "The identity logged in Ory",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OryIdentityDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "identity"
+        ]
+      },
       "UserCredentialsDto": {
         "type": "object",
         "properties": {
@@ -210,11 +299,17 @@
           "id": {
             "type": "string",
             "description": "User id"
+          },
+          "identityId": {
+            "type": "string",
+            "description": "User identity id",
+            "format": "uuid"
           }
         },
         "required": [
           "email",
-          "id"
+          "id",
+          "identityId"
         ]
       }
     }
