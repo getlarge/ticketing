@@ -3,28 +3,28 @@
     "defaultBase": "main"
   },
   "generators": {
-    "@nrwl/react": {
+    "@nx/react": {
       "application": {
         "babel": true
       }
     },
-    "@nrwl/next": {
+    "@nx/next": {
       "application": {
         "style": "css",
         "linter": "eslint"
       }
     },
-    "@nrwl/angular:application": {
+    "@nx/angular:application": {
       "style": "css",
       "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
-    "@nrwl/angular:library": {
+    "@nx/angular:library": {
       "linter": "eslint",
       "unitTestRunner": "jest"
     },
-    "@nrwl/angular:component": {
+    "@nx/angular:component": {
       "style": "css"
     }
   },

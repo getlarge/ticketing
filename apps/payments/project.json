@@ -52,14 +52,14 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/payments/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/payments"],
       "options": {
         "jestConfig": "apps/payments/jest.config.ts",
@@ -67,7 +67,7 @@
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/payments-e2e"],
       "options": {
         "jestConfig": "apps/payments/jest-e2e.config.ts",
@@ -106,7 +106,7 @@
     "refresh-pkg-json": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/utils/regenerate-pkg-json-cli.js -p payments -v"
+        "command": "ts-node --project tools/tsconfig.json tools/utils/regenerate-pkg-json-cli.ts -p payments -v"
       }
     },
     "dotenv-push": {

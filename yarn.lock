@@ -5172,15 +5172,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/devkit@npm:16.0.0-beta.1":
-  version: 16.0.0-beta.1
-  resolution: "@nrwl/devkit@npm:16.0.0-beta.1"
-  dependencies:
-    "@nx/devkit": 16.0.0-beta.1
-  checksum: 0af525da289b58274d751fa1f5a9b08eb0d074e90520ea3d8ecacc9e125a84ed3c1a0fc4c0d9fb24f1101ce40ce27b07b41f2acf9d48448ba8f5865391467d57
-  languageName: node
-  linkType: hard
-
 "@nrwl/devkit@npm:17.1.3":
   version: 17.1.3
   resolution: "@nrwl/devkit@npm:17.1.3"
@@ -5190,21 +5181,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/eslint-plugin-nx@npm:16.0.0-beta.1":
-  version: 16.0.0-beta.1
-  resolution: "@nrwl/eslint-plugin-nx@npm:16.0.0-beta.1"
-  dependencies:
-    "@nx/eslint-plugin-nx": 16.0.0-beta.1
-  checksum: f69bfcd4d526920945cfed9bdb3b6a1003e5d278f26c444c153ba55d897078deab6bd529b180eab140986df161d6638e75fcd61516fc5c5b0e7437cbf5f5fd13
-  languageName: node
-  linkType: hard
-
-"@nrwl/jest@npm:17.1.3":
+"@nrwl/eslint-plugin-nx@npm:17.1.3":
   version: 17.1.3
-  resolution: "@nrwl/jest@npm:17.1.3"
+  resolution: "@nrwl/eslint-plugin-nx@npm:17.1.3"
   dependencies:
-    "@nx/jest": 17.1.3
-  checksum: cfd11be0c67c82508689b9861257616d2dc3b22edf731a22efbe92a1f892f9d35646fe5834a1e54a74251d2dfbe8229671c0e362cd39b1eda4a8c4b1cb03d9e1
+    "@nx/eslint-plugin": 17.1.3
+  checksum: 4b8069037da27b2c1a0f0b47f18d550a62e733eef16584b8206231e7024d0836518ecc634fa5667d6b9068026adff373ceacae403672938dab1cd149e5a562d4
   languageName: node
   linkType: hard
 
@@ -5364,22 +5346,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/devkit@npm:16.0.0-beta.1":
-  version: 16.0.0-beta.1
-  resolution: "@nx/devkit@npm:16.0.0-beta.1"
-  dependencies:
-    "@nrwl/devkit": 16.0.0-beta.1
-    ejs: ^3.1.7
-    ignore: ^5.0.4
-    semver: 7.3.4
-    tmp: ~0.2.1
-    tslib: ^2.3.0
-  peerDependencies:
-    nx: ">= 14.1 <= 16"
-  checksum: 9d99fb0f9cc5e9f1c7d6a3602a3437224c5ed027586da1b2c9e9a88c01d04790589626b02b3bfc48271817f2d82f604a3af18ae23dc5aa260f5360df86f155b8
-  languageName: node
-  linkType: hard
-
 "@nx/devkit@npm:17.1.3":
   version: 17.1.3
   resolution: "@nx/devkit@npm:17.1.3"
@@ -5397,23 +5363,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/eslint-plugin-nx@npm:16.0.0-beta.1":
-  version: 16.0.0-beta.1
-  resolution: "@nx/eslint-plugin-nx@npm:16.0.0-beta.1"
+"@nx/eslint-plugin@npm:17.1.3":
+  version: 17.1.3
+  resolution: "@nx/eslint-plugin@npm:17.1.3"
   dependencies:
-    "@nrwl/eslint-plugin-nx": 16.0.0-beta.1
-    "@nx/devkit": 16.0.0-beta.1
-    "@typescript-eslint/utils": ^5.58.0
+    "@nrwl/eslint-plugin-nx": 17.1.3
+    "@nx/devkit": 17.1.3
+    "@nx/js": 17.1.3
+    "@typescript-eslint/type-utils": ^6.9.1
+    "@typescript-eslint/utils": ^6.9.1
     chalk: ^4.1.0
     confusing-browser-globals: ^1.0.9
-    semver: 7.3.4
+    jsonc-eslint-parser: ^2.1.0
+    semver: 7.5.3
+    tslib: ^2.3.0
   peerDependencies:
-    "@typescript-eslint/parser": ^5.58.0
-    eslint-config-prettier: ^8.1.0
+    "@typescript-eslint/parser": ^6.9.1
+    eslint-config-prettier: ^9.0.0
   peerDependenciesMeta:
     eslint-config-prettier:
       optional: true
-  checksum: 4bd1a37174f84e23e575411ef768a04532f9dd84e9d00ef582cb02f692c49f12766002d1eccdcee88ee713eae32ece9b684ceae45eb3772e02789a9f387ac30a
+  checksum: 63aac2b61e0463502f8576de5e637995b612611d052974971d35eb01e8e0f43264c27d4c94d66c40bd54050bea3c18cad80a6247847d7351100389ef72ee9135
   languageName: node
   linkType: hard
 
@@ -5441,8 +5411,8 @@ __metadata:
   dependencies:
     "@jest/reporters": ^29.4.1
     "@jest/test-result": ^29.4.1
-    "@nrwl/jest": 17.1.3
     "@nx/devkit": 17.1.3
+    "@nx/jest": 17.1.3
     "@nx/js": 17.1.3
     "@phenomnomnominal/tsquery": ~5.0.1
     chalk: ^4.1.0
@@ -7116,13 +7086,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:^7.3.12":
-  version: 7.5.1
-  resolution: "@types/semver@npm:7.5.1"
-  checksum: 2fffe938c7ac168711f245a16e1856a3578d77161ca17e29a05c3e02c7be3e9c5beefa29a3350f6c1bd982fb70aa28cc52e4845eb7d36246bcdc0377170d584d
-  languageName: node
-  linkType: hard
-
 "@types/semver@npm:^7.5.0":
   version: 7.5.6
   resolution: "@types/semver@npm:7.5.6"
@@ -7485,7 +7448,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:6.13.2":
+"@typescript-eslint/utils@npm:6.13.2, @typescript-eslint/utils@npm:^6.9.1":
   version: 6.13.2
   resolution: "@typescript-eslint/utils@npm:6.13.2"
   dependencies:
@@ -7499,24 +7462,6 @@ __metadata:
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
   checksum: b66bcf2a945e9c55f3dccb48af49565863d974837ee23b2f01ce7f3fb2462eb8a5871784d4a2fcc80dac7d5cd4ed90c8d01431cd177c0249de89a448f6663fc8
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/utils@npm:^5.58.0":
-  version: 5.62.0
-  resolution: "@typescript-eslint/utils@npm:5.62.0"
-  dependencies:
-    "@eslint-community/eslint-utils": ^4.2.0
-    "@types/json-schema": ^7.0.9
-    "@types/semver": ^7.3.12
-    "@typescript-eslint/scope-manager": 5.62.0
-    "@typescript-eslint/types": 5.62.0
-    "@typescript-eslint/typescript-estree": 5.62.0
-    eslint-scope: ^5.1.1
-    semver: ^7.3.7
-  peerDependencies:
-    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: ee9398c8c5db6d1da09463ca7bf36ed134361e20131ea354b2da16a5fdb6df9ba70c62a388d19f6eebb421af1786dbbd79ba95ddd6ab287324fc171c3e28d931
   languageName: node
   linkType: hard
 
@@ -13120,7 +13065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
+"eslint-scope@npm:5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
   dependencies:
@@ -13140,7 +13085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^3.3.0, eslint-visitor-keys@npm:^3.4.1, eslint-visitor-keys@npm:^3.4.2":
+"eslint-visitor-keys@npm:^3.0.0, eslint-visitor-keys@npm:^3.3.0, eslint-visitor-keys@npm:^3.4.1, eslint-visitor-keys@npm:^3.4.2":
   version: 3.4.3
   resolution: "eslint-visitor-keys@npm:3.4.3"
   checksum: 36e9ef87fca698b6fd7ca5ca35d7b2b6eeaaf106572e2f7fd31c12d3bfdaccdb587bba6d3621067e5aece31c8c3a348b93922ab8f7b2cbc6aaab5e1d89040c60
@@ -13194,7 +13139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"espree@npm:^9.6.0, espree@npm:^9.6.1":
+"espree@npm:^9.0.0, espree@npm:^9.6.0, espree@npm:^9.6.1":
   version: 9.6.1
   resolution: "espree@npm:9.6.1"
   dependencies:
@@ -16792,6 +16737,18 @@ __metadata:
   bin:
     json5: lib/cli.js
   checksum: 2a7436a93393830bce797d4626275152e37e877b265e94ca69c99e3d20c2b9dab021279146a39cdb700e71b2dd32a4cebd1514cd57cee102b1af906ce5040349
+  languageName: node
+  linkType: hard
+
+"jsonc-eslint-parser@npm:^2.1.0":
+  version: 2.4.0
+  resolution: "jsonc-eslint-parser@npm:2.4.0"
+  dependencies:
+    acorn: ^8.5.0
+    eslint-visitor-keys: ^3.0.0
+    espree: ^9.0.0
+    semver: ^7.3.5
+  checksum: 495d8be340b464137db0bb25f8280deda2ad773cca6b8b5605325fddb50e8e317842a07ffdfa692b0adcba2d06e25d127087f2d703a63032923d1e67ee5a9efe
   languageName: node
   linkType: hard
 
@@ -22004,17 +21961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.3.4":
-  version: 7.3.4
-  resolution: "semver@npm:7.3.4"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: 96451bfd7cba9b60ee87571959dc47e87c95b2fe58a9312a926340fee9907fc7bc062c352efdaf5bb24b2dff59c145e14faf7eb9d718a84b4751312531b39f43
-  languageName: node
-  linkType: hard
-
 "semver@npm:7.3.5":
   version: 7.3.5
   resolution: "semver@npm:7.3.5"
@@ -23472,7 +23418,7 @@ __metadata:
     "@nx/angular": 17.1.3
     "@nx/cypress": 17.1.3
     "@nx/eslint": 17.1.3
-    "@nx/eslint-plugin-nx": 16.0.0-beta.1
+    "@nx/eslint-plugin": 17.1.3
     "@nx/jest": 17.1.3
     "@nx/nest": 17.1.3
     "@nx/next": 17.1.3

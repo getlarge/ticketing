@@ -52,14 +52,14 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/expiration/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/expiration"],
       "options": {
         "jestConfig": "apps/expiration/jest.config.ts",
@@ -96,7 +96,7 @@
     "refresh-pkg-json": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/utils/regenerate-pkg-json-cli.js -p expiration -v"
+        "command": "ts-node --project tools/tsconfig.json tools/utils/regenerate-pkg-json-cli.ts -p expiration -v"
       }
     },
     "dotenv-push": {

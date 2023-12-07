@@ -1,7 +1,7 @@
-const { execSync } = require('child_process');
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const { getPackageJson, outputPackageJson } = require('../nx/get-package-json');
+import { execSync } from 'child_process';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+import { getPackageJson, outputPackageJson } from '../nx/get-package-json';
 
 async function regeneratePackageJson({ projectName, root }) {
   const packageJson = await getPackageJson({
@@ -9,14 +9,17 @@ async function regeneratePackageJson({ projectName, root }) {
     root,
     skipDev: true,
   });
-  outputPackageJson({ output: 'file', outputPath: `apps/${projectName}` }, packageJson);
-  execSync(`npm i --prefix apps/${projectName} --package-lock-only`, {
+  outputPackageJson(
+    { output: 'file', outputPath: `apps/${projectName}` },
+    packageJson
+  );
+  execSync(`npm i --prefix apps/${projectName} --package-lock-only --force`, {
     stdio: 'inherit',
   });
 }
 
 (async function () {
-  const argv = yargs(hideBin(process.argv))
+  const argv = await yargs(hideBin(process.argv))
     .usage('Usage: $0 -p [projects]')
     .options({
       projectName: {

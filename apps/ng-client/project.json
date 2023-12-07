@@ -110,7 +110,7 @@
     "ory-tunnel": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ory tunnel --dev --project 7219f256-464a-4511-874c-bde7724f6897 --port 4200"
+        "command": "ory tunnel http://localhost:4200 --dev --project tender-satoshi-rtd7nibdhq --port 4000"
       }
     },
     "extract-i18n": {
@@ -120,7 +120,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": [
           "apps/ng-client/src/**/*.ts",
@@ -129,7 +129,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/ng-client"],
       "options": {
         "jestConfig": "apps/ng-client/jest.config.ts",
