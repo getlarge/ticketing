@@ -14,20 +14,28 @@ import { OryService } from './ory.service';
   providers: [OryService],
 })
 export class OryModule {
-  static forRoot(options: IOryModuleOptions): DynamicModule {
+  static forRoot(
+    options: IOryModuleOptions,
+    isGlobal?: boolean
+  ): DynamicModule {
     return {
       module: OryModule,
-      providers: [{ provide: OryModuleOptions, useValue: options }],
-      exports: [OryModuleOptions],
+      providers: [{ provide: OryModuleOptions, useValue: options }, OryService],
+      exports: [OryModuleOptions, OryService],
+      global: isGlobal,
     };
   }
 
-  static forRootAsync(options: OryModuleAsyncOptions): DynamicModule {
+  static forRootAsync(
+    options: OryModuleAsyncOptions,
+    isGlobal?: boolean
+  ): DynamicModule {
     return {
       module: OryModule,
       imports: options.imports ?? [],
-      providers: this.createAsyncProviders(options),
-      exports: [OryModuleOptions],
+      providers: [...this.createAsyncProviders(options), OryService],
+      exports: [OryModuleOptions, OryService],
+      global: isGlobal,
     };
   }
 
