@@ -1,5 +1,6 @@
-import { Action } from '@ngrx/store';
-import { UserCredentialsDto, UserDto } from '@ticketing/ng/open-api';
+import type { Action } from '@ngrx/store';
+import type { Session } from '@ory/client';
+import type { UserCredentialsDto, UserDto } from '@ticketing/ng/open-api';
 
 export enum ActionTypes {
   SIGN_UP = '[Sign up] Create User',
@@ -40,12 +41,13 @@ export class SignUpFailureAction implements Action {
 
 export class SignInAction implements Action {
   readonly type = ActionTypes.SIGN_IN;
-  constructor(public payload: { credentials: UserCredentialsDto }) {}
 }
 
 export class SignInSuccessAction implements Action {
   readonly type = ActionTypes.SIGN_IN_SUCCESS;
-  constructor(public payload: { token?: string }) {}
+  constructor(
+    public payload: { token?: string; logoutUrl?: string; session?: Session }
+  ) {}
 }
 
 export class SignInFailureAction implements Action {

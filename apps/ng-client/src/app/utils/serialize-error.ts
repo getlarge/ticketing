@@ -62,7 +62,7 @@ function isHTML(str: string): boolean {
     .querySelectorAll('*')
     .forEach((el) => el.parentNode?.removeChild(el));
   // if there is textContent, then not a pure HTML
-  return !(fragment.textContent || '').trim();
+  return !(fragment.textContent ?? '').trim();
 }
 
 export function transformError(value: unknown): string {

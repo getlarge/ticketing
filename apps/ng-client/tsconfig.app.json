@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": [],
-    "target": "es2020"
+    "target": "es2020",
+    "lib": ["DOM", "es2019"]
   },
   "files": ["src/main.ts", "src/polyfills.ts"],
   "include": ["src/**/*.d.ts"],

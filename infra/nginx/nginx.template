@@ -45,6 +45,7 @@ map $http_origin $use_cors {
     "(https?:\/\/)($DOMAIN)" 'true';
     "~*(https?:\/\/)(.+\.)*($DOMAIN)" 'true';
     "~*(^|^https?:\/\/)(.+\.)*(ticketing.(dev|ovh|com))" 'true';
+    "~*(^|^https?:\/\/)(.+\.)*(getlarge.eu)" 'true';
 }
 
 map $use_cors $cors_cred {
@@ -72,7 +73,7 @@ server {
   listen $PORT;
   listen [::]:$PORT ipv6only=on;
   server_name _;
-  
+
   real_ip_header X-Forwarded-For;
   add_header Access-Control-Allow-Origin $allow_origin always;
   add_header Access-Control-Allow-Credentials $cors_cred;
@@ -136,7 +137,7 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
   }
-  
+
   location / {
     proxy_pass http://frontend;
     include /etc/nginx/snippets/proxy.conf;
@@ -149,4 +150,3 @@ server {
   }
 
 }
-

@@ -1,5 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { User } from '@ticketing/shared/models';
+import type { Session } from '@ory/client';
+import type { User } from '@ticketing/shared/models';
 
 import { LocalStorageService } from '../../services';
 
@@ -12,6 +13,8 @@ export interface State extends EntityState<User> {
   error: string | null;
   currentUser: User | null;
   currentToken?: string;
+  logoutUrl?: string;
+  session?: Session;
 }
 
 export const initialState: State = featureAdapter.getInitialState({
@@ -19,4 +22,5 @@ export const initialState: State = featureAdapter.getInitialState({
   error: null,
   currentUser: LocalStorageService.getObject('user'),
   currentToken: LocalStorageService.get('token'),
+  logoutUrl: '/',
 });
