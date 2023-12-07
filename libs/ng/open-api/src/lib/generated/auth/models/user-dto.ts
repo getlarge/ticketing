@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export interface UserDto {
-
   /**
    * User email address
    */
@@ -11,4 +10,9 @@ export interface UserDto {
    * User id
    */
   id: string;
+
+  /**
+   * User identity id
+   */
+  identityId: string;
 }

@@ -2,9 +2,9 @@
 /* eslint-disable */
 import { FilterOperatorType } from './filter-operator-type';
 export interface FilterDto {
-  arr_value?: (string | number);
-  mode?: ('eq' | 'gt' | 'gte' | 'lt' | 'lte' | 'regex' | 'in' | 'nin' | string);
-  name: (Array<string> | string);
+  arr_value?: string | number;
+  mode?: 'eq' | 'gt' | 'gte' | 'lt' | 'lte' | 'regex' | 'in' | 'nin' | string;
+  name: Array<string> | string;
   operator: FilterOperatorType;
   value: string;
 }
