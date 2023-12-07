@@ -105,6 +105,5 @@ function createAuthGuard(type?: string | string[]): Type<IAuthGuard> {
       return undefined;
     }
   }
-  const guard = mixin(MixinAuthGuard);
-  return guard;
+  return mixin(MixinAuthGuard);
 }

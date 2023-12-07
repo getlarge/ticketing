@@ -30,11 +30,21 @@ describe('OrdersService', () => {
         MongooseModule.forRoot(envVariables['MONGODB_URI']),
       ],
     }).compile();
+  });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ordersService = app.get(OrdersService);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('should be defined', () => {
+    it('should be defined', () => {
+      ordersService = app.get<OrdersService>(OrdersService);
+      orderModel = app.get<Model<OrderDocument>>(
+        getModelToken(OrderSchema.name)
+      );
+      expect(ordersService).toBeDefined();
+      expect(orderModel).toBeDefined();
+    });
   });
 
   describe('create()', () => {

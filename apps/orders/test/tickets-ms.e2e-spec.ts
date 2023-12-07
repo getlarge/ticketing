@@ -82,7 +82,6 @@ describe('TicketsMSController (e2e)', () => {
       ),
     };
     microservice = moduleFixture.createNestMicroservice(options);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ticketModel = app.get<Model<TicketDocument>>(getModelToken(Ticket.name));
 
     await microservice.listen();
@@ -93,6 +92,15 @@ describe('TicketsMSController (e2e)', () => {
     natsPublisher.close();
     await microservice.close();
     await app.close();
+  });
+
+  describe('should be defined', () => {
+    it('should be defined', () => {
+      expect(app).toBeDefined();
+      expect(microservice).toBeDefined();
+      expect(natsPublisher).toBeDefined();
+      expect(ticketModel).toBeDefined();
+    });
   });
 
   describe('ticket:created', () => {

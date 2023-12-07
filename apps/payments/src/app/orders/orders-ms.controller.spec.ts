@@ -11,7 +11,6 @@ describe('OrdersMSController', () => {
   let app: TestingModule;
 
   beforeAll(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app = await Test.createTestingModule({
       providers: [
         OrdersMSController,
@@ -21,6 +20,10 @@ describe('OrdersMSController', () => {
         },
       ],
     }).compile();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('onCreate()', () => {
