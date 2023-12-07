@@ -10,7 +10,10 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -18,6 +21,9 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "@ticketing/microservices/ory-client": [
+        "libs/microservices/ory-client/src/index.ts"
+      ],
       "@ticketing/microservices/shared/constants": [
         "libs/microservices/shared/constants/src/index.ts"
       ],
@@ -54,13 +60,28 @@
       "@ticketing/microservices/shared/testing": [
         "libs/microservices/shared/testing/src/index.ts"
       ],
-      "@ticketing/ng/alert": ["libs/ng/alert/src/index.ts"],
-      "@ticketing/ng/env": ["libs/ng/env/src/index.ts"],
-      "@ticketing/ng/open-api": ["libs/ng/open-api/src/index.ts"],
-      "@ticketing/shared/constants": ["libs/shared/constants/src/index.ts"],
-      "@ticketing/shared/errors": ["libs/shared/errors/src/index.ts"],
-      "@ticketing/shared/models": ["libs/shared/models/src/index.ts"]
+      "@ticketing/ng/alert": [
+        "libs/ng/alert/src/index.ts"
+      ],
+      "@ticketing/ng/env": [
+        "libs/ng/env/src/index.ts"
+      ],
+      "@ticketing/ng/open-api": [
+        "libs/ng/open-api/src/index.ts"
+      ],
+      "@ticketing/shared/constants": [
+        "libs/shared/constants/src/index.ts"
+      ],
+      "@ticketing/shared/errors": [
+        "libs/shared/errors/src/index.ts"
+      ],
+      "@ticketing/shared/models": [
+        "libs/shared/models/src/index.ts"
+      ],
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
