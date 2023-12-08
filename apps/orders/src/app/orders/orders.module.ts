@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
@@ -25,6 +26,7 @@ import { OrdersMSController } from './orders-ms.controller';
       session: true,
     }),
     NatsStreamingTransport.registerAsync({
+      inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({
         clientId: configService.get('NATS_CLIENT_ID'),
         clusterId: configService.get('NATS_CLUSTER_ID'),
@@ -33,7 +35,13 @@ import { OrdersMSController } from './orders-ms.controller';
           name: `${Services.ORDERS_SERVICE}_${Resources.ORDERS}`,
         },
       }),
+    }),
+    OryModule.forRootAsync({
       inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        basePath: configService.get('ORY_BASE_PATH'),
+        accessToken: configService.get('ORY_API_KEY'),
+      }),
     }),
   ],
   controllers: [OrdersController, OrdersMSController],

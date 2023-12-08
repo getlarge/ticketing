@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
-import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
+import { OryAuthGuard } from '@ticketing/microservices/shared/guards';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
@@ -34,7 +34,7 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -63,7 +63,7 @@ export class OrdersController {
     return this.ordersService.create(order, currentUser);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -81,7 +81,7 @@ export class OrdersController {
     return this.ordersService.find(currentUser);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -101,7 +101,7 @@ export class OrdersController {
     return this.ordersService.findById(id, currentUser);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
