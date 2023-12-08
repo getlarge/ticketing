@@ -4,6 +4,7 @@ import {
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
   NatsEnvironmentVariables,
+  OryEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Services } from '@ticketing/shared/constants';
 import { Exclude } from 'class-transformer';
@@ -18,10 +19,12 @@ export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
-  NatsEnvironmentVariables
+  NatsEnvironmentVariables,
+  OryEnvironmentVariables
 ) {
   @Exclude()
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
 
   APP_NAME?: string = 'tickets';

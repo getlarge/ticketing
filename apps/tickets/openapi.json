@@ -241,7 +241,7 @@
       "url": "http://localhost:3010"
     },
     {
-      "url": "http://localhost:80"
+      "url": "http://localhost:8080"
     },
     {
       "url": "http://ticketing.dev"

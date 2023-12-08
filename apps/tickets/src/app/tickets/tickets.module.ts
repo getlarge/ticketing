@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
@@ -31,6 +32,7 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
 ]);
 
 const NatsPublisher = NatsStreamingTransport.registerAsync({
+  inject: [ConfigService],
   useFactory: (configService: AppConfigService) => ({
     clientId: configService.get('NATS_CLIENT_ID'),
     clusterId: configService.get('NATS_CLUSTER_ID'),
@@ -39,7 +41,6 @@ const NatsPublisher = NatsStreamingTransport.registerAsync({
       name: `${Services.TICKETS_SERVICE}_${Resources.TICKETS}`,
     },
   }),
-  inject: [ConfigService],
 });
 
 @Module({
@@ -50,6 +51,13 @@ const NatsPublisher = NatsStreamingTransport.registerAsync({
       session: true,
     }),
     NatsPublisher,
+    OryModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        basePath: configService.get('ORY_BASE_PATH'),
+        accessToken: configService.get('ORY_API_KEY'),
+      }),
+    }),
   ],
   controllers: [TicketsController],
   providers: [
