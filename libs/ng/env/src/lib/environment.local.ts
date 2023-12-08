@@ -13,7 +13,7 @@ export const environment: Environment = {
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
-  apiBaseDomain: 'localhost:80',
+  apiBaseDomain: 'localhost:8080',
   // apiBaseDomain: 'ticketing.dev',
   useUnsafeConnection: true,
   stripePublishableKey: '',

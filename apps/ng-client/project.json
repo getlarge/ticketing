@@ -93,7 +93,8 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "buildTarget": "ng-client:build"
+        "buildTarget": "ng-client:build",
+        "disableHostCheck": true
       },
       "configurations": {
         "production": {
@@ -101,7 +102,8 @@
         },
         "development": {
           "disableHostCheck": true,
-          "host": "localhost",
+          "port": 4200,
+          "host": "0.0.0.0",
           "buildTarget": "ng-client:build:development"
         }
       },
