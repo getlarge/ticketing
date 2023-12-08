@@ -223,7 +223,7 @@ jobs:
 
       - name: Regenerate frontend models
         if: needs.init.outputs.should-update-models == 'true'
-        run: yarn extract-api
+        run: yarn ng:openapi
 
       - name: Run prettier
         if: needs.init.outputs.should-update-models == 'true'
