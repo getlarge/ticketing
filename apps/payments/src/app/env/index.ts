@@ -4,6 +4,7 @@ import {
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
   NatsEnvironmentVariables,
+  OryEnvironmentVariables,
   StripeEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Services } from '@ticketing/shared/constants';
@@ -20,6 +21,7 @@ export class EnvironmentVariables extends Mixin(
   JWTEnvironmentVariables,
   NatsEnvironmentVariables,
   MongoEnvironmentVariables,
+  OryEnvironmentVariables,
   StripeEnvironmentVariables
 ) {
   @Exclude()
