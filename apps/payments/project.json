@@ -112,7 +112,7 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/payments && dotenv-cli push"]
+        "commands": ["cd apps/payments && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
@@ -124,6 +124,14 @@
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/payments && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:payments", "type:app", "platform:server"]

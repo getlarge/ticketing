@@ -112,7 +112,7 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/orders && dotenv-cli push"]
+        "commands": ["cd apps/orders && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
@@ -124,6 +124,14 @@
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/orders && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:orders", "type:app", "platform:server"]

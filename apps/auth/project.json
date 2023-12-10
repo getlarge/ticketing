@@ -112,10 +112,10 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/auth && dotenv-cli push"]
+        "commands": ["cd apps/auth && dotenv-vault push"]
       },
-      "parallel": false,
-      "cwd": "."
+      "cwd": ".",
+      "parallel": false
     },
     "dotenv-pull": {
       "executor": "nx:run-commands",
@@ -124,6 +124,14 @@
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/auth && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:auth", "type:app", "platform:server"]

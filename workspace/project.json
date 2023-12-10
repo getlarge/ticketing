@@ -79,7 +79,7 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["dotenv-cli push"]
+        "commands": ["dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
@@ -87,7 +87,7 @@
     "dotenv-pull": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["dotenv-cli pull"]
+        "commands": ["dotenv-vault pull"]
       },
       "parallel": false,
       "cwd": "."

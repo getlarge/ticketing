@@ -113,7 +113,7 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/tickets && dotenv-cli push"]
+        "commands": ["cd apps/tickets && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
@@ -125,6 +125,14 @@
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/tickets && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:tickets", "type:app", "platform:server"]

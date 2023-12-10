@@ -102,7 +102,7 @@
     "dotenv-push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/expiration && dotenv-cli push"]
+        "commands": ["cd apps/expiration && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
@@ -114,6 +114,14 @@
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/expiration && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:expiration", "type:app", "platform:server"]
