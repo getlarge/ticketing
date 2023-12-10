@@ -66,3 +66,5 @@ keys/*
 !.yarn/versions
 
 .nx/cache
+.flaskenv*
+!.env.vault
