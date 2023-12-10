@@ -1,3 +1,5 @@
+import './vault';
+
 import { fastifyHelmet } from '@fastify/helmet';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';

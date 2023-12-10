@@ -4558,9 +4558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/config@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@nestjs/config@npm:3.0.1"
+"@nestjs/config@npm:3.1.1":
+  version: 3.1.1
+  resolution: "@nestjs/config@npm:3.1.1"
   dependencies:
     dotenv: 16.3.1
     dotenv-expand: 10.0.0
@@ -4569,7 +4569,7 @@ __metadata:
   peerDependencies:
     "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
     reflect-metadata: ^0.1.13
-  checksum: 76c82dae9197b8041f98b76ec1904cd2eec3e6ffe260e5898579d85847d355732828bab09d5d98a201d1c5231adcabaaa8a0bcc28edc7190b1b94b35fe4e4954
+  checksum: 95446dd12678581582c15a1c7cc4d7b560466b646085cec2aab442e977def6699526f300c18f0bbbd795d7e7675b505ace382a453b3babc650d14d0c5af9502f
   languageName: node
   linkType: hard
 
@@ -11755,13 +11755,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-expand@npm:8.0.3":
-  version: 8.0.3
-  resolution: "dotenv-expand@npm:8.0.3"
-  checksum: 128ce90ac825b543de3ece0154a51b056ab0dc36bb26d97a68cd0b8707327ecd3c182fb6ac63b26a0fcdfa85064419906a1065cb634f1f9dc08ad311375f1fc0
-  languageName: node
-  linkType: hard
-
 "dotenv-vault@npm:^1.25.0":
   version: 1.25.0
   resolution: "dotenv-vault@npm:1.25.0"
@@ -11777,13 +11770,6 @@ __metadata:
   bin:
     dotenv-vault: bin/run
   checksum: 9d56aa8336a4c4a910980c9a697c254446c679a77129a5861451ddd5373aed4e2eb790c85fbe7752ee81cf3dcc6d5be3ab63b8c61da14af52b8a0a0a1b3cb593
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:16.0.0":
-  version: 16.0.0
-  resolution: "dotenv@npm:16.0.0"
-  checksum: 664cebb51f0a9a1d1b930f51f0271e72e26d62feaecc9dc03df39453dd494b4e724809ca480fb3ec3213382b1ed3f791aaeb83569a137f9329ce58efd4853dbf
   languageName: node
   linkType: hard
 
@@ -22756,7 +22742,7 @@ __metadata:
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
     "@nestjs/common": 10.2.4
-    "@nestjs/config": 3.0.1
+    "@nestjs/config": 3.1.1
     "@nestjs/core": 10.2.4
     "@nestjs/jwt": 10.1.0
     "@nestjs/microservices": 10.2.4
@@ -22806,8 +22792,8 @@ __metadata:
     core-js: ^3.6.5
     cypress: ^8.3.0
     cz-conventional-changelog: ^3.3.0
-    dotenv: 16.0.0
-    dotenv-expand: 8.0.3
+    dotenv: 16.3.1
+    dotenv-expand: 10.0.0
     dotenv-vault: ^1.25.0
     eslint: 8.46.0
     eslint-config-prettier: 9.1.0
