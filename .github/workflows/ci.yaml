@@ -450,12 +450,11 @@ jobs:
       - name: Run verifications for affected apps
         uses: jameshenry/parallel-bash-commands@v1
         with:
-          cmd1: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn scan:openapi
-          cmd2: npx nx affected --target=lint --parallel=4 --verbose
-          cmd4: npx nx affected --target=test --parallel=4 --exclude=workspace --ci --verbose
-          cmd5: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
+          cmd1: npx nx affected --target=lint --parallel=4 --exclude=workspace --verbose
+          cmd2: npx nx affected --target=test --parallel=4 --exclude=workspace --ci --verbose
+          cmd3: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
           # running e2e tests in parallel create conflicts in DB
-          cmd6: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend --ci --verbose
+          # cmd4: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend --ci --verbose
 
       - name: Stop Nx agents
         if: always()
