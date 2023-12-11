@@ -68,6 +68,12 @@ const typeEnumDescription = {
     title: 'Continuous Integrations',
     emoji: '🏭',
   },
+  ops: {
+    description:
+      'Changes to our CI / CD configuration files and scripts (example scopes: GH Actions, Heroku, Docker...)',
+    title: 'DevOps',
+    emoji: '🏭',
+  },
   chore: {
     description: "Other changes that don't modify src or test files",
     title: 'Chores',

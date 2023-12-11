@@ -1,0 +1,300 @@
+name: 'ticketing CD'
+
+on:
+  workflow_call:
+    inputs:
+      workflow_conclusion:
+        description: 'Status of workflow trigerring s1seven CD'
+        required: false
+        default: 'success'
+        type: string
+      tag:
+        description: 'Release tag, semver formatted prefixed with "v"'
+        required: false
+        default: ''
+        type: string
+      environment:
+        description: 'Deployment environment'
+        required: false
+        type: string
+        default: ''
+
+  workflow_dispatch:
+    inputs:
+      workflow_conclusion:
+        description: 'Status of workflow trigerring s1seven CD'
+        required: false
+        default: 'success'
+      tag:
+        description: 'Release tag, semver formatted prefixed with "v"'
+        required: false
+        default: ''
+      environment:
+        description: 'Deployment environment'
+        required: false
+        type: choice
+        default: ''
+        options:
+          - development
+          - staging
+          - production
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-cd
+  cancel-in-progress: true
+
+env:
+  ACTIONS_STEP_DEBUG: ${{ vars.ACTIONS_STEP_DEBUG }}
+  NODE_VERSION: ${{ vars.NODE_VERSION || '18.x' }}
+  STEP_SETUP_PROJECT: 'Setup node, checkout and install project dependencies'
+  BUILD_FOLDER: dist
+  BUILD_ARTIFACTS: build
+  CI_WORKFLOW: ci.yaml
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' ||
+      github.event.inputs.workflow_conclusion == 'success'
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check that tag matches a valid release
+        id: check-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -z "${{ inputs.tag }}" || "${{ inputs.tag }}" == "" ]]; then
+            echo "is-valid=false" >> $GITHUB_OUTPUT
+          elif [[ $(git tag -l "${{ inputs.tag }}") =~ "${{ inputs.tag }}" ]]; then
+            echo "is-valid=true" >> $GITHUB_OUTPUT
+          else
+            echo "is-valid=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
+      - name: Generate tag
+        id: current-tag
+        run: |
+          if [[ "${{ steps.check-tag.outputs.is-valid }}" == "true" ]]; then
+            echo "value=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.branch-name.outputs.is_tag }}" == "true" ]]; then
+            echo "value=${{ steps.branch-name.outputs.tag }}" >> $GITHUB_OUTPUT
+          elif [[ -z "${{ inputs.tag }}" || "${{ inputs.tag }}" == "" ]]; then
+            echo "value=$(echo nx_successful_ci_run__$(echo ${{ github.run_id }})__$(date +"%Y-%m-%d-%H%M")-UTC)" >> $GITHUB_OUTPUT
+          else
+            # an invalid tag was passed to the workflow
+            exit 1
+          fi
+
+      - name: Check if source event is 'release'
+        uses: haya14busa/action-cond@v1
+        id: is-release
+        with:
+          cond: ${{ startsWith(steps.current-tag.outputs.value, 'v') }}
+          if_true: 'true'
+          if_false: 'false'
+
+      - name: Get Git ref
+        uses: haya14busa/action-cond@v1
+        id: git-ref
+        with:
+          cond: ${{ steps.is-release.outputs.value == 'true' || steps.branch-name.outputs.is_tag == 'true' }}
+          if_true: ${{ steps.current-tag.outputs.value }}
+          if_false: ${{ steps.branch-name.outputs.current_branch }}
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        id: setup
+        uses: ./.github/actions/checkout-and-yarn
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ steps.git-ref.outputs.value }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get reference workflow
+        uses: haya14busa/action-cond@v1
+        id: ref-workflow
+        with:
+          cond: ${{ github.event_name == 'workflow_dispatch' }}
+          if_true: ${{ env.CD_WORKFLOW }}
+          if_false: ${{ env.CI_WORKFLOW }}
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        id: set-shas
+        uses: nrwl/nx-set-shas@v3
+        with:
+          # solves issue where no projects are affected after merging to main
+          workflow-id: ${{ steps.ref-workflow.outputs.value }}
+
+      - name: Check if any project was affected
+        id: check-projects
+        run: |
+          if [[ $(npx nx affected:apps --exclude=workspace --plain) == "" && \
+          $(npx nx affected:libs --exclude=workspace --plain) == "" ]]; then
+            echo "affected=false" >> $GITHUB_OUTPUT
+          else
+            echo "affected=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Find depth of NX_BASE
+        id: commit-depth
+        run: echo "depth=$(git rev-list HEAD ^${{ env.NX_BASE }} --count)" >> $GITHUB_OUTPUT
+
+      - name: List apps (affected or all if release)
+        id: check-apps
+        env:
+          NX_BASE: ${{ steps.set-shas.outputs.base }}
+          NX_HEAD: ${{ steps.set-shas.outputs.head }}
+        run: |
+          if [[ "${{ steps.is-release.outputs.value }}" == "true" ]]; then
+            echo "affected=$(yarn ts-node-tools tools/nx/get-projects-cli.ts -t app)" >> $GITHUB_OUTPUT
+          else
+            echo "affected=$(yarn affected:apps | node -e "
+              const input = require('fs').readFileSync(0).toString().trim();
+              const result = JSON.stringify(input === '' ? [] : input.split(','));
+              console.log(result);
+              ")" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Define environment to deploy
+        id: deploy
+        run: |
+          if [[ "${{ inputs.environment }}" != "" ]]; then
+            echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.is-release.outputs.value }}" == "true" ]]; then
+              echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Show outputs
+        run: |
+          echo "current-branch: ${{ steps.branch-name.outputs.current_branch }}"
+          echo "projects-affected: ${{ steps.check-projects.outputs.affected }}"
+          echo "deploy-config: ${{ steps.deploy.outputs.environment }}"
+          echo "is-release: ${{ steps.is-release.outputs.value }}"
+          echo "tag: ${{ steps.current-tag.outputs.value }}"
+          echo "git-ref: ${{ steps.git-ref.outputs.value }}"
+          echo "ref-workflow: ${{ steps.ref-workflow.outputs.value }}"
+
+      - name: Create job summary
+        run: |
+          echo "## CD initialized! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "- deploy config: ${{ steps.deploy.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- base commit SHA: ${{ steps.set-shas.outputs.base }}" >> $GITHUB_STEP_SUMMARY
+          echo "- head commit SHA: ${{ steps.set-shas.outputs.head }}" >> $GITHUB_STEP_SUMMARY
+          echo "- current branch: ${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- tag: ${{ steps.current-tag.outputs.value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- git ref: ${{ steps.git-ref.outputs.value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- reference workflow: ${{ steps.ref-workflow.outputs.value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- is release ?: ${{ steps.is-release.outputs.value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- affected apps: ${{ steps.check-apps.outputs.affected }}" >> $GITHUB_STEP_SUMMARY
+
+    outputs:
+      current-branch: ${{ steps.branch-name.outputs.current_branch }}
+      tag: ${{ steps.current-tag.outputs.value }}
+      git-ref: ${{ steps.git-ref.outputs.value }}
+      ref-workflow: ${{ steps.ref-workflow.outputs.value }}
+      base: ${{ steps.set-shas.outputs.base }}
+      head: ${{ steps.set-shas.outputs.head }}
+      base-depth: ${{ steps.commit-depth.outputs.depth}}
+      deploy-config: ${{ steps.deploy.outputs.environment }}
+      is-release: ${{ steps.is-release.outputs.value }}
+      projects-affected: ${{ steps.check-projects.outputs.affected }}
+      affected-apps: ${{ steps.check-apps.outputs.affected }}
+
+  docker:
+    needs: [init]
+    runs-on: ubuntu-latest
+    if: |
+      needs.init.outputs.projects-affected == 'true' &&
+      needs.init.outputs.is-release == 'false'
+    timeout-minutes: 20
+    # TODO: disable once docker build is stable again
+    continue-on-error: true
+    env:
+      NX_BASE: ${{ needs.init.outputs.base }}
+      NX_HEAD: ${{ needs.init.outputs.head }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.init.outputs.git-ref }}
+
+      - name: ${{ env.STEP_SETUP_PROJECT }}
+        uses: ./.github/actions/checkout-and-yarn
+        id: setup
+        with:
+          fetch-depth: 0
+          fetch-ref: ${{ needs.init.outputs.git-ref }}
+          node-version: ${{ env.NODE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # When building images in CI runner
+      - name: Retrieve build output from external workflow
+        if: github.event_name == 'workflow_dispatch'
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ needs.init.outputs.current-branch }}
+          workflow: ${{ env.CI_WORKFLOW }}
+          name: ${{ env.BUILD_ARTIFACTS }}
+          path: ${{ env.BUILD_FOLDER }}
+          if_no_artifact_found: warn
+
+      - name: Check build outputs presence
+        uses: xSAVIKx/artifact-exists-action@v0
+        id: check-build-artifact
+        with:
+          name: ${{ env.BUILD_ARTIFACTS }}
+
+      - name: Retrieve build output from current workflow
+        if: github.event_name != 'workflow_dispatch' && steps.check-build-artifact.outputs.exists == 'true'
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.BUILD_ARTIFACTS }}
+          path: ${{ env.BUILD_FOLDER }}
+
+      - name: Check build artifact existence
+        id: check-build
+        uses: andstor/file-existence-action@v2
+        with:
+          files: ${{ env.BUILD_FOLDER }}
+
+      - if: steps.check-build.outputs.files_exists != 'true'
+        run: exit 1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          use: true
+
+      - name: Run Docker build
+        run: yarn nx run-many --target=docker-build-remote --projects=$(yarn get:apps) --parallel=4 --verbose
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # - name: Cancel workflow on failure
+      #   if: failure()
+      #   uses: andymckay/cancel-action@0.3
