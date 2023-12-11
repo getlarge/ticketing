@@ -122,6 +122,14 @@
       },
       "cwd": ".",
       "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/expiration && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:expiration", "type:app", "platform:server"]

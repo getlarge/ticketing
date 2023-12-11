@@ -132,6 +132,14 @@
       },
       "cwd": ".",
       "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/auth && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:auth", "type:app", "platform:server"]

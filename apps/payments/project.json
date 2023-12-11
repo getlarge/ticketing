@@ -132,6 +132,14 @@
       },
       "cwd": ".",
       "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/payments && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:payments", "type:app", "platform:server"]
