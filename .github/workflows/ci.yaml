@@ -229,6 +229,19 @@ jobs:
           echo "should-update-packages: ${{ steps.package-json.outputs.has-changed }}"
           echo "should-run-regenerate: ${{ steps.regenerate.outputs.should-run }}"
 
+      - name: Create job summary
+        run: |
+          echo "## CI initialized! :rocket: " >> $GITHUB_STEP_SUMMARY
+          echo "- base commit SHA: ${{ steps.set-shas.outputs.base }}" >> $GITHUB_STEP_SUMMARY
+          echo "- head commit SHA: ${{ steps.set-shas.outputs.head }}" >> $GITHUB_STEP_SUMMARY
+          echo "- base commit depth: ${{ steps.commit-depth.outputs.depth }}" >> $GITHUB_STEP_SUMMARY
+          echo "- current branch: ${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- current version: ${{ steps.package-version.outputs.current-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- tag: ${{ steps.tag.outputs.value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- affected apps: ${{ steps.check-apps.outputs.affected }}" >> $GITHUB_STEP_SUMMARY
+          echo "- affected libs: ${{ steps.check-libs.outputs.affected }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Nx agents count: ${{ steps.nx-cloud-agents.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+
     outputs:
       fetch-ref: ${{ steps.fetch-ref.outputs.value }}
       base: ${{ steps.set-shas.outputs.base }}
@@ -265,7 +278,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
+          ref: ${{ needs.init.outputs.fetch-ref }}
 
       - name: ${{ env.STEP_SETUP_PROJECT }}
         id: setup
@@ -322,6 +335,7 @@ jobs:
     outputs:
       base-depth: ${{ env.BASE_DEPTH }}
       job-status: ${{ job.status }}
+
   # AGENTS
   agents:
     runs-on: ubuntu-latest
@@ -413,7 +427,8 @@ jobs:
         id: setup
         uses: ./.github/actions/checkout-and-yarn
         with:
-          fetch-depth: ${{ steps.fetch-depth.outputs.value }}
+          # fetch-depth: ${{ steps.fetch-depth.outputs.value }}
+          fetch-depth: 0
           fetch-ref: ${{ needs.init.outputs.fetch-ref }}
           node-version: ${{ env.NODE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -441,7 +456,6 @@ jobs:
           cmd5: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
           # running e2e tests in parallel create conflicts in DB
           cmd6: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend --ci --verbose
-          # cmd7: yarn scan:deps
 
       - name: Stop Nx agents
         if: always()
@@ -482,85 +496,6 @@ jobs:
           path: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
           retention-days: 1
 
-      - name: Cancel workflow on failure
-        if: failure()
-        uses: andymckay/cancel-action@0.3
-
-    outputs:
-      has-apps-coverage: ${{ steps.check-apps-coverage.outputs.files_exists }}
-      has-libs-coverage: ${{ steps.check-libs-coverage.outputs.files_exists }}
-      fetch-ref: ${{ needs.init.outputs.fetch-ref }}
-
-  # E2E
-  e2e:
-    runs-on: ubuntu-latest
-    needs: [init, regenerate]
-    if: |
-      !failure() && !cancelled() &&
-      needs.init.outputs.projects-affected == 'true' &&
-      (github.event_name == 'push' || !github.event.pull_request.draft)
-    timeout-minutes: 10
-    services:
-      nats-streaming:
-        image: ghcr.io/getlarge/ticketing/nats-streaming:latest
-        credentials:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-        ports:
-          - '4222:4222'
-          - '8222:8222'
-
-      auth-mongo:
-        image: mongo
-        ports:
-          - 27017:27017
-
-      orders-mongo:
-        image: mongo
-        ports:
-          - 27018:27017
-
-      tickets-mongo:
-        image: mongo
-        ports:
-          - 27019:27017
-
-      payments-mongo:
-        image: mongo
-        ports:
-          - 27020:27017
-
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.init.outputs.fetch-ref }}
-
-      - name: ${{ env.STEP_SETUP_PROJECT }}
-        id: setup
-        uses: ./.github/actions/checkout-and-yarn
-        with:
-          fetch-depth: ${{ needs.regenerate.outputs.base-depth || needs.init.outputs.base-depth }}
-          fetch-ref: ${{ needs.init.outputs.fetch-ref }}
-          node-version: ${{ env.NODE_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v3
-
-      # running e2e tests in parallel create conflicts in DB
-      - name: Run Affected Backend e2e tests
-        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend
-
       - name: Check coverage reports existence
         uses: andstor/file-existence-action@v2
         id: check-coverage
@@ -580,5 +515,6 @@ jobs:
         uses: andymckay/cancel-action@0.3
 
     outputs:
-      has-coverage: ${{ steps.check-coverage.outputs.files_exists }}
+      has-apps-coverage: ${{ steps.check-apps-coverage.outputs.files_exists }}
+      has-libs-coverage: ${{ steps.check-libs-coverage.outputs.files_exists }}
       fetch-ref: ${{ needs.init.outputs.fetch-ref }}
