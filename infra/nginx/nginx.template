@@ -70,8 +70,8 @@ map $use_cors $expose_headers {
 }
 
 server {
-  listen $PORT;
-  listen [::]:$PORT ipv6only=on;
+  listen 8080;
+  listen [::]:8080 ipv6only=on;
   server_name _;
 
   real_ip_header X-Forwarded-For;
@@ -140,7 +140,13 @@ server {
 
   location / {
     proxy_pass http://frontend;
+    proxy_set_header Host $FRONTEND;
     include /etc/nginx/snippets/proxy.conf;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    # add_header Content-Security-Policy "default-src 'self' $DEFAULT_SRC; script-src 'self' $SCRIPT_SRC; style-src 'self' $STYLE_SRC; style-src-elem 'self' $STYLE_SRC_ELEM; style-src-attr 'self' 'unsafe-inline' $STYLE_SRC_ATTR; connect-src 'self' $CONNECT_SRC; font-src 'self' $FONT_SRC; object-src 'self'; media-src 'self' $MEDIA_SRC; img-src 'self' data: $IMG_SRC; form-action 'self' $FORM_ACTION; frame-src 'self' $FRAME_SRC"; always;
+    add_header X-Content-Type-Options nosniff always;
+		add_header Referrer-Policy "no-referrer" always;
+		add_header X-XSS-Protection "1; mode=block" always;
   }
 
   error_page 500 502 503 504 /50x.html;
