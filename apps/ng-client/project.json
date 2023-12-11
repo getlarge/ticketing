@@ -93,28 +93,36 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "browserTarget": "ng-client:build"
+        "buildTarget": "ng-client:build",
+        "disableHostCheck": true
       },
       "configurations": {
         "production": {
-          "browserTarget": "ng-client:build:production"
+          "buildTarget": "ng-client:build:production"
         },
         "development": {
-          "browserTarget": "ng-client:build:development",
           "disableHostCheck": true,
-          "host": "localhost"
+          "port": 4200,
+          "host": "0.0.0.0",
+          "buildTarget": "ng-client:build:development"
         }
       },
       "defaultConfiguration": "development"
     },
+    "ory-tunnel": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ory tunnel http://localhost:4200 --dev --project tender-satoshi-rtd7nibdhq --port 4000"
+      }
+    },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "ng-client:build"
+        "buildTarget": "ng-client:build"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": [
           "apps/ng-client/src/**/*.ts",
@@ -123,7 +131,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/ng-client"],
       "options": {
         "jestConfig": "apps/ng-client/jest.config.ts",
@@ -131,7 +139,7 @@
       }
     },
     "docker-build": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node ./tools/deploy/build-docker.js -p 'ng-client' -c {args.conf} -t {args.tag} -f {args.file}"
@@ -140,13 +148,13 @@
       }
     },
     "docker-run": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker run -it --rm -p 4200:3000/tcp --name ticketing-ng-client ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
       }
     },
     "docker-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
       }

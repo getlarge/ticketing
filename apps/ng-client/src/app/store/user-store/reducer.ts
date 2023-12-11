@@ -7,7 +7,10 @@ export function featureReducer(
   action: ActionsUnion
 ): State {
   switch (action.type) {
-    case ActionTypes.SIGN_UP: {
+    case ActionTypes.SIGN_UP:
+    case ActionTypes.SIGN_IN:
+    case ActionTypes.SIGN_OUT:
+    case ActionTypes.LOAD_CURRENT_USER: {
       return {
         ...state,
         isLoading: true,
@@ -21,18 +24,12 @@ export function featureReducer(
         error: null,
       });
     }
-    case ActionTypes.SIGN_UP_FAILURE: {
+    case ActionTypes.SIGN_UP_FAILURE:
+    case ActionTypes.SIGN_IN_FAILURE: {
       return {
         ...state,
         isLoading: false,
         error: action.payload.error,
-      };
-    }
-    case ActionTypes.SIGN_IN: {
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
       };
     }
     case ActionTypes.SIGN_IN_SUCCESS: {
@@ -41,20 +38,8 @@ export function featureReducer(
         isLoading: false,
         error: null,
         currentToken: action.payload.token,
-      };
-    }
-    case ActionTypes.SIGN_IN_FAILURE: {
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload.error,
-      };
-    }
-    case ActionTypes.SIGN_OUT: {
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
+        logoutUrl: action.payload.logoutUrl,
+        session: action.payload.session,
       };
     }
     case ActionTypes.SIGN_OUT_SUCCESS: {
@@ -64,6 +49,8 @@ export function featureReducer(
         error: null,
         currentToken: undefined,
         currentUser: null,
+        session: undefined,
+        logoutUrl: '/',
       });
     }
     case ActionTypes.SIGN_OUT_FAILURE: {
@@ -74,13 +61,8 @@ export function featureReducer(
         error: null,
         currentToken: undefined,
         currentUser: null,
-      };
-    }
-    case ActionTypes.LOAD_CURRENT_USER: {
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
+        session: undefined,
+        logoutUrl: '/',
       };
     }
     case ActionTypes.LOAD_CURRENT_USER_SUCCESS: {

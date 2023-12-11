@@ -13,6 +13,10 @@ import { first, Observable, Subject, takeUntil } from 'rxjs';
 
 import { RootStoreState, UserStoreActions, UserStoreSelectors } from '../store';
 
+/**
+ * @deprecated Account creation is now handled by the Ory self-service UI
+ * This component might be reused to provide a custom signup form
+ */
 @Component({ templateUrl: 'sign-up.component.html' })
 export class SignUpComponent implements OnInit, OnDestroy {
   form!: UntypedFormGroup;

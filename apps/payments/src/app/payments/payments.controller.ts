@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
-import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
+import { OryAuthGuard } from '@ticketing/microservices/shared/guards';
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
@@ -30,7 +30,7 @@ import { PaymentsService } from './payments.service';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,

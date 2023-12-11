@@ -4,8 +4,8 @@ const { hideBin } = require('yargs/helpers');
 
 async function dotenvPush({ projectName = '' }) {
   const command = projectName
-    ? `cd apps/${projectName} && dotenv-cli push`
-    : 'dotenv-cli push';
+    ? `cd apps/${projectName} && dotenv-vault push`
+    : 'dotenv-vault push';
   execSync(command, { stdio: 'inherit' });
 }
 

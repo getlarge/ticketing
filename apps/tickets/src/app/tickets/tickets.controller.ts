@@ -26,7 +26,7 @@ import {
   ApiPaginatedDto,
   CurrentUser,
 } from '@ticketing/microservices/shared/decorators';
-import { JwtAuthGuard } from '@ticketing/microservices/shared/guards';
+import { OryAuthGuard } from '@ticketing/microservices/shared/guards';
 import {
   PaginatedDto,
   PaginateDto,
@@ -56,7 +56,7 @@ import { TicketsService } from './tickets.service';
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -120,7 +120,7 @@ export class TicketsController {
     return this.ticketsService.findById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OryAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,

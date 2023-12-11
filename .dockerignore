@@ -12,3 +12,7 @@ coverage
 .scannerwork
 .vscode
 tmp
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

@@ -18,6 +18,9 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "@ticketing/microservices/ory-client": [
+        "libs/microservices/ory-client/src/index.ts"
+      ],
       "@ticketing/microservices/shared/constants": [
         "libs/microservices/shared/constants/src/index.ts"
       ],

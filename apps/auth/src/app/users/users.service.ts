@@ -4,14 +4,13 @@ import {
   Inject,
   Injectable,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import { OryService } from '@ticketing/microservices/ory-client';
 import { Model } from 'mongoose';
 
-import { Password } from '../shared/password';
 import { User, UserCredentials } from './models';
+import { OnOrySignInDto, OnOrySignUpDto } from './models/ory-identity.dto';
 import { User as UserSchema, UserDocument } from './schemas';
 
 @Injectable()
@@ -20,8 +19,64 @@ export class UsersService {
 
   constructor(
     @InjectModel(UserSchema.name) private userModel: Model<UserDocument>,
-    @Inject(JwtService) private jwtService: JwtService
+    @Inject(OryService) private readonly oryService: OryService
   ) {}
+
+  /**
+   * @description handle webhook payload sent after Ory registration and modify identity
+   * Unfortunately Ory's promise is not totally fulfilled. It seems impossible to trigger a blocking hooks after user registration
+   * This webhook is processed asynchronously so we need to make an API call to modify the identity
+   *
+   * @see https://www.ory.sh/docs/guides/integrate-with-ory-cloud-through-webhooks#modify-identities
+   **/
+  async onSignUp(body: OnOrySignUpDto): Promise<OnOrySignUpDto> {
+    const { identity } = body;
+    this.logger.debug(`onSignUp`, body);
+    const email = identity.traits.email;
+    const existingUser = await this.userModel.findOne({
+      email,
+    });
+    if (existingUser) {
+      await this.oryService.deleteIdentity(identity.id).catch((error) => {
+        this.logger.error(error);
+      });
+      throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
+    }
+    const newUser = await this.userModel.create({
+      identityId: identity.id,
+      email,
+    });
+    const updatedIdentity = await this.oryService.updateIdentityMetadata(
+      identity.id,
+      { id: newUser.id }
+    );
+    return { identity: updatedIdentity };
+  }
+
+  /**
+   * @description To workarround the issue with Ory's not offering transactional hooks, we need to check if the user exists in our database
+   * if not we use it as a second chance to create it
+   **/
+  async onSignIn(body: OnOrySignInDto): Promise<OnOrySignInDto> {
+    const { identity } = body;
+    this.logger.debug(`onSignIn`, body);
+    const email = identity.traits.email;
+    const user = await this.userModel.findOne({
+      email,
+    });
+    if (!user) {
+      const newUser = await this.userModel.create({
+        identityId: identity.id,
+        email,
+      });
+      const updatedIdentity = await this.oryService.updateIdentityMetadata(
+        identity.id,
+        { id: newUser.id }
+      );
+      identity.metadata_public = updatedIdentity.metadata_public;
+    }
+    return { identity };
+  }
 
   async signUp(credentials: UserCredentials): Promise<User> {
     const existingUser = await this.userModel.findOne({
@@ -32,38 +87,5 @@ export class UsersService {
     }
     const newUser = await this.userModel.create(credentials);
     return newUser.toJSON<User>();
-  }
-
-  async validateUser(email: string, password: string): Promise<User> {
-    const existingUser = await this.userModel.findOne({ email });
-    if (!existingUser) {
-      throw new UnauthorizedException();
-    }
-    await this.validatePassword(existingUser.password, password);
-    return { id: existingUser.id, email };
-  }
-
-  async validatePassword(
-    storedPassword: string,
-    password: string
-  ): Promise<void> {
-    const isValid = await Password.compare(storedPassword, password).catch(
-      () => {
-        throw new UnauthorizedException();
-      }
-    );
-    if (!isValid) {
-      throw new UnauthorizedException();
-    }
-  }
-
-  async signIn(currentUser: User): Promise<{ token: string }> {
-    const payload = { username: currentUser.email, sub: currentUser.id };
-    const token = await this.jwtService.signAsync(payload);
-    return { token };
-  }
-
-  signOut(): { success: boolean } {
-    return { success: true };
   }
 }

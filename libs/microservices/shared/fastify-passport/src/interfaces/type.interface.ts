@@ -1,3 +1,2 @@
-export interface Type<T = any> extends Function {
-  new (...args: any[]): T;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Type<T = any> = new (...args: any[]) => T;

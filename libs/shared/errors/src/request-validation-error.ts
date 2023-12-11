@@ -1,4 +1,4 @@
-import { ValidationError } from 'class-validator';
+import type { ValidationError } from 'class-validator';
 
 import { CustomError } from './custom-error';
 
@@ -31,7 +31,7 @@ export function extractValidationErrorField(
     for (const key in error.constraints) {
       constraints[key] = `${parentPath}.${error.constraints[key]}`;
     }
-    return Object.assign(Object.assign({}, error), { constraints });
+    return { ...error, constraints };
   }
 
   function mapChildrenToValidationErrors(

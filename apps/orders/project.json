@@ -52,14 +52,14 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/orders/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/orders"],
       "options": {
         "jestConfig": "apps/orders/jest.config.ts",
@@ -67,7 +67,7 @@
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/orders-e2e"],
       "options": {
         "jestConfig": "apps/orders/jest-e2e.config.ts",
@@ -77,13 +77,13 @@
       }
     },
     "get-dependencies": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node ./tools/nx/get-dependencies-cli.js -p auth"
       }
     },
     "docker-build": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node ./tools/deploy/build-docker.js -p orders -c {args.conf} -t {args.tag} -f {args.file}"
@@ -92,38 +92,54 @@
       }
     },
     "docker-run": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-orders ghcr.io/getlarge/ticketing-orders:{args.tag}"
       }
     },
     "docker-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-orders:{args.tag}"
       }
     },
     "refresh-pkg-json": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/utils/regenerate-pkg-json-cli.js -p orders -v"
+        "command": "ts-node --project tools/tsconfig.json tools/utils/regenerate-pkg-json-cli.ts -p orders -v"
       }
     },
     "dotenv-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/orders && dotenv-cli push"]
+        "commands": ["cd apps/orders && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
     },
     "dotenv-pull": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["node tools/utils/dotenv-pull.js -p orders -v"]
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/orders && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/orders && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:orders", "type:app", "platform:server"]

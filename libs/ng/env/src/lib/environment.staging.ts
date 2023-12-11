@@ -1,4 +1,4 @@
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import packageInfo from '../../../../../package.json';
 import { Environment, VersioningType } from './env.interface';
 import { getApiVersion } from './helpers';
@@ -14,4 +14,5 @@ export const environment: Environment = {
   versioningType: VersioningType.HEADER,
   apiBaseDomain: 'ticketing.dev',
   stripePublishableKey: '',
+  oryBasePath: 'https://auth.ticketing.dev',
 };

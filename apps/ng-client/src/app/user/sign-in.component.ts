@@ -12,6 +12,10 @@ import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
 
 import { UserStoreActions, UserStoreSelectors, UserStoreState } from '../store';
 
+/**
+ * @deprecated Account login is now handled by the Ory self-service UI
+ * This component might be reused to provide a custom login form
+ */
 @Component({ templateUrl: 'sign-in.component.html' })
 export class SignInComponent implements OnInit, OnDestroy {
   form!: UntypedFormGroup;
@@ -79,10 +83,6 @@ export class SignInComponent implements OnInit, OnDestroy {
     if (this.form.invalid) {
       return;
     }
-    this.store.dispatch(
-      new UserStoreActions.SignInAction({
-        credentials: this.form.value,
-      })
-    );
+    this.store.dispatch(new UserStoreActions.SignInAction());
   }
 }

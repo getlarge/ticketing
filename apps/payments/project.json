@@ -52,14 +52,14 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/payments/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/payments"],
       "options": {
         "jestConfig": "apps/payments/jest.config.ts",
@@ -67,7 +67,7 @@
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/payments-e2e"],
       "options": {
         "jestConfig": "apps/payments/jest-e2e.config.ts",
@@ -77,13 +77,13 @@
       }
     },
     "get-dependencies": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "node ./tools/nx/get-dependencies-cli.js -p auth"
       }
     },
     "docker-build": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           "node ./tools/deploy/build-docker.js -p payments -c {args.conf} -t {args.tag} -f {args.file}"
@@ -92,38 +92,54 @@
       }
     },
     "docker-run": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker run -it --rm -p 3000:3000/tcp --name ticketing-payments ghcr.io/getlarge/ticketing-payments:{args.tag}"
       }
     },
     "docker-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "docker push ghcr.io/getlarge/ticketing-payments:{args.tag}"
       }
     },
     "refresh-pkg-json": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/utils/regenerate-pkg-json-cli.js -p payments -v"
+        "command": "ts-node --project tools/tsconfig.json tools/utils/regenerate-pkg-json-cli.ts -p payments -v"
       }
     },
     "dotenv-push": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "commands": ["cd apps/payments && dotenv-cli push"]
+        "commands": ["cd apps/payments && dotenv-vault push"]
       },
       "parallel": false,
       "cwd": "."
     },
     "dotenv-pull": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": ["node tools/utils/dotenv-pull.js -p payments -v"]
       },
       "parallel": false,
       "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/payments && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/payments && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:payments", "type:app", "platform:server"]

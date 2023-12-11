@@ -48,5 +48,5 @@ export enum Actions {
   ALL = '*',
 }
 
-export const CURRENT_USER_KEY = 'currentUser';
+export const CURRENT_USER_KEY = 'user';
 export const SESSION_ACCESS_TOKEN = 'access_token';

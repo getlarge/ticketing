@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 
 import { AppConfigService } from '../env';
-import { LocalStrategy } from '../guards/local.strategy';
-import { Password } from '../shared/password';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -19,14 +18,7 @@ import { UsersService } from './users.service';
       {
         name: User.name,
         useFactory: () => {
-          const schema = UserSchema;
-          schema.pre('save', async function () {
-            if (this.isModified('password')) {
-              const hash = await Password.toHash(this.get('password'));
-              this.set('password', hash);
-            }
-          });
-          return schema;
+          return UserSchema;
         },
         inject: [ConfigService],
       },
@@ -48,8 +40,15 @@ import { UsersService } from './users.service';
       }),
       inject: [ConfigService],
     }),
+    OryModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        accessToken: configService.get('ORY_API_KEY'),
+        basePath: configService.get('ORY_BASE_PATH'),
+      }),
+    }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, LocalStrategy, JwtStrategy],
+  providers: [UsersService, JwtStrategy],
 })
 export class UsersModule {}

@@ -17,8 +17,8 @@ async function dotenvPull({
   });
   me = parsed.DOTENV_ME || me;
   const command = projectName
-    ? `cd apps/${projectName} && dotenv-cli pull`
-    : 'dotenv-cli pull';
+    ? `cd apps/${projectName} && dotenv-vault pull`
+    : 'dotenv-vault pull';
   execSync(`${command} ${environment} ${fileName} -m ${me}`, {
     stdio: 'inherit',
   });

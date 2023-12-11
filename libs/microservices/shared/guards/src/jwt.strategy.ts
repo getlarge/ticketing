@@ -47,12 +47,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   validate(payload: {
     username: string;
     sub: string;
+    identityId: string;
     iat: number;
     exp: number;
     aud: string;
     iss: string;
   }): User {
     // TODO: has user been banned ?
-    return { id: payload.sub, email: payload.username };
+    return {
+      id: payload.sub,
+      email: payload.username,
+      identityId: payload.identityId,
+    };
   }
 }

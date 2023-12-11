@@ -1,3 +1,5 @@
+import './vault';
+
 import fastifyCors from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
 import fastifyPassport from '@fastify/passport';

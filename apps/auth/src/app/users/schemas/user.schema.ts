@@ -13,18 +13,23 @@ import { User as UserAttrs } from '../models';
   },
 })
 export class User extends UserAttrs {
-  @Prop({ type: String, required: true, unique: true, lowercase: true })
+  @Prop({
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    index: true,
+  })
   email: string;
 
-  @Prop({ type: String, required: true })
-  password: string;
+  @Prop({ type: String, required: true, unique: true })
+  identityId: string;
 }
 
 export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// UserSchema.statics.build = (): UserDocument => {};
 export interface UserModel extends Model<UserDocument> {
   build(attr: UserAttrs): UserDocument;
 }

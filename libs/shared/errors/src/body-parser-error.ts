@@ -1,10 +1,8 @@
-import { HttpStatus } from '@nestjs/common';
-
 import { CustomError } from './custom-error';
 
 export class BodyParserError extends CustomError {
   constructor(
-    public statusCode: HttpStatus,
+    public statusCode: number,
     public reason: string,
     public details: Record<string, unknown> = {}
   ) {
