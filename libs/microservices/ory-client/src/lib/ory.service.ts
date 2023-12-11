@@ -69,8 +69,6 @@ export class OryService {
       ? authHeader.slice(7, authHeader.length)
       : undefined;
 
-    console.log('sessionToken : ', sessionToken);
-    console.log('cookie : ', request.headers.cookie);
     try {
       const { data: session } = await this.frontendApi.toSession({
         cookie: request.headers.cookie,

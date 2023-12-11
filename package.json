@@ -12,8 +12,6 @@
     "build": "nx build",
     "build:docker:base": "docker build . -t getlarge/ticketing:nx-base",
     "build:docker": "nx run-many --target=docker-build",
-    "test": "nx test",
-    "lint": "nx workspace-lint && nx lint",
     "report": "nx report",
     "get:apps": "ts-node --project tools/tsconfig.json tools/nx/get-projects-cli.ts -t app -p",
     "get:libs": "ts-node --project tools/tsconfig.json tools/nx/get-projects-cli.ts -t lib -p",
