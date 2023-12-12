@@ -1,31 +1,25 @@
 {
   "item": [
     {
-      "id": "361f8b2f-7457-43de-8208-118ebfa4476d",
+      "id": "fd0d3c20-d2a8-4c44-9c7f-2aae94bb3c6c",
       "name": "api",
       "item": [
         {
-          "id": "2bffb5af-9d4c-4e72-a0cf-4337623901e6",
+          "id": "4bdf25c0-0d03-450a-a86d-55ed8967b6ac",
           "name": "users",
           "item": [
             {
-              "id": "0a35d5cc-39b8-488e-83f5-d28f33fc9e19",
+              "id": "09518e85-b611-4405-9325-34da47a4d284",
               "name": "Register a user - Scope : users:create_one",
               "request": {
                 "name": "Register a user - Scope : users:create_one",
                 "description": {
-                  "content": "Request creation of a user",
+                  "content": "Triggered when a user is created in Ory",
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "users",
-                    "sign-up"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "users", "on-sign-up"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -33,13 +27,17 @@
                   {
                     "key": "Content-Type",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
                   }
                 ],
                 "method": "POST",
                 "auth": null,
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                  "raw": "{\n  \"identity\": {\n    \"id\": \"<string>\",\n    \"schema_id\": \"<string>\",\n    \"schema_url\": \"<string>\",\n    \"traits\": {\n      \"email\": \"<string>\"\n    },\n    \"state\": \"<object>\",\n    \"recovery_addresses\": \"<object>\",\n    \"verifiable_addresses\": \"<object>\",\n    \"credentials\": \"<object>\",\n    \"metadata_public\": \"<object>\",\n    \"metadata_admin\": \"<object>\",\n    \"created_at\": \"<string>\",\n    \"updated_at\": \"<string>\",\n    \"state_changed_at\": \"<string>\"\n  }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -49,18 +47,12 @@
               },
               "response": [
                 {
-                  "id": "23fe1515-1b64-45ca-9c1d-4a44dd8ef72e",
+                  "id": "9e7ea7a1-5ad3-4654-9c34-918ae8e1bcb8",
                   "name": "User created",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "users",
-                        "sign-up"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "users", "on-sign-up"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": []
                     },
@@ -77,7 +69,181 @@
                     "method": "POST",
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
+                      "raw": "{\n  \"identity\": {\n    \"id\": \"<string>\",\n    \"schema_id\": \"<string>\",\n    \"schema_url\": \"<string>\",\n    \"traits\": {\n      \"email\": \"<string>\"\n    },\n    \"state\": \"<object>\",\n    \"recovery_addresses\": \"<object>\",\n    \"verifiable_addresses\": \"<object>\",\n    \"credentials\": \"<object>\",\n    \"metadata_public\": \"<object>\",\n    \"metadata_admin\": \"<object>\",\n    \"created_at\": \"<string>\",\n    \"updated_at\": \"<string>\",\n    \"state_changed_at\": \"<string>\"\n  }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"identity\": {\n    \"id\": \"laboris est\",\n    \"schema_id\": \"proident\",\n    \"schema_url\": \"dolor labore\",\n    \"traits\": {\n      \"email\": \"laboris eu cupidatat ut\"\n    },\n    \"state\": {},\n    \"recovery_addresses\": {},\n    \"verifiable_addresses\": {},\n    \"credentials\": {},\n    \"metadata_public\": {},\n    \"metadata_admin\": {},\n    \"created_at\": \"ad aliquip cillum non in\",\n    \"updated_at\": \"reprehenderit aute deserunt\",\n    \"state_changed_at\": \"aliqua\"\n  }\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "842d3533-b5b3-4fef-9006-03e3f8095ecc",
+              "name": "Login a user - Scope : users:sign_in",
+              "request": {
+                "name": "Login a user - Scope : users:sign_in",
+                "description": {
+                  "content": "Triggered when a user signed in via Ory",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": ["api", "users", "on-sign-in"],
+                  "host": ["{{baseUrl}}"],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"identity\": {\n    \"id\": \"<string>\",\n    \"schema_id\": \"<string>\",\n    \"schema_url\": \"<string>\",\n    \"traits\": {\n      \"email\": \"<string>\"\n    },\n    \"state\": \"<object>\",\n    \"recovery_addresses\": \"<object>\",\n    \"verifiable_addresses\": \"<object>\",\n    \"credentials\": \"<object>\",\n    \"metadata_public\": \"<object>\",\n    \"metadata_admin\": \"<object>\",\n    \"created_at\": \"<string>\",\n    \"updated_at\": \"<string>\",\n    \"state_changed_at\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "56f324fc-9a0d-448e-9531-1d451bffc59b",
+                  "name": "User logged in",
+                  "originalRequest": {
+                    "url": {
+                      "path": ["api", "users", "on-sign-in"],
+                      "host": ["{{baseUrl}}"],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identity\": {\n    \"id\": \"<string>\",\n    \"schema_id\": \"<string>\",\n    \"schema_url\": \"<string>\",\n    \"traits\": {\n      \"email\": \"<string>\"\n    },\n    \"state\": \"<object>\",\n    \"recovery_addresses\": \"<object>\",\n    \"verifiable_addresses\": \"<object>\",\n    \"credentials\": \"<object>\",\n    \"metadata_public\": \"<object>\",\n    \"metadata_admin\": \"<object>\",\n    \"created_at\": \"<string>\",\n    \"updated_at\": \"<string>\",\n    \"state_changed_at\": \"<string>\"\n  }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"identity\": {\n    \"id\": \"laboris est\",\n    \"schema_id\": \"proident\",\n    \"schema_url\": \"dolor labore\",\n    \"traits\": {\n      \"email\": \"laboris eu cupidatat ut\"\n    },\n    \"state\": {},\n    \"recovery_addresses\": {},\n    \"verifiable_addresses\": {},\n    \"credentials\": {},\n    \"metadata_public\": {},\n    \"metadata_admin\": {},\n    \"created_at\": \"ad aliquip cillum non in\",\n    \"updated_at\": \"reprehenderit aute deserunt\",\n    \"state_changed_at\": \"aliqua\"\n  }\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "25fbae7a-7b70-4263-831e-fc93b7a50077",
+              "name": "Register a user - Scope : users:create_one",
+              "request": {
+                "name": "Register a user - Scope : users:create_one",
+                "description": {
+                  "content": "Request creation of a user",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": ["api", "users", "sign-up"],
+                  "host": ["{{baseUrl}}"],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"<password>\",\n  \"email\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "91655a58-98a9-4199-805b-e1003edc913d",
+                  "name": "User created",
+                  "originalRequest": {
+                    "url": {
+                      "path": ["api", "users", "sign-up"],
+                      "host": ["{{baseUrl}}"],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: apikey",
+                          "type": "text/plain"
+                        },
+                        "key": "session",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"password\": \"<password>\",\n  \"email\": \"<email>\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -93,191 +259,18 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"email\": \"9BEZ9Pd@a.nxao\",\n \"id\": \"minim esse sint sed non\"\n}",
+                  "body": "{\n  \"email\": \"I11PLJ@nSEMXwKIgGMzsmzZZxcj.xx\",\n  \"id\": \"consequat et anim velit cillum\",\n  \"identityId\": \"e76d756e-0a1d-19ec-94da-88afa7ac3b7d\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
               ],
-              "event": []
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
             },
             {
-              "id": "1051b786-f35d-4949-bcb6-69e92dedb95f",
-              "name": "Sign in - Scope : users:sign_in",
-              "request": {
-                "name": "Sign in - Scope : users:sign_in",
-                "description": {
-                  "content": "Sign in as registered user",
-                  "type": "text/plain"
-                },
-                "url": {
-                  "path": [
-                    "api",
-                    "users",
-                    "sign-in"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "POST",
-                "auth": null,
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              },
-              "response": [
-                {
-                  "id": "93e42d3f-8cb0-4407-821c-0145ba08d221",
-                  "name": "JWT Token",
-                  "originalRequest": {
-                    "url": {
-                      "path": [
-                        "api",
-                        "users",
-                        "sign-in"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "query": [],
-                      "variable": []
-                    },
-                    "header": [
-                      {
-                        "description": {
-                          "content": "Added as a part of security scheme: apikey",
-                          "type": "text/plain"
-                        },
-                        "key": "session",
-                        "value": "<API Key>"
-                      }
-                    ],
-                    "method": "POST",
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n    \"password\": \"<password>\",\n    \"email\": \"<email>\"\n}",
-                      "options": {
-                        "raw": {
-                          "language": "json"
-                        }
-                      }
-                    }
-                  },
-                  "status": "OK",
-                  "code": 200,
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "body": "{\n \"token\": \"proident eiusmod laboris deserunt\"\n}",
-                  "cookie": [],
-                  "_postman_previewlanguage": "json"
-                }
-              ],
-              "event": []
-            },
-            {
-              "id": "2e211de7-3d1a-4092-88e2-6478a3eb5361",
-              "name": "Sign out - Scope : users:sign_out",
-              "request": {
-                "name": "Sign out - Scope : users:sign_out",
-                "description": {
-                  "content": "Sign out as signed in user",
-                  "type": "text/plain"
-                },
-                "url": {
-                  "path": [
-                    "api",
-                    "users",
-                    "sign-out"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "method": "POST",
-                "auth": {
-                  "type": "apikey",
-                  "apikey": [
-                    {
-                      "key": "key",
-                      "value": "session"
-                    },
-                    {
-                      "key": "value",
-                      "value": "<API Key>"
-                    },
-                    {
-                      "key": "in",
-                      "value": "header"
-                    }
-                  ]
-                }
-              },
-              "response": [
-                {
-                  "id": "0e601ed2-c45d-4b0a-ad87-c161024d3087",
-                  "originalRequest": {
-                    "url": {
-                      "path": [
-                        "api",
-                        "users",
-                        "sign-out"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "query": [],
-                      "variable": []
-                    },
-                    "header": [
-                      {
-                        "description": {
-                          "content": "Added as a part of security scheme: apikey",
-                          "type": "text/plain"
-                        },
-                        "key": "session",
-                        "value": "<API Key>"
-                      }
-                    ],
-                    "method": "POST",
-                    "body": {}
-                  },
-                  "status": "OK",
-                  "code": 200,
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "body": "{\n \"success\": false\n}",
-                  "cookie": [],
-                  "_postman_previewlanguage": "json"
-                }
-              ],
-              "event": []
-            },
-            {
-              "id": "8c567d4a-c4e6-4c26-a87e-a301e43f377c",
+              "id": "97706408-f24b-4e0f-8643-7ddea2cb01df",
               "name": "Get current user - Scope : users:read_one",
               "request": {
                 "name": "Get current user - Scope : users:read_one",
@@ -286,17 +279,17 @@
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "users",
-                    "current-user"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "users", "current-user"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
                 "method": "GET",
                 "auth": {
                   "type": "apikey",
@@ -318,18 +311,12 @@
               },
               "response": [
                 {
-                  "id": "3e8c9c97-8a54-4276-9be4-e34110565ad1",
+                  "id": "461fdbbc-ecae-43bf-a0e4-2ba66c2e369c",
                   "name": "Current user logged in",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "users",
-                        "current-user"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "users", "current-user"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": []
                     },
@@ -354,7 +341,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"email\": \"9BEZ9Pd@a.nxao\",\n \"id\": \"minim esse sint sed non\"\n}",
+                  "body": "{\n  \"email\": \"I11PLJ@nSEMXwKIgGMzsmzZZxcj.xx\",\n  \"id\": \"consequat et anim velit cillum\",\n  \"identityId\": \"e76d756e-0a1d-19ec-94da-88afa7ac3b7d\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -365,11 +352,11 @@
           "event": []
         },
         {
-          "id": "0b94df44-b3bf-46a0-8785-16421ff30dbd",
+          "id": "de499993-4376-4a39-8506-3d2bf25d8d34",
           "name": "tickets",
           "item": [
             {
-              "id": "7616d32e-68a5-4a6c-ba7a-1fa64ea4b3e7",
+              "id": "6b423118-4158-49b8-ab7e-b1664ba5ce4c",
               "name": "Create a ticket - Scope : tickets:create_one",
               "request": {
                 "name": "Create a ticket - Scope : tickets:create_one",
@@ -378,19 +365,18 @@
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "tickets"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "tickets"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
                 "header": [
                   {
                     "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
                     "value": "application/json"
                   }
                 ],
@@ -414,7 +400,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                  "raw": "{\n  \"title\": \"<string>\",\n  \"price\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -424,17 +410,12 @@
               },
               "response": [
                 {
-                  "id": "0f6a355f-2d8f-46de-bdd3-9d5eb28f04ca",
+                  "id": "c7251273-35a9-41c0-bca8-bd8014eeec91",
                   "name": "Ticket created",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "tickets"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "tickets"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": []
                     },
@@ -451,7 +432,7 @@
                     "method": "POST",
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\"\n}",
+                      "raw": "{\n  \"title\": \"<string>\",\n  \"price\": \"<number>\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -467,15 +448,18 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
+                  "body": "{\n  \"id\": \"ad consectetur nostrud\",\n  \"title\": \"qui commodo exerc\",\n  \"price\": 21587898.46209388,\n  \"version\": -16326668.364046663,\n  \"userId\": \"eiusmod\",\n  \"orderId\": \"aliquip id ad\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
               ],
-              "event": []
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
             },
             {
-              "id": "e925fed0-2dd7-4dca-84e2-3dc2aeeea2d4",
+              "id": "205abd9e-488c-4b84-8570-6f92afe210f3",
               "name": "Find tickets - Scope : tickets:read_many",
               "request": {
                 "name": "Find tickets - Scope : tickets:read_many",
@@ -484,13 +468,8 @@
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "tickets"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "tickets"],
+                  "host": ["{{baseUrl}}"],
                   "query": [
                     {
                       "disabled": false,
@@ -534,7 +513,12 @@
                     },
                     {
                       "disabled": false,
-                      "key": "filter[0][name]",
+                      "key": "filter[0][name][0]",
+                      "value": "<string>"
+                    },
+                    {
+                      "disabled": false,
+                      "key": "filter[0][name][1]",
                       "value": "<string>"
                     },
                     {
@@ -559,7 +543,12 @@
                     },
                     {
                       "disabled": false,
-                      "key": "filter[1][name]",
+                      "key": "filter[1][name][0]",
+                      "value": "<string>"
+                    },
+                    {
+                      "disabled": false,
+                      "key": "filter[1][name][1]",
                       "value": "<string>"
                     },
                     {
@@ -605,22 +594,23 @@
                   ],
                   "variable": []
                 },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
                 "method": "GET",
                 "auth": null
               },
               "response": [
                 {
-                  "id": "ac986db2-db2b-4ea5-b83c-0a88f057bd3b",
+                  "id": "1d45e611-5ec5-41c1-87f3-d86027e32122",
                   "name": "Tickets found",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "tickets"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "tickets"],
+                      "host": ["{{baseUrl}}"],
                       "query": [
                         {
                           "key": "start_key[0][key]",
@@ -655,7 +645,11 @@
                           "value": "<number>"
                         },
                         {
-                          "key": "filter[0][name]",
+                          "key": "filter[0][name][0]",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "filter[0][name][1]",
                           "value": "<string>"
                         },
                         {
@@ -675,7 +669,11 @@
                           "value": "eq"
                         },
                         {
-                          "key": "filter[1][name]",
+                          "key": "filter[1][name][0]",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "filter[1][name][1]",
                           "value": "<string>"
                         },
                         {
@@ -734,7 +732,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"next\": [\n  {\n   \"key\": \"nostrud sunt culpa\",\n   \"value\": \"Ut deserunt magna et\"\n  }\n ],\n \"results\": [\n  {\n   \"id\": \"dolor pariatur dolore\",\n   \"title\": \"exercitation esse magna ea\",\n   \"price\": 13520002.741425619,\n   \"version\": -82958039.29203323,\n   \"userId\": \"commodo ea incididunt pariatur\",\n   \"orderId\": \"consequat id\"\n  },\n  {\n   \"id\": \"ut cillum eu velit\",\n   \"title\": \"non sunt\",\n   \"price\": 24237079.974064346,\n   \"version\": 75444848.84993735,\n   \"userId\": \"ullamco culpa\",\n   \"orderId\": \"est cupidatat officia\"\n  }\n ]\n}",
+                  "body": "{\n  \"next\": [\n    {\n      \"key\": \"in\",\n      \"value\": \"mollit sunt elit consectetur\"\n    }\n  ],\n  \"results\": [\n    {\n      \"id\": \"laboris sit reprehenderit pariatur magna\",\n      \"title\": \"ad ea sunt\",\n      \"price\": 38789036.10968145,\n      \"version\": -9035.339598104358,\n      \"userId\": \"dolore do\",\n      \"orderId\": \"Duis occaecat commodo\"\n    },\n    {\n      \"id\": \"ex adipisicing in\",\n      \"title\": \"non\",\n      \"price\": 61544040.98086315,\n      \"version\": 91921723.9350309,\n      \"userId\": \"sint esse \",\n      \"orderId\": \"enim fugiat\"\n    }\n  ]\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -742,11 +740,11 @@
               "event": []
             },
             {
-              "id": "bb5f2eda-199c-4962-8a9e-6b7883a89077",
+              "id": "b9c52db2-c846-4020-96dd-09834cf56ac1",
               "name": "{id}",
               "item": [
                 {
-                  "id": "a88b04ba-7348-4c05-a238-8a8c974cc07b",
+                  "id": "48cd0c7c-d3a2-4728-8205-2992bb3aaad9",
                   "name": "Find a ticket - Scope : tickets:read_one",
                   "request": {
                     "name": "Find a ticket - Scope : tickets:read_one",
@@ -755,14 +753,8 @@
                       "type": "text/plain"
                     },
                     "url": {
-                      "path": [
-                        "api",
-                        "tickets",
-                        ":id"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "tickets", ":id"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": [
                         {
@@ -774,23 +766,23 @@
                         }
                       ]
                     },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
                     "method": "GET",
                     "auth": null
                   },
                   "response": [
                     {
-                      "id": "8fcfcd4c-adcc-48d1-a0dd-10aa66bec99e",
+                      "id": "a8c7f08e-f5c2-46f1-8c09-ca072ca1155c",
                       "name": "Ticket found",
                       "originalRequest": {
                         "url": {
-                          "path": [
-                            "api",
-                            "tickets",
-                            ":id"
-                          ],
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
+                          "path": ["api", "tickets", ":id"],
+                          "host": ["{{baseUrl}}"],
                           "query": [],
                           "variable": [
                             {
@@ -823,7 +815,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
+                      "body": "{\n  \"id\": \"ad consectetur nostrud\",\n  \"title\": \"qui commodo exerc\",\n  \"price\": 21587898.46209388,\n  \"version\": -16326668.364046663,\n  \"userId\": \"eiusmod\",\n  \"orderId\": \"aliquip id ad\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -831,7 +823,7 @@
                   "event": []
                 },
                 {
-                  "id": "5e03944f-4fd6-4942-8db3-bbf067fbca68",
+                  "id": "4faf5316-b43e-4ccf-8157-e5f12b24d044",
                   "name": "Update a ticket - Scope : tickets:update_one",
                   "request": {
                     "name": "Update a ticket - Scope : tickets:update_one",
@@ -840,14 +832,8 @@
                       "type": "text/plain"
                     },
                     "url": {
-                      "path": [
-                        "api",
-                        "tickets",
-                        ":id"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "tickets", ":id"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": [
                         {
@@ -862,6 +848,10 @@
                     "header": [
                       {
                         "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
                         "value": "application/json"
                       }
                     ],
@@ -885,7 +875,7 @@
                     },
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\",\n    \"orderId\": \"<string>\"\n}",
+                      "raw": "{\n  \"title\": \"<string>\",\n  \"price\": \"<number>\",\n  \"orderId\": \"<string>\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -895,18 +885,12 @@
                   },
                   "response": [
                     {
-                      "id": "f24ec3c2-5ab5-464b-9ceb-a58cda82b069",
+                      "id": "1a0c5269-5219-4c19-a8d6-ef632932a5bb",
                       "name": "Ticket updated",
                       "originalRequest": {
                         "url": {
-                          "path": [
-                            "api",
-                            "tickets",
-                            ":id"
-                          ],
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
+                          "path": ["api", "tickets", ":id"],
+                          "host": ["{{baseUrl}}"],
                           "query": [],
                           "variable": [
                             {
@@ -931,7 +915,7 @@
                         "method": "PUT",
                         "body": {
                           "mode": "raw",
-                          "raw": "{\n    \"title\": \"<string>\",\n    \"price\": \"<number>\",\n    \"orderId\": \"<string>\"\n}",
+                          "raw": "{\n  \"title\": \"<string>\",\n  \"price\": \"<number>\",\n  \"orderId\": \"<string>\"\n}",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -947,12 +931,15 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"ex ullamco nisi\",\n \"title\": \"culpa exercitat\",\n \"price\": 21536769.57687247,\n \"version\": 43273884.43592003,\n \"userId\": \"dolor minim laboris qui\",\n \"orderId\": \"aliqua dolor Ut sint\"\n}",
+                      "body": "{\n  \"id\": \"ad consectetur nostrud\",\n  \"title\": \"qui commodo exerc\",\n  \"price\": 21587898.46209388,\n  \"version\": -16326668.364046663,\n  \"userId\": \"eiusmod\",\n  \"orderId\": \"aliquip id ad\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
                   ],
-                  "event": []
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
                 }
               ],
               "event": []
@@ -961,11 +948,11 @@
           "event": []
         },
         {
-          "id": "97a7292c-0a1e-42dc-ae56-a648eedc7561",
+          "id": "6713f950-c07b-497e-9a14-eeeaf03412f9",
           "name": "orders",
           "item": [
             {
-              "id": "9b1c97df-d2ab-4867-be0c-1ea1c38ae844",
+              "id": "52cc1d73-a3ca-4cab-8775-34f99caacf76",
               "name": "Create an order - Scope : orders:create_one",
               "request": {
                 "name": "Create an order - Scope : orders:create_one",
@@ -974,19 +961,18 @@
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "orders"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "orders"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
                 "header": [
                   {
                     "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
                     "value": "application/json"
                   }
                 ],
@@ -1010,7 +996,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"ticketId\": \"<string>\"\n}",
+                  "raw": "{\n  \"ticketId\": \"<string>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1020,17 +1006,12 @@
               },
               "response": [
                 {
-                  "id": "4bbf36e1-765a-4fc9-bad3-5b4ef2804abb",
+                  "id": "0c455cf9-dd05-43d9-9532-bb0f9024397d",
                   "name": "Order created",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "orders"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "orders"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": []
                     },
@@ -1047,7 +1028,7 @@
                     "method": "POST",
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"ticketId\": \"<string>\"\n}",
+                      "raw": "{\n  \"ticketId\": \"<string>\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1063,15 +1044,18 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
+                  "body": "{\n  \"id\": \"elit esse nulla\",\n  \"ticket\": {\n    \"id\": \"sed amet\",\n    \"title\": \"nulla in\",\n    \"price\": 17679051.10888981,\n    \"version\": 54443703.97427499\n  },\n  \"userId\": \"dolor officia minim consequat\",\n  \"status\": \"complete\",\n  \"version\": 28277.28369027376,\n  \"expiresAt\": \"aute eu\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
               ],
-              "event": []
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
             },
             {
-              "id": "8559ffba-d113-45cf-8a4f-1a028107f224",
+              "id": "5145f1ba-ce22-4035-9d61-778c443b1e79",
               "name": "Find orders - Scope : orders:read_many",
               "request": {
                 "name": "Find orders - Scope : orders:read_many",
@@ -1080,16 +1064,17 @@
                   "type": "text/plain"
                 },
                 "url": {
-                  "path": [
-                    "api",
-                    "orders"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "orders"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
                 "method": "GET",
                 "auth": {
                   "type": "apikey",
@@ -1111,17 +1096,12 @@
               },
               "response": [
                 {
-                  "id": "92d5cf58-c0f7-439b-b8bd-f0dc6d67addb",
+                  "id": "2ebebae9-68a6-4ddc-b28d-e3e34fa3a661",
                   "name": "Orders found",
                   "originalRequest": {
                     "url": {
-                      "path": [
-                        "api",
-                        "orders"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "orders"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": []
                     },
@@ -1146,7 +1126,7 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "[\n {\n  \"id\": \"nisi eu do cupidatat ut\",\n  \"ticket\": {\n   \"id\": \"officia f\",\n   \"title\": \"velit\",\n   \"price\": 30385650.209955674,\n   \"version\": 17695729.51850687\n  },\n  \"userId\": \"sint Ut amet\",\n  \"status\": \"complete\",\n  \"version\": -97777034.24725673,\n  \"expiresAt\": \"cupidatat\"\n },\n {\n  \"id\": \"occaecat cupidatat aliqua\",\n  \"ticket\": {\n   \"id\": \"elit nulla voluptate ipsum ad\",\n   \"title\": \"Duis exercita\",\n   \"price\": 32435966.47544793,\n   \"version\": 97596215.6853571\n  },\n  \"userId\": \"eu nisi enim\",\n  \"status\": \"complete\",\n  \"version\": -3279667.4464767426,\n  \"expiresAt\": \"veniam minim aliquip et\"\n }\n]",
+                  "body": "[\n  {\n    \"id\": \"adipisicing in voluptate cillum veniam\",\n    \"ticket\": {\n      \"id\": \"ex\",\n      \"title\": \"sun\",\n      \"price\": 29580432.728851225,\n      \"version\": 35183879.3338168\n    },\n    \"userId\": \"Duis qui nulla ex\",\n    \"status\": \"complete\",\n    \"version\": -40236896.84396019,\n    \"expiresAt\": \"deserunt et\"\n  },\n  {\n    \"id\": \"nostrud officia ut aliquip\",\n    \"ticket\": {\n      \"id\": \"Duis mollit consectetur reprehenderit\",\n      \"title\": \"sunt anim fugiat\",\n      \"price\": 27817700.06051516,\n      \"version\": 93965260.37170565\n    },\n    \"userId\": \"occaecat esse elit\",\n    \"status\": \"complete\",\n    \"version\": 23458287.879636243,\n    \"expiresAt\": \"nostrud amet\"\n  }\n]",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 }
@@ -1154,11 +1134,11 @@
               "event": []
             },
             {
-              "id": "cc1076bf-a575-45b2-89e2-c4a6d5afbdec",
+              "id": "1e17cabb-0a5c-4273-8a30-b21893d885e4",
               "name": "{id}",
               "item": [
                 {
-                  "id": "e2e3d0bd-1adc-45bd-84a2-edc4617e7ee1",
+                  "id": "10c64c51-4228-4b30-9a22-6884da4b1690",
                   "name": "Find an order - Scope : orders:read_one",
                   "request": {
                     "name": "Find an order - Scope : orders:read_one",
@@ -1167,14 +1147,8 @@
                       "type": "text/plain"
                     },
                     "url": {
-                      "path": [
-                        "api",
-                        "orders",
-                        ":id"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "orders", ":id"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": [
                         {
@@ -1186,6 +1160,12 @@
                         }
                       ]
                     },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
                     "method": "GET",
                     "auth": {
                       "type": "apikey",
@@ -1207,18 +1187,12 @@
                   },
                   "response": [
                     {
-                      "id": "2c702365-eca1-44f1-884b-6edf3d083b27",
+                      "id": "07d7b510-382a-4974-bfc1-9da86e723a4f",
                       "name": "Order found",
                       "originalRequest": {
                         "url": {
-                          "path": [
-                            "api",
-                            "orders",
-                            ":id"
-                          ],
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
+                          "path": ["api", "orders", ":id"],
+                          "host": ["{{baseUrl}}"],
                           "query": [],
                           "variable": [
                             {
@@ -1251,7 +1225,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
+                      "body": "{\n  \"id\": \"elit esse nulla\",\n  \"ticket\": {\n    \"id\": \"sed amet\",\n    \"title\": \"nulla in\",\n    \"price\": 17679051.10888981,\n    \"version\": 54443703.97427499\n  },\n  \"userId\": \"dolor officia minim consequat\",\n  \"status\": \"complete\",\n  \"version\": 28277.28369027376,\n  \"expiresAt\": \"aute eu\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -1259,7 +1233,7 @@
                   "event": []
                 },
                 {
-                  "id": "472f2cff-6728-4ac2-b367-df9be78b6a39",
+                  "id": "05fa8990-d3fc-4987-a05c-f6ccf701c745",
                   "name": "Cancel an order - Scope : orders:delete_one",
                   "request": {
                     "name": "Cancel an order - Scope : orders:delete_one",
@@ -1268,14 +1242,8 @@
                       "type": "text/plain"
                     },
                     "url": {
-                      "path": [
-                        "api",
-                        "orders",
-                        ":id"
-                      ],
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
+                      "path": ["api", "orders", ":id"],
+                      "host": ["{{baseUrl}}"],
                       "query": [],
                       "variable": [
                         {
@@ -1287,6 +1255,12 @@
                         }
                       ]
                     },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
                     "method": "DELETE",
                     "auth": {
                       "type": "apikey",
@@ -1308,18 +1282,12 @@
                   },
                   "response": [
                     {
-                      "id": "a9db92c4-6435-4ff4-8c92-513789fea258",
+                      "id": "798cb5af-c141-46b7-ab4a-87987351408f",
                       "name": "Order cancelled",
                       "originalRequest": {
                         "url": {
-                          "path": [
-                            "api",
-                            "orders",
-                            ":id"
-                          ],
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
+                          "path": ["api", "orders", ":id"],
+                          "host": ["{{baseUrl}}"],
                           "query": [],
                           "variable": [
                             {
@@ -1352,7 +1320,7 @@
                           "value": "application/json"
                         }
                       ],
-                      "body": "{\n \"id\": \"aliquip enim\",\n \"ticket\": {\n  \"id\": \"est minim anim commodo cillum\",\n  \"title\": \"consectetu\",\n  \"price\": 43680902.780405976,\n  \"version\": -86633779.60667771\n },\n \"userId\": \"commodo\",\n \"status\": \"complete\",\n \"version\": -92770407.21548703,\n \"expiresAt\": \"ut Excepteur\"\n}",
+                      "body": "{\n  \"id\": \"elit esse nulla\",\n  \"ticket\": {\n    \"id\": \"sed amet\",\n    \"title\": \"nulla in\",\n    \"price\": 17679051.10888981,\n    \"version\": 54443703.97427499\n  },\n  \"userId\": \"dolor officia minim consequat\",\n  \"status\": \"complete\",\n  \"version\": 28277.28369027376,\n  \"expiresAt\": \"aute eu\"\n}",
                       "cookie": [],
                       "_postman_previewlanguage": "json"
                     }
@@ -1366,7 +1334,7 @@
           "event": []
         },
         {
-          "id": "a30fbc17-1dfd-4ffa-9792-1d0d1e635eb5",
+          "id": "01acf417-9b5e-40ff-8128-e00c98d3db4b",
           "name": "Create payment request - Scope : payments:create_one",
           "request": {
             "name": "Create payment request - Scope : payments:create_one",
@@ -1375,19 +1343,18 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "payments"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "payments"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
             "header": [
               {
                 "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
                 "value": "application/json"
               }
             ],
@@ -1411,7 +1378,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"orderId\": \"<string>\",\n    \"token\": \"<string>\"\n}",
+              "raw": "{\n  \"orderId\": \"<string>\",\n  \"token\": \"<string>\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1421,17 +1388,12 @@
           },
           "response": [
             {
-              "id": "c1ae5ab7-25f5-4dbc-ab12-47f8e3b18c50",
+              "id": "49e3dd48-ca88-4152-90dc-e8ded014cce9",
               "name": "Charge created",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "payments"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "payments"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -1448,7 +1410,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"orderId\": \"<string>\",\n    \"token\": \"tok_visa\"\n}",
+                  "raw": "{\n  \"orderId\": \"<string>\",\n  \"token\": \"tok_visa\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1464,12 +1426,15 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n \"id\": \"sit in\",\n \"orderId\": \"laboris\",\n \"stripeId\": \"labore Lorem\",\n \"version\": 10063007.855675772\n}",
+              "body": "{\n  \"id\": \"Lorem exercitation sed in\",\n  \"orderId\": \"al\",\n  \"stripeId\": \"consequat cillum dolor\",\n  \"version\": -843258.4777204841\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
           ],
-          "event": []
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
         }
       ],
       "event": []
@@ -1501,7 +1466,7 @@
     ]
   },
   "info": {
-    "_postman_id": "20f4d624-dff6-4ba7-97cb-ee5898cb8f97",
+    "_postman_id": "6d26c20e-95cf-45d4-86c4-0f1bfb8d1296",
     "name": "Ticketing API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

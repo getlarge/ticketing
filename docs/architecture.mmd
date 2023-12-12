@@ -1,41 +1,41 @@
 flowchart LR
 %% defining styles
     classDef app fill:#f7e081,stroke:#333,stroke-width:1px
-    
+
 %% defining entities
-    FE[React app]
+    FE[Angular app]
     LB[Nginx proxy]
     A[Auth API]
     A-M[(Mongo)]
     T[Tickets API]
     T-M[(Mongo)]
     O[Orders API]
-    O-M[(Mongo)]	
+    O-M[(Mongo)]
     P[Payments API]
-    P-M[(Mongo)]	
-    St[Stripe]	
+    P-M[(Mongo)]
+    St[Stripe]
     E[Expiration API]
-    E-R[(Redis)]		
-    NATS[NATS streaming server]		
-		
+    E-R[(Redis)]
+    NATS[NATS streaming server]
+
 %% assigning styles to entities
     %%AS,OS,ES,TS,PS:::service
     %%class A,T,O,E,P,FE app;
 
-
-%%click A "http://www.github.com/getlarge/ticketing/apps/auth" _blank
-
 %% flow
     FE -->|HTTP| LB
     FE -->|HTTP| St <-->|HTTP| PS
+    FE -->|HTTP| ORY <-->|HTTP| AS
     LB --->|HTTP| AS & TS & OS & PS
     NATS <-.->|HTTP| TS & OS & ES & PS
     subgraph AS [Auth service]
     direction LR
     A --> A-M
     end
+    subgraph ORY [Ory Network]
+    end
 		subgraph TS [Tickets service]
-    direction LR		
+    direction LR
     T --> T-M
     end
 		subgraph OS [Orders service]
