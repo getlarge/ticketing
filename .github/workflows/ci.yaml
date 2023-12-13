@@ -76,8 +76,10 @@ env:
   PAYMENTS_SERVICE_PORT: 3040
   TICKETS_SERVICE_PORT: 3010
   FRONTEND_PORT: 4200
-  NATS_URL: http://localhost:4222
-  NATS_CLUSTER_ID: ticketing
+  ORY_BASE_PATH: ${{ secrets.ORY_BASE_PATH }}
+  ORY_API_KEY: ${{ secrets.ORY_API_KEY }}
+  ORY_ACTION_API_KEY: ${{ secrets.ORY_ACTION_API_KEY }}
+  RMQ_URL: http://localhost:5672
   MONGODB_URI: mongodb://localhost:27017
   REDIS_URL: redis://localhost:6379
 

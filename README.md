@@ -38,10 +38,10 @@ This repository shows:
 # build custom Nginx Proxy
 yarn docker:nginx:build
 
-# build custom NATS Streaming Server
-yarn docker:nats:build
+# build custom RabbitMQ node
+yarn docker:rmq:build
 
-# start the docker images (mongo, redis, nats)
+# start the docker images (mongo, redis, rabbitmq)
 yarn docker:deps:up
 
 # start Nginx Proxy
