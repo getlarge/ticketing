@@ -19,7 +19,7 @@ export class ErrorResponseDto extends ErrorResponse {
   declare statusCode: number;
 
   @ApiProperty({
-    description: 'HTTP path or NATS subject',
+    description: 'HTTP path or RMQ routing key',
   })
   declare path: string;
 

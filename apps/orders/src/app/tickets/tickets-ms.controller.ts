@@ -44,11 +44,13 @@ export class TicketsMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ticketsService.create(data);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      // TODO: requeue when error is timeout or connection error
+      channel.nack(message);
+      throw e;
     }
   }
 
@@ -73,11 +75,13 @@ export class TicketsMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ticketsService.updateById(data.id, data);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      // TODO: requeue when error is timeout or connection error
+      channel.nack(message);
+      throw e;
     }
   }
 }

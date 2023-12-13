@@ -27,7 +27,7 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.ExpirationCompleted, Transport.NATS)
+  @EventPattern(Patterns.ExpirationCompleted, Transport.RMQ)
   async onExpiration(
     @Payload() data: ExpirationCompletedEvent['data'],
     @Ctx() context: RmqContext,
@@ -38,16 +38,18 @@ export class OrdersMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.expireById(data.id);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      // TODO: requeue when error is timeout or connection error
+      channel.nack(message);
+      throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.PaymentCreated, Transport.NATS)
+  @EventPattern(Patterns.PaymentCreated, Transport.RMQ)
   async onPaymentCreated(
     @Payload(
       new ValidationPipe({
@@ -66,11 +68,13 @@ export class OrdersMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.complete(data);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      // TODO: requeue when error is timeout or connection error
+      channel.nack(message);
+      throw e;
     }
   }
 }
