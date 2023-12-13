@@ -12,8 +12,10 @@ import {
   Patterns,
   PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
+import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { OrderStatus, User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
+import { firstValueFrom } from 'rxjs';
 
 import { Order as OrderSchema, OrderDocument } from '../orders/schemas';
 import { ORDERS_CLIENT } from '../shared/constants';
@@ -55,24 +57,32 @@ export class PaymentsService {
         `Order ${orderId} has been cancelled and can't be paid for`,
       );
     }
-    // TODO: use MongoDB transaction
+
     // 4. make sure the payment amount match the order price and create payment with Stripe
     const charge = await this.stripeService.charges.create({
       amount: order.price * 100,
       currency: 'eur',
       source: token,
     });
-    // 6. Create charge instance in Mongo
-    const payment = await this.paymentModel.create({
-      orderId,
-      stripeId: charge.id,
+
+    await using manager = await transactionManager(this.paymentModel);
+    return manager.wrap(async () => {
+      // 5. Create charge instance in Mongo
+      const payment = await this.paymentModel.create({
+        orderId,
+        stripeId: charge.id,
+      });
+      const result = payment.toJSON<Payment>();
+      // 6. emit payment:create event
+      await firstValueFrom(
+        this.client
+          .emit<PaymentCreatedEvent['name'], PaymentCreatedEvent['data']>(
+            Patterns.PaymentCreated,
+            result,
+          )
+          .pipe(),
+      );
+      return result;
     });
-    const result = payment.toJSON<Payment>();
-    // 7. emit payment:create event
-    this.client.emit<PaymentCreatedEvent['name'], PaymentCreatedEvent['data']>(
-      Patterns.PaymentCreated,
-      result,
-    );
-    return result;
   }
 }

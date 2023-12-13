@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryService } from '@ticketing/microservices/ory-client';
+import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { Model } from 'mongoose';
 
 import { User, UserCredentials } from './models';
@@ -19,7 +20,7 @@ export class UsersService {
 
   constructor(
     @InjectModel(UserSchema.name) private userModel: Model<UserDocument>,
-    @Inject(OryService) private readonly oryService: OryService
+    @Inject(OryService) private readonly oryService: OryService,
   ) {}
 
   /**
@@ -30,27 +31,33 @@ export class UsersService {
    * @see https://www.ory.sh/docs/guides/integrate-with-ory-cloud-through-webhooks#modify-identities
    **/
   async onSignUp(body: OnOrySignUpDto): Promise<OnOrySignUpDto> {
-    const { identity } = body;
     this.logger.debug(`onSignUp`, body);
-    const email = identity.traits.email;
+    const email = body.identity.traits.email;
     const existingUser = await this.userModel.findOne({
       email,
     });
     if (existingUser) {
-      await this.oryService.deleteIdentity(identity.id).catch((error) => {
+      await this.oryService.deleteIdentity(body.identity.id).catch((error) => {
         this.logger.error(error);
       });
       throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
     }
-    const newUser = await this.userModel.create({
-      identityId: identity.id,
-      email,
+    await using manager = await transactionManager(this.userModel);
+    const { identity } = await manager.wrap(async () => {
+      const doc: Omit<User, 'id'> = {
+        identityId: identity.id,
+        email,
+      };
+      const [user] = await this.userModel.create([doc], {
+        session: manager.session,
+      });
+      const updatedIdentity = await this.oryService.updateIdentityMetadata(
+        identity.id,
+        { id: user.id },
+      );
+      return { user, identity: updatedIdentity };
     });
-    const updatedIdentity = await this.oryService.updateIdentityMetadata(
-      identity.id,
-      { id: newUser.id }
-    );
-    return { identity: updatedIdentity };
+    return { identity };
   }
 
   /**
@@ -71,7 +78,7 @@ export class UsersService {
       });
       const updatedIdentity = await this.oryService.updateIdentityMetadata(
         identity.id,
-        { id: newUser.id }
+        { id: newUser.id },
       );
       identity.metadata_public = updatedIdentity.metadata_public;
     }

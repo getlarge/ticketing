@@ -19,6 +19,7 @@ import {
   NextPaginationDto,
   PaginateDto,
 } from '@ticketing/microservices/shared/models';
+import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
@@ -46,13 +47,27 @@ export class TicketsService {
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
-    const newTicket = await this.ticketModel.create({
-      ...ticket,
-      userId: currentUser.id,
+    await using manager = await transactionManager(this.ticketModel);
+    return manager.wrap(async () => {
+      const doc: CreateTicket & { userId: string } = {
+        ...ticket,
+        userId: currentUser.id,
+      };
+      const [newTicket] = await this.ticketModel.create([doc], {
+        session: manager.session,
+      });
+      // await this.oryPermissionService.createRelation(
+      //   parseRelationTuple(
+      //     `${PermissionNamespaces[Resources.TICKETS]}:${newTicket.id}#owners@${PermissionNamespaces[Resources.USERS]}:${currentUser.id}#edit`,
+      //   ).unwrapOrThrow(),
+      // );
+
+      const result = newTicket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketCreated, result).pipe(),
+      );
+      return result;
     });
-    const result = newTicket.toJSON<Ticket>();
-    this.emitEvent(Patterns.TicketCreated, result);
-    return result;
   }
 
   paginate(params: PaginateDto = {}): Promise<{
@@ -109,11 +124,17 @@ export class TicketsService {
     } else if (ticket.orderId) {
       throw new BadRequestException(`Ticket ${id} is currently reserved`);
     }
-    ticket.set(update);
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    this.emitEvent(Patterns.TicketUpdated, result);
-    return result;
+
+    await using manager = await transactionManager(this.ticketModel);
+    return manager.wrap(async () => {
+      ticket.set(update);
+      await ticket.save({ session: manager.session });
+      const result = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+      );
+      return result;
+    });
   }
 
   async createOrder(event: OrderCreatedEvent['data']): Promise<Ticket> {
@@ -123,11 +144,16 @@ export class TicketsService {
     if (isEmpty(ticket)) {
       throw new NotFoundException(`Ticket ${ticketId} not found`);
     }
-    ticket.set({ orderId });
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    await lastValueFrom(this.emitEvent(Patterns.TicketUpdated, result).pipe());
-    return result;
+    await using manager = await transactionManager(this.ticketModel);
+    return manager.wrap(async () => {
+      ticket.set({ orderId });
+      await ticket.save({ session: manager.session });
+      const result = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+      );
+      return result;
+    });
   }
 
   async cancelOrder(event: OrderCancelledEvent['data']): Promise<Ticket> {
@@ -136,10 +162,15 @@ export class TicketsService {
     if (isEmpty(ticket)) {
       throw new NotFoundException(`Ticket ${ticketId} not found`);
     }
-    ticket.set({ orderId: undefined });
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    await lastValueFrom(this.emitEvent(Patterns.TicketUpdated, result).pipe());
-    return result;
+    await using manager = await transactionManager(this.ticketModel);
+    return manager.wrap(async () => {
+      ticket.set({ orderId: undefined });
+      await ticket.save({ session: manager.session });
+      const result = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+      );
+      return result;
+    });
   }
 }

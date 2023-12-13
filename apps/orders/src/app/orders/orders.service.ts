@@ -15,10 +15,11 @@ import {
   Patterns,
   PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
+import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
-import { Observable, zip } from 'rxjs';
+import { lastValueFrom, Observable, zip } from 'rxjs';
 
 import { AppConfigService } from '../env';
 import {
@@ -75,19 +76,22 @@ export class OrdersService {
     // 3. Calclate expiration date
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + this.expirationWindow);
-    // 4. Build the order and save it to DB
-    // TODO: use a transaction here
-    const newOrder = await this.orderModel.create({
-      ticket,
-      userId: currentUser.id,
-      expiresAt,
-      status: OrderStatus.Created,
+
+    await using manager = await transactionManager(this.ticketModel);
+    return manager.wrap(async () => {
+      // 4. Build the order and save it to DB
+      const newOrder = await this.orderModel.create({
+        ticket,
+        userId: currentUser.id,
+        expiresAt,
+        status: OrderStatus.Created,
+      });
+      await newOrder.populate('ticket');
+      const result = newOrder.toJSON<Order>();
+      // 5. Publish an event
+      await lastValueFrom(this.emitEvent(Patterns.OrderCreated, result).pipe());
+      return result;
     });
-    await newOrder.populate('ticket');
-    const result = newOrder.toJSON<Order>();
-    // 5. Publish an event
-    this.emitEvent(Patterns.OrderCreated, result);
-    return result;
   }
 
   async find(currentUser: User): Promise<Order[]> {
@@ -124,29 +128,43 @@ export class OrdersService {
   }
 
   async cancelById(id: string, currentUser: User): Promise<Order> {
-    // TODO: use a transaction here
-    const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
-    this.orderExists(id, order);
-    this.userIsOrderOwner(currentUser, order);
-    order.set({ status: OrderStatus.Cancelled });
-    await order.save();
-    const result = order.toJSON<Order>();
-    this.emitEvent(Patterns.OrderCancelled, result);
-    return result;
+    await using manager = await transactionManager(this.orderModel);
+    return manager.wrap(async () => {
+      const order = await this.orderModel
+        .findOne({ _id: id })
+        .populate('ticket')
+        .session(manager.session);
+      this.orderExists(id, order);
+      this.userIsOrderOwner(currentUser, order);
+      order.set({ status: OrderStatus.Cancelled });
+      await order.save({ session: manager.session });
+      const result = order.toJSON<Order>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.OrderCancelled, result).pipe(),
+      );
+      return result;
+    });
   }
 
   async expireById(id: string): Promise<Order> {
-    const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
-    this.orderExists(id, order);
-    if (order.status === OrderStatus.Complete) {
-      return order.toJSON<Order>();
-    }
-    // TODO: use a transaction here
-    order.set({ status: OrderStatus.Cancelled });
-    await order.save();
-    const result = order.toJSON<Order>();
-    this.emitEvent(Patterns.OrderCancelled, result);
-    return result;
+    await using manager = await transactionManager(this.orderModel);
+    return manager.wrap(async () => {
+      const order = await this.orderModel
+        .findOne({ _id: id })
+        .populate('ticket')
+        .session(manager.session);
+      this.orderExists(id, order);
+      if (order.status === OrderStatus.Complete) {
+        return order.toJSON<Order>();
+      }
+      order.set({ status: OrderStatus.Cancelled });
+      await order.save({ session: manager.session });
+      const result = order.toJSON<Order>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.OrderCancelled, result).pipe(),
+      );
+      return result;
+    });
   }
 
   async complete(data: PaymentCreatedEvent['data']): Promise<Order> {
