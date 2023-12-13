@@ -16,7 +16,7 @@ import { OryService } from './ory.service';
 export class OryModule {
   static forRoot(
     options: IOryModuleOptions,
-    isGlobal?: boolean
+    isGlobal?: boolean,
   ): DynamicModule {
     return {
       module: OryModule,
@@ -28,7 +28,7 @@ export class OryModule {
 
   static forRootAsync(
     options: OryModuleAsyncOptions,
-    isGlobal?: boolean
+    isGlobal?: boolean,
   ): DynamicModule {
     return {
       module: OryModule,
@@ -40,7 +40,7 @@ export class OryModule {
   }
 
   private static createAsyncProviders(
-    options: OryModuleAsyncOptions
+    options: OryModuleAsyncOptions,
   ): Provider[] {
     if (options.useExisting || options.useFactory) {
       return [this.createAsyncOptionsProvider(options)];
@@ -58,7 +58,7 @@ export class OryModule {
   }
 
   private static createAsyncOptionsProvider(
-    options: OryModuleAsyncOptions
+    options: OryModuleAsyncOptions,
   ): Provider {
     if (options.useFactory) {
       return {
@@ -72,8 +72,8 @@ export class OryModule {
     }
     return {
       provide: OryModuleOptions,
-      useFactory: async (optionsFactory: OryModuleOptionsFactory) =>
-        await optionsFactory.createOryOptions(),
+      useFactory: (optionsFactory: OryModuleOptionsFactory) =>
+        optionsFactory.createOryOptions(),
       inject: [
         (options.useExisting ??
           options.useClass) as Type<OryModuleOptionsFactory>,

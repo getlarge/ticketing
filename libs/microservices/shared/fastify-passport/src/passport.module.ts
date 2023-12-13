@@ -27,7 +27,7 @@ export class PassportModule {
   }
 
   private static createAsyncProviders(
-    options: AuthModuleAsyncOptions
+    options: AuthModuleAsyncOptions,
   ): Provider[] {
     if (options.useExisting || options.useFactory) {
       return [this.createAsyncOptionsProvider(options)];
@@ -42,7 +42,7 @@ export class PassportModule {
   }
 
   private static createAsyncOptionsProvider(
-    options: AuthModuleAsyncOptions
+    options: AuthModuleAsyncOptions,
   ): Provider {
     if (options.useFactory) {
       return {
@@ -53,8 +53,8 @@ export class PassportModule {
     }
     return {
       provide: AuthModuleOptions,
-      useFactory: async (optionsFactory: AuthOptionsFactory) =>
-        await optionsFactory.createAuthOptions(),
+      useFactory: (optionsFactory: AuthOptionsFactory) =>
+        optionsFactory.createAuthOptions(),
       inject: [options.useExisting || options.useClass],
     };
   }

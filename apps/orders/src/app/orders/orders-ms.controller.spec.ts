@@ -35,7 +35,7 @@ describe('OrdersMSController', () => {
   });
 
   describe('onExpiration()', () => {
-    it('should call "OrdersService.expireById" and in case of success ack NATS message', async () => {
+    it('should call "OrdersService.expireById" and in case of success ack RMQ message', async () => {
       // order coming from expiration-service
       const order = { id: new Types.ObjectId().toHexString() };
       const context = createRmqContext();
@@ -49,7 +49,7 @@ describe('OrdersMSController', () => {
       expect(context.getChannelRef().ack).toBeCalled();
     });
 
-    it('should call "OrdersService.expireById" and in case of error NOT ack NATS message', async () => {
+    it('should call "OrdersService.expireById" and in case of error NOT ack RMQ message', async () => {
       // order coming from expiration-service
       const order = { id: new Types.ObjectId().toHexString() };
       const context = createRmqContext();

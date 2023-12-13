@@ -30,7 +30,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     private router: Router,
     private actionsSubj: ActionsSubject,
     private store: Store<RootStoreState.RootState>,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -45,16 +45,14 @@ export class SignUpComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$), first())
       .subscribe({
         next: (user) => {
-          if (user) {
-            this.router.navigate(['/']);
-          }
+          user && void this.router.navigate(['/']);
         },
       });
 
     this.actionsSubj
       .pipe(
         takeUntil(this.destroy$),
-        ofType(UserStoreActions.ActionTypes.SIGN_UP_SUCCESS)
+        ofType(UserStoreActions.ActionTypes.SIGN_UP_SUCCESS),
       )
       .subscribe({
         next: () => {
@@ -62,7 +60,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
             keepAfterRouteChange: true,
             autoClose: true,
           });
-          this.router.navigate(['../sign-in'], { relativeTo: this.route });
+          void this.router.navigate(['../sign-in'], { relativeTo: this.route });
         },
       });
   }
@@ -87,7 +85,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       new UserStoreActions.SignUpAction({
         credentials: this.form.value,
-      })
+      }),
     );
   }
 }

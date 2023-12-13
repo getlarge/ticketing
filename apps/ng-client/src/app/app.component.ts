@@ -29,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<RootState>,
     private router: Router,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +37,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.error$ = this.store.select(RootStoreSelectors.selectError);
     this.isLoading$ = this.store.select(RootStoreSelectors.selectIsLoading);
     this.user$ = this.store.select(UserStoreSelectors.selectCurrentUser);
-    // TODO: only dispatch LoadCurrentUserAction if !!currentToken
     this.store.dispatch(new UserStoreActions.LoadCurrentUserAction());
     this.error$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (error) => {
@@ -54,6 +53,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.store.dispatch(new UserStoreActions.SignOutAction());
-    this.router.navigate(['/']);
+    void this.router.navigate(['/']);
   }
 }
