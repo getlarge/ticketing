@@ -8,11 +8,11 @@ export class UserCredentialsDto extends UserCredentials {
     minLength: userConstraints.password.min,
     maxLength: userConstraints.password.max,
   })
-  password: string;
+  declare password: string;
 
   @ApiProperty({
     description: 'User email address',
     format: 'email',
   })
-  email: string;
+  declare email: string;
 }

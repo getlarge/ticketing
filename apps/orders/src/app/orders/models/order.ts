@@ -8,5 +8,5 @@ export class Order extends BaseOrder {
   @Expose()
   @Type(() => Ticket)
   @ValidateNested()
-  ticket: Ticket;
+  declare ticket: Ticket;
 }

@@ -33,7 +33,7 @@ export class Sort {
 // TODO: name field to be keyof model to be paginated
 export class Projection extends projectionDto {
   @Type(() => Number)
-  mode: number;
+  declare mode: number;
 }
 
 // parse JSON string or 'key=value,key1=value1,...'
@@ -47,17 +47,18 @@ function parseQueryString(val: string): Record<string, unknown> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformQueryArray(value: any): Record<string, unknown>[] {
+  if (typeof value === 'string') {
+    return [parseQueryString(value)];
+  }
   return Array.isArray(value)
     ? value.map((v) => (typeof v === 'string' ? parseQueryString(v) : v))
-    : typeof value === 'string'
-    ? [parseQueryString(value)]
     : value;
 }
 
 export class PaginateQuery extends PaginationDto {
   @Transform(
     ({ value }) => plainToInstance(startKeyDto, transformQueryArray(value)),
-    { toClassOnly: true }
+    { toClassOnly: true },
   )
   start_key: startKeyDto[] = undefined;
 
@@ -73,13 +74,13 @@ export class PaginateQuery extends PaginationDto {
 
   @Transform(
     ({ value }) => plainToInstance(filterDto, transformQueryArray(value)),
-    { toClassOnly: true }
+    { toClassOnly: true },
   )
   filter: filterDto[] = undefined;
 
   @Transform(
     ({ value }) => plainToInstance(Projection, transformQueryArray(value)),
-    { toClassOnly: true }
+    { toClassOnly: true },
   )
   projection: Projection[] = undefined;
 }

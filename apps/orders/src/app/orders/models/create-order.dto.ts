@@ -7,5 +7,5 @@ export class CreateOrderDto extends CreateOrder {
     description: 'Ticket to order',
     required: true,
   })
-  ticketId: string;
+  declare ticketId: string;
 }

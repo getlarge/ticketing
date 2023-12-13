@@ -11,19 +11,19 @@ function getDecorators(fn: Function) {
   const constructor = fn.prototype;
   const properties = Reflect.getMetadata(
     'swagger/apiModelPropertiesArray',
-    constructor
+    constructor,
   ).map((prop) => prop.substr(1));
 
   return properties.flatMap((property) => {
     const propertyType = Reflect.getMetadata(
       'design:type',
       constructor,
-      property
+      property,
     );
     const meta = Reflect.getMetadata(
       'swagger/apiModelProperties',
       constructor,
-      property
+      property,
     );
     const subClass = meta.type();
 
@@ -52,7 +52,7 @@ function getDecorators(fn: Function) {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-function-return-type
-export function ApiNestedQuery(query: Function) {
+export function ApiNestedQuery(query: Function): MethodDecorator {
   const decorators = getDecorators(query);
   return applyDecorators(...decorators);
 }

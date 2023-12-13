@@ -8,20 +8,20 @@ export class OrderDto extends Order {
     description: 'Order database identifier',
     required: true,
   })
-  id: string;
+  declare id: string;
 
   @ApiProperty({
     description: 'Ticket ordered reference',
     type: TicketDto,
     required: true,
   })
-  ticket: Ticket;
+  declare ticket: Ticket;
 
   @ApiProperty({
     description: 'User who created the order',
     required: true,
   })
-  userId: string;
+  declare userId: string;
 
   @ApiProperty({
     description: 'Order status',
@@ -31,18 +31,18 @@ export class OrderDto extends Order {
     enumName: 'OrderStatus',
     default: OrderStatus.Created,
   })
-  status: OrderStatus;
+  declare status: OrderStatus;
 
   @ApiProperty({
     description: 'Order expiration date',
     required: false,
   })
-  expiresAt?: string;
+  declare expiresAt?: string;
 
   @ApiProperty({
     description:
       'Order version represented by a number incremented at each updated',
     required: true,
   })
-  version: number;
+  declare version: number;
 }
