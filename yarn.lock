@@ -4494,22 +4494,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs-plugins/nestjs-nats-streaming-transport@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@nestjs-plugins/nestjs-nats-streaming-transport@npm:1.2.0"
-  dependencies:
-    node-nats-streaming: ^0.3.2
-    reflect-metadata: ^0.1.13
-    rxjs: ^7.5.7
-    shortid: ^2.2.16
-  peerDependencies:
-    "@nestjs/common": ^9.2.0
-    "@nestjs/core": ^9.2.0
-    "@nestjs/microservices": ^9.2.0
-  checksum: 76ca18abefe8a2883e766cefcd2f463adf5ad8ef0ba75dbe2c570a6e76561af2057dd4dbe73f264b92c92c530b01c2dc4ae18de33d015105b3d689a75e89da59
-  languageName: node
-  linkType: hard
-
 "@nestjs/axios@npm:3.0.0":
   version: 3.0.0
   resolution: "@nestjs/axios@npm:3.0.0"
@@ -5720,7 +5704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@s1seven/nestjs-tools-amqp-transport@npm:^0.5.1":
+"@s1seven/nestjs-tools-amqp-transport@npm:0.5.1":
   version: 0.5.1
   resolution: "@s1seven/nestjs-tools-amqp-transport@npm:0.5.1"
   dependencies:
@@ -7879,7 +7863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amqplib@npm:^0.10.3":
+"amqplib@npm:0.10.3":
   version: 0.10.3
   resolution: "amqplib@npm:0.10.3"
   dependencies:
@@ -14204,13 +14188,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-protobuf@npm:^3.11.2":
-  version: 3.21.2
-  resolution: "google-protobuf@npm:3.21.2"
-  checksum: 3caa2e1e2654714cc1a201ac5e5faabcaa48f5fba3d8ff9b64ca66fe19e4e0506b94053f32eddc77bf3a7a47ac1660315c6744185c1e2bb27654fd76fe91b988
-  languageName: node
-  linkType: hard
-
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -18088,13 +18065,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^2.1.0":
-  version: 2.1.11
-  resolution: "nanoid@npm:2.1.11"
-  checksum: 18cd14386816873849787eb4e65667021bfdeb019a8f14c74287c23594c67b7c0e8f42c7d69f6aedf05cd3d100f1ddc41184f9f9b6b17fbaea1c3ee3f0704eec
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.3.6":
   version: 3.3.6
   resolution: "nanoid@npm:3.3.6"
@@ -18110,21 +18080,6 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: d36c427e530713e4ac6567d488b489a36582ef89da1d6d4e3b87eded11eb10d7042a877958c6f104929809b2ab0bafa17652b076cdf84324aa75b30b722204f2
-  languageName: node
-  linkType: hard
-
-"nats@npm:^1.4.9":
-  version: 1.4.12
-  resolution: "nats@npm:1.4.12"
-  dependencies:
-    nuid: ^1.1.4
-    ts-nkeys: ^1.0.16
-  bin:
-    node-pub: examples/node-pub
-    node-reply: examples/node-reply
-    node-req: examples/node-req
-    node-sub: examples/node-sub
-  checksum: 7c0f8daffdeeb22ae35a7237435ba44e0e7367c543da2b27f558ce8206f99cac868982cdeccdd25ca6e5290efcae13d71f58ea6673416813d4a13ee6e247a80c
   languageName: node
   linkType: hard
 
@@ -18406,20 +18361,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-nats-streaming@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "node-nats-streaming@npm:0.3.2"
-  dependencies:
-    google-protobuf: ^3.11.2
-    nats: ^1.4.9
-    nuid: ^1.1.4
-  bin:
-    node-stan-pub: examples/stan-pub.js
-    node-stan-sub: examples/stan-sub.js
-  checksum: e06842d765e8ea3b665becb54aa84c1fa6cfb0a5140cd27a14755787ce54e8b682c5fb8c07eb00ded1fff6c09e61ce41eb52faec8ddc2383dc9755604d43447b
-  languageName: node
-  linkType: hard
-
 "node-readfiles@npm:^0.2.0":
   version: 0.2.0
   resolution: "node-readfiles@npm:0.2.0"
@@ -18615,13 +18556,6 @@ __metadata:
   dependencies:
     boolbase: ^1.0.0
   checksum: 5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
-  languageName: node
-  linkType: hard
-
-"nuid@npm:^1.1.4":
-  version: 1.1.6
-  resolution: "nuid@npm:1.1.6"
-  checksum: 6e994707135a853c7f0b1024498eb5f29e52d19b5037abe9e2732e678fffc923edb339d7df45dfceb46706403b55c20213ce1aa5a4c18a03b1a670ba9e67c08a
   languageName: node
   linkType: hard
 
@@ -21288,7 +21222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:7.8.1, rxjs@npm:^7.5.1, rxjs@npm:^7.5.5, rxjs@npm:^7.5.7, rxjs@npm:^7.8.0, rxjs@npm:^7.8.1":
+"rxjs@npm:7.8.1, rxjs@npm:^7.5.1, rxjs@npm:^7.5.5, rxjs@npm:^7.8.0, rxjs@npm:^7.8.1":
   version: 7.8.1
   resolution: "rxjs@npm:7.8.1"
   dependencies:
@@ -21760,15 +21694,6 @@ __metadata:
   version: 1.8.1
   resolution: "shell-quote@npm:1.8.1"
   checksum: 5f01201f4ef504d4c6a9d0d283fa17075f6770bfbe4c5850b074974c68062f37929ca61700d95ad2ac8822e14e8c4b990ca0e6e9272e64befd74ce5e19f0736b
-  languageName: node
-  linkType: hard
-
-"shortid@npm:^2.2.16":
-  version: 2.2.16
-  resolution: "shortid@npm:2.2.16"
-  dependencies:
-    nanoid: ^2.1.0
-  checksum: 0790ce22fe20aacc226915160da178b5a6af7814d1796404684f6699b60f77e291d39ad3b6b2b4c6efcf5553e1deeee7e29a48b8f46955de1425e67ab934e309
   languageName: node
   linkType: hard
 
@@ -22925,7 +22850,6 @@ __metadata:
     "@fastify/swagger": 8.10.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
-    "@nestjs-plugins/nestjs-nats-streaming-transport": ^1.2.0
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
     "@nestjs/common": 10.2.4
@@ -22956,7 +22880,7 @@ __metadata:
     "@nx/workspace": 17.1.3
     "@ory/client": ^1.4.3
     "@popperjs/core": ^2.11.5
-    "@s1seven/nestjs-tools-amqp-transport": ^0.5.1
+    "@s1seven/nestjs-tools-amqp-transport": 0.5.1
     "@stripe/stripe-js": 1.34.0
     "@swc-node/register": ~1.6.7
     "@swc/core": ~1.3.85
@@ -22972,7 +22896,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 6.14.0
     "@typescript-eslint/parser": 6.14.0
     amqp-connection-manager: 4.1.14
-    amqplib: ^0.10.3
+    amqplib: 0.10.3
     axios: 1.5.0
     babel-jest: 29.4.3
     bootstrap: ^5.1.3
@@ -23223,15 +23147,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-nkeys@npm:^1.0.16":
-  version: 1.0.16
-  resolution: "ts-nkeys@npm:1.0.16"
-  dependencies:
-    tweetnacl: ^1.0.3
-  checksum: ba043b0aa54283f4f26a50ba5cefc8e691f403f82c505df69a5c9d2580804355c971a9a47182d96c9cc705176505785cfc0bac1ea395c269b8786e3106e72e19
-  languageName: node
-  linkType: hard
-
 "ts-node-dev@npm:^2.0.0":
   version: 2.0.0
   resolution: "ts-node-dev@npm:2.0.0"
@@ -23416,13 +23331,6 @@ __metadata:
   version: 0.14.5
   resolution: "tweetnacl@npm:0.14.5"
   checksum: 6061daba1724f59473d99a7bb82e13f211cdf6e31315510ae9656fefd4779851cb927adad90f3b488c8ed77c106adc0421ea8055f6f976ff21b27c5c4e918487
-  languageName: node
-  linkType: hard
-
-"tweetnacl@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "tweetnacl@npm:1.0.3"
-  checksum: e4a57cac188f0c53f24c7a33279e223618a2bfb5fea426231991652a13247bea06b081fd745d71291fcae0f4428d29beba1b984b1f1ce6f66b06a6d1ab90645c
   languageName: node
   linkType: hard
 
