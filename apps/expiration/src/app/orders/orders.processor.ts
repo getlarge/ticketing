@@ -5,7 +5,7 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Inject, Logger } from '@nestjs/common';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   ExpirationCompletedEvent,
   Patterns,
@@ -14,7 +14,11 @@ import { Order } from '@ticketing/shared/models';
 import { Job } from 'bull';
 import { lastValueFrom } from 'rxjs';
 
-import { ORDERS_EXPIRATION_JOB, ORDERS_QUEUE } from '../shared/constants';
+import {
+  ORDERS_CLIENT,
+  ORDERS_EXPIRATION_JOB,
+  ORDERS_QUEUE,
+} from '../shared/constants';
 
 export type OrdersProcessorData = Pick<Order, 'id' | 'expiresAt'>;
 
@@ -22,19 +26,19 @@ export type OrdersProcessorData = Pick<Order, 'id' | 'expiresAt'>;
 export class OrdersProcessor {
   readonly logger = new Logger(OrdersProcessor.name);
 
-  constructor(@Inject(Publisher) private publisher: Publisher) {}
+  constructor(@Inject(ORDERS_CLIENT) private client: ClientProxy) {}
 
   @Process(ORDERS_EXPIRATION_JOB)
   async expireOrder(job: Job<OrdersProcessorData>): Promise<void> {
     const { data } = job;
     this.logger.debug(`Expire order ${data.id}`);
     await lastValueFrom(
-      this.publisher
-        .emit<string, ExpirationCompletedEvent['data']>(
-          Patterns.ExpirationCompleted,
-          data
-        )
-        .pipe()
+      this.client
+        .emit<
+          ExpirationCompletedEvent['name'],
+          ExpirationCompletedEvent['data']
+        >(Patterns.ExpirationCompleted, data)
+        .pipe(),
     );
   }
 
@@ -46,7 +50,7 @@ export class OrdersProcessor {
   @OnQueueFailed({ name: ORDERS_EXPIRATION_JOB })
   onFailed(job: Job, error: Error): void {
     this.logger.log(
-      `Processing job ${job.id} of type ${job.name} has failed with error ${error.message}`
+      `Processing job ${job.id} of type ${job.name} has failed with error ${error.message}`,
     );
   }
 }

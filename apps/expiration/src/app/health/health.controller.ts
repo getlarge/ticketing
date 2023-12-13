@@ -6,6 +6,7 @@ import {
   VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
@@ -13,6 +14,8 @@ import {
   HealthCheckService,
   HttpHealthIndicator,
   MemoryHealthIndicator,
+  MicroserviceHealthIndicator,
+  MicroserviceHealthIndicatorOptions,
 } from '@nestjs/terminus';
 import {
   HEALTH_DEFAULT_HEAP_USED_TRESHOLD,
@@ -21,10 +24,6 @@ import {
   HEALTH_REDIS_PING_TIMEOUT,
   HEALTH_RPC_PING_TIMEOUT,
 } from '@ticketing/microservices/shared/constants';
-import {
-  NatsStreamingConfig,
-  NatsStreamingHealthCheck,
-} from '@ticketing/microservices/shared/nats-streaming';
 import {
   RedisConfig,
   RedisHealthCheck,
@@ -37,8 +36,9 @@ import { AppConfigService } from '../env';
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
 @Injectable()
 export class HealthController {
-  heapUsedThreshold: number;
-  rssThreshold: number;
+  readonly heapUsedThreshold: number;
+  readonly rssThreshold: number;
+  readonly microserviceOptions: MicroserviceHealthIndicatorOptions;
 
   constructor(
     @Inject(ConfigService) private readonly configService: AppConfigService,
@@ -46,16 +46,23 @@ export class HealthController {
     private readonly http: HttpHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
     private readonly redis: RedisHealthCheck,
-    private readonly nats: NatsStreamingHealthCheck
+    private readonly microservice: MicroserviceHealthIndicator,
   ) {
     this.heapUsedThreshold = this.configService.get<number>(
       'HEAP_USED_TRESHOLD',
-      HEALTH_DEFAULT_HEAP_USED_TRESHOLD
+      HEALTH_DEFAULT_HEAP_USED_TRESHOLD,
     );
     this.rssThreshold = this.configService.get<number>(
       'MEMORY_RSS_TRESHOLD',
-      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD
+      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD,
     );
+    this.microserviceOptions = {
+      transport: Transport.RMQ,
+      options: {
+        urls: [configService.get('RMQ_URL') as string],
+      },
+      timeout: HEALTH_RPC_PING_TIMEOUT,
+    };
   }
 
   @ApiExcludeEndpoint()
@@ -74,11 +81,7 @@ export class HealthController {
           options: new RedisConfig(this.configService).options,
           timeout: HEALTH_REDIS_PING_TIMEOUT,
         }),
-      () =>
-        this.nats.pingCheck('nats', {
-          options: new NatsStreamingConfig(this.configService).options,
-          timeout: HEALTH_RPC_PING_TIMEOUT,
-        }),
+      () => this.microservice.pingCheck('rpc', this.microserviceOptions),
     ];
 
     return this.health.check(extraHealthChecks);
