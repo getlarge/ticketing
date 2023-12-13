@@ -1,6 +1,8 @@
 import { execSync } from 'node:child_process';
 import { unlink } from 'node:fs/promises';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
 import { getPackageJson, outputPackageJson } from '../nx/get-package-json';
 
 async function regeneratePackageJson({
@@ -31,7 +33,7 @@ async function regeneratePackageJson({
 }
 
 (async function () {
-  const argv = await yargs()
+  const argv = await yargs(hideBin(process.argv))
     .usage('Usage: $0 -p [projects]')
     .options({
       projectName: {
