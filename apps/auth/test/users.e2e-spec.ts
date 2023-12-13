@@ -48,15 +48,15 @@ describe('UsersController (e2e)', () => {
     app = moduleFixture.createNestApplication(new FastifyAdapter());
 
     const configService = app.get<AppConfigService>(ConfigService);
-    app.register(fastifySecureSession, {
+    await app.register(fastifySecureSession, {
       key: configService.get('SESSION_KEY'),
       cookie: {
         secure: false,
         signed: false,
       },
     });
-    app.register(fastifyPassport.initialize());
-    app.register(fastifyPassport.secureSession());
+    await app.register(fastifyPassport.initialize());
+    await app.register(fastifyPassport.secureSession());
 
     await app.init();
   });
@@ -116,7 +116,7 @@ describe('UsersController (e2e)', () => {
       expect(statusCode).toBe(400);
       expect(body).toHaveProperty('errors');
       expect(body.errors[0].message).toBe(
-        'password must be longer than or equal to 4 characters'
+        'password must be longer than or equal to 4 characters',
       );
     });
 
@@ -176,7 +176,7 @@ describe('UsersController (e2e)', () => {
         expect.objectContaining({
           name: 'session',
           value: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -252,7 +252,7 @@ describe('UsersController (e2e)', () => {
       });
       //
       const sessionCookie = response.cookies.find(
-        (cookie) => (cookie as any).name === 'session'
+        (cookie) => (cookie as any).name === 'session',
       );
       expect(response.statusCode).toBe(200);
       expect((sessionCookie as any)?.value).toBe('');

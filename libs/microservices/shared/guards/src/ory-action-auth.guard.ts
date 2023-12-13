@@ -21,7 +21,7 @@ export class OryActionAuthGuard implements CanActivate {
     @Inject(ConfigService)
     configService: ConfigService<
       BaseEnvironmentVariables & OryActionEnvironmentVariables
-    >
+    >,
   ) {
     this.apiKey = configService.get('ORY_ACTION_API_KEY');
   }
@@ -30,7 +30,7 @@ export class OryActionAuthGuard implements CanActivate {
     return context.switchToHttp().getRequest();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const req = this.getRequest(context);
     const authHeader = req.headers['x-ory-api-key'];
     return authHeader && authHeader === this.apiKey;

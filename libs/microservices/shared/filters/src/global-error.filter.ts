@@ -1,26 +1,27 @@
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ArgumentsHost } from '@nestjs/common/interfaces';
-import { RpcException } from '@nestjs/microservices';
-import { NatsStreamingContext } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { RmqContext, RpcException } from '@nestjs/microservices';
 import { ErrorResponse, isCustomError } from '@ticketing/shared/errors';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { Observable, throwError } from 'rxjs';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isHttpException(error: any): error is HttpException {
+function isHttpException(error: unknown): error is HttpException {
   return (
     error instanceof HttpException ||
     (typeof error === 'object' &&
+      'getStatus' in error &&
       typeof error?.getStatus === 'function' &&
+      'getResponse' in error &&
       typeof error?.getResponse === 'function')
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isRpcException(error: any): error is RpcException {
+function isRpcException(error: unknown): error is RpcException {
   return (
     error instanceof RpcException ||
-    (typeof error === 'object' && typeof error?.getError === 'function')
+    (typeof error === 'object' &&
+      'getError' in error &&
+      typeof error?.getError === 'function')
   );
 }
 
@@ -64,19 +65,19 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     if (response.sent) {
       return;
     }
-    response.status(status).send(errorResponse);
+    void response.status(status).send(errorResponse);
   }
 
   catchRpcError(exception: T, host: ArgumentsHost): Observable<R> {
     const context = host.switchToRpc();
-    const ctx = context.getContext<NatsStreamingContext>();
-    const channel = ctx.message.getSubject();
+    const ctx = context.getContext<RmqContext>();
+    const pattern = ctx.getPattern();
     const status = this.getExceptionStatus(exception);
     const message = this.getExceptionMessage(exception);
     const details = this.getExceptionDetails(exception);
     const errorResponse: ErrorResponse = {
       statusCode: status,
-      path: channel,
+      path: pattern,
       errors: message,
       timestamp: new Date().toISOString(),
       details,

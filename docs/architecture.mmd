@@ -16,7 +16,7 @@ flowchart LR
     St[Stripe]
     E[Expiration API]
     E-R[(Redis)]
-    NATS[NATS streaming server]
+    RMQ[RabbitMQ]
 
 %% assigning styles to entities
     %%AS,OS,ES,TS,PS:::service
@@ -27,7 +27,8 @@ flowchart LR
     FE -->|HTTP| St <-->|HTTP| PS
     FE -->|HTTP| ORY <-->|HTTP| AS
     LB --->|HTTP| AS & TS & OS & PS
-    NATS <-.->|HTTP| TS & OS & ES & PS
+    RMQ <-.->|AMQP| TS & OS & ES & PS
+    TS & OS & PS -->|HTTP| ORY
     subgraph AS [Auth service]
     direction LR
     A --> A-M

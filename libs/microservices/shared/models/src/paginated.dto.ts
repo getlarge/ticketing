@@ -3,10 +3,10 @@ import { startKeyDto } from 'nestjs-keyset-paginator';
 
 export class NextPaginationDto extends startKeyDto {
   @ApiProperty()
-  key: string;
+  declare key: string;
 
   @ApiProperty({ oneOf: [{ type: 'string' }, { type: 'number' }] })
-  value: number | string;
+  declare value: number | string;
 }
 
 export class PaginatedDto<TData> {

@@ -24,21 +24,17 @@ export class RedisHealthCheckTimeoutError extends Error {
 // @Injectable({ scope: Scope.TRANSIENT })
 @Injectable()
 export class RedisHealthCheck extends HealthIndicator {
-  constructor() {
-    super();
-  }
-
   promiseTimeout(
-    delay = 1000,
+    delay: number,
     client: Redis.Redis,
-    fn: Promise<void>
+    fn: Promise<void>,
   ): Promise<void> {
     const timeoutError = new RedisHealthCheckTimeoutError(
-      'Redis connection timed out'
+      'Redis connection timed out',
     );
     return new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
-        client.quit().finally(() => reject(timeoutError));
+        void client.quit().finally(() => reject(timeoutError));
       }, delay);
 
       fn.then(() => {
@@ -51,7 +47,7 @@ export class RedisHealthCheck extends HealthIndicator {
     });
   }
 
-  private async pingMicroservice(client: Redis.Redis): Promise<void> {
+  private pingMicroservice(client: Redis.Redis): Promise<void> {
     const checkConnection = async (): Promise<void> => {
       if (!client.status.includes('connect')) {
         await client.connect();
@@ -63,7 +59,7 @@ export class RedisHealthCheck extends HealthIndicator {
 
   async pingCheck(
     key: string,
-    options: RedisHealthCheckOptions
+    options: RedisHealthCheckOptions,
   ): Promise<HealthIndicatorResult> {
     let isHealthy = false;
     const timeout = options.timeout || 1000;
@@ -86,14 +82,14 @@ export class RedisHealthCheck extends HealthIndicator {
         timeout,
         this.getStatus(key, false, {
           message: `timeout of ${timeout}ms exceeded`,
-        })
+        }),
       );
     }
     throw new HealthCheckError(
       error.message,
       this.getStatus(key, false, {
         message: error.message,
-      })
+      }),
     );
   }
 }

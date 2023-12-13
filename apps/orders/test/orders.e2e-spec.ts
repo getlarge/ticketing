@@ -10,7 +10,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
@@ -24,6 +23,11 @@ import { AppConfigService, EnvironmentVariables } from '../src/app/env';
 import { CreateOrder, Order, OrderStatus } from '../src/app/orders/models';
 import { OrdersModule } from '../src/app/orders/orders.module';
 import { Order as OrderSchema, OrderDocument } from '../src/app/orders/schemas';
+import {
+  EXPIRATION_CLIENT,
+  PAYMENTS_CLIENT,
+  TICKETS_CLIENT,
+} from '../src/app/shared/constants';
 import { Ticket } from '../src/app/tickets/models';
 import {
   Ticket as TicketSchema,
@@ -37,7 +41,9 @@ describe('OrdersController (e2e)', () => {
   let app: NestFastifyApplication;
   let orderModel: Model<OrderDocument>;
   let ticketModel: Model<TicketDocument>;
-  let natsClient: MockClient;
+  let expirationRmqClient: MockClient;
+  let ticketRmqClient: MockClient;
+  let paymentRmqClient: MockClient;
   const envVariables = loadEnv(envFilePath, true);
 
   beforeAll(async () => {
@@ -60,28 +66,34 @@ describe('OrdersController (e2e)', () => {
         },
       ],
     })
-      .overrideProvider(Publisher)
+      .overrideProvider(PAYMENTS_CLIENT)
+      .useValue(new MockClient())
+      .overrideProvider(EXPIRATION_CLIENT)
+      .useValue(new MockClient())
+      .overrideProvider(TICKETS_CLIENT)
       .useValue(new MockClient())
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
 
     const configService = app.get<AppConfigService>(ConfigService);
-    app.register(fastifySecureSession, {
+    await app.register(fastifySecureSession, {
       key: configService.get('SESSION_KEY'),
       cookie: {
         secure: false,
         signed: false,
       },
     });
-    app.register(fastifyPassport.initialize());
-    app.register(fastifyPassport.secureSession());
+    await app.register(fastifyPassport.initialize());
+    await app.register(fastifyPassport.secureSession());
 
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     ticketModel = app.get<Model<TicketDocument>>(
-      getModelToken(TicketSchema.name)
+      getModelToken(TicketSchema.name),
     );
-    natsClient = app.get(Publisher);
+    paymentRmqClient = app.get(PAYMENTS_CLIENT);
+    expirationRmqClient = app.get(EXPIRATION_CLIENT);
+    ticketRmqClient = app.get(TICKETS_CLIENT);
     await app.init();
   });
 
@@ -166,7 +178,9 @@ describe('OrdersController (e2e)', () => {
         payload: order,
       });
       expect(statusCode).toBe(400);
-      expect(natsClient.emit).not.toBeCalled();
+      expect(expirationRmqClient.emit).not.toBeCalled();
+      expect(paymentRmqClient.emit).not.toBeCalled();
+      expect(ticketRmqClient.emit).not.toBeCalled();
     });
 
     it('should create an order with valid ticket and emit a "created" event', async () => {
@@ -196,7 +210,12 @@ describe('OrdersController (e2e)', () => {
       expect(body.ticket).toEqual(expect.objectContaining({ id: ticketId }));
       orders = await orderModel.find({ ticket });
       expect(orders.length).toBe(1);
-      expect(natsClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
+      expect(expirationRmqClient.emit).toBeCalledWith(
+        Patterns.OrderCreated,
+        body,
+      );
+      expect(paymentRmqClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
+      expect(ticketRmqClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
     });
   });
 
@@ -215,7 +234,7 @@ describe('OrdersController (e2e)', () => {
           { title: 'title1', price: 1 },
           { title: 'title2', price: 1 },
           { title: 'title3', price: 1 },
-        ].map((ticketToCreate) => ticketModel.create(ticketToCreate))
+        ].map((ticketToCreate) => ticketModel.create(ticketToCreate)),
       );
 
       const userOrder = (
@@ -349,9 +368,20 @@ describe('OrdersController (e2e)', () => {
       expect(body.status).toBe(OrderStatus.Cancelled);
       expect(body).toHaveProperty('ticket');
       expect(body.ticket).toEqual(
-        expect.objectContaining({ id: ticket._id.toString() })
+        expect.objectContaining({ id: ticket._id.toString() }),
       );
-      expect(natsClient.emit).toBeCalledWith(Patterns.OrderCancelled, body);
+      expect(expirationRmqClient.emit).toBeCalledWith(
+        Patterns.OrderCancelled,
+        body,
+      );
+      expect(paymentRmqClient.emit).toBeCalledWith(
+        Patterns.OrderCancelled,
+        body,
+      );
+      expect(ticketRmqClient.emit).toBeCalledWith(
+        Patterns.OrderCancelled,
+        body,
+      );
     });
   });
 });

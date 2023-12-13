@@ -3,12 +3,12 @@ import './vault';
 import { fastifyHelmet } from '@fastify/helmet';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { CustomStrategy, Transport } from '@nestjs/microservices';
+import type { CustomStrategy } from '@nestjs/microservices';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { Services } from '@ticketing/shared/constants';
 import { Logger } from 'nestjs-pino';
@@ -27,18 +27,17 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true, abortOnError: false }
+    { bufferLogs: true, abortOnError: false },
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
   const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
-
   const logger = app.get(Logger);
   app.useLogger(logger);
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
 
   // Fastify
-  app.register(fastifyHelmet, {
+  await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: [`'self'`],
@@ -49,22 +48,27 @@ async function bootstrap(): Promise<void> {
     },
   });
 
-  // NATS
-  const natsListener = new Listener(
-    configService.get('NATS_CLUSTER_ID'),
-    configService.get('NATS_CLIENT_ID'),
-    `${Services.EXPIRATION_SERVICE}_GROUP`,
-    { url: configService.get('NATS_URL'), name: Services.EXPIRATION_SERVICE },
-    {
-      durableName: `${Services.EXPIRATION_SERVICE}_subscriptions`,
-      manualAckMode: true,
-      deliverAllAvailable: true,
-      ackWait: 5 * 1000,
-    }
-  );
-  natsListener.transportId = Transport.NATS;
+  // RMQ
+  const amqpOptions: AmqpOptions = {
+    urls: [configService.get('RMQ_URL') as string],
+    persistent: true,
+    noAck: false,
+    prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
+    isGlobalPrefetchCount: false,
+    queue: `${Services.EXPIRATION_SERVICE}_QUEUE`,
+    queueOptions: {
+      durable: true,
+      exclusive: false,
+      autoDelete: false,
+    },
+    socketOptions: {
+      keepAlive: true,
+      heartbeatIntervalInSeconds: 30,
+      reconnectTimeInSeconds: 1,
+    },
+  };
   const options: CustomStrategy = {
-    strategy: natsListener,
+    strategy: new AmqpServer(amqpOptions),
   };
   const microService = app.connectMicroservice(options);
 
@@ -75,4 +79,7 @@ async function bootstrap(): Promise<void> {
   });
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

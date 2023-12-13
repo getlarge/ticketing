@@ -7,12 +7,12 @@ export class CreatePaymentDto extends CreatePayment {
     description: 'Order for which payment is attempted',
     required: true,
   })
-  orderId: string;
+  declare orderId: string;
 
   @ApiProperty({
     description: 'Stripe token',
     required: true,
     example: 'tok_visa',
   })
-  token: string;
+  declare token: string;
 }

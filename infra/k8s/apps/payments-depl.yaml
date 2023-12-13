@@ -28,10 +28,6 @@ spec:
               value: 'https://ticketing.dev'
             - name: MONGODB_URI
               value: mongodb://payments-mongo-srv:27017/payments
-            - name: NATS_CLIENT_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -47,6 +43,11 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: SESSION_KEY
+            - name: ORY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ory-secret
+                  key: ORY_API_KEY
             - name: STRIPE_PUBLISHABLE_KEY
               valueFrom:
                 secretKeyRef:
@@ -73,7 +74,7 @@ spec:
               port: 3000
             failureThreshold: 3
             periodSeconds: 10
-            timeoutSeconds: 2                  
+            timeoutSeconds: 2
           resources:
             limits:
               memory: '128Mi'

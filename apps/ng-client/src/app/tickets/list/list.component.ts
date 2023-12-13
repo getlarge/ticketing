@@ -52,11 +52,11 @@ export class TicketListComponent implements OnInit {
   }
 
   onViewTicket(ticketId: string): void {
-    this.router.navigate([`/${Resources.TICKETS}`, ticketId]);
+    void this.router.navigate([`/${Resources.TICKETS}`, ticketId]);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onUpdateTicket(ticketId: string): void {
+  onUpdateTicket(_ticketId: string): void {
     // const modalRef = this.modalService.open(UpdateTicketModalComponent);
     // modalRef.componentInstance.ticketId = ticketId;
   }

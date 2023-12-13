@@ -16,15 +16,15 @@ export class ErrorResponseDto extends ErrorResponse {
     description: 'Error status code',
     required: true,
   })
-  statusCode: number;
+  declare statusCode: number;
 
   @ApiProperty({
-    description: 'HTTP path or NATS subject',
+    description: 'HTTP path or RMQ routing key',
   })
-  path: string;
+  declare path: string;
 
   @ApiProperty()
-  timestamp: string;
+  declare timestamp: string;
 
   @ApiProperty({
     description: 'Error messages',
@@ -32,10 +32,10 @@ export class ErrorResponseDto extends ErrorResponse {
     type: ErrorResponseMessageDto,
     isArray: true,
   })
-  errors: { message: string; field?: string }[];
+  declare errors: { message: string; field?: string }[];
 
   @ApiProperty({
     required: false,
   })
-  details?: Record<string, unknown>;
+  declare details?: Record<string, unknown>;
 }

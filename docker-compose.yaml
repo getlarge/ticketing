@@ -5,7 +5,7 @@ networks:
     driver: bridge
   redis:
     driver: bridge
-  nats-streaming:
+  rabbitmq:
     driver: bridge
   apps:
     driver: bridge
@@ -13,7 +13,7 @@ networks:
 volumes:
   mongo_volume:
   redis_volume:
-  nats_volume:
+  rabbitmq_volume:
 
 services:
   mongo:
@@ -53,33 +53,29 @@ services:
       - 'deps-only'
       - 'dev'
 
-  nats-streaming:
-    image: nats-streaming:0.23.0
-    container_name: ticketing-nats
-    hostname: ticketing-nats
-    command:
-      [
-        --store,
-        MEMORY,
-        --port,
-        '4222',
-        --http_port,
-        '8222',
-        --hb_interval,
-        5s,
-        --hb_timeout,
-        5s,
-        --hb_fail_count,
-        '2',
-        --stan_debug,
-        --cluster_id,
-        ticketing,
-      ]
-    networks:
-      - nats-streaming
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: 'ticketing-rabbitmq'
+    hostname: ticketing-rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'status']
+      interval: '10s'
+      timeout: '15s'
+      start_period: '30s'
+      retries: 3
+    volumes:
+      - ./infra/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      # - ./infra/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      # - ./infra/rabbitmq/logs:/var/log/rabbitmq/log
+      - ./infra/rabbitmq/etc/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - rabbitmq_volume:/var/lib/rabbitmq/mnesia/rabbit@ticketing-rabbitmq
     ports:
-      - '4222:4222'
-      - '8222:8222'
+      - ${RABBITMQ_PORT:-5672}:5672
+      - ${RABBITMQ_MGT_PORT:-15672}:15672
+      - ${RABBITMQ_MQTT_PORT:-1883}:1883
+      - ${RABBITMQ_WS_PORT:-15675}:15675
+    networks:
+      - rabbitmq
     restart: always
     profiles:
       - 'deps-only'
@@ -102,9 +98,11 @@ services:
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
-      NATS_URL: http://ticketing-nats:4222
-      NATS_CLUSTER_ID: ticketing
+      RMQ_URL: http://ticketing-rabbitmq:5672
       MONGODB_URI: mongodb://ticketing-mongo:27017/auth
+      ORY_ACTION_API_KEY: ${ORY_ACTION_API_KEY}
+      ORY_API_KEY: ${ORY_API_KEY}
+      ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
       test: node ./healthcheck.js http://0.0.0.0:${AUTH_HTTP_PORT:-3000}/$GLOBAL_API_PREFIX/health
       interval: 60s
@@ -113,12 +111,12 @@ services:
       retries: 2
     depends_on:
       - mongo
-      - nats-streaming
+      - rabbitmq
     ports:
       - '${AUTH_HTTP_PORT:-3000}:${AUTH_HTTP_PORT:-3000}'
     networks:
       - mongo
-      - nats-streaming
+      - rabbitmq
       - apps
     mem_limit: 256m
     memswap_limit: 512m
@@ -137,9 +135,10 @@ services:
       PORT: ${EXPIRATION_HTTP_PORT:-3030}
       SERVER_URL: http://127.0.0.1:${EXPIRATION_HTTP_PORT:-3030}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
-      NATS_URL: http://ticketing-nats:4222
-      NATS_CLUSTER_ID: ticketing
+      RMQ_URL: http://ticketing-rabbitmq:5672
       REDIS_URL: redis://ticketing-redis:6379
+      ORY_API_KEY: ${ORY_API_KEY}
+      ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
       test: node ./healthcheck.js http://0.0.0.0:${EXPIRATION_HTTP_PORT:-3000}/${GLOBAL_API_PREFIX:-api}/health
       interval: 60s
@@ -148,12 +147,12 @@ services:
       retries: 2
     depends_on:
       - redis
-      - nats-streaming
+      - rabbitmq
     ports:
       - '${EXPIRATION_HTTP_PORT:-3030}:${EXPIRATION_HTTP_PORT:-3030}'
     networks:
       - redis
-      - nats-streaming
+      - rabbitmq
       - apps
     mem_limit: 256m
     memswap_limit: 512m
@@ -179,9 +178,10 @@ services:
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
-      NATS_URL: http://ticketing-nats:4222
-      NATS_CLUSTER_ID: ticketing
+      RMQ_URL: http://ticketing-rabbitmq:5672
       MONGODB_URI: mongodb://ticketing-mongo:27017/orders
+      ORY_API_KEY: ${ORY_API_KEY}
+      ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
       test: node ./healthcheck.js http://0.0.0.0:${ORDERS_HTTP_PORT:-3020}/${GLOBAL_API_PREFIX:-api}/health
       interval: 60s
@@ -190,12 +190,12 @@ services:
       retries: 2
     depends_on:
       - mongo
-      - nats-streaming
+      - rabbitmq
     ports:
       - '${ORDERS_HTTP_PORT:-3020}:${ORDERS_HTTP_PORT:-3020}'
     networks:
       - mongo
-      - nats-streaming
+      - rabbitmq
       - apps
     mem_limit: 256m
     memswap_limit: 512m
@@ -221,12 +221,13 @@ services:
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
-      NATS_URL: http://ticketing-nats:4222
-      NATS_CLUSTER_ID: ticketing
+      RMQ_URL: http://ticketing-rabbitmq:5672
       MONGODB_URI: mongodb://ticketing-mongo:27017/payments
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_ENDPOINT_SECRET: ${STRIPE_ENDPOINT_SECRET}
+      ORY_API_KEY: ${ORY_API_KEY}
+      ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
       test: node ./healthcheck.js http://0.0.0.0:${PAYMENTS_HTTP_PORT:-3040}/${GLOBAL_API_PREFIX:-api}/health
       interval: 60s
@@ -235,12 +236,12 @@ services:
       retries: 2
     depends_on:
       - mongo
-      - nats-streaming
+      - rabbitmq
     ports:
       - '${PAYMENTS_HTTP_PORT:-3040}:${PAYMENTS_HTTP_PORT:-3040}'
     networks:
       - mongo
-      - nats-streaming
+      - rabbitmq
       - apps
     mem_limit: 256m
     memswap_limit: 512m
@@ -266,9 +267,10 @@ services:
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
-      NATS_URL: http://ticketing-nats:4222
-      NATS_CLUSTER_ID: ticketing
+      RMQ_URL: http://ticketing-rabbitmq:5672
       MONGODB_URI: mongodb://ticketing-mongo:27017/tickets
+      ORY_API_KEY: ${ORY_API_KEY}
+      ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
       test: node ./healthcheck.js http://0.0.0.0:${TICKETS_HTTP_PORT:-3010}/${GLOBAL_API_PREFIX:-api}/health
       interval: 60s
@@ -277,12 +279,12 @@ services:
       retries: 2
     depends_on:
       - mongo
-      - nats-streaming
+      - rabbitmq
     ports:
       - '${TICKETS_HTTP_PORT:-3010}:${TICKETS_HTTP_PORT:-3010}'
     networks:
       - mongo
-      - nats-streaming
+      - rabbitmq
       - apps
     mem_limit: 256m
     memswap_limit: 512m
@@ -296,9 +298,9 @@ services:
     container_name: ng-client
     hostname: ng-client
     healthcheck:
-      test: curl -f http://localhost:3000
+      test: curl -f http://localhost:4200
     ports:
-      - '4200:3000'
+      - '4200:4200'
     networks:
       - apps
     mem_limit: 256m

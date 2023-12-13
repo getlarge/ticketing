@@ -4,13 +4,13 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { MockClient } from '@ticketing/microservices/shared/testing';
 import { Model, Types } from 'mongoose';
 import { of } from 'rxjs';
 
+import { ORDERS_CLIENT } from '../src/app/shared/constants';
 import {
   Ticket as TicketSchema,
   TicketDocument,
@@ -26,7 +26,7 @@ describe('TicketsService', () => {
   let app: TestingModule;
   let ticketsService: TicketsService;
   let ticketModel: Model<TicketDocument>;
-  const natsClient = new MockClient();
+  const ordersRmqPublisher = new MockClient();
   const envVariables = loadEnv(envFilePath, true);
 
   beforeAll(async () => {
@@ -42,18 +42,18 @@ describe('TicketsService', () => {
         MongooseModule.forRoot(envVariables['MONGODB_URI']),
       ],
     })
-      .overrideProvider(Publisher)
-      .useValue(natsClient)
+      .overrideProvider(ORDERS_CLIENT)
+      .useValue(ordersRmqPublisher)
       .compile();
 
     ticketsService = app.get(TicketsService);
     ticketModel = app.get<Model<TicketDocument>>(
-      getModelToken(TicketSchema.name)
+      getModelToken(TicketSchema.name),
     );
   });
 
   beforeEach(() => {
-    natsClient.emit.mockReset();
+    ordersRmqPublisher.emit.mockReset();
   });
 
   describe('create()', () => {
@@ -66,7 +66,7 @@ describe('TicketsService', () => {
       };
       //
       await expect(
-        ticketsService.create(ticket as any, mockCurrentUser())
+        ticketsService.create(ticket as any, mockCurrentUser()),
       ).rejects.toThrowError();
       const tickets = await ticketModel.find();
       expect(tickets.length).toBe(0);
@@ -79,9 +79,9 @@ describe('TicketsService', () => {
       await ticketsService.create(ticket, currentUser);
       const tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
-      expect(natsClient.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
         Patterns.TicketCreated,
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -89,7 +89,7 @@ describe('TicketsService', () => {
   describe('findById()', () => {
     it('should throw NotFoundException when no ticket is found', async () => {
       await expect(
-        ticketsService.findById(new Types.ObjectId().toHexString())
+        ticketsService.findById(new Types.ObjectId().toHexString()),
       ).rejects.toThrowError(NotFoundException);
     });
 
@@ -121,8 +121,8 @@ describe('TicketsService', () => {
             price: 200,
             version: 200,
           } as any,
-          currentUser
-        )
+          currentUser,
+        ),
       ).rejects.toThrow();
     });
 
@@ -136,14 +136,14 @@ describe('TicketsService', () => {
       const updatedTicket = await ticketsService.updateById(
         ticket._id.toString(),
         { price: 200 },
-        currentUser
+        currentUser,
       );
       expect(updatedTicket.price).not.toEqual(ticket.price);
       expect(updatedTicket.price).toEqual(200);
       expect(updatedTicket.version).toEqual(ticket.version + 1);
-      expect(natsClient.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
         Patterns.TicketUpdated,
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -159,15 +159,15 @@ describe('TicketsService', () => {
       const order = mockOrderEvent({
         ticket: { ...fakeTicket, id: ticket._id.toString() },
       });
-      natsClient.emit = jest.fn().mockReturnValue(of(''));
+      ordersRmqPublisher.emit = jest.fn().mockReturnValue(of(''));
       //
       const updatedTicket = await ticketsService.createOrder(order);
       const foundTicket = await ticketModel.findOne({ _id: updatedTicket.id });
       expect(updatedTicket.orderId).toEqual(order.id);
       expect(foundTicket.orderId).toEqual(order.id);
-      expect(natsClient.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
         Patterns.TicketUpdated,
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -183,15 +183,15 @@ describe('TicketsService', () => {
       const order = mockOrderEvent({
         ticket: { ...fakeTicket, id: ticket._id.toString() },
       });
-      natsClient.emit = jest.fn().mockReturnValue(of(''));
+      ordersRmqPublisher.emit = jest.fn().mockReturnValue(of(''));
       //
       const updatedTicket = await ticketsService.cancelOrder(order);
       const foundTicket = await ticketModel.findOne({ _id: updatedTicket.id });
       expect(updatedTicket.orderId).toBeUndefined();
       expect(foundTicket.orderId).toBeUndefined();
-      expect(natsClient.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
         Patterns.TicketUpdated,
-        expect.anything()
+        expect.anything(),
       );
     });
   });

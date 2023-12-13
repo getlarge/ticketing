@@ -11,10 +11,10 @@ import {
 
 export class StartKeyDto extends startKeyDto {
   @ApiProperty()
-  key: string;
+  declare key: string;
 
   @ApiProperty({ oneOf: [{ type: 'string' }, { type: 'number' }] })
-  value: number | string;
+  declare value: number | string;
 }
 
 export class SortDto {
@@ -72,10 +72,10 @@ export class FilterDto extends PartialType(filterDto) {
 
 export class ProjectionDto extends projectionDto {
   @ApiProperty({ minLength: 2, maxLength: 20 })
-  name: string;
+  declare name: string;
 
   @ApiProperty({ minimum: 0, maximum: 1 })
-  mode: number;
+  declare mode: number;
 }
 
 export class PaginateDto extends PartialType(PaginationDto) {

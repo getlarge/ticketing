@@ -52,6 +52,7 @@ function createAuthGuard(type?: string | string[]): Type<IAuthGuard> {
         const handler = passport.authenticate(
           type,
           options,
+          // eslint-disable-next-line require-await
           async function (
             _req: FastifyRequest,
             _res: FastifyReply,

@@ -20,10 +20,10 @@ export class User extends UserAttrs {
     lowercase: true,
     index: true,
   })
-  email: string;
+  declare email: string;
 
   @Prop({ type: String, required: true, unique: true })
-  identityId: string;
+  declare identityId: string;
 }
 
 export type UserDocument = User & Document;

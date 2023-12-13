@@ -11,7 +11,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
@@ -22,6 +21,7 @@ import {
 import { Types } from 'mongoose';
 
 import { AppConfigService, EnvironmentVariables } from '../src/app/env';
+import { ORDERS_CLIENT } from '../src/app/shared/constants';
 import { CreateTicket, UpdateTicket } from '../src/app/tickets/models';
 import {
   Ticket as TicketSchema,
@@ -36,7 +36,7 @@ const defaultUserEmail = 'test@test.com';
 describe('TicketsController (e2e)', () => {
   let app: NestFastifyApplication;
   let ticketModel: TicketModel;
-  let natsClient: MockClient;
+  let ordersRmqPublisher: MockClient;
   const envVariables = loadEnv(envFilePath, true);
 
   beforeAll(async () => {
@@ -59,25 +59,25 @@ describe('TicketsController (e2e)', () => {
         },
       ],
     })
-      .overrideProvider(Publisher)
+      .overrideProvider(ORDERS_CLIENT)
       .useValue(new MockClient())
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
 
     const configService = app.get<AppConfigService>(ConfigService);
-    app.register(fastifySecureSession, {
+    await app.register(fastifySecureSession, {
       key: configService.get('SESSION_KEY'),
       cookie: {
         secure: false,
         signed: false,
       },
     });
-    app.register(fastifyPassport.initialize());
-    app.register(fastifyPassport.secureSession());
+    await app.register(fastifyPassport.initialize());
+    await app.register(fastifyPassport.secureSession());
 
     ticketModel = app.get<TicketModel>(getModelToken(TicketSchema.name));
-    natsClient = app.get(Publisher);
+    ordersRmqPublisher = app.get(ORDERS_CLIENT);
     await app.init();
   });
 
@@ -162,7 +162,10 @@ describe('TicketsController (e2e)', () => {
 
       tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
-      expect(natsClient.emit).toBeCalledWith(Patterns.TicketCreated, body);
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
+        Patterns.TicketCreated,
+        body,
+      );
     });
   });
 
@@ -177,8 +180,8 @@ describe('TicketsController (e2e)', () => {
       ];
       await Promise.all(
         ticketsToCreate.map((ticketToCreate) =>
-          createTicket(ticketToCreate, ticketModel)
-        )
+          createTicket(ticketToCreate, ticketModel),
+        ),
       );
       //
       const { payload, statusCode } = await app.inject({
@@ -287,7 +290,7 @@ describe('TicketsController (e2e)', () => {
       });
       const { id } = await createTicket(
         { orderId: new Types.ObjectId().toHexString(), userId },
-        ticketModel
+        ticketModel,
       );
       const invalidTicket: UpdateTicket = { title: 'updated title' };
       const expectedErrors = [
@@ -355,7 +358,10 @@ describe('TicketsController (e2e)', () => {
       expect(body.id).toEqual(id);
       expect(body.title).toEqual(ticketUpdate.title);
       expect(body.price).toEqual(ticketUpdate.price);
-      expect(natsClient.emit).toBeCalledWith(Patterns.TicketUpdated, body);
+      expect(ordersRmqPublisher.emit).toBeCalledWith(
+        Patterns.TicketUpdated,
+        body,
+      );
     });
   });
 });

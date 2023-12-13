@@ -6,7 +6,7 @@ export class TicketDto extends Ticket {
     description: 'Ticket database identifier',
     required: true,
   })
-  id: string;
+  declare id: string;
 
   @ApiProperty({
     description: 'Ticket title',
@@ -14,31 +14,31 @@ export class TicketDto extends Ticket {
     minLength: ticketConstraints.title.min,
     maxLength: ticketConstraints.title.max,
   })
-  title: string;
+  declare title: string;
 
   @ApiProperty({
     description: 'Ticket price',
     required: true,
     minimum: ticketConstraints.price.min,
   })
-  price: number;
+  declare price: number;
 
   @ApiProperty({
     description:
       'Ticket version represented by a number incremented at each updated',
     required: true,
   })
-  version: number;
+  declare version: number;
 
   @ApiProperty({
     description: 'Ticket creator id',
     required: true,
   })
-  userId: string;
+  declare userId: string;
 
   @ApiProperty({
     description: 'Ticket reservation order id',
     required: false,
   })
-  orderId?: string;
+  declare orderId?: string;
 }

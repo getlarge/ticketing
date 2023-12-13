@@ -33,7 +33,7 @@ export class HttpErrorFilter<T = unknown> implements ExceptionFilter<T> {
     if (response.sent) {
       return;
     }
-    response.status(status).send(errorResponse);
+    void response.status(status).send(errorResponse);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,7 +52,7 @@ export class HttpErrorFilter<T = unknown> implements ExceptionFilter<T> {
       return exception.serializeErrors();
     } else if (isHttpException(exception)) {
       return [{ message: exception.message }];
-    } else if (Object.prototype.hasOwnProperty.call(exception, 'message')) {
+    } else if (Object.hasOwn(exception, 'message')) {
       return [{ message: exception.message }];
     }
     return [{ message: 'Internal Server Error' }];

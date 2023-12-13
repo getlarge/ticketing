@@ -29,7 +29,7 @@ export class SignInComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private store: Store<UserStoreState.State>,
-    private actionsSubj: ActionsSubject
+    private actionsSubj: ActionsSubject,
   ) {}
 
   ngOnInit(): void {
@@ -45,11 +45,11 @@ export class SignInComponent implements OnInit, OnDestroy {
       .select(UserStoreSelectors.selectCurrentUser)
       .pipe(
         takeUntil(this.destroy$),
-        filter((user) => !!user?.email)
+        filter((user) => !!user?.email),
       )
       .subscribe({
         next: () => {
-          this.router.navigate([this.returnUrl]);
+          void this.router.navigate([this.returnUrl]);
         },
       });
 
@@ -57,9 +57,9 @@ export class SignInComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         ofType<UserStoreActions.SignInSuccessAction>(
-          UserStoreActions.ActionTypes.SIGN_IN_SUCCESS
+          UserStoreActions.ActionTypes.SIGN_IN_SUCCESS,
         ),
-        take(1)
+        take(1),
       )
       .subscribe({
         next: () => {

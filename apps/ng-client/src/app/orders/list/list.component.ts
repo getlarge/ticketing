@@ -24,19 +24,19 @@ export class OrderListComponent implements OnInit {
 
   constructor(
     private store: Store<RootStoreState.RootState>,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.orders$ = this.store.select(OrderStoreSelectors.selectAllOrderItems);
     this.isLoading$ = this.store.select(
-      OrderStoreSelectors.selectOrderIsLoading
+      OrderStoreSelectors.selectOrderIsLoading,
     );
     this.store.dispatch(new OrderStoreActions.LoadOrdersAction());
   }
 
   onViewOrder(orderId: string): void {
-    this.router.navigate([`/${Resources.ORDERS}`, orderId]);
+    void this.router.navigate([`/${Resources.ORDERS}`, orderId]);
   }
 
   onCancelOrder(orderId: string): void {

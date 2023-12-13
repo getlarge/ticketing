@@ -9,14 +9,12 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  Listener,
-  Publisher,
-} from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { AmqpClient, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
-import { Resources, Services } from '@ticketing/shared/constants';
+import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
+import { Services } from '@ticketing/shared/constants';
 import { Model, Types } from 'mongoose';
 import { delay, lastValueFrom } from 'rxjs';
 
@@ -30,7 +28,7 @@ import { mockTicketEvent } from './models/ticket.mock';
 describe('TicketsMSController (e2e)', () => {
   let app: NestFastifyApplication;
   let microservice: INestMicroservice;
-  let natsPublisher: Publisher;
+  let ticketRmqPublisher: AmqpClient;
   let ticketModel: Model<TicketDocument>;
   const envVariables = loadEnv(envFilePath, true);
 
@@ -57,29 +55,50 @@ describe('TicketsMSController (e2e)', () => {
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
     const configService = app.get<AppConfigService>(ConfigService);
+    const rmqUrl = configService.get('RMQ_URL') as string;
 
-    natsPublisher = new Publisher({
-      clusterId: configService.get('NATS_CLUSTER_ID'),
-      clientId: configService.get('NATS_CLIENT_ID'),
-      connectOptions: {
-        url: configService.get('NATS_URL'),
-        name: `${Services.ORDERS_SERVICE}_${Resources.ORDERS}_test`,
+    ticketRmqPublisher = new AmqpClient({
+      urls: [rmqUrl],
+      persistent: false,
+      noAck: false,
+      prefetchCount: 1,
+      isGlobalPrefetchCount: false,
+      queue: `${Services.ORDERS_SERVICE}_QUEUE`,
+      replyQueue: getReplyQueueName(
+        Services.ORDERS_SERVICE,
+        Services.TICKETS_SERVICE,
+      ),
+      queueOptions: {
+        durable: false,
+        exclusive: false,
+        autoDelete: false,
+      },
+      socketOptions: {
+        keepAlive: true,
+        heartbeatIntervalInSeconds: 30,
+        reconnectTimeInSeconds: 1,
       },
     });
 
     const options: CustomStrategy = {
-      strategy: new Listener(
-        configService.get('NATS_CLUSTER_ID'),
-        configService.get('NATS_CLIENT_ID'),
-        `${Services.ORDERS_SERVICE}_GROUP_TEST`,
-        { url: configService.get('NATS_URL') },
-        {
-          durableName: `${Resources.TICKETS}_subscriptions_test`,
-          manualAckMode: false,
-          // deliverAllAvailable: true,
-          // ackWait: 5 * 1000,
-        }
-      ),
+      strategy: new AmqpServer({
+        urls: [rmqUrl],
+        persistent: false,
+        noAck: false,
+        prefetchCount: 1,
+        isGlobalPrefetchCount: false,
+        queue: `${Services.ORDERS_SERVICE}_QUEUE`,
+        queueOptions: {
+          durable: false,
+          exclusive: false,
+          autoDelete: false,
+        },
+        socketOptions: {
+          keepAlive: true,
+          heartbeatIntervalInSeconds: 30,
+          reconnectTimeInSeconds: 1,
+        },
+      }),
     };
     microservice = moduleFixture.createNestMicroservice(options);
     ticketModel = app.get<Model<TicketDocument>>(getModelToken(Ticket.name));
@@ -89,7 +108,7 @@ describe('TicketsMSController (e2e)', () => {
   });
 
   afterAll(async () => {
-    natsPublisher.close();
+    ticketRmqPublisher.close();
     await microservice.close();
     await app.close();
   });
@@ -98,7 +117,7 @@ describe('TicketsMSController (e2e)', () => {
     it('should be defined', () => {
       expect(app).toBeDefined();
       expect(microservice).toBeDefined();
-      expect(natsPublisher).toBeDefined();
+      expect(ticketRmqPublisher).toBeDefined();
       expect(ticketModel).toBeDefined();
     });
   });
@@ -115,7 +134,9 @@ describe('TicketsMSController (e2e)', () => {
       ticketsService.create = jest.fn();
       //
       await lastValueFrom(
-        natsPublisher.emit(Patterns.TicketCreated, ticket).pipe(delay(500))
+        ticketRmqPublisher
+          .emit(Patterns.TicketCreated, ticket)
+          .pipe(delay(500)),
       );
       expect(ticketsService.create).not.toBeCalled();
       expect(exceptionFilter.catch).toHaveBeenCalled();
@@ -127,7 +148,9 @@ describe('TicketsMSController (e2e)', () => {
       ticketsService.create = jest.fn();
       //
       await lastValueFrom(
-        natsPublisher.emit(Patterns.TicketCreated, ticket).pipe(delay(500))
+        ticketRmqPublisher
+          .emit(Patterns.TicketCreated, ticket)
+          .pipe(delay(500)),
       );
       expect(ticketsService.create).toBeCalled();
       // const createdTicket = await ticketModel.findOne({ _id: ticket.id });

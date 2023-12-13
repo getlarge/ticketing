@@ -10,7 +10,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import {
@@ -30,6 +29,7 @@ import {
   PaymentDocument,
 } from '../src/app/payments/schemas';
 import { StripeService } from '../src/app/payments/stripe.service';
+import { ORDERS_CLIENT } from '../src/app/shared/constants';
 import { envFilePath } from './constants';
 
 const defaultUserEmail = 'test@test.com';
@@ -39,7 +39,6 @@ describe('PaymentsController (e2e)', () => {
   let orderModel: Model<OrderDocument>;
   let paymentModel: Model<PaymentDocument>;
   let stripeService: StripeService;
-  // let natsClient: MockClient;
   const envVariables = loadEnv(envFilePath, true);
 
   beforeAll(async () => {
@@ -62,30 +61,28 @@ describe('PaymentsController (e2e)', () => {
         },
       ],
     })
-      .overrideProvider(Publisher)
+      .overrideProvider(ORDERS_CLIENT)
       .useValue(new MockClient())
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
 
     const configService = app.get<AppConfigService>(ConfigService);
-    app.register(fastifySecureSession, {
+    await app.register(fastifySecureSession, {
       key: configService.get('SESSION_KEY'),
       cookie: {
         secure: false,
         signed: false,
       },
     });
-    app.register(fastifyPassport.initialize());
-    app.register(fastifyPassport.secureSession());
+    await app.register(fastifyPassport.initialize());
+    await app.register(fastifyPassport.secureSession());
 
     stripeService = app.get(StripeService);
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     paymentModel = app.get<Model<PaymentDocument>>(
-      getModelToken(PaymentSchema.name)
+      getModelToken(PaymentSchema.name),
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // natsClient = app.get(Publisher);
     await app.init();
   });
 
@@ -223,7 +220,7 @@ describe('PaymentsController (e2e)', () => {
       });
 
       expect(statusCode).toBe(201);
-      const { data: charges } = await stripeService.instance.charges.list({
+      const { data: charges } = await stripeService.charges.list({
         limit: 50,
       });
       const foundCharge = charges.find(({ amount }) => amount === price * 100);

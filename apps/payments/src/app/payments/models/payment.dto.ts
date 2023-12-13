@@ -6,24 +6,24 @@ export class PaymentDto extends Payment {
     description: 'Charge internal identifier',
     required: true,
   })
-  id: string;
+  declare id: string;
 
   @ApiProperty({
     description: 'Reference to the order',
     required: true,
   })
-  orderId: string;
+  declare orderId: string;
 
   @ApiProperty({
     description: 'Reference to the stripe charge',
     required: true,
   })
-  stripeId: string;
+  declare stripeId: string;
 
   @ApiProperty({
     description:
       'Payment version represented by a number incremented at each updated',
     required: true,
   })
-  version: number;
+  declare version: number;
 }

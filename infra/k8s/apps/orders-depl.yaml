@@ -30,10 +30,6 @@ spec:
               value: '60'
             - name: MONGODB_URI
               value: mongodb://orders-mongo-srv:27017/orders
-            - name: NATS_CLIENT_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -49,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: SESSION_KEY
+            - name: ORY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ory-secret
+                  key: ORY_API_KEY
           startupProbe:
             exec:
               command: ['pgrep', '-x', 'node']
@@ -60,7 +61,7 @@ spec:
               port: 3000
             failureThreshold: 3
             periodSeconds: 10
-            timeoutSeconds: 2                  
+            timeoutSeconds: 2
           resources:
             limits:
               memory: '128Mi'

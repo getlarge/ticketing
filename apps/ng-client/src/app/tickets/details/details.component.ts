@@ -29,19 +29,19 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
     private router: Router,
     private actionsSubj: ActionsSubject,
     private route: ActivatedRoute,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
     this.ticket$ = this.store.select(
-      TicketStoreSelectors.selectCurrentTicket()
+      TicketStoreSelectors.selectCurrentTicket(),
     );
 
     const ticketId = this.route.snapshot.paramMap.get('id');
     if (ticketId) {
       this.store.dispatch(
         // new TicketStoreActions.LoadTicketAction({ ticketId })
-        new TicketStoreActions.SelectTicketAction({ ticketId })
+        new TicketStoreActions.SelectTicketAction({ ticketId }),
       );
     }
 
@@ -49,8 +49,8 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         ofType<OrderStoreActions.CreateOrderSuccessAction>(
-          OrderStoreActions.ActionTypes.CREATE_ORDER_SUCCESS
-        )
+          OrderStoreActions.ActionTypes.CREATE_ORDER_SUCCESS,
+        ),
       )
       .subscribe({
         next: ({ payload }) => {
@@ -58,7 +58,10 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
             keepAfterRouteChange: true,
             autoClose: true,
           });
-          this.router.navigate([`/${Resources.ORDERS}/`, payload.order.id]);
+          void this.router.navigate([
+            `/${Resources.ORDERS}/`,
+            payload.order.id,
+          ]);
         },
       });
   }
@@ -70,7 +73,7 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
 
   purchaseTicket(ticket: Ticket): void {
     this.store.dispatch(
-      new OrderStoreActions.CreateOrderAction({ ticketId: ticket.id })
+      new OrderStoreActions.CreateOrderAction({ ticketId: ticket.id }),
     );
   }
 

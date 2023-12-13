@@ -6,8 +6,8 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
@@ -25,6 +25,7 @@ import { Model } from 'mongoose';
 import Paginator from 'nestjs-keyset-paginator';
 import { lastValueFrom, Observable } from 'rxjs';
 
+import { ORDERS_CLIENT } from '../shared/constants';
 import { CreateTicket, Ticket, UpdateTicket } from './models';
 import { Ticket as TicketSchema, TicketDocument } from './schemas';
 
@@ -34,14 +35,14 @@ export class TicketsService {
 
   constructor(
     @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
-    @Inject(Publisher) private publisher: Publisher
+    @Inject(ORDERS_CLIENT) private client: ClientProxy,
   ) {}
 
   emitEvent(
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
-    event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data']
+    event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
   ): Observable<string> {
-    return this.publisher.emit<string, typeof event>(pattern, event);
+    return this.client.emit<string, typeof event>(pattern, event);
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
@@ -75,12 +76,12 @@ export class TicketsService {
       sort?.field,
       sort?.order,
       filter,
-      projection
+      projection,
     );
   }
 
   async find(
-    params: PaginateDto = {}
+    params: PaginateDto = {},
   ): Promise<{ results: Ticket[]; next: NextPaginationDto[] }> {
     const { docs, next_key } = await this.paginate(params);
     const results = docs.map((ticket) => ticket.toJSON<Ticket>());
@@ -98,7 +99,7 @@ export class TicketsService {
   async updateById(
     id: string,
     update: UpdateTicket,
-    currenUser: User
+    currenUser: User,
   ): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ _id: id });
     if (isEmpty(ticket)) {

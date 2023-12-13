@@ -28,10 +28,6 @@ spec:
               value: 'https://ticketing.dev'
             - name: MONGODB_URI
               value: mongodb://tickets-mongo-srv:27017/tickets
-            - name: NATS_CLIENT_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -47,6 +43,11 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: SESSION_KEY
+            - name: ORY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ory-secret
+                  key: ORY_API_KEY
           startupProbe:
             exec:
               command: ['pgrep', '-x', 'node']

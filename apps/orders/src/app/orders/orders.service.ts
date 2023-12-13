@@ -7,8 +7,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
@@ -18,9 +18,14 @@ import {
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash';
 import { Model } from 'mongoose';
-import { Observable } from 'rxjs';
+import { Observable, zip } from 'rxjs';
 
 import { AppConfigService } from '../env';
+import {
+  EXPIRATION_CLIENT,
+  PAYMENTS_CLIENT,
+  TICKETS_CLIENT,
+} from '../shared/constants';
 import { Ticket as TicketSchema, TicketDocument } from '../tickets/schemas';
 import { CreateOrder, Order, OrderStatus } from './models';
 import { Order as OrderSchema, OrderDocument } from './schemas';
@@ -34,19 +39,25 @@ export class OrdersService {
     @InjectModel(OrderSchema.name) private orderModel: Model<OrderDocument>,
     @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
     @Inject(ConfigService) private configService: AppConfigService,
-    @Inject(Publisher) private publisher: Publisher
+    @Inject(TICKETS_CLIENT) private ticketsClient: ClientProxy,
+    @Inject(EXPIRATION_CLIENT) private expirationClient: ClientProxy,
+    @Inject(PAYMENTS_CLIENT) private paymentsClient: ClientProxy,
   ) {
     this.expirationWindow = this.configService.get(
       'EXPIRATION_WINDOW_SECONDS',
-      { infer: true }
+      { infer: true },
     );
   }
 
   emitEvent(
     pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
-    event: OrderCreatedEvent['data'] | OrderCancelledEvent['data']
-  ): Observable<string> {
-    return this.publisher.emit<string, typeof event>(pattern, event);
+    event: OrderCreatedEvent['data'] | OrderCancelledEvent['data'],
+  ): Observable<[string, string, string]> {
+    return zip(
+      this.ticketsClient.emit<string, typeof event>(pattern, event),
+      this.expirationClient.emit<string, typeof event>(pattern, event),
+      this.paymentsClient.emit<string, typeof event>(pattern, event),
+    );
   }
 
   async create(orderRequest: CreateOrder, currentUser: User): Promise<Order> {
@@ -65,6 +76,7 @@ export class OrdersService {
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + this.expirationWindow);
     // 4. Build the order and save it to DB
+    // TODO: use a transaction here
     const newOrder = await this.orderModel.create({
       ticket,
       userId: currentUser.id,
@@ -94,7 +106,7 @@ export class OrdersService {
   userIsOrderOwner(currentUser: User, order: OrderDocument): void {
     if (order.userId !== currentUser.id) {
       throw new ForbiddenException(
-        `Order ${order._id} does not belong to user ${currentUser.id}`
+        `Order ${order._id} does not belong to user ${currentUser.id}`,
       );
     }
   }
@@ -105,13 +117,14 @@ export class OrdersService {
     this.userIsOrderOwner(currentUser, order);
     if (order.userId !== currentUser.id) {
       throw new ForbiddenException(
-        `Order ${id} does not belong to user ${currentUser.id}`
+        `Order ${id} does not belong to user ${currentUser.id}`,
       );
     }
     return order.toJSON<Order>();
   }
 
   async cancelById(id: string, currentUser: User): Promise<Order> {
+    // TODO: use a transaction here
     const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
     this.orderExists(id, order);
     this.userIsOrderOwner(currentUser, order);
@@ -128,6 +141,7 @@ export class OrdersService {
     if (order.status === OrderStatus.Complete) {
       return order.toJSON<Order>();
     }
+    // TODO: use a transaction here
     order.set({ status: OrderStatus.Cancelled });
     await order.save();
     const result = order.toJSON<Order>();

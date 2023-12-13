@@ -40,7 +40,7 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true, abortOnError: false }
+    { bufferLogs: true, abortOnError: false },
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
@@ -60,7 +60,7 @@ async function bootstrap(): Promise<void> {
   // });
 
   // Fastify
-  app.register(fastifyHelmet, {
+  await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: [`'self'`],
@@ -70,14 +70,14 @@ async function bootstrap(): Promise<void> {
       },
     },
   });
-  app.register(fastifySecureSession, {
+  await app.register(fastifySecureSession, {
     key: configService.get('SESSION_KEY'),
     cookie: getCookieOptions(environment),
   });
-  app.register(fastifyPassport.initialize());
-  app.register(fastifyPassport.secureSession());
+  await app.register(fastifyPassport.initialize());
+  await app.register(fastifyPassport.secureSession());
   if (!proxyServerUrls.length) {
-    app.register(fastifyCors, {
+    await app.register(fastifyCors, {
       origin: '*',
       // allowedHeaders: ALLOWED_HEADERS,
       // exposedHeaders: EXPOSED_HEADERS,
@@ -126,9 +126,12 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
     logger.log(
-      `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
+      `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`,
     );
   });
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

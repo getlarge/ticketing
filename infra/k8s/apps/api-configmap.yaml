@@ -15,6 +15,6 @@ data:
   JWT_ALGORITHM: ES256
   JWT_EXPIRES_IN: 60m
   JWT_ISSUER: ticketing.dev
-  NATS_URL: http://nats-srv:4222
-  NATS_CLUSTER_ID: ticketing
+  RMQ_URL: http://rmq-srv:5672
+  ORY_BASE_PATH: http://localhost:4000
   LOG_LEVEL: info

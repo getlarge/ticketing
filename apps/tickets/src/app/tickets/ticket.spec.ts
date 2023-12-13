@@ -1,11 +1,11 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { MockClient } from '@ticketing/microservices/shared/testing';
 import { Model, Types } from 'mongoose';
 
 import { AppConfigService } from '../env';
+import { ORDERS_CLIENT } from '../shared/constants';
 import { Ticket, TicketDocument } from './schemas';
 import { TicketsModule } from './tickets.module';
 
@@ -28,7 +28,7 @@ describe('Tickets', () => {
         TicketsModule,
       ],
     })
-      .overrideProvider(Publisher)
+      .overrideProvider(ORDERS_CLIENT)
       .useValue(new MockClient())
       .compile();
 
