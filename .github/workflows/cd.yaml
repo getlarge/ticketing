@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       workflow_conclusion:
-        description: 'Status of workflow trigerring s1seven CD'
+        description: 'Status of workflow trigerring ticketing CD'
         required: false
         default: 'success'
         type: string
@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       workflow_conclusion:
-        description: 'Status of workflow trigerring s1seven CD'
+        description: 'Status of workflow trigerring ticketing CD'
         required: false
         default: 'success'
       tag:
