@@ -13,6 +13,7 @@ import { AmqpClient, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
+import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Services } from '@ticketing/shared/constants';
 import { Types } from 'mongoose';
 import { delay, lastValueFrom } from 'rxjs';
@@ -60,7 +61,10 @@ describe('OrdersMSController (e2e)', () => {
       prefetchCount: 1,
       isGlobalPrefetchCount: false,
       queue: `${Services.TICKETS_SERVICE}_QUEUE`,
-      replyQueue: `${Services.TICKETS_SERVICE}_REPLY_${Services.TICKETS_SERVICE}_QUEUE`,
+      replyQueue: getReplyQueueName(
+        Services.TICKETS_SERVICE,
+        Services.ORDERS_SERVICE,
+      ),
       queueOptions: {
         durable: false,
         exclusive: false,

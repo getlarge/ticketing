@@ -11,6 +11,7 @@ import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
+import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { CURRENT_USER_KEY, Services } from '@ticketing/shared/constants';
 
 import { AppConfigService } from '../env';
@@ -35,7 +36,7 @@ const clientFactory = (
     prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
     isGlobalPrefetchCount: false,
     queue: `${consumerService}_QUEUE`,
-    replyQueue: `${consumerService}_REPLY_${Services.TICKETS_SERVICE}_QUEUE`,
+    replyQueue: getReplyQueueName(consumerService, Services.TICKETS_SERVICE),
     queueOptions: {
       durable: true,
       exclusive: false,

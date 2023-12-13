@@ -10,6 +10,7 @@ import {
   type AmqpOptions,
   AmqpClient,
 } from '@s1seven/nestjs-tools-amqp-transport';
+import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Services } from '@ticketing/shared/constants';
 
 import { AppConfigService } from '../env';
@@ -40,7 +41,10 @@ import { OrdersMSController } from './orders-ms.controller';
               exclusive: false,
               autoDelete: false,
             },
-            replyQueue: `${Services.ORDERS_SERVICE}_REPLY_${Services.EXPIRATION_SERVICE}_QUEUE`,
+            replyQueue: getReplyQueueName(
+              Services.ORDERS_SERVICE,
+              Services.EXPIRATION_SERVICE,
+            ),
             replyQueueOptions: {
               durable: true,
               exclusive: true,

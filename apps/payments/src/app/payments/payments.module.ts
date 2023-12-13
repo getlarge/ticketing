@@ -12,6 +12,7 @@ import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
+import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { CURRENT_USER_KEY, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
@@ -61,7 +62,10 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
             prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
             isGlobalPrefetchCount: false,
             queue: `${Services.ORDERS_SERVICE}_QUEUE`,
-            replyQueue: `${Services.ORDERS_SERVICE}_REPLY_${Services.PAYMENTS_SERVICE}_QUEUE`,
+            replyQueue: getReplyQueueName(
+              Services.ORDERS_SERVICE,
+              Services.PAYMENTS_SERVICE,
+            ),
             queueOptions: {
               durable: true,
               exclusive: false,
