@@ -6,7 +6,6 @@ import type {
   MessageFields,
   MessageProperties,
 } from 'amqplib';
-import EventEmitter from 'node:events';
 import { of } from 'rxjs';
 
 export class MockClient {
@@ -49,9 +48,8 @@ export class RmqMessage implements Message {
   }
 }
 
-class RmqChannel extends EventEmitter implements Channel {
+class RmqChannel implements Channel {
   constructor(connection?: Connection) {
-    super();
     this.connection = connection;
   }
   connection: Connection;
@@ -79,6 +77,21 @@ class RmqChannel extends EventEmitter implements Channel {
   reject = jest.fn();
   prefetch = jest.fn();
   recover = jest.fn();
+  off = jest.fn();
+  on = jest.fn();
+  once = jest.fn();
+  addListener = jest.fn();
+  removeListener = jest.fn();
+  removeAllListeners = jest.fn();
+  listeners = jest.fn();
+  rawListeners = jest.fn();
+  emit = jest.fn();
+  eventNames = jest.fn();
+  listenerCount = jest.fn();
+  setMaxListeners = jest.fn();
+  getMaxListeners = jest.fn();
+  prependListener = jest.fn();
+  prependOnceListener = jest.fn();
 }
 
 export function createRmqContext(

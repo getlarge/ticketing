@@ -5,6 +5,7 @@ import {
   createRmqContext,
   MockModel,
 } from '@ticketing/microservices/shared/testing';
+import { Channel } from 'amqp-connection-manager';
 
 import { mockTicketEvent } from '../../../test/models/ticket.mock';
 import { TicketsService } from './tickets.service';
@@ -26,7 +27,7 @@ describe('TicketsMSController', () => {
   });
 
   describe('onCreated()', () => {
-    it('should call "TicketsService.create" and in case of success ack NATS message', async () => {
+    it('should call "TicketsService.create" and in case of success ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
       const context = createRmqContext();
@@ -41,7 +42,7 @@ describe('TicketsMSController', () => {
       expect(context.getChannelRef().ack).toBeCalled();
     });
 
-    it('should call "TicketsService.create" and in case of error NOT ack NATS message', async () => {
+    it('should call "TicketsService.create" and in case of error NOT ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
       const context = createRmqContext();
@@ -50,18 +51,21 @@ describe('TicketsMSController', () => {
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
       ticketsService.create = jest.fn().mockRejectedValueOnce(expectedError);
-      context.getChannelRef().ack = jest.fn();
+      const channel = context.getChannelRef() as Channel;
+      channel.ack = jest.fn();
+      channel.nack = jest.fn();
       //
       await expect(
         ticketsController.onCreated(ticket, context),
       ).rejects.toThrowError(expectedError);
       expect(ticketsService.create).toBeCalledWith(ticket);
-      expect(context.getChannelRef().ack).not.toBeCalled();
+      expect(channel.ack).not.toBeCalled();
+      expect(channel.nack).toBeCalled();
     });
   });
 
   describe('onUpdated()', () => {
-    it('should call "TicketsService.updatedById" and in case of success, ack NATS message', async () => {
+    it('should call "TicketsService.updatedById" and in case of success, ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
       const context = createRmqContext();
@@ -76,7 +80,7 @@ describe('TicketsMSController', () => {
       expect(context.getChannelRef().ack).toBeCalled();
     });
 
-    it('should call "TicketsService.updatedById" and in case of error, NOT ack NATS message', async () => {
+    it('should call "TicketsService.updatedById" and in case of error, NOT ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
       const context = createRmqContext();
@@ -87,13 +91,16 @@ describe('TicketsMSController', () => {
       ticketsService.updateById = jest
         .fn()
         .mockRejectedValueOnce(expectedError);
-      context.getChannelRef().ack = jest.fn();
+      const channel = context.getChannelRef() as Channel;
+      channel.ack = jest.fn();
+      channel.nack = jest.fn();
       //
       await expect(
         ticketsController.onUpdated(ticket, context),
       ).rejects.toThrowError(expectedError);
       expect(ticketsService.updateById).toBeCalledWith(ticket.id, ticket);
-      expect(context.getChannelRef().ack).not.toBeCalled();
+      expect(channel.ack).not.toBeCalled();
+      expect(channel.nack).toBeCalled();
     });
   });
 });

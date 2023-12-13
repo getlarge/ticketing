@@ -7,6 +7,7 @@ import {
   MockModel,
   MockPublisher,
 } from '@ticketing/microservices/shared/testing';
+import { Channel } from 'amqp-connection-manager';
 import { Types } from 'mongoose';
 
 import { OrdersService } from './orders.service';
@@ -58,12 +59,16 @@ describe('OrdersMSController', () => {
       const ordersService = app.get(OrdersService);
       ordersService.expireById = jest.fn().mockRejectedValueOnce(expectedError);
       context.getChannelRef().ack = jest.fn();
+      const channel = context.getChannelRef() as Channel;
+      channel.ack = jest.fn();
+      channel.nack = jest.fn();
       //
       await expect(
         ordersController.onExpiration(order, context),
       ).rejects.toThrowError(expectedError);
       expect(ordersService.expireById).toBeCalledWith(order.id);
-      expect(context.getChannelRef().ack).not.toBeCalled();
+      expect(channel.ack).not.toBeCalled();
+      expect(channel.nack).toBeCalled();
     });
   });
 });

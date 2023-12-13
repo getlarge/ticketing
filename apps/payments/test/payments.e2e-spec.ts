@@ -83,8 +83,6 @@ describe('PaymentsController (e2e)', () => {
     paymentModel = app.get<Model<PaymentDocument>>(
       getModelToken(PaymentSchema.name),
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // natsClient = app.get(Publisher);
     await app.init();
   });
 
