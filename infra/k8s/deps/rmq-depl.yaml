@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmq-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmq
+  template:
+    metadata:
+      labels:
+        app: rmq
+    spec:
+      containers:
+        - name: rmq
+          image: rabbitmq:3.12-management
+          env:
+            - name : RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: '-rabbit auth_backends [rabbit_auth_backend_internal,rabbit_auth_backend_cache]
+                -rabbitmq_auth_backend_cache cached_backend rabbit_auth_backend_http
+                -rabbitmq_auth_backend_cache cache_ttl 5000
+                -rabbitmq_auth_backend_http http_method post
+                -rabbitmq_auth_backend_http user_path "http://auth-srv:3000/user"
+                -rabbitmq_auth_backend_http vhost_path "http://auth-srv:3000/vhost"
+                -rabbitmq_auth_backend_http resource_path "http://auth-srv:3000/resource"
+                -rabbitmq_auth_backend_http topic_path "http://auth-srv:3000/topic"'
+          resources:
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-srv
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - name: client
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+    - name: adminui
+      protocol: TCP
+      port: 15672
+      targetPort: 15672

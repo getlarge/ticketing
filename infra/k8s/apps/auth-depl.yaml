@@ -43,6 +43,16 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: SESSION_KEY
+            - name: ORY_ACTION_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ory-secret
+                  key: ORY_ACTION_API_KEY
+            - name: ORY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ory-secret
+                  key: ORY_API_KEY
           startupProbe:
             exec:
               command: ['pgrep', '-x', 'node']
