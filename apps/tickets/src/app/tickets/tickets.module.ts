@@ -1,20 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import {
+  ClientsModule,
+  CustomClientOptions,
+  Transport,
+} from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
-import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
 import { OryModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
-import {
-  CURRENT_USER_KEY,
-  Resources,
-  Services,
-} from '@ticketing/shared/constants';
+import { CURRENT_USER_KEY, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { AppConfigService } from '../env';
+import { ORDERS_CLIENT } from '../shared/constants';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
@@ -31,17 +33,38 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
   },
 ]);
 
-const NatsPublisher = NatsStreamingTransport.registerAsync({
-  inject: [ConfigService],
-  useFactory: (configService: AppConfigService) => ({
-    clientId: configService.get('NATS_CLIENT_ID'),
-    clusterId: configService.get('NATS_CLUSTER_ID'),
-    connectOptions: {
-      url: configService.get('NATS_URL'),
-      name: `${Services.TICKETS_SERVICE}_${Resources.TICKETS}`,
+const OrdersClient = ClientsModule.registerAsync([
+  {
+    name: ORDERS_CLIENT,
+    inject: [ConfigService],
+    useFactory: (configService: AppConfigService) => {
+      const options: AmqpOptions = {
+        urls: [configService.get('RMQ_URL') as string],
+        persistent: true,
+        noAck: true,
+        prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
+        isGlobalPrefetchCount: false,
+        queue: `${Services.ORDERS_SERVICE}_QUEUE`,
+        replyQueue: `${Services.ORDERS_SERVICE}_REPLY_${Services.TICKETS_SERVICE}_QUEUE`,
+        queueOptions: {
+          durable: true,
+          exclusive: false,
+          autoDelete: false,
+        },
+        socketOptions: {
+          keepAlive: true,
+          heartbeatIntervalInSeconds: 30,
+          reconnectTimeInSeconds: 1,
+        },
+      };
+      const clientOptions: CustomClientOptions = {
+        customClass: AmqpClient,
+        options,
+      };
+      return { ...clientOptions, transport: Transport.RMQ };
     },
-  }),
-});
+  },
+]);
 
 @Module({
   imports: [
@@ -50,7 +73,7 @@ const NatsPublisher = NatsStreamingTransport.registerAsync({
       assignProperty: CURRENT_USER_KEY,
       session: true,
     }),
-    NatsPublisher,
+    OrdersClient,
     OryModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({
@@ -69,6 +92,6 @@ const NatsPublisher = NatsStreamingTransport.registerAsync({
     TicketsService,
     JwtStrategy,
   ],
-  exports: [MongooseFeatures, NatsPublisher, TicketsService],
+  exports: [MongooseFeatures, OrdersClient, TicketsService],
 })
 export class TicketsModule {}

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  createNatsContext,
+  createRmqContext,
   MockModel,
   MockPublisher,
 } from '@ticketing/microservices/shared/testing';
@@ -22,7 +22,7 @@ describe('OrdersMSController', () => {
           provide: TicketsService,
           useValue: new TicketsService(
             new MockModel() as any,
-            new MockPublisher() as any
+            new MockPublisher() as any,
           ),
         },
       ],
@@ -33,34 +33,34 @@ describe('OrdersMSController', () => {
     it('should call "TicketsService.createOrder" and in case of success ack NATS message', async () => {
       // ticket coming from tickets-service
       const order = mockOrderEvent();
-      const context = createNatsContext();
+      const context = createRmqContext();
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.createOrder = jest.fn();
-      context.message.ack = jest.fn();
+      context.getChannelRef().ack = jest.fn();
       //
       await ordersMSController.onCreated(order, context);
       expect(ticketsService.createOrder).toBeCalledWith(order);
-      expect(context.message.ack).toBeCalled();
+      expect(context.getChannelRef().ack).toBeCalled();
     });
 
     it('should call "TicketsService.createOrder" and in case of error NOT ack NATS message', async () => {
       // ticket coming from tickets-service
       const order = mockOrderEvent();
-      const context = createNatsContext();
+      const context = createRmqContext();
       const expectedError = new Error('Cannot create ticket');
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.createOrder = jest
         .fn()
         .mockRejectedValueOnce(expectedError);
-      context.message.ack = jest.fn();
+      context.getChannelRef().ack = jest.fn();
       //
       await expect(
-        ordersMSController.onCreated(order, context)
+        ordersMSController.onCreated(order, context),
       ).rejects.toThrowError(expectedError);
       expect(ticketsService.createOrder).toBeCalledWith(order);
-      expect(context.message.ack).not.toBeCalled();
+      expect(context.getChannelRef().ack).not.toBeCalled();
     });
   });
 
@@ -68,34 +68,34 @@ describe('OrdersMSController', () => {
     it('should call "TicketsService.cancelOrder" and in case of success, ack NATS message', async () => {
       // ticket coming from tickets-service
       const order = mockOrderEvent();
-      const context = createNatsContext();
+      const context = createRmqContext();
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.cancelOrder = jest.fn();
-      context.message.ack = jest.fn();
+      context.getChannelRef().ack = jest.fn();
       //
       await ordersMSController.onCancelled(order, context);
       expect(ticketsService.cancelOrder).toBeCalledWith(order);
-      expect(context.message.ack).toBeCalled();
+      expect(context.getChannelRef().ack).toBeCalled();
     });
 
     it('should call "TicketsService.cancelOrder" and in case of error, NOT ack NATS message', async () => {
       // ticket coming from tickets-service
       const order = mockOrderEvent();
-      const context = createNatsContext();
+      const context = createRmqContext();
       const expectedError = new Error('Cannot create ticket');
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.cancelOrder = jest
         .fn()
         .mockRejectedValueOnce(expectedError);
-      context.message.ack = jest.fn();
+      context.getChannelRef().ack = jest.fn();
       //
       await expect(
-        ordersMSController.onCancelled(order, context)
+        ordersMSController.onCancelled(order, context),
       ).rejects.toThrowError(expectedError);
       expect(ticketsService.cancelOrder).toBeCalledWith(order);
-      expect(context.message.ack).not.toBeCalled();
+      expect(context.getChannelRef().ack).not.toBeCalled();
     });
   });
 });

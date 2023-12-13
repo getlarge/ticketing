@@ -39,8 +39,6 @@
     "dotenv-pull:all": "npx nx run-many --target=dotenv-pull --projects=auth,expiration,orders,tickets,payments",
     "dotenv-push": "node tools/utils/dotenv-push.js",
     "dotenv-push:all": "npx nx run-many --target=dotenv-push --projects=auth,expiration,orders,tickets,payments",
-    "docker:nats:build": "docker build infra/nats-streaming -f infra/nats-streaming/Dockerfile -t ghcr.io/getlarge/ticketing/nats-streaming",
-    "docker:nats:push": "docker push ghcr.io/getlarge/ticketing/nats-streaming:latest",
     "docker:rmq:build": "docker buildx build infra/rabbitmq -f infra/rabbitmq/Dockerfile -t ghcr.io/s1seven/rabbitmq --load",
     "docker:rmq:push": "docker buildx build infra/rabbitmq -f infra/rabbitmq/Dockerfile --platform linux/amd64,linux/arm64 -t ghcr.io/s1seven/rabbitmq --push",
     "docker:proxy:build": "docker buildx build infra/nginx --no-cache -f infra/nginx/Dockerfile -t ghcr.io/getlarge/ticketing/nginx-proxy --build-arg TEMPLATE=nginx.template --load",

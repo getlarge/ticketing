@@ -9,14 +9,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  Listener,
-  Publisher,
-} from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { AmqpClient, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
-import { Resources, Services } from '@ticketing/shared/constants';
+import { Services } from '@ticketing/shared/constants';
 import { Types } from 'mongoose';
 import { delay, lastValueFrom } from 'rxjs';
 
@@ -29,8 +26,7 @@ import { mockOrderEvent } from './models/order.mock';
 describe('OrdersMSController (e2e)', () => {
   let app: NestFastifyApplication;
   let microservice: INestMicroservice;
-  let natsPublisher: Publisher;
-  // let ticketModel: Model<TicketDocument>;
+  let orderRmqPublisher: AmqpClient;
   const envVariables = loadEnv(envFilePath, true);
   const exceptionFilter = new GlobalErrorFilter();
   exceptionFilter.catch = jest.fn();
@@ -55,29 +51,47 @@ describe('OrdersMSController (e2e)', () => {
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
     const configService = app.get<AppConfigService>(ConfigService);
+    const rmqUrl = configService.get('RMQ_URL') as string;
 
-    natsPublisher = new Publisher({
-      clusterId: configService.get('NATS_CLUSTER_ID'),
-      clientId: configService.get('NATS_CLIENT_ID'),
-      connectOptions: {
-        url: configService.get('NATS_URL'),
-        name: `${Services.ORDERS_SERVICE}_${Resources.ORDERS}_test`,
+    orderRmqPublisher = new AmqpClient({
+      urls: [rmqUrl],
+      persistent: false,
+      noAck: false,
+      prefetchCount: 1,
+      isGlobalPrefetchCount: false,
+      queue: `${Services.TICKETS_SERVICE}_QUEUE`,
+      replyQueue: `${Services.TICKETS_SERVICE}_REPLY_${Services.TICKETS_SERVICE}_QUEUE`,
+      queueOptions: {
+        durable: false,
+        exclusive: false,
+        autoDelete: false,
+      },
+      socketOptions: {
+        keepAlive: true,
+        heartbeatIntervalInSeconds: 30,
+        reconnectTimeInSeconds: 1,
       },
     });
 
     const options: CustomStrategy = {
-      strategy: new Listener(
-        configService.get('NATS_CLUSTER_ID'),
-        configService.get('NATS_CLIENT_ID'),
-        `${Services.ORDERS_SERVICE}_GROUP_TEST`,
-        { url: configService.get('NATS_URL') },
-        {
-          durableName: `${Resources.ORDERS}_subscriptions_test`,
-          manualAckMode: false,
-          // deliverAllAvailable: true,
-          // ackWait: 5 * 1000,
-        }
-      ),
+      strategy: new AmqpServer({
+        urls: [rmqUrl],
+        persistent: false,
+        noAck: false,
+        prefetchCount: 1,
+        isGlobalPrefetchCount: false,
+        queue: `${Services.ORDERS_SERVICE}_QUEUE`,
+        queueOptions: {
+          durable: false,
+          exclusive: false,
+          autoDelete: false,
+        },
+        socketOptions: {
+          keepAlive: true,
+          heartbeatIntervalInSeconds: 30,
+          reconnectTimeInSeconds: 1,
+        },
+      }),
     };
     microservice = moduleFixture.createNestMicroservice(options);
     await microservice.listen();
@@ -85,7 +99,7 @@ describe('OrdersMSController (e2e)', () => {
   });
 
   afterAll(async () => {
-    natsPublisher.close();
+    orderRmqPublisher.close();
     await microservice.close();
     await app.close();
   });
@@ -106,7 +120,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.createOrder = jest.fn();
       //
       await lastValueFrom(
-        natsPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250))
+        orderRmqPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250)),
       );
       expect(ticketsService.createOrder).not.toBeCalled();
       expect(exceptionFilter.catch).toBeCalled();
@@ -118,7 +132,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.createOrder = jest.fn();
       //
       await lastValueFrom(
-        natsPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250))
+        orderRmqPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250)),
       );
       expect(ticketsService.createOrder).toBeCalled();
     }, 6000);
@@ -131,7 +145,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.cancelOrder = jest.fn();
       //
       await lastValueFrom(
-        natsPublisher.emit(Patterns.OrderCancelled, order).pipe(delay(250))
+        orderRmqPublisher.emit(Patterns.OrderCancelled, order).pipe(delay(250)),
       );
       expect(ticketsService.cancelOrder).toBeCalled();
     }, 6000);
