@@ -289,9 +289,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v3
-
       - name: Regenerate backend apps package.json
         if: needs.init.outputs.should-update-packages == 'true'
         run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn refresh-pkg-json
@@ -385,14 +382,29 @@ jobs:
       (github.event_name == 'release' || github.event_name == 'push' || !github.event.pull_request.draft)
 
     services:
-      nats-streaming:
-        image: ghcr.io/getlarge/ticketing/nats-streaming:latest
+      rabbitmq:
+        image: ghcr.io/getlarge/ticketing/rabbitmq:latest
         credentials:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS:
+            '-rabbit auth_backends [rabbit_auth_backend_internal,rabbit_auth_backend_cache]
+            -rabbitmq_auth_backend_cache cached_backend rabbit_auth_backend_http
+            -rabbitmq_auth_backend_cache cache_ttl 5000
+            -rabbitmq_auth_backend_http http_method post
+            -rabbitmq_auth_backend_http user_path "http://172.17.0.1:3000/user"
+            -rabbitmq_auth_backend_http vhost_path "http://172.17.0.1:3000/vhost"
+            -rabbitmq_auth_backend_http resource_path "http://172.17.0.1:3000/resource"
+            -rabbitmq_auth_backend_http topic_path "http://172.17.0.1:3000/topic"'
+        options: >-
+          --health-cmd "rabbitmq-diagnostics status"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
-          - '4222:4222'
-          - '8222:8222'
+          - 5672:5672
+          - 15672:15672
 
       auth-mongo:
         image: mongo
