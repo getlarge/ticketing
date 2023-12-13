@@ -45,6 +45,9 @@
       "@ticketing/microservices/shared/models": [
         "libs/microservices/shared/models/src/index.ts"
       ],
+      "@ticketing/microservices/shared/mongo": [
+        "libs/microservices/shared/mongo/src/index.ts"
+      ],
       "@ticketing/microservices/shared/pipes": [
         "libs/microservices/shared/pipes/src/index.ts"
       ],
