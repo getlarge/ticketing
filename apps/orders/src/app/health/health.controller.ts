@@ -6,6 +6,7 @@ import {
   VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import {
@@ -14,6 +15,8 @@ import {
   HealthCheckService,
   HttpHealthIndicator,
   MemoryHealthIndicator,
+  MicroserviceHealthIndicator,
+  MicroserviceHealthIndicatorOptions,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
 import {
@@ -23,12 +26,8 @@ import {
   HEALTH_MONGO_PING_TIMEOUT,
   HEALTH_RPC_PING_TIMEOUT,
 } from '@ticketing/microservices/shared/constants';
-import {
-  NatsStreamingConfig,
-  NatsStreamingHealthCheck,
-} from '@ticketing/microservices/shared/nats-streaming';
 import { Resources } from '@ticketing/shared/constants';
-import { Connection } from 'mongoose';
+import type { Connection } from 'mongoose';
 
 import { AppConfigService } from '../env';
 
@@ -36,8 +35,9 @@ import { AppConfigService } from '../env';
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
 @Injectable()
 export class HealthController {
-  heapUsedThreshold: number;
-  rssThreshold: number;
+  readonly heapUsedThreshold: number;
+  readonly rssThreshold: number;
+  readonly microserviceOptions: MicroserviceHealthIndicatorOptions;
 
   constructor(
     @Inject(ConfigService) private readonly configService: AppConfigService,
@@ -47,16 +47,23 @@ export class HealthController {
     private readonly http: HttpHealthIndicator,
     private readonly mongo: MongooseHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
-    private readonly nats: NatsStreamingHealthCheck
+    private readonly microservice: MicroserviceHealthIndicator,
   ) {
     this.heapUsedThreshold = this.configService.get<number>(
       'HEAP_USED_TRESHOLD',
-      HEALTH_DEFAULT_HEAP_USED_TRESHOLD
+      HEALTH_DEFAULT_HEAP_USED_TRESHOLD,
     );
     this.rssThreshold = this.configService.get<number>(
       'MEMORY_RSS_TRESHOLD',
-      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD
+      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD,
     );
+    this.microserviceOptions = {
+      transport: Transport.RMQ,
+      options: {
+        urls: [configService.get('RMQ_URL') as string],
+      },
+      timeout: HEALTH_RPC_PING_TIMEOUT,
+    };
   }
 
   @ApiExcludeEndpoint()
@@ -75,11 +82,7 @@ export class HealthController {
           connection: this.mongooseConnection,
           timeout: HEALTH_MONGO_PING_TIMEOUT,
         }),
-      () =>
-        this.nats.pingCheck('nats', {
-          options: new NatsStreamingConfig(this.configService).options,
-          timeout: HEALTH_RPC_PING_TIMEOUT,
-        }),
+      () => this.microservice.pingCheck('rpc', this.microserviceOptions),
     ];
 
     return this.health.check(extraHealthChecks);

@@ -1,10 +1,17 @@
 import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, Transport } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { NatsStreamingContext } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { Ticket } from '@ticketing/shared/models';
+import type { Channel } from 'amqp-connection-manager';
+import type { Message } from 'amqplib';
 
 import { TicketsService } from './tickets.service';
 
@@ -13,11 +20,11 @@ export class TicketsMSController {
   readonly logger = new Logger(TicketsMSController.name);
 
   constructor(
-    @Inject(TicketsService) private readonly ticketsService: TicketsService
+    @Inject(TicketsService) private readonly ticketsService: TicketsService,
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketCreated, Transport.NATS)
+  @EventPattern(Patterns.TicketCreated, Transport.RMQ)
   async onCreated(
     @Payload(
       new ValidationPipe({
@@ -26,20 +33,27 @@ export class TicketsMSController {
         exceptionFactory: requestValidationErrorFactory,
         forbidUnknownValues: true,
         whitelist: true,
-      })
+      }),
     )
     data: Ticket,
-    @Ctx() context: NatsStreamingContext
+    @Ctx() context: RmqContext,
   ): Promise<void> {
-    this.logger.debug(`received message on ${context.message.getSubject()}`, {
+    const channel = context.getChannelRef() as Channel;
+    const message = context.getMessage() as Message;
+    const pattern = context.getPattern();
+    this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    await this.ticketsService.create(data);
-    context.message.ack();
+    // TODO: conditional ack
+    try {
+      await this.ticketsService.create(data);
+    } finally {
+      channel.ack(message);
+    }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketUpdated, Transport.NATS)
+  @EventPattern(Patterns.TicketUpdated, Transport.RMQ)
   async onUpdated(
     @Payload(
       new ValidationPipe({
@@ -48,15 +62,22 @@ export class TicketsMSController {
         exceptionFactory: requestValidationErrorFactory,
         forbidUnknownValues: true,
         whitelist: true,
-      })
+      }),
     )
     data: Ticket,
-    @Ctx() context: NatsStreamingContext
+    @Ctx() context: RmqContext,
   ): Promise<void> {
-    this.logger.debug(`received message on ${context.message.getSubject()}`, {
+    const channel = context.getChannelRef() as Channel;
+    const message = context.getMessage() as Message;
+    const pattern = context.getPattern();
+    this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    await this.ticketsService.updateById(data.id, data);
-    context.message.ack();
+    // TODO: conditional ack
+    try {
+      await this.ticketsService.updateById(data.id, data);
+    } finally {
+      channel.ack(message);
+    }
   }
 }

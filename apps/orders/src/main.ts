@@ -6,7 +6,7 @@ import fastifyPassport from '@fastify/passport';
 import fastifySecureSession from '@fastify/secure-session';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { CustomStrategy, Transport } from '@nestjs/microservices';
+import { CustomStrategy } from '@nestjs/microservices';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -16,7 +16,7 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { Listener } from '@nestjs-plugins/nestjs-nats-streaming-transport';
+import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import {
   bearerSecurityScheme,
   getCookieOptions,
@@ -25,9 +25,9 @@ import {
   sessionSecurityScheme,
 } from '@ticketing/microservices/shared/constants';
 import { Resources, Services } from '@ticketing/shared/constants';
-import { existsSync, writeFileSync } from 'fs';
 import { Logger } from 'nestjs-pino';
-import { resolve } from 'path';
+import { existsSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { AppModule } from './app/app.module';
 import { AppConfigService } from './app/env';
@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
       // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
       // maxParamLength: 100,
     }),
-    { bufferLogs: true, abortOnError: false }
+    { bufferLogs: true, abortOnError: false },
   );
 
   const configService = app.get<AppConfigService>(ConfigService);
@@ -59,7 +59,7 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
 
   // Fastify
-  app.register(fastifyHelmet, {
+  await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: [`'self'`],
@@ -69,14 +69,14 @@ async function bootstrap(): Promise<void> {
       },
     },
   });
-  app.register(fastifySecureSession, {
+  await app.register(fastifySecureSession, {
     key: configService.get('SESSION_KEY'),
     cookie: getCookieOptions(environment),
   });
-  app.register(fastifyPassport.initialize());
-  app.register(fastifyPassport.secureSession());
+  await app.register(fastifyPassport.initialize());
+  await app.register(fastifyPassport.secureSession());
   if (!proxyServerUrls.length) {
-    app.register(fastifyCors, {
+    await app.register(fastifyCors, {
       origin: '*',
       // allowedHeaders: ALLOWED_HEADERS,
       // exposedHeaders: EXPOSED_HEADERS,
@@ -85,22 +85,26 @@ async function bootstrap(): Promise<void> {
     });
   }
 
-  // NATS
-  const natsListener = new Listener(
-    configService.get('NATS_CLUSTER_ID'),
-    configService.get('NATS_CLIENT_ID'),
-    `${Services.ORDERS_SERVICE}_GROUP`,
-    { url: configService.get('NATS_URL'), name: Services.ORDERS_SERVICE },
-    {
-      durableName: `${Services.ORDERS_SERVICE}_subscriptions`,
-      manualAckMode: true,
-      deliverAllAvailable: true,
-      ackWait: 5 * 1000,
-    }
-  );
-  natsListener.transportId = Transport.NATS;
+  const amqpOptions: AmqpOptions = {
+    urls: [configService.get('RMQ_URL') as string],
+    persistent: true,
+    noAck: false,
+    prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
+    isGlobalPrefetchCount: false,
+    queue: `${Services.ORDERS_SERVICE}_QUEUE`,
+    queueOptions: {
+      durable: true,
+      exclusive: false,
+      autoDelete: false,
+    },
+    socketOptions: {
+      keepAlive: true,
+      heartbeatIntervalInSeconds: 30,
+      reconnectTimeInSeconds: 1,
+    },
+  };
   const options: CustomStrategy = {
-    strategy: natsListener,
+    strategy: new AmqpServer(amqpOptions),
   };
   const microService = app.connectMicroservice(options);
 
@@ -140,9 +144,12 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, '0.0.0.0', () => {
     logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
     logger.log(
-      `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`
+      `Access SwaggerUI at http://localhost:${port}/${swaggerUiPrefix}`,
     );
   });
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
