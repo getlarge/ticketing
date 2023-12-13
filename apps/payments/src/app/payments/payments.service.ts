@@ -6,8 +6,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { Publisher } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import {
   Patterns,
   PaymentCreatedEvent,
@@ -16,6 +16,7 @@ import { OrderStatus, User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
 
 import { Order as OrderSchema, OrderDocument } from '../orders/schemas';
+import { ORDERS_CLIENT } from '../shared/constants';
 import { CreatePayment, Payment } from './models';
 import { Payment as PaymentSchema, PaymentDocument } from './schemas';
 import { StripeService } from './stripe.service';
@@ -29,12 +30,12 @@ export class PaymentsService {
     @InjectModel(PaymentSchema.name)
     private paymentModel: Model<PaymentDocument>,
     @Inject(StripeService) private readonly stripeService: StripeService,
-    @Inject(Publisher) private publisher: Publisher
+    @Inject(ORDERS_CLIENT) private client: ClientProxy,
   ) {}
 
   async create(
     paymentRequest: CreatePayment,
-    currentUser: User
+    currentUser: User,
   ): Promise<Payment> {
     const { orderId, token } = paymentRequest;
     // 1. find the order the user is trying to pay for
@@ -45,17 +46,18 @@ export class PaymentsService {
     // 2. make sure the order belongs to the user
     if (order.userId !== currentUser.id) {
       throw new UnauthorizedException(
-        `User ${currentUser.id} is not a valid owner`
+        `User ${currentUser.id} is not a valid owner`,
       );
     }
     // 3. make sure the order is not cancelled
     if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestException(
-        `Order ${orderId} has been cancelled and can't be paid for`
+        `Order ${orderId} has been cancelled and can't be paid for`,
       );
     }
+    // TODO: use MongoDB transaction
     // 4. make sure the payment amount match the order price and create payment with Stripe
-    const charge = await this.stripeService.instance.charges.create({
+    const charge = await this.stripeService.charges.create({
       amount: order.price * 100,
       currency: 'eur',
       source: token,
@@ -67,9 +69,9 @@ export class PaymentsService {
     });
     const result = payment.toJSON<Payment>();
     // 7. emit payment:create event
-    this.publisher.emit<string, PaymentCreatedEvent['data']>(
+    this.client.emit<PaymentCreatedEvent['name'], PaymentCreatedEvent['data']>(
       Patterns.PaymentCreated,
-      result
+      result,
     );
     return result;
   }
