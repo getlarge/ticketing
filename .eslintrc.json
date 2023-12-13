@@ -254,6 +254,9 @@
         "no-unreachable-loop": "error",
         "no-var": "error",
         "prefer-const": "error",
+        "no-return-await": "error",
+        "require-await": "error",
+        "require-yield": "error",
         "@typescript-eslint/ban-ts-comment": "error",
         "@typescript-eslint/ban-tslint-comment": "error",
         "@typescript-eslint/ban-types": "error",
@@ -265,7 +268,21 @@
             "allowHigherOrderFunctions": true
           }
         ],
+        "@typescript-eslint/explicit-module-boundary-types": [
+          "warn",
+          {
+            "allowArgumentsExplicitlyTypedAsAny": true,
+            "allowTypedFunctionExpressions": true,
+            "allowHigherOrderFunctions": true
+          }
+        ],
         "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-floating-promises": [
+          "error",
+          {
+            "ignoreIIFE": true
+          }
+        ],
         "@typescript-eslint/no-inferrable-types": [
           "error",
           {
