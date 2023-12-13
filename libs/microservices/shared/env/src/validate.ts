@@ -4,15 +4,14 @@ import { omitBy } from 'lodash';
 
 import { BaseEnvironmentVariables } from './base-environment-variables';
 
-export const validate = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  envClass: ClassConstructor<BaseEnvironmentVariables & Record<string, any>>
+export const validate = <T extends BaseEnvironmentVariables>(
+  envClass: ClassConstructor<T>,
 ) => {
-  return (config: Record<string, unknown>) => {
+  return (config: Record<string, unknown>): T => {
     // eslint-disable-next-line no-param-reassign
     config = omitBy(
       config,
-      (val) => !val || val === 'null' || val === 'undefined'
+      (val) => !val || val === 'null' || val === 'undefined',
     );
 
     const validatedConfig = plainToClass(envClass, config, {
