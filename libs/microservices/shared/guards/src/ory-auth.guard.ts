@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { OryService } from '@ticketing/microservices/ory-client';
 import type { FastifyRequest } from 'fastify/types/request';
@@ -18,8 +19,12 @@ export class OryAuthGuard implements CanActivate {
     return context.switchToHttp().getRequest();
   }
 
-  canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = this.getRequest(context);
-    return this.oryService.validateSession(req);
+    const result = await this.oryService.validateSession(req);
+    if (!result) {
+      throw new UnauthorizedException();
+    }
+    return result;
   }
 }

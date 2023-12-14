@@ -4734,6 +4734,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nidomiro/relation-tuple-parser@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@nidomiro/relation-tuple-parser@npm:0.4.0"
+  peerDependencies:
+    antlr4ts: 0.5.0-alpha.4
+    defekt: 9.3.1
+    lodash: 4.17.21
+    tslib: 2.4.1
+  checksum: 3f8633c6939615d68ee8247320a6153c54510f4b49904f7a27c66ffae7257703548af5e2c0ed6e8a1ef1177db7c6e222e90e5c1beee4f0f570de2d6703973d1e
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -7723,6 +7735,15 @@ __metadata:
   version: 0.3.2
   resolution: "ansicolors@npm:0.3.2"
   checksum: e84fae7ebc27ac96d9dbb57f35f078cd6dde1b7046b0f03f73dcefc9fbb1f2e82e3685d083466aded8faf038f9fa9ebb408d215282bcd7aaa301d5ac3c486815
+  languageName: node
+  linkType: hard
+
+"antlr4ts@npm:^0.5.0-alpha.4":
+  version: 0.5.0-dev
+  resolution: "antlr4ts@npm:0.5.0-dev"
+  dependencies:
+    source-map-support: ^0.5.16
+  checksum: 640dae2229124372b0329315e9614ae983bb80b1af237d8c0b3e90a2d85fb534e851c51d65d1897c92b36d27851d041ad8d95aab44af19cf7355b3ad11a3ddbf
   languageName: node
   linkType: hard
 
@@ -11243,6 +11264,13 @@ __metadata:
   dependencies:
     clone: ^1.0.2
   checksum: 3a88b7a587fc076b84e60affad8b85245c01f60f38fc1d259e7ac1d89eb9ce6abb19e27215de46b98568dd5bc48471730b327637e6f20b0f1bc85cf00440c80a
+  languageName: node
+  linkType: hard
+
+"defekt@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "defekt@npm:9.3.1"
+  checksum: 80ba931818e45dc6670973b6fe022154c00530b28a18ee82cf1387798e91b15c1ff1df7031d6a3ed5101292affdff009a2694a6e3160b75bbd0cf47b82754da3
   languageName: node
   linkType: hard
 
@@ -21390,7 +21418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:0.5.21, source-map-support@npm:^0.5.12, source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.21, source-map-support@npm:^0.5.5, source-map-support@npm:~0.5.20":
+"source-map-support@npm:0.5.21, source-map-support@npm:^0.5.12, source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.21, source-map-support@npm:^0.5.5, source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
@@ -22226,6 +22254,7 @@ __metadata:
     "@ngrx/entity": 16.0.1
     "@ngrx/store": 16.0.1
     "@ngrx/store-devtools": 16.0.1
+    "@nidomiro/relation-tuple-parser": ^0.4.0
     "@nx/angular": 17.1.3
     "@nx/cypress": 17.1.3
     "@nx/eslint": 17.1.3
@@ -22255,6 +22284,7 @@ __metadata:
     "@typescript-eslint/parser": 6.14.0
     amqp-connection-manager: 4.1.14
     amqplib: 0.10.3
+    antlr4ts: ^0.5.0-alpha.4
     axios: 1.5.0
     babel-jest: 29.4.3
     bootstrap: ^5.1.3
@@ -22265,6 +22295,7 @@ __metadata:
     core-js: ^3.6.5
     cypress: ^8.3.0
     cz-conventional-changelog: ^3.3.0
+    defekt: ^9.3.1
     dotenv: 16.3.1
     dotenv-expand: 10.0.0
     dotenv-vault: ^1.25.0
