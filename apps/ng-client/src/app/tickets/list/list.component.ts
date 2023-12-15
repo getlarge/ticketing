@@ -14,6 +14,7 @@ import {
   TicketStoreSelectors,
 } from '../../store';
 import { CreateTicketModalComponent } from '../create-ticket-modal/create-ticket-modal.component';
+import { UpdateTicketModalComponent } from '../update-ticket-modal/update-ticket-modal.component';
 
 @Component({
   selector: 'ticketing-ticket-list',
@@ -29,19 +30,19 @@ export class TicketListComponent implements OnInit {
   constructor(
     private store: Store<RootStoreState.RootState>,
     private router: Router,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {}
 
   ngOnInit(): void {
     //? TODO: only show available tickets with TicketStoreSelectors.selectAvailableTicketItems
     this.tickets$ = this.store.select(
-      TicketStoreSelectors.selectAllTicketItems
+      TicketStoreSelectors.selectAllTicketItems,
     );
     this.currentFilter$ = this.store.select(
-      TicketStoreSelectors.selectTicketCurrentFilter
+      TicketStoreSelectors.selectTicketCurrentFilter,
     );
     this.isLoading$ = this.store.select(
-      TicketStoreSelectors.selectTicketIsLoading
+      TicketStoreSelectors.selectTicketIsLoading,
     );
     this.users$ = of([]);
     this.store.dispatch(new TicketStoreActions.LoadTicketsAction());
@@ -55,10 +56,10 @@ export class TicketListComponent implements OnInit {
     void this.router.navigate([`/${Resources.TICKETS}`, ticketId]);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onUpdateTicket(_ticketId: string): void {
-    // const modalRef = this.modalService.open(UpdateTicketModalComponent);
-    // modalRef.componentInstance.ticketId = ticketId;
+  onUpdateTicket(ticketId: string): void {
+    // TODO: add basic permission check
+    const modalRef = this.modalService.open(UpdateTicketModalComponent);
+    modalRef.componentInstance.ticketId = ticketId;
   }
 
   onOrderTicket(ticketId: string): void {
