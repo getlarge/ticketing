@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
+import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
@@ -23,7 +24,7 @@ import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
-import Paginator from 'nestjs-keyset-paginator';
+import { Paginator } from 'nestjs-keyset-paginator';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import { ORDERS_CLIENT } from '../shared/constants';
@@ -35,39 +36,38 @@ export class TicketsService {
   readonly logger = new Logger(TicketsService.name);
 
   constructor(
-    @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
-    @Inject(ORDERS_CLIENT) private client: ClientProxy,
+    @InjectModel(TicketSchema.name)
+    private readonly ticketModel: Model<TicketDocument>,
+    @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
   emitEvent(
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
     event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
   ): Observable<string> {
-    return this.client.emit<string, typeof event>(pattern, event);
+    return this.client.emit(pattern, event);
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
     await using manager = await transactionManager(this.ticketModel);
-    return manager.wrap(async () => {
+    const res = await manager.wrap<Ticket>(async (session) => {
       const doc: CreateTicket & { userId: string } = {
         ...ticket,
         userId: currentUser.id,
       };
-      const [newTicket] = await this.ticketModel.create([doc], {
-        session: manager.session,
+      const docs = await this.ticketModel.create([doc], {
+        session,
       });
-      // await this.oryPermissionService.createRelation(
-      //   parseRelationTuple(
-      //     `${PermissionNamespaces[Resources.TICKETS]}:${newTicket.id}#owners@${PermissionNamespaces[Resources.USERS]}:${currentUser.id}#edit`,
-      //   ).unwrapOrThrow(),
-      // );
-
-      const result = newTicket.toJSON<Ticket>();
-      await lastValueFrom(
-        this.emitEvent(Patterns.TicketCreated, result).pipe(),
-      );
-      return result;
+      const newTicket = docs[0].toJSON<Ticket>();
+      this.logger.debug(`Created ticket ${newTicket.id}`);
+      await lastValueFrom(this.emitEvent(Patterns.TicketCreated, newTicket));
+      this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
+      return newTicket;
     });
+    if (res.error) {
+      throw res.error;
+    }
+    return res.value;
   }
 
   paginate(params: PaginateDto = {}): Promise<{
@@ -116,61 +116,85 @@ export class TicketsService {
     update: UpdateTicket,
     currenUser: User,
   ): Promise<Ticket> {
-    const ticket = await this.ticketModel.findOne({ _id: id });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${id} not found`);
-    } else if (ticket.userId !== currenUser.id) {
-      throw new ForbiddenException();
-    } else if (ticket.orderId) {
-      throw new BadRequestException(`Ticket ${id} is currently reserved`);
-    }
-
     await using manager = await transactionManager(this.ticketModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: id })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${id} not found`);
+      } else if (ticket.userId !== currenUser.id) {
+        // TODO: should be handled by Ory permissions only
+        throw new ForbiddenException();
+      } else if (ticket.orderId) {
+        throw new BadRequestException(`Ticket ${id} is currently reserved`);
+      }
       ticket.set(update);
-      await ticket.save({ session: manager.session });
-      const result = ticket.toJSON<Ticket>();
+      await ticket.save({ session });
+      const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
       );
-      return result;
+      return updatedTicket;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 
   async createOrder(event: OrderCreatedEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
     const orderId = event.id;
-    const ticket = await this.ticketModel.findOne({ _id: ticketId });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${ticketId} not found`);
-    }
     await using manager = await transactionManager(this.ticketModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: ticketId })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${ticketId} not found`);
+      }
       ticket.set({ orderId });
-      await ticket.save({ session: manager.session });
-      const result = ticket.toJSON<Ticket>();
+      await ticket.save({ session });
+      // TODO: create relation between ticket and order
+      const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
       );
-      return result;
+      return updatedTicket;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 
   async cancelOrder(event: OrderCancelledEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
-    const ticket = await this.ticketModel.findOne({ _id: ticketId });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${ticketId} not found`);
-    }
+
     await using manager = await transactionManager(this.ticketModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: ticketId })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${ticketId} not found`);
+      }
       ticket.set({ orderId: undefined });
       await ticket.save({ session: manager.session });
-      const result = ticket.toJSON<Ticket>();
+      // TODO: delete relation between ticket and order
+      const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, result).pipe(),
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
       );
-      return result;
+      return updatedTicket;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 }

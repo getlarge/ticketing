@@ -35,6 +35,7 @@ export class PaymentsService {
     @Inject(ORDERS_CLIENT) private client: ClientProxy,
   ) {}
 
+  // TODO: add safe guard to avoid double payment
   async create(
     paymentRequest: CreatePayment,
     currentUser: User,
@@ -59,30 +60,42 @@ export class PaymentsService {
     }
 
     // 4. make sure the payment amount match the order price and create payment with Stripe
-    const charge = await this.stripeService.charges.create({
-      amount: order.price * 100,
-      currency: 'eur',
-      source: token,
-    });
+    const charge = await this.stripeService.charges.create(
+      {
+        amount: order.price * 100,
+        currency: 'eur',
+        source: token,
+      },
+      {
+        // idempotencyKey: orderId,
+      },
+    );
 
     await using manager = await transactionManager(this.paymentModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
       // 5. Create charge instance in Mongo
-      const payment = await this.paymentModel.create({
-        orderId,
-        stripeId: charge.id,
-      });
-      const result = payment.toJSON<Payment>();
+      const res = await this.paymentModel.create(
+        [
+          {
+            orderId,
+            stripeId: charge.id,
+          },
+        ],
+        { session },
+      );
+      const payment = res[0].toJSON<Payment>();
       // 6. emit payment:create event
       await firstValueFrom(
-        this.client
-          .emit<PaymentCreatedEvent['name'], PaymentCreatedEvent['data']>(
-            Patterns.PaymentCreated,
-            result,
-          )
-          .pipe(),
+        this.client.emit<
+          PaymentCreatedEvent['name'],
+          PaymentCreatedEvent['data']
+        >(Patterns.PaymentCreated, payment),
       );
-      return result;
+      return payment;
     });
+    if (result.error) {
+      throw result.error;
+    }
+    return result.value;
   }
 }

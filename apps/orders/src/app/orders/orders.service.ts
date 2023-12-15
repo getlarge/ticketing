@@ -78,20 +78,30 @@ export class OrdersService {
     expiresAt.setSeconds(expiresAt.getSeconds() + this.expirationWindow);
 
     await using manager = await transactionManager(this.ticketModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
       // 4. Build the order and save it to DB
-      const newOrder = await this.orderModel.create({
-        ticket,
-        userId: currentUser.id,
-        expiresAt,
-        status: OrderStatus.Created,
-      });
-      await newOrder.populate('ticket');
-      const result = newOrder.toJSON<Order>();
+      const res = await this.orderModel.create(
+        [
+          {
+            ticket,
+            userId: currentUser.id,
+            expiresAt,
+            status: OrderStatus.Created,
+          },
+        ],
+        { session },
+      );
+      await res[0].populate('ticket');
+      const order = res[0].toJSON<Order>();
       // 5. Publish an event
-      await lastValueFrom(this.emitEvent(Patterns.OrderCreated, result).pipe());
-      return result;
+      await lastValueFrom(this.emitEvent(Patterns.OrderCreated, order));
+      return order;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 
   async find(currentUser: User): Promise<Order[]> {
@@ -129,42 +139,52 @@ export class OrdersService {
 
   async cancelById(id: string, currentUser: User): Promise<Order> {
     await using manager = await transactionManager(this.orderModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
       const order = await this.orderModel
         .findOne({ _id: id })
         .populate('ticket')
-        .session(manager.session);
+        .session(session);
       this.orderExists(id, order);
       this.userIsOrderOwner(currentUser, order);
       order.set({ status: OrderStatus.Cancelled });
-      await order.save({ session: manager.session });
-      const result = order.toJSON<Order>();
+      await order.save({ session });
+      const updatedOrder = order.toJSON<Order>();
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, result).pipe(),
+        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
       );
-      return result;
+      return updatedOrder;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 
   async expireById(id: string): Promise<Order> {
     await using manager = await transactionManager(this.orderModel);
-    return manager.wrap(async () => {
+    const result = await manager.wrap(async (session) => {
       const order = await this.orderModel
         .findOne({ _id: id })
         .populate('ticket')
-        .session(manager.session);
+        .session(session);
       this.orderExists(id, order);
       if (order.status === OrderStatus.Complete) {
         return order.toJSON<Order>();
       }
       order.set({ status: OrderStatus.Cancelled });
-      await order.save({ session: manager.session });
-      const result = order.toJSON<Order>();
+      await order.save({ session });
+      const updatedOrder = order.toJSON<Order>();
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, result).pipe(),
+        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
       );
-      return result;
+      return updatedOrder;
     });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
+    }
+    return result.value;
   }
 
   async complete(data: PaymentCreatedEvent['data']): Promise<Order> {
