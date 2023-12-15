@@ -86,6 +86,8 @@
     "git:check-diff": "node tools/git/check-diff-cli.js",
     "git:workflow-runs": "node tools/git/get-workflows-cli.js",
     "git:dispatch-workflow": "node tools/git/dispatch-workflow-cli.js",
+    "ory:get:identities": "ts-node --project tools/tsconfig.json tools/ory/get-config.ts identity",
+    "ory:get:permissions": "ts-node --project tools/tsconfig.json tools/ory/get-config.ts permission",
     "tunnel": "node tools/utils/local-tunnel",
     "cz": "cz",
     "prepare": "husky install",
