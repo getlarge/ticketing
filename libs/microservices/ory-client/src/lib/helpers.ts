@@ -1,10 +1,10 @@
+import type { RelationQuery, Relationship } from '@ory/client';
 import {
   isRelationTuple,
   RelationTuple,
   RelationTupleWithReplacements,
   ReplacementValues,
-} from '@nidomiro/relation-tuple-parser';
-import type { RelationQuery, Relationship } from '@ory/client';
+} from '@ticketing/microservices/shared/relation-tuple-parser';
 
 export function createRelationQuery(tuple: RelationTuple): RelationQuery;
 export function createRelationQuery<T extends ReplacementValues>(

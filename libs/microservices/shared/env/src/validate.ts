@@ -1,6 +1,6 @@
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { omitBy } from 'lodash';
+import { omitBy } from 'lodash-es';
 
 import { BaseEnvironmentVariables } from './base-environment-variables';
 

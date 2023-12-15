@@ -9,13 +9,14 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/auth",
+        "outputFileName": "main.mjs",
         "main": "apps/auth/src/main.ts",
         "tsConfig": "apps/auth/tsconfig.app.json",
         "assets": ["apps/auth/src/assets"],
         "generatePackageJson": true,
         "target": "node",
         "compiler": "tsc",
-        "webpackConfig": "apps/auth/webpack.config.js",
+        "webpackConfig": "apps/auth/webpack.config.cjs",
         "isolatedConfig": true,
         "babelUpwardRootMode": true
       },

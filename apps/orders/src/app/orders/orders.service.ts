@@ -17,7 +17,7 @@ import {
 } from '@ticketing/microservices/shared/events';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { User } from '@ticketing/shared/models';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { lastValueFrom, Observable, zip } from 'rxjs';
 

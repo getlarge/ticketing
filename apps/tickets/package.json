@@ -1,5 +1,6 @@
 {
   "name": "tickets",
+  "type": "module",
   "version": "0.2.0",
   "dependencies": {
     "@fastify/cookie": "9.0.4",

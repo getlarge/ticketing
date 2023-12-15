@@ -15,7 +15,7 @@
         "generatePackageJson": true,
         "target": "node",
         "compiler": "tsc",
-        "webpackConfig": "apps/orders/webpack.config.js",
+        "webpackConfig": "apps/orders/webpack.config.cjs",
         "isolatedConfig": true,
         "babelUpwardRootMode": true
       },

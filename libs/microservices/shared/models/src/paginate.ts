@@ -7,7 +7,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { fromPairs } from 'lodash';
+import { fromPairs } from 'lodash-es';
 import {
   filterDto,
   PaginationDto,

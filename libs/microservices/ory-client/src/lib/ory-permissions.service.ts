@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Configuration, PermissionApi, RelationshipApi } from '@ory/client';
+import { PermissionObjects } from '@ticketing/microservices/shared/models';
 import type {
   RelationTuple,
   RelationTupleWithReplacements,
-} from '@nidomiro/relation-tuple-parser';
-import { Configuration, PermissionApi, RelationshipApi } from '@ory/client';
-import { PermissionObjects } from '@ticketing/microservices/shared/models';
+} from '@ticketing/microservices/shared/relation-tuple-parser';
 
 import { createRelationQuery, createRelationTuple } from './helpers';
 import { OryModuleOptions } from './ory.interfaces';

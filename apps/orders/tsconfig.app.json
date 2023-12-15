@@ -2,11 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "Bundler",
+    "module": "esnext",
+    "target": "es2022",
     "types": [
       "node"
     ],
-    "emitDecoratorMetadata": true,
   },
   "exclude": [
     "**/*.spec.ts",

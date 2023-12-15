@@ -15,7 +15,7 @@
         "generatePackageJson": false,
         "target": "node",
         "compiler": "tsc",
-        "webpackConfig": "apps/payments/webpack.config.js",
+        "webpackConfig": "apps/payments/webpack.config.cjs",
         "isolatedConfig": true,
         "babelUpwardRootMode": true
       },

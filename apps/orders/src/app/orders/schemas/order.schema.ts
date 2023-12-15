@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { Document, Model, Schema as MongooseSchema } from 'mongoose';
 
 import { TicketDocument } from '../../tickets/schemas';

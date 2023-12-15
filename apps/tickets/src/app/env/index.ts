@@ -8,10 +8,14 @@ import {
 } from '@ticketing/microservices/shared/env';
 import { Exclude } from 'class-transformer';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Mixin } from 'ts-mixer';
 
 export type AppConfigService = ConfigService<EnvironmentVariables, true>;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkgPath = join(__dirname, '..', '..', '..', '..', '..', 'package.json');
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
@@ -22,8 +26,10 @@ export class EnvironmentVariables extends Mixin(
 ) {
   @Exclude()
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
+    JSON.parse(
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
+      readFileSync(pkgPath, 'utf8'),
+    );
 
   APP_NAME?: string = 'tickets';
 

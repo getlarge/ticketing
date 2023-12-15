@@ -9,13 +9,14 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/tickets",
+        "outputFileName": "main.mjs",
         "main": "apps/tickets/src/main.ts",
         "tsConfig": "apps/tickets/tsconfig.app.json",
         "assets": ["apps/tickets/src/assets"],
         "generatePackageJson": false,
         "target": "node",
         "compiler": "tsc",
-        "webpackConfig": "apps/tickets/webpack.config.js",
+        "webpackConfig": "apps/tickets/webpack.config.cjs",
         "isolatedConfig": true,
         "babelUpwardRootMode": true
       },

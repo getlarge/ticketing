@@ -1,11 +1,11 @@
 import { CustomDecorator, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { PermissionObjects } from '@ticketing/microservices/shared/models';
 import {
   parseRelationTupleWithReplacements,
   RelationTupleStringGenerator,
   RelationTupleWithReplacements,
-} from '@nidomiro/relation-tuple-parser';
-import { PermissionObjects } from '@ticketing/microservices/shared/models';
+} from '@ticketing/microservices/shared/relation-tuple-parser';
 
 type PermissionCheckMetadataType =
   RelationTupleWithReplacements<PermissionObjects>;
