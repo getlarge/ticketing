@@ -4,7 +4,7 @@
   "plugins": ["@nx/eslint-plugin"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.cjs"],
       "rules": {
         "@nx/enforce-module-boundaries": [
           "error",
@@ -253,7 +253,7 @@
       }
     },
     {
-      "files": ["*.js", "*.jsx"],
+      "files": ["*.js", "*.jsx", "*.cjs"],
       "extends": ["plugin:@nx/javascript"],
       "rules": {}
     }
