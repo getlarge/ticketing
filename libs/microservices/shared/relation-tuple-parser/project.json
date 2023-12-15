@@ -1,0 +1,49 @@
+{
+  "name": "relation-tuple-parser",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/microservices/shared/relation-tuple-parser/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/microservices/shared/relation-tuple-parser",
+        "main": "libs/microservices/shared/relation-tuple-parser/src/index.ts",
+        "tsConfig": "libs/microservices/shared/relation-tuple-parser/tsconfig.lib.json",
+        "assets": ["libs/microservices/shared/relation-tuple-parser/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true,
+        "buildableProjectDepsInPackageJsonType": "peerDependencies"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/microservices/shared/relation-tuple-parser/**/*.ts",
+          "libs/microservices/shared/relation-tuple-parser/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/relation-tuple-parser/jest.config.ts"
+      }
+    },
+    "generate-parser": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rm -rf src/lib/generated/antlr",
+          "antlr4ng -Dlanguage=TypeScript -no-listener -visitor RelationTuple.g4 -o src/lib/generated/antlr"
+        ],
+        "cwd": "libs/microservices/shared/relation-tuple-parser",
+        "parallel": false
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:utils", "platform:server"]
+}
