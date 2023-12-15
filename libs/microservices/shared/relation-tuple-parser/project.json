@@ -1,5 +1,5 @@
 {
-  "name": "relation-tuple-parser",
+  "name": "microservices-shared-relation-tuple-parser",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/microservices/shared/relation-tuple-parser/src",
   "projectType": "library",

@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'relation-tuple-parser',
+  displayName: 'microservices-shared-relation-tuple-parser',
   preset: '../../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {

@@ -3,12 +3,11 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "moduleResolution": "Bundler",
     "module": "esnext",
     "target": "es2022",
-    "types": [
-      "node"
-    ],
+    "types": ["node"]
   },
   "exclude": [
     "**/*.mock.ts",
@@ -16,7 +15,5 @@
     "**/*.e2e-spec.ts",
     "jest.config.ts"
   ],
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"]
 }

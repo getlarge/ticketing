@@ -1,5 +1,5 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 
 import { isSupportedProjectType, supportedProjectTypes } from './helpers';
 
@@ -12,13 +12,13 @@ const execAsync = promisify(exec);
 export async function getAffectedProjects(
   searchType: string,
   base = 'main',
-  head = 'HEAD'
+  head = 'HEAD',
 ): Promise<string> {
   if (!isSupportedProjectType(searchType)) {
     throw new Error(`Supported project types are ${supportedProjectTypes}`);
   }
   const { stdout } = await execAsync(
-    `nx print-affected --type=${searchType} --select=projects --exclude=platform,tools --base=${base} --head=${head}`
+    `nx print-affected --type=${searchType} --select=projects --exclude=platform,tools --base=${base} --head=${head}`,
   );
   return stdout;
 }
