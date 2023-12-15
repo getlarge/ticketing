@@ -20,7 +20,7 @@
                   "type:const",
                   "type:env",
                   "type:ui",
-                  "type:util",
+                  "type:utils",
                   "type:testing",
                   "scope:shared"
                 ]
@@ -32,7 +32,7 @@
                   "type:core",
                   "type:env",
                   "type:ui",
-                  "type:util",
+                  "type:utils",
                   "scope:shared"
                 ]
               },
@@ -44,7 +44,7 @@
                   "type:core",
                   "type:env",
                   "type:ui",
-                  "type:util"
+                  "type:utils"
                 ]
               },
               {
@@ -54,14 +54,14 @@
                   "type:const",
                   "type:core",
                   "type:ui",
-                  "type:util"
+                  "type:utils"
                 ]
               },
               {
-                "sourceTag": "type:util",
+                "sourceTag": "type:utils",
                 "onlyDependOnLibsWithTags": [
                   "type:const",
-                  "type:util",
+                  "type:utils",
                   "type:env"
                 ]
               },
@@ -78,7 +78,7 @@
                 "onlyDependOnLibsWithTags": [
                   "type:const",
                   "type:env",
-                  "type:util"
+                  "type:utils"
                 ]
               },
               {
