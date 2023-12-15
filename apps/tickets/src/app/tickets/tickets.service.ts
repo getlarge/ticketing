@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -19,8 +18,11 @@ import {
 import {
   NextPaginationDto,
   PaginateDto,
+  PermissionNamespaces,
 } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
+import { parseRelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
@@ -38,6 +40,8 @@ export class TicketsService {
   constructor(
     @InjectModel(TicketSchema.name)
     private readonly ticketModel: Model<TicketDocument>,
+    @Inject(OryPermissionsService)
+    private readonly oryPermissionService: OryPermissionsService,
     @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
@@ -60,6 +64,21 @@ export class TicketsService {
       });
       const newTicket = docs[0].toJSON<Ticket>();
       this.logger.debug(`Created ticket ${newTicket.id}`);
+
+      const relationTuple = `${PermissionNamespaces[Resources.TICKETS]}:${
+        newTicket.id
+      }#owners@${PermissionNamespaces[Resources.USERS]}:${currentUser.id}`;
+      const relationShipCreated =
+        await this.oryPermissionService.createRelation(
+          parseRelationTuple(relationTuple).unwrapOrThrow(),
+        );
+      if (!relationShipCreated) {
+        throw new BadRequestException(
+          `Could not create relation ${relationTuple}`,
+        );
+      }
+      this.logger.debug(`Created relation ${relationTuple}`);
+
       await lastValueFrom(this.emitEvent(Patterns.TicketCreated, newTicket));
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
       return newTicket;
@@ -111,11 +130,7 @@ export class TicketsService {
     return ticket.toJSON<Ticket>();
   }
 
-  async updateById(
-    id: string,
-    update: UpdateTicket,
-    currenUser: User,
-  ): Promise<Ticket> {
+  async updateById(id: string, update: UpdateTicket): Promise<Ticket> {
     await using manager = await transactionManager(this.ticketModel);
     const result = await manager.wrap(async (session) => {
       const ticket = await this.ticketModel
@@ -123,9 +138,6 @@ export class TicketsService {
         .session(session);
       if (isEmpty(ticket)) {
         throw new NotFoundException(`Ticket ${id} not found`);
-      } else if (ticket.userId !== currenUser.id) {
-        // TODO: should be handled by Ory permissions only
-        throw new ForbiddenException();
       } else if (ticket.orderId) {
         throw new BadRequestException(`Ticket ${id} is currently reserved`);
       }
