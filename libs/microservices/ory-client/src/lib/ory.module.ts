@@ -7,7 +7,7 @@ import {
   OryModuleOptionsFactory,
 } from './ory.interfaces';
 import { OryService } from './ory.service';
-// import { OryPermissionsService } from './ory-permissions.service';
+import { OryPermissionsService } from './ory-permissions.service';
 
 @Module({})
 export class OryModule {
@@ -20,13 +20,9 @@ export class OryModule {
       providers: [
         { provide: OryModuleOptions, useValue: options },
         OryService,
-        // OryPermissionsService,
+        OryPermissionsService,
       ],
-      exports: [
-        OryModuleOptions,
-        OryService,
-        //  OryPermissionsService
-      ],
+      exports: [OryModuleOptions, OryService, OryPermissionsService],
       global: isGlobal,
     };
   }
@@ -41,13 +37,9 @@ export class OryModule {
       providers: [
         ...this.createAsyncProviders(options),
         OryService,
-        // OryPermissionsService,
+        OryPermissionsService,
       ],
-      exports: [
-        OryModuleOptions,
-        OryService,
-        //  OryPermissionsService
-      ],
+      exports: [OryModuleOptions, OryService, OryPermissionsService],
       global: isGlobal,
     };
   }

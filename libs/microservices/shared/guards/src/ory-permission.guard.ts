@@ -34,22 +34,26 @@ export class OryPermissionGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const relationTuple = getGuardingRelationTuple(
-      this.reflector,
-      context.getHandler(),
-    );
+    const { expression, relationTuple, replacementsFactory } =
+      getGuardingRelationTuple(this.reflector, context.getHandler()) ?? {};
+
     if (relationTuple == null) {
       // no relation tuple ? - should not use this guard then => Forbidden
       return Promise.resolve(false);
     }
     const currentUserId = this.getUserId(context);
-    // TODO: find a method to retrieve all parameters required for the relation tuple
-    const result = await this.oryService.checkPermission(relationTuple, {
+    const replacements = {
       currentUserId,
-    });
+      ...(replacementsFactory?.(context) ?? {}),
+    };
+    const result = await this.oryService.checkPermission(
+      relationTuple,
+      replacements,
+    );
+
     if (!result) {
       this.logger.warn(
-        `User ${currentUserId} is not allowed to access ${relationTuple.relation}`,
+        `User ${currentUserId} is not allowed to access ${expression(context)}`,
       );
       throw new ForbiddenException();
     }

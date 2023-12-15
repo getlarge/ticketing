@@ -1,4 +1,8 @@
-import type { RelationQuery, Relationship } from '@ory/client';
+import type {
+  PermissionApiCheckPermissionRequest,
+  RelationQuery,
+  Relationship,
+} from '@ory/client';
 import {
   isRelationTuple,
   RelationTuple,
@@ -11,15 +15,14 @@ export function createRelationQuery<T extends ReplacementValues>(
   tuple: RelationTupleWithReplacements<T>,
   replacements: T,
 ): RelationQuery;
-export function createRelationQuery<T extends ReplacementValues>(
-  tuple: RelationTuple | RelationTupleWithReplacements<T>,
-  replacements?: T,
+export function createRelationQuery<
+  T extends ReplacementValues,
+  U extends RelationTuple | RelationTupleWithReplacements<T>,
+>(
+  tuple: U,
+  replacements?: U extends RelationTupleWithReplacements<T> ? T : never,
 ): RelationQuery {
-  if (isRelationTuple(tuple)) {
-    return createRelationTuple(tuple);
-  }
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return createRelationTuple(tuple, replacements!);
+  return createRelationTuple(tuple, replacements);
 }
 
 export function createRelationTuple(tuple: RelationTuple): Relationship;
@@ -30,6 +33,13 @@ export function createRelationTuple<T extends ReplacementValues>(
 export function createRelationTuple<T extends ReplacementValues>(
   tuple: RelationTuple | RelationTupleWithReplacements<T>,
   opt_replacements?: T,
+): Relationship;
+export function createRelationTuple<
+  T extends ReplacementValues,
+  U extends RelationTuple | RelationTupleWithReplacements<T>,
+>(
+  tuple: U,
+  opt_replacements?: U extends RelationTupleWithReplacements<T> ? T : never,
 ): Relationship {
   if (isRelationTuple(tuple)) {
     const result: Relationship = {
@@ -68,5 +78,48 @@ export function createRelationTuple<T extends ReplacementValues>(
     };
   }
 
+  return result;
+}
+
+export function createPermissionCheckQuery(
+  tuple: RelationTuple,
+): PermissionApiCheckPermissionRequest;
+export function createPermissionCheckQuery<T extends ReplacementValues>(
+  tuple: RelationTupleWithReplacements<T>,
+  replacements: T,
+): PermissionApiCheckPermissionRequest;
+export function createPermissionCheckQuery<T extends ReplacementValues>(
+  tuple: RelationTuple | RelationTupleWithReplacements<T>,
+  replacements?: T,
+): PermissionApiCheckPermissionRequest {
+  const relationship = createRelationTuple(tuple, replacements);
+
+  const result: PermissionApiCheckPermissionRequest = {
+    namespace: relationship.namespace,
+    object: relationship.object,
+    relation: relationship.relation,
+  };
+
+  if (relationship.subject_id) {
+    Object.defineProperty(result, 'subjectId', {
+      value: relationship.subject_id,
+      enumerable: true,
+    });
+  } else if (relationship.subject_set) {
+    Object.defineProperties(result, {
+      subjectSetNamespace: {
+        value: relationship.subject_set.namespace,
+        enumerable: true,
+      },
+      subjectSetObject: {
+        value: relationship.subject_set.object,
+        enumerable: true,
+      },
+      subjectSetRelation: {
+        value: relationship.subject_set.relation,
+        enumerable: true,
+      },
+    });
+  }
   return result;
 }
