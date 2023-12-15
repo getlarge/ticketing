@@ -20,7 +20,7 @@ export class OryClientService {
         baseOptions: {
           withCredentials: true,
         },
-      })
+      }),
     );
   }
 
@@ -72,7 +72,16 @@ export class OryClientService {
         window.location.replace(`${this.basePath}/ui/login`);
         console.error(error);
         return throwError(() => error);
-      })
+      }),
     );
+  }
+
+  disableSession(sessionId: string): Observable<boolean> {
+    return new Observable((subscriber) => {
+      this.client
+        .disableMySession({ id: sessionId })
+        .then(() => subscriber.next(true))
+        .catch((error) => subscriber.error(error));
+    });
   }
 }
