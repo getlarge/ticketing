@@ -10,7 +10,7 @@ import {
   Session,
 } from '@ory/client';
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
-import type { FastifyRequest } from 'fastify';
+import type { FastifyRequest } from 'fastify/types/request';
 
 import { OryModuleOptions } from './ory.interfaces';
 
@@ -26,19 +26,19 @@ export class OryService {
     this.frontendApi = new FrontendApi(
       new Configuration({
         basePath,
-      })
+      }),
     );
     this.identityApi = new IdentityApi(
       new Configuration({
         basePath,
         accessToken,
-      })
+      }),
     );
     this.oauth2Api = new OAuth2Api(
       new Configuration({
         basePath,
         accessToken,
-      })
+      }),
     );
   }
 
@@ -78,11 +78,13 @@ export class OryService {
         this.logger.error('Invalid session', session);
         return false;
       }
-      request[CURRENT_USER_KEY] = {
-        identityId: session.identity.id,
-        id: session.identity.metadata_public.id,
-        email: session.identity.traits.email,
-      };
+      Object.defineProperty(request, CURRENT_USER_KEY, {
+        value: {
+          identityId: session.identity.id,
+          id: session.identity.metadata_public.id,
+          email: session.identity.traits.email,
+        },
+      });
       return !!session?.identity;
     } catch (e) {
       this.logger.error(e);
@@ -95,7 +97,7 @@ export class OryService {
   // #region Identity API
   async updateIdentityMetadata(
     identityId: string,
-    metadata: Identity['metadata_public']
+    metadata: Identity['metadata_public'],
   ): Promise<Identity> {
     const response = await this.identityApi.patchIdentity({
       id: identityId,
@@ -117,7 +119,7 @@ export class OryService {
 
   async toggleIdentityState(
     identityId: string,
-    state: 'active' | 'inactive'
+    state: 'active' | 'inactive',
   ): Promise<Identity> {
     const response = await this.identityApi.patchIdentity({
       id: identityId,
@@ -148,7 +150,7 @@ export class OryService {
   // TODO: allow users to create their own M2M clients
   async createClient(
     userId: string,
-    scope: string = 'openid offline'
+    scope: string = 'openid offline',
   ): Promise<OAuth2Client> {
     const response = await this.oauth2Api.createOAuth2Client({
       oAuth2Client: {
