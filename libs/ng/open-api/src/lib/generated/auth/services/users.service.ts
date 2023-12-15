@@ -43,7 +43,7 @@ export class UsersService extends BaseService {
     const rb = new RequestBuilder(
       this.rootUrl,
       UsersService.UsersControllerOnSignUpPath,
-      'post'
+      'post',
     );
     if (params) {
       rb.body(params.body, 'application/json');
@@ -54,13 +54,13 @@ export class UsersService extends BaseService {
         rb.build({
           responseType: 'json',
           accept: 'application/json',
-        })
+        }),
       )
       .pipe(
         filter((r: any) => r instanceof HttpResponse),
         map((r: HttpResponse<any>) => {
           return r as StrictHttpResponse<OnOrySignUpDto>;
-        })
+        }),
       );
   }
 
@@ -78,7 +78,7 @@ export class UsersService extends BaseService {
     body: OnOrySignUpDto;
   }): Observable<OnOrySignUpDto> {
     return this.usersControllerOnSignUp$Response(params).pipe(
-      map((r: StrictHttpResponse<OnOrySignUpDto>) => r.body as OnOrySignUpDto)
+      map((r: StrictHttpResponse<OnOrySignUpDto>) => r.body as OnOrySignUpDto),
     );
   }
 
@@ -103,7 +103,7 @@ export class UsersService extends BaseService {
     const rb = new RequestBuilder(
       this.rootUrl,
       UsersService.UsersControllerOnSignInPath,
-      'post'
+      'post',
     );
     if (params) {
       rb.body(params.body, 'application/json');
@@ -114,13 +114,13 @@ export class UsersService extends BaseService {
         rb.build({
           responseType: 'json',
           accept: 'application/json',
-        })
+        }),
       )
       .pipe(
         filter((r: any) => r instanceof HttpResponse),
         map((r: HttpResponse<any>) => {
           return r as StrictHttpResponse<OnOrySignInDto>;
-        })
+        }),
       );
   }
 
@@ -138,7 +138,7 @@ export class UsersService extends BaseService {
     body: OnOrySignInDto;
   }): Observable<OnOrySignInDto> {
     return this.usersControllerOnSignIn$Response(params).pipe(
-      map((r: StrictHttpResponse<OnOrySignInDto>) => r.body as OnOrySignInDto)
+      map((r: StrictHttpResponse<OnOrySignInDto>) => r.body as OnOrySignInDto),
     );
   }
 
@@ -163,7 +163,7 @@ export class UsersService extends BaseService {
     const rb = new RequestBuilder(
       this.rootUrl,
       UsersService.UsersControllerSignUpPath,
-      'post'
+      'post',
     );
     if (params) {
       rb.body(params.body, 'application/json');
@@ -174,13 +174,13 @@ export class UsersService extends BaseService {
         rb.build({
           responseType: 'json',
           accept: 'application/json',
-        })
+        }),
       )
       .pipe(
         filter((r: any) => r instanceof HttpResponse),
         map((r: HttpResponse<any>) => {
           return r as StrictHttpResponse<UserDto>;
-        })
+        }),
       );
   }
 
@@ -198,7 +198,7 @@ export class UsersService extends BaseService {
     body: UserCredentialsDto;
   }): Observable<UserDto> {
     return this.usersControllerSignUp$Response(params).pipe(
-      map((r: StrictHttpResponse<UserDto>) => r.body as UserDto)
+      map((r: StrictHttpResponse<UserDto>) => r.body as UserDto),
     );
   }
 
@@ -223,7 +223,7 @@ export class UsersService extends BaseService {
     const rb = new RequestBuilder(
       this.rootUrl,
       UsersService.UsersControllerGetCurrentUserPath,
-      'get'
+      'get',
     );
     if (params) {
     }
@@ -233,13 +233,13 @@ export class UsersService extends BaseService {
         rb.build({
           responseType: 'json',
           accept: 'application/json',
-        })
+        }),
       )
       .pipe(
         filter((r: any) => r instanceof HttpResponse),
         map((r: HttpResponse<any>) => {
           return r as StrictHttpResponse<UserDto>;
-        })
+        }),
       );
   }
 
@@ -255,7 +255,7 @@ export class UsersService extends BaseService {
    */
   usersControllerGetCurrentUser(params?: {}): Observable<UserDto> {
     return this.usersControllerGetCurrentUser$Response(params).pipe(
-      map((r: StrictHttpResponse<UserDto>) => r.body as UserDto)
+      map((r: StrictHttpResponse<UserDto>) => r.body as UserDto),
     );
   }
 }

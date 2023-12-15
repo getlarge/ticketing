@@ -174,7 +174,7 @@
           "tickets"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "TicketsController_updateById",
         "summary": "Update a ticket - Scope : tickets:update_one",
         "description": "Update a ticket by id",

@@ -22,10 +22,7 @@ import { UpdateTicketDto } from '../models/update-ticket-dto';
   providedIn: 'root',
 })
 export class TicketsService extends BaseService {
-  constructor(
-    config: ApiConfiguration,
-    http: HttpClient
-  ) {
+  constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
 
@@ -51,31 +48,50 @@ export class TicketsService extends BaseService {
     sort?: SortDto;
     filter?: Array<FilterDto>;
     projection?: Array<ProjectionDto>;
-  }): Observable<StrictHttpResponse<PaginatedDto & {
-'results'?: Array<TicketDto>;
-}>> {
-
-    const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerFindPath, 'get');
+  }): Observable<
+    StrictHttpResponse<
+      PaginatedDto & {
+        results?: Array<TicketDto>;
+      }
+    >
+  > {
+    const rb = new RequestBuilder(
+      this.rootUrl,
+      TicketsService.TicketsControllerFindPath,
+      'get',
+    );
     if (params) {
-      rb.query('start_key', params.start_key, {"style":"deepObject","explode":true});
+      rb.query('start_key', params.start_key, {
+        style: 'deepObject',
+        explode: true,
+      });
       rb.query('skip', params.skip, {});
       rb.query('limit', params.limit, {});
-      rb.query('sort', params.sort, {"style":"deepObject","explode":false});
-      rb.query('filter', params.filter, {"style":"deepObject","explode":true});
-      rb.query('projection', params.projection, {"style":"deepObject","explode":true});
+      rb.query('sort', params.sort, { style: 'deepObject', explode: false });
+      rb.query('filter', params.filter, { style: 'deepObject', explode: true });
+      rb.query('projection', params.projection, {
+        style: 'deepObject',
+        explode: true,
+      });
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<PaginatedDto & {
-        'results'?: Array<TicketDto>;
-        }>;
-      })
-    );
+    return this.http
+      .request(
+        rb.build({
+          responseType: 'json',
+          accept: 'application/json',
+        }),
+      )
+      .pipe(
+        filter((r: any) => r instanceof HttpResponse),
+        map((r: HttpResponse<any>) => {
+          return r as StrictHttpResponse<
+            PaginatedDto & {
+              results?: Array<TicketDto>;
+            }
+          >;
+        }),
+      );
   }
 
   /**
@@ -95,16 +111,24 @@ export class TicketsService extends BaseService {
     sort?: SortDto;
     filter?: Array<FilterDto>;
     projection?: Array<ProjectionDto>;
-  }): Observable<PaginatedDto & {
-'results'?: Array<TicketDto>;
-}> {
-
+  }): Observable<
+    PaginatedDto & {
+      results?: Array<TicketDto>;
+    }
+  > {
     return this.ticketsControllerFind$Response(params).pipe(
-      map((r: StrictHttpResponse<PaginatedDto & {
-'results'?: Array<TicketDto>;
-}>) => r.body as PaginatedDto & {
-'results'?: Array<TicketDto>;
-})
+      map(
+        (
+          r: StrictHttpResponse<
+            PaginatedDto & {
+              results?: Array<TicketDto>;
+            }
+          >,
+        ) =>
+          r.body as PaginatedDto & {
+            results?: Array<TicketDto>;
+          },
+      ),
     );
   }
 
@@ -124,23 +148,30 @@ export class TicketsService extends BaseService {
    * This method sends `application/json` and handles request body of type `application/json`.
    */
   ticketsControllerCreate$Response(params: {
-    body: CreateTicketDto
+    body: CreateTicketDto;
   }): Observable<StrictHttpResponse<TicketDto>> {
-
-    const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerCreatePath, 'post');
+    const rb = new RequestBuilder(
+      this.rootUrl,
+      TicketsService.TicketsControllerCreatePath,
+      'post',
+    );
     if (params) {
       rb.body(params.body, 'application/json');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<TicketDto>;
-      })
-    );
+    return this.http
+      .request(
+        rb.build({
+          responseType: 'json',
+          accept: 'application/json',
+        }),
+      )
+      .pipe(
+        filter((r: any) => r instanceof HttpResponse),
+        map((r: HttpResponse<any>) => {
+          return r as StrictHttpResponse<TicketDto>;
+        }),
+      );
   }
 
   /**
@@ -154,11 +185,10 @@ export class TicketsService extends BaseService {
    * This method sends `application/json` and handles request body of type `application/json`.
    */
   ticketsControllerCreate(params: {
-    body: CreateTicketDto
+    body: CreateTicketDto;
   }): Observable<TicketDto> {
-
     return this.ticketsControllerCreate$Response(params).pipe(
-      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto)
+      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto),
     );
   }
 
@@ -180,21 +210,28 @@ export class TicketsService extends BaseService {
   ticketsControllerFindById$Response(params: {
     id: string;
   }): Observable<StrictHttpResponse<TicketDto>> {
-
-    const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerFindByIdPath, 'get');
+    const rb = new RequestBuilder(
+      this.rootUrl,
+      TicketsService.TicketsControllerFindByIdPath,
+      'get',
+    );
     if (params) {
       rb.path('id', params.id, {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<TicketDto>;
-      })
-    );
+    return this.http
+      .request(
+        rb.build({
+          responseType: 'json',
+          accept: 'application/json',
+        }),
+      )
+      .pipe(
+        filter((r: any) => r instanceof HttpResponse),
+        map((r: HttpResponse<any>) => {
+          return r as StrictHttpResponse<TicketDto>;
+        }),
+      );
   }
 
   /**
@@ -207,12 +244,9 @@ export class TicketsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  ticketsControllerFindById(params: {
-    id: string;
-  }): Observable<TicketDto> {
-
+  ticketsControllerFindById(params: { id: string }): Observable<TicketDto> {
     return this.ticketsControllerFindById$Response(params).pipe(
-      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto)
+      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto),
     );
   }
 
@@ -233,24 +267,31 @@ export class TicketsService extends BaseService {
    */
   ticketsControllerUpdateById$Response(params: {
     id: string;
-    body: UpdateTicketDto
+    body: UpdateTicketDto;
   }): Observable<StrictHttpResponse<TicketDto>> {
-
-    const rb = new RequestBuilder(this.rootUrl, TicketsService.TicketsControllerUpdateByIdPath, 'put');
+    const rb = new RequestBuilder(
+      this.rootUrl,
+      TicketsService.TicketsControllerUpdateByIdPath,
+      'patch',
+    );
     if (params) {
       rb.path('id', params.id, {});
       rb.body(params.body, 'application/json');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<TicketDto>;
-      })
-    );
+    return this.http
+      .request(
+        rb.build({
+          responseType: 'json',
+          accept: 'application/json',
+        }),
+      )
+      .pipe(
+        filter((r: any) => r instanceof HttpResponse),
+        map((r: HttpResponse<any>) => {
+          return r as StrictHttpResponse<TicketDto>;
+        }),
+      );
   }
 
   /**
@@ -265,12 +306,10 @@ export class TicketsService extends BaseService {
    */
   ticketsControllerUpdateById(params: {
     id: string;
-    body: UpdateTicketDto
+    body: UpdateTicketDto;
   }): Observable<TicketDto> {
-
     return this.ticketsControllerUpdateById$Response(params).pipe(
-      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto)
+      map((r: StrictHttpResponse<TicketDto>) => r.body as TicketDto),
     );
   }
-
 }
