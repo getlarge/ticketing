@@ -29,7 +29,7 @@ import {
 import { Resources } from '@ticketing/shared/constants';
 import type { Connection } from 'mongoose';
 
-import { AppConfigService } from '../env';
+import type { EnvironmentVariables } from '../env';
 
 @ApiTags(Resources.HEALTH)
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
@@ -40,7 +40,8 @@ export class HealthController {
   readonly microserviceOptions: MicroserviceHealthIndicatorOptions;
 
   constructor(
-    @Inject(ConfigService) private readonly configService: AppConfigService,
+    @Inject(ConfigService)
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
     @Inject(getConnectionToken())
     private readonly mongooseConnection: Connection,
     private readonly health: HealthCheckService,

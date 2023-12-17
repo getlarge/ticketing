@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -9,19 +8,23 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
+import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,
   PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
+import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
+import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { lastValueFrom, Observable, zip } from 'rxjs';
 
-import { AppConfigService } from '../env';
+import type { EnvironmentVariables } from '../env';
 import {
   EXPIRATION_CLIENT,
   PAYMENTS_CLIENT,
@@ -39,7 +42,10 @@ export class OrdersService {
   constructor(
     @InjectModel(OrderSchema.name) private orderModel: Model<OrderDocument>,
     @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
-    @Inject(ConfigService) private configService: AppConfigService,
+    @Inject(ConfigService)
+    private configService: ConfigService<EnvironmentVariables, true>,
+    @Inject(OryPermissionsService)
+    private oryPermissionsService: OryPermissionsService,
     @Inject(TICKETS_CLIENT) private ticketsClient: ClientProxy,
     @Inject(EXPIRATION_CLIENT) private expirationClient: ClientProxy,
     @Inject(PAYMENTS_CLIENT) private paymentsClient: ClientProxy,
@@ -59,6 +65,32 @@ export class OrdersService {
       this.expirationClient.emit<string, typeof event>(pattern, event),
       this.paymentsClient.emit<string, typeof event>(pattern, event),
     );
+  }
+
+  private async createRelationShip(
+    relationTuple: RelationTuple,
+  ): Promise<void> {
+    const relationShipCreated =
+      await this.oryPermissionsService.createRelation(relationTuple);
+    if (!relationShipCreated) {
+      throw new BadRequestException(
+        `Could not create relation ${relationTuple}`,
+      );
+    }
+    this.logger.debug(`Created relation ${relationTuple.toString()}`);
+  }
+
+  private async deleteRelationShip(
+    relationTuple: RelationTuple,
+  ): Promise<void> {
+    const relationShipDeleted =
+      await this.oryPermissionsService.deleteRelation(relationTuple);
+    if (!relationShipDeleted) {
+      throw new BadRequestException(
+        `Could not delete relation ${relationTuple}`,
+      );
+    }
+    this.logger.debug(`Deleted relation ${relationTuple.toString()}`);
   }
 
   async create(orderRequest: CreateOrder, currentUser: User): Promise<Order> {
@@ -93,7 +125,30 @@ export class OrdersService {
       );
       await res[0].populate('ticket');
       const order = res[0].toJSON<Order>();
-      // 5. Publish an event
+      // 5. Create a relation between the ticket and the order
+      const relationTupleWithTicket = new RelationTuple(
+        PermissionNamespaces[Resources.ORDERS],
+        order.id,
+        'parents',
+        {
+          namespace: PermissionNamespaces[Resources.TICKETS],
+          object: ticket.id,
+        },
+      );
+      await this.createRelationShip(relationTupleWithTicket);
+      // 6. Create a relation between the user and the order
+      const relationTupleWithUser = new RelationTuple(
+        PermissionNamespaces[Resources.ORDERS],
+        order.id,
+        'owners',
+        {
+          namespace: PermissionNamespaces[Resources.USERS],
+          object: order.userId,
+        },
+      );
+      await this.createRelationShip(relationTupleWithUser);
+
+      // 7. Publish an event
       await lastValueFrom(this.emitEvent(Patterns.OrderCreated, order));
       return order;
     });
@@ -117,27 +172,13 @@ export class OrdersService {
     }
   }
 
-  userIsOrderOwner(currentUser: User, order: OrderDocument): void {
-    if (order.userId !== currentUser.id) {
-      throw new ForbiddenException(
-        `Order ${order._id} does not belong to user ${currentUser.id}`,
-      );
-    }
-  }
-
-  async findById(id: string, currentUser: User): Promise<Order> {
+  async findById(id: string): Promise<Order> {
     const order = await this.orderModel.findOne({ _id: id }).populate('ticket');
     this.orderExists(id, order);
-    this.userIsOrderOwner(currentUser, order);
-    if (order.userId !== currentUser.id) {
-      throw new ForbiddenException(
-        `Order ${id} does not belong to user ${currentUser.id}`,
-      );
-    }
     return order.toJSON<Order>();
   }
 
-  async cancelById(id: string, currentUser: User): Promise<Order> {
+  async cancelById(id: string): Promise<Order> {
     await using manager = await transactionManager(this.orderModel);
     const result = await manager.wrap(async (session) => {
       const order = await this.orderModel
@@ -145,10 +186,21 @@ export class OrdersService {
         .populate('ticket')
         .session(session);
       this.orderExists(id, order);
-      this.userIsOrderOwner(currentUser, order);
       order.set({ status: OrderStatus.Cancelled });
       await order.save({ session });
       const updatedOrder = order.toJSON<Order>();
+
+      const relationTuple = new RelationTuple(
+        PermissionNamespaces[Resources.ORDERS],
+        order.id,
+        'parents',
+        {
+          namespace: PermissionNamespaces[Resources.TICKETS],
+          object: order.ticket.id,
+        },
+      );
+      await this.deleteRelationShip(relationTuple);
+
       await lastValueFrom(
         this.emitEvent(Patterns.OrderCancelled, updatedOrder),
       );
@@ -175,6 +227,18 @@ export class OrdersService {
       order.set({ status: OrderStatus.Cancelled });
       await order.save({ session });
       const updatedOrder = order.toJSON<Order>();
+
+      const relationTuple = new RelationTuple(
+        PermissionNamespaces[Resources.ORDERS],
+        order.id,
+        'parents',
+        {
+          namespace: PermissionNamespaces[Resources.TICKETS],
+          object: order.ticket.id,
+        },
+      );
+      await this.deleteRelationShip(relationTuple);
+
       await lastValueFrom(
         this.emitEvent(Patterns.OrderCancelled, updatedOrder),
       );
