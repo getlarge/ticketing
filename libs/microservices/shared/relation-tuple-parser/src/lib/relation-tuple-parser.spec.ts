@@ -1,7 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
-import { type RelationTuple } from './relation-tuple.js';
-import { parseRelationTuple } from './relation-tuple-parser.js';
+import { RelationTuple } from './relation-tuple.js';
+import {
+  parseRelationTuple,
+  relationTupleToString,
+} from './relation-tuple-parser.js';
 
 function fail(reason = 'fail was called in a test.'): void {
   throw new Error(reason);
@@ -29,7 +32,7 @@ const generateRelationTuple = (i: number, withSubjectSet: boolean): string => {
 
 describe('parseRelationTuple tests', () => {
   describe(`parses valid RelationTuples`, () => {
-    it.each([
+    const testCases: [string, RelationTuple][] = [
       [
         'namespace:object#relation@subject',
         {
@@ -120,7 +123,8 @@ describe('parseRelationTuple tests', () => {
           },
         } as RelationTuple,
       ],
-    ])('%s', (str, expectedRelationTuple) => {
+    ];
+    it.each(testCases)('%s', (str, expectedRelationTuple) => {
       const result = parseRelationTuple(str);
 
       expect(result.unwrapOrThrow()).toEqual(expectedRelationTuple);
@@ -221,5 +225,49 @@ describe('parseRelationTuple tests', () => {
         );
       }
     });
+  });
+});
+
+describe('relationTupleToString tests', () => {
+  const testCases: [RelationTuple, string][] = [
+    [
+      {
+        namespace: 'namespace',
+        object: 'object',
+        relation: 'relation',
+        subjectIdOrSet: 'subject',
+      },
+      'namespace:object#relation@subject',
+    ],
+    [
+      {
+        namespace: 'namespace',
+        object: 'object',
+        relation: 'relation',
+        subjectIdOrSet: {
+          namespace: 'subjectNamespace',
+          object: 'subjectObject',
+          relation: 'subjectRelation',
+        },
+      },
+      'namespace:object#relation@subjectNamespace:subjectObject#subjectRelation',
+    ],
+    [
+      {
+        namespace: 'namespace',
+        object: 'object',
+        relation: 'relation',
+        subjectIdOrSet: {
+          namespace: 'subjectNamespace',
+          object: 'subjectObject',
+        },
+      },
+      'namespace:object#relation@subjectNamespace:subjectObject',
+    ],
+  ];
+  it.each(testCases)('%s', (relationTuple, expectedString) => {
+    const result = relationTupleToString(relationTuple);
+
+    expect(result).toEqual(expectedString);
   });
 });
