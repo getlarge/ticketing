@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
-import { getGuardingRelationTuple } from '@ticketing/microservices/shared/decorators';
+import { getGuardingRelationTuples } from '@ticketing/microservices/shared/decorators';
 
 @Injectable()
 export class OryPermissionGuard implements CanActivate {
@@ -21,20 +21,22 @@ export class OryPermissionGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { expression, relationTupleFactory } =
-      getGuardingRelationTuple(this.reflector, context.getHandler()) ?? {};
+    const factories =
+      getGuardingRelationTuples(this.reflector, context.getHandler()) ?? [];
 
-    if (!relationTupleFactory) {
+    if (!factories?.length) {
       // no relation tuple ? - should not use this guard then => Forbidden
       return Promise.resolve(false);
     }
-    const relationTuple = relationTupleFactory(context);
-    const result = await this.oryService.checkPermission(relationTuple);
-
-    if (!result) {
-      this.logger.warn(`Not allowed to access ${expression(context)}`);
-      throw new ForbiddenException();
+    for (const { expression, relationTupleFactory } of factories) {
+      const relationTuple = relationTupleFactory(context);
+      const isPermitted = await this.oryService.checkPermission(relationTuple);
+      if (!isPermitted) {
+        this.logger.warn(`Not allowed to access ${expression(context)}`);
+        throw new ForbiddenException();
+      }
     }
+
     return true;
   }
 }
