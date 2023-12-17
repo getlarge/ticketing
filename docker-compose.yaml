@@ -16,22 +16,22 @@ volumes:
   rabbitmq_volume:
 
 services:
-  mongo:
-    image: mongo:latest
-    container_name: ticketing-mongo
-    hostname: ticketing-mongo
-    # volumes:
-    #   - mongo_volume:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: example=value
+  mongo-primary:
+    image: mongo:7
+    container_name: ticketing-mongo-primary
+    hostname: ticketing-mongo-primary
     networks:
       - mongo
     ports:
       - '${MONGO_PORT:-27017}:27017'
-    mem_limit: 256m
-    memswap_limit: 512m
-    restart: always
+    command: mongod --replSet rs0
+    healthcheck:
+      test: |
+        mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok }"
+      start_period: 0s
+      interval: 500ms
+      timeout: 5s
+      retries: 5
     profiles:
       - 'deps-only'
       - 'dev'
@@ -99,7 +99,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/auth
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/auth
       ORY_ACTION_API_KEY: ${ORY_ACTION_API_KEY}
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
@@ -110,7 +110,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${AUTH_HTTP_PORT:-3000}:${AUTH_HTTP_PORT:-3000}'
@@ -179,7 +179,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/orders
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/orders
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
@@ -189,7 +189,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${ORDERS_HTTP_PORT:-3020}:${ORDERS_HTTP_PORT:-3020}'
@@ -222,7 +222,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/payments
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/payments
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_ENDPOINT_SECRET: ${STRIPE_ENDPOINT_SECRET}
@@ -235,7 +235,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${PAYMENTS_HTTP_PORT:-3040}:${PAYMENTS_HTTP_PORT:-3040}'
@@ -268,7 +268,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/tickets
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/tickets
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
@@ -278,7 +278,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${TICKETS_HTTP_PORT:-3010}:${TICKETS_HTTP_PORT:-3010}'
