@@ -61,14 +61,24 @@ export const parseRelationTuple = (
   }
 };
 
-export const relationTupleToString = (tuple: RelationTuple): string => {
-  const base = `${tuple.namespace}:${tuple.object}#${tuple.relation}`;
+type RelationTupleString =
+  | `${string}:${string}#${string}@${string}`
+  | `${string}:${string}#${string}@${string}:${string}`
+  | `${string}:${string}#${string}@${string}:${string}#${string}`
+  | `${string}:${string}#${string}@(${string})`
+  | `${string}:${string}#${string}@(${string}:${string})`
+  | `${string}:${string}#${string}@(${string}:${string}#${string})`;
+
+export const relationTupleToString = (
+  tuple: RelationTuple,
+): RelationTupleString => {
+  const base: `${string}:${string}#${string}` = `${tuple.namespace}:${tuple.object}#${tuple.relation}`;
   if (typeof tuple.subjectIdOrSet === 'string') {
     return `${base}@${tuple.subjectIdOrSet}`;
   }
   const { namespace, object, relation } = tuple.subjectIdOrSet;
   if (!relation) {
-    return `${base}@${namespace}:${object})`;
+    return `${base}@${namespace}:${object}`;
   }
-  return `${base}@${namespace}:${object}#${relation})`;
+  return `${base}@${namespace}:${object}#${relation}`;
 };
