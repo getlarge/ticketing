@@ -12,32 +12,41 @@ import {
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 import type { FastifyRequest } from 'fastify/types/request';
 
-import { OryModuleOptions } from './ory.interfaces';
+import { OryAuthenticationModuleOptions } from './ory.interfaces';
 
 @Injectable()
-export class OryService {
-  readonly logger = new Logger(OryService.name);
+export class OryAuthenticationService {
+  readonly logger = new Logger(OryAuthenticationService.name);
   private readonly identityApi: IdentityApi;
   private readonly oauth2Api: OAuth2Api;
   private readonly frontendApi: FrontendApi;
 
-  constructor(@Inject(OryModuleOptions) options: OryModuleOptions) {
-    const { accessToken, basePath } = options;
+  constructor(
+    @Inject(OryAuthenticationModuleOptions)
+    options: OryAuthenticationModuleOptions,
+  ) {
+    const {
+      kratosAccessToken,
+      kratosAdminApiPath,
+      kratosPublicApiPath,
+      hydraAccessToken,
+      hydraPublicApiPath,
+    } = options;
     this.frontendApi = new FrontendApi(
       new Configuration({
-        basePath,
+        basePath: kratosPublicApiPath,
       }),
     );
     this.identityApi = new IdentityApi(
       new Configuration({
-        basePath,
-        accessToken,
+        basePath: kratosAdminApiPath,
+        accessToken: kratosAccessToken,
       }),
     );
     this.oauth2Api = new OAuth2Api(
       new Configuration({
-        basePath,
-        accessToken,
+        basePath: hydraPublicApiPath,
+        accessToken: hydraAccessToken,
       }),
     );
   }

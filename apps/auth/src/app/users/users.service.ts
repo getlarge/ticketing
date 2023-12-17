@@ -1,12 +1,5 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { OryService } from '@ticketing/microservices/ory-client';
 import { Model } from 'mongoose';
 
 import { User, UserCredentials } from './models';
@@ -19,7 +12,6 @@ export class UsersService {
 
   constructor(
     @InjectModel(UserSchema.name) private userModel: Model<UserDocument>,
-    @Inject(OryService) private readonly oryService: OryService,
   ) {}
 
   /**

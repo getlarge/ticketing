@@ -4,7 +4,8 @@ import {
   JWTEnvironmentVariables,
   MongoEnvironmentVariables,
   OryActionEnvironmentVariables,
-  OryEnvironmentVariables,
+  OryHydraEnvironmentVariables,
+  OryKratosEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
 import { Exclude } from 'class-transformer';
 import { readFileSync } from 'node:fs';
@@ -16,6 +17,11 @@ export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgPath = join(__dirname, '..', '..', '..', '..', '..', 'package.json');
+
+class OryEnvironmentVariables extends Mixin(
+  OryHydraEnvironmentVariables,
+  OryKratosEnvironmentVariables,
+) {}
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,

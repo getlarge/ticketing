@@ -1,51 +1,48 @@
 import { DynamicModule, Module, Provider, Type } from '@nestjs/common';
 
 import {
-  IOryModuleOptions,
-  OryModuleAsyncOptions,
-  OryModuleOptions,
-  OryModuleOptionsFactory,
+  IOryAuthenticationModuleOptions,
+  OryAuthenticationModuleAsyncOptions,
+  OryAuthenticationModuleOptions,
+  OryAuthenticationModuleOptionsFactory,
 } from './ory.interfaces';
-import { OryService } from './ory.service';
-import { OryPermissionsService } from './ory-permissions.service';
+import { OryAuthenticationService } from './ory-authentication.service';
 
 @Module({})
-export class OryModule {
+export class OryAuthenticationModule {
   static forRoot(
-    options: IOryModuleOptions,
+    options: IOryAuthenticationModuleOptions,
     isGlobal?: boolean,
   ): DynamicModule {
     return {
-      module: OryModule,
+      module: OryAuthenticationModule,
       providers: [
-        { provide: OryModuleOptions, useValue: options },
-        OryService,
-        OryPermissionsService,
+        { provide: OryAuthenticationModuleOptions, useValue: options },
+        OryAuthenticationService,
       ],
-      exports: [OryModuleOptions, OryService, OryPermissionsService],
+      exports: [OryAuthenticationModuleOptions, OryAuthenticationService],
       global: isGlobal,
     };
   }
 
   static forRootAsync(
-    options: OryModuleAsyncOptions,
+    options: OryAuthenticationModuleAsyncOptions,
     isGlobal?: boolean,
   ): DynamicModule {
     return {
-      module: OryModule,
+      module: OryAuthenticationModule,
       imports: options.imports ?? [],
       providers: [
         ...this.createAsyncProviders(options),
-        OryService,
-        OryPermissionsService,
+        OryAuthenticationService,
       ],
-      exports: [OryModuleOptions, OryService, OryPermissionsService],
+      exports: [OryAuthenticationModuleOptions, OryAuthenticationService],
       global: isGlobal,
     };
   }
 
   private static createAsyncProviders(
-    options: OryModuleAsyncOptions,
+    options: OryAuthenticationModuleAsyncOptions,
   ): Provider[] {
     if (options.useExisting || options.useFactory) {
       return [this.createAsyncOptionsProvider(options)];
@@ -59,29 +56,29 @@ export class OryModule {
         },
       ];
     }
-    throw new Error('Invalid OryModuleAsyncOptions');
+    throw new Error('Invalid OryAuthenticationModuleAsyncOptions');
   }
 
   private static createAsyncOptionsProvider(
-    options: OryModuleAsyncOptions,
+    options: OryAuthenticationModuleAsyncOptions,
   ): Provider {
     if (options.useFactory) {
       return {
-        provide: OryModuleOptions,
+        provide: OryAuthenticationModuleOptions,
         useFactory: options.useFactory,
         inject: options.inject ?? [],
       };
     }
     if (!options.useExisting && !options.useClass) {
-      throw new Error('Invalid OryModuleAsyncOptions');
+      throw new Error('Invalid OryAuthenticationModuleAsyncOptions');
     }
     return {
-      provide: OryModuleOptions,
-      useFactory: (optionsFactory: OryModuleOptionsFactory) =>
+      provide: OryAuthenticationModuleOptions,
+      useFactory: (optionsFactory: OryAuthenticationModuleOptionsFactory) =>
         optionsFactory.createOryOptions(),
       inject: [
         (options.useExisting ??
-          options.useClass) as Type<OryModuleOptionsFactory>,
+          options.useClass) as Type<OryAuthenticationModuleOptionsFactory>,
       ],
     };
   }

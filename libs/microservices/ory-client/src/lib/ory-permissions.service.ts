@@ -7,7 +7,7 @@ import {
   createRelationQuery,
   createRelationTuple,
 } from './helpers';
-import { OryModuleOptions } from './ory.interfaces';
+import { OryPermissionsModuleOptions } from './ory.interfaces';
 
 @Injectable()
 export class OryPermissionsService {
@@ -15,17 +15,20 @@ export class OryPermissionsService {
   private readonly relationShipApi: RelationshipApi;
   private readonly permissionApi: PermissionApi;
 
-  constructor(@Inject(OryModuleOptions) options: OryModuleOptions) {
+  constructor(
+    @Inject(OryPermissionsModuleOptions) options: OryPermissionsModuleOptions,
+  ) {
+    const { ketoAccessToken, ketoAdminApiPath, ketoPublicApiPath } = options;
     this.relationShipApi = new RelationshipApi(
       new Configuration({
-        basePath: options.basePath,
-        accessToken: options.accessToken,
+        basePath: ketoAdminApiPath,
+        accessToken: ketoAccessToken,
       }),
     );
     this.permissionApi = new PermissionApi(
       new Configuration({
-        basePath: options.basePath,
-        accessToken: options.accessToken,
+        basePath: ketoPublicApiPath,
+        accessToken: ketoAccessToken,
       }),
     );
   }
@@ -36,6 +39,7 @@ export class OryPermissionsService {
 
   createPermissionCheckQuery = createPermissionCheckQuery;
 
+  // TODO: cache on write ?
   async createRelation(tuple: RelationTuple): Promise<boolean> {
     try {
       const createRelationshipBody = this.createRelationQuery(tuple);
@@ -49,6 +53,17 @@ export class OryPermissionsService {
     }
   }
 
+  // async createRelations(tuples: RelationTuple[]): Promise<boolean> {
+  //   let createdRelations: RelationTuple[] = [];
+  //   for (const tuple of tuples) {
+  //     const created = await this.createRelation(tuple);
+  //     if (!created) {
+  //       await this.deleteRelations(createdRelations);
+  //       return false;
+  //     }
+  //   }
+  // }
+
   async deleteRelation(tuple: RelationTuple): Promise<boolean> {
     try {
       const relationQuery = this.createRelationQuery(tuple);
@@ -60,6 +75,7 @@ export class OryPermissionsService {
     }
   }
 
+  // TODO: add caching ?
   async checkPermission(relationTuple: RelationTuple): Promise<boolean> {
     const checkRequest = this.createPermissionCheckQuery(relationTuple);
     try {
