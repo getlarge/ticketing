@@ -1,3 +1,5 @@
+import { relationTupleToString } from './relation-tuple-parser.js';
+
 export class SubjectSet {
   namespace: string;
   object: string;
@@ -24,5 +26,9 @@ export class RelationTuple {
     this.object = object;
     this.relation = relation;
     this.subjectIdOrSet = subjectIdOrSet;
+  }
+
+  toString(): string {
+    return relationTupleToString(this);
   }
 }

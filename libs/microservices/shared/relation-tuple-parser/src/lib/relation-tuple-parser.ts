@@ -60,3 +60,15 @@ export const parseRelationTuple = (
     return error(new UnknownError({ data: e }));
   }
 };
+
+export const relationTupleToString = (tuple: RelationTuple): string => {
+  const base = `${tuple.namespace}:${tuple.object}#${tuple.relation}`;
+  if (typeof tuple.subjectIdOrSet === 'string') {
+    return `${base}@${tuple.subjectIdOrSet}`;
+  }
+  const { namespace, object, relation } = tuple.subjectIdOrSet;
+  if (!relation) {
+    return `${base}@${namespace}:${object})`;
+  }
+  return `${base}@${namespace}:${object}#${relation})`;
+};
