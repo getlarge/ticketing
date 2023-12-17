@@ -125,6 +125,7 @@ export class OrdersService {
       );
       await res[0].populate('ticket');
       const order = res[0].toJSON<Order>();
+      this.logger.debug(`Created order ${order.id}`);
       // 5. Create a relation between the ticket and the order
       const relationTupleWithTicket = new RelationTuple(
         PermissionNamespaces[Resources.ORDERS],
@@ -136,6 +137,9 @@ export class OrdersService {
         },
       );
       await this.createRelationShip(relationTupleWithTicket);
+      this.logger.debug(
+        `Created relation ${relationTupleWithTicket.toString()}`,
+      );
       // 6. Create a relation between the user and the order
       const relationTupleWithUser = new RelationTuple(
         PermissionNamespaces[Resources.ORDERS],
@@ -147,9 +151,10 @@ export class OrdersService {
         },
       );
       await this.createRelationShip(relationTupleWithUser);
-
+      this.logger.debug(`Created relation ${relationTupleWithUser.toString()}`);
       // 7. Publish an event
       await lastValueFrom(this.emitEvent(Patterns.OrderCreated, order));
+      this.logger.debug(`Sent event ${Patterns.OrderCreated}`);
       return order;
     });
     if (result.error) {

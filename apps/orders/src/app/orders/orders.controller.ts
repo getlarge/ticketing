@@ -24,7 +24,7 @@ import {
   PermissionCheck,
 } from '@ticketing/microservices/shared/decorators';
 import {
-  OryAuthGuard,
+  OryAuthenticationGuard,
   OryPermissionGuard,
 } from '@ticketing/microservices/shared/guards';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
@@ -48,6 +48,7 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  // TODO: check if ticket is reserved via Ory by adding orders to the tickets relations
   @PermissionCheck((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
     const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
@@ -62,7 +63,7 @@ export class OrdersController {
       },
     });
   })
-  @UseGuards(OryAuthGuard, OryPermissionGuard)
+  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -91,7 +92,7 @@ export class OrdersController {
     return this.ordersService.create(order, currentUser);
   }
 
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -123,7 +124,7 @@ export class OrdersController {
       },
     });
   })
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -154,7 +155,7 @@ export class OrdersController {
       },
     });
   })
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,

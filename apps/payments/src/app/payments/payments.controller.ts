@@ -21,7 +21,7 @@ import {
   PermissionCheck,
 } from '@ticketing/microservices/shared/decorators';
 import {
-  OryAuthGuard,
+  OryAuthenticationGuard,
   OryPermissionGuard,
 } from '@ticketing/microservices/shared/guards';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
@@ -58,7 +58,7 @@ export class PaymentsController {
       },
     });
   })
-  @UseGuards(OryAuthGuard, OryPermissionGuard)
+  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,

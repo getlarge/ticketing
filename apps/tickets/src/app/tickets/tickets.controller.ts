@@ -28,7 +28,7 @@ import {
   PermissionCheck,
 } from '@ticketing/microservices/shared/decorators';
 import {
-  OryAuthGuard,
+  OryAuthenticationGuard,
   OryPermissionGuard,
 } from '@ticketing/microservices/shared/guards';
 import {
@@ -68,7 +68,7 @@ import { TicketsService } from './tickets.service';
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -146,7 +146,7 @@ export class TicketsController {
       },
     });
   })
-  @UseGuards(OryAuthGuard, OryPermissionGuard)
+  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,

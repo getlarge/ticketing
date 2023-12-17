@@ -6,14 +6,17 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { OryService } from '@ticketing/microservices/ory-client';
+import { OryAuthenticationService } from '@ticketing/microservices/ory-client';
 import type { FastifyRequest } from 'fastify/types/request';
 
 @Injectable()
-export class OryAuthGuard implements CanActivate {
-  readonly logger = new Logger(OryAuthGuard.name);
+export class OryAuthenticationGuard implements CanActivate {
+  readonly logger = new Logger(OryAuthenticationGuard.name);
 
-  constructor(@Inject(OryService) private readonly oryService: OryService) {}
+  constructor(
+    @Inject(OryAuthenticationService)
+    private readonly oryService: OryAuthenticationService,
+  ) {}
 
   private getRequest(context: ExecutionContext): FastifyRequest {
     return context.switchToHttp().getRequest();

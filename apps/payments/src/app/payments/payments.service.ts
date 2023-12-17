@@ -4,7 +4,6 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
@@ -65,20 +64,14 @@ export class PaymentsService {
     if (!order) {
       throw new NotFoundException(`Order ${orderId} not found`);
     }
-    // 2. make sure the order belongs to the user
-    if (order.userId !== currentUser.id) {
-      throw new UnauthorizedException(
-        `User ${currentUser.id} is not a valid owner`,
-      );
-    }
-    // 3. make sure the order is not cancelled
+    // 2. make sure the order is not cancelled
     if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestException(
         `Order ${orderId} has been cancelled and can't be paid for`,
       );
     }
 
-    // 4. make sure the payment amount match the order price and create payment with Stripe
+    // 3. make sure the payment amount match the order price and create payment with Stripe
     const charge = await this.stripeService.charges.create(
       {
         amount: order.price * 100,
@@ -92,7 +85,7 @@ export class PaymentsService {
 
     await using manager = await transactionManager(this.paymentModel);
     const result = await manager.wrap(async (session) => {
-      // 5. Create charge instance in Mongo
+      // 4. Create charge instance in Mongo
       const res = await this.paymentModel.create(
         [
           {
@@ -103,7 +96,7 @@ export class PaymentsService {
         { session },
       );
       const payment = res[0].toJSON<Payment>();
-      // 6. create a relation between the order and the payment
+      // 5. create a relation between the order and the payment
       const relationTupleWithOrder = new RelationTuple(
         PermissionNamespaces[Resources.PAYMENTS],
         payment.id,
@@ -115,7 +108,7 @@ export class PaymentsService {
       );
       await this.createRelationShip(relationTupleWithOrder);
 
-      // 7. create a relation between the user and the payment
+      // 6. create a relation between the user and the payment
       const relationTupleWithUser = new RelationTuple(
         PermissionNamespaces[Resources.PAYMENTS],
         payment.id,
@@ -127,7 +120,7 @@ export class PaymentsService {
       );
       await this.createRelationShip(relationTupleWithUser);
 
-      // 8. emit payment:create event
+      // 7. emit payment:create event
       await firstValueFrom(
         this.client.emit<
           PaymentCreatedEvent['name'],

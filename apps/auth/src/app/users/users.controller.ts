@@ -21,7 +21,7 @@ import { SecurityRequirements } from '@ticketing/microservices/shared/constants'
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import {
   OryActionAuthGuard,
-  OryAuthGuard,
+  OryAuthenticationGuard,
 } from '@ticketing/microservices/shared/guards';
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
@@ -41,7 +41,7 @@ export class UsersController {
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
       forbidUnknownValues: true,
-    })
+    }),
   )
   @ApiOperation({
     description: 'Triggered when a user is created in Ory',
@@ -65,7 +65,7 @@ export class UsersController {
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
       forbidUnknownValues: true,
-    })
+    }),
   )
   @ApiOperation({
     description: 'Triggered when a user signed in via Ory',
@@ -91,7 +91,7 @@ export class UsersController {
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
       forbidUnknownValues: true,
-    })
+    }),
   )
   @ApiOperation({
     description: 'Request creation of a user',
@@ -108,7 +108,7 @@ export class UsersController {
     return this.usersService.signUp(credentials);
   }
 
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @ApiOperation({
     description: 'Get details about currently signed in user',
     summary: `Get current user - Scope : ${Resources.USERS}:${Actions.READ_ONE}`,
