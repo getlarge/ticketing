@@ -1,10 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Configuration, PermissionApi, RelationshipApi } from '@ory/client';
-import { PermissionObjects } from '@ticketing/microservices/shared/models';
-import {
-  type RelationTuple,
-  type RelationTupleWithReplacements,
-} from '@ticketing/microservices/shared/relation-tuple-parser';
+import { type RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 
 import {
   createPermissionCheckQuery,
@@ -64,14 +60,8 @@ export class OryPermissionsService {
     }
   }
 
-  async checkPermission(
-    relationTuple: RelationTupleWithReplacements<PermissionObjects>,
-    replacements: PermissionObjects,
-  ): Promise<boolean> {
-    const checkRequest = this.createPermissionCheckQuery(
-      relationTuple,
-      replacements,
-    );
+  async checkPermission(relationTuple: RelationTuple): Promise<boolean> {
+    const checkRequest = this.createPermissionCheckQuery(relationTuple);
     try {
       const { data } = await this.permissionApi.checkPermission(checkRequest);
       return data.allowed;
