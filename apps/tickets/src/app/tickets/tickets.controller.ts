@@ -41,7 +41,12 @@ import {
   ParseObjectId,
   ParseQuery,
 } from '@ticketing/microservices/shared/pipes';
-import { Actions, Resources } from '@ticketing/shared/constants';
+import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
+import {
+  Actions,
+  CURRENT_USER_KEY,
+  Resources,
+} from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import { FastifyRequest } from 'fastify/types/request';
@@ -127,19 +132,20 @@ export class TicketsController {
     return this.ticketsService.findById(id);
   }
 
-  @PermissionCheck(
-    ({ currentUserId, resourceId }) =>
-      `${PermissionNamespaces[Resources.TICKETS]}:${resourceId}#owners@${
-        PermissionNamespaces[Resources.USERS]
-      }:${currentUserId}`,
-    (ctx) => {
-      const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-      return {
-        currentUserId: get(req, 'user.id'),
-        resourceId: get(req, 'params.id'),
-      };
-    },
-  )
+  @PermissionCheck((ctx) => {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+    const resourceId = get(req, 'params.id');
+    return relationTupleToString({
+      namespace: PermissionNamespaces[Resources.TICKETS],
+      object: resourceId,
+      relation: 'owners',
+      subjectIdOrSet: {
+        namespace: PermissionNamespaces[Resources.USERS],
+        object: currentUserId,
+      },
+    });
+  })
   @UseGuards(OryAuthGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({

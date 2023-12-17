@@ -28,7 +28,7 @@ import { Logger } from 'nestjs-pino';
 import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
-import { AppConfigService } from './app/env';
+import { EnvironmentVariables } from './app/env';
 import { APP_FOLDER, DEFAULT_PORT } from './app/shared/constants';
 
 async function bootstrap(): Promise<void> {
@@ -43,7 +43,8 @@ async function bootstrap(): Promise<void> {
     { bufferLogs: true, abortOnError: false },
   );
 
-  const configService = app.get<AppConfigService>(ConfigService);
+  const configService =
+    app.get<ConfigService<EnvironmentVariables, true>>(ConfigService);
   const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });

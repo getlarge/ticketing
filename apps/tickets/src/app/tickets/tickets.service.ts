@@ -21,7 +21,7 @@ import {
   PermissionNamespaces,
 } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
-import { parseRelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
@@ -65,13 +65,17 @@ export class TicketsService {
       const newTicket = docs[0].toJSON<Ticket>();
       this.logger.debug(`Created ticket ${newTicket.id}`);
 
-      const relationTuple = `${PermissionNamespaces[Resources.TICKETS]}:${
-        newTicket.id
-      }#owners@${PermissionNamespaces[Resources.USERS]}:${currentUser.id}`;
+      const relationTuple = new RelationTuple(
+        PermissionNamespaces[Resources.TICKETS],
+        newTicket.id,
+        'owners',
+        {
+          namespace: PermissionNamespaces[Resources.USERS],
+          object: currentUser.id,
+        },
+      );
       const relationShipCreated =
-        await this.oryPermissionService.createRelation(
-          parseRelationTuple(relationTuple).unwrapOrThrow(),
-        );
+        await this.oryPermissionService.createRelation(relationTuple);
       if (!relationShipCreated) {
         throw new BadRequestException(
           `Could not create relation ${relationTuple}`,
@@ -141,6 +145,7 @@ export class TicketsService {
       } else if (ticket.orderId) {
         throw new BadRequestException(`Ticket ${id} is currently reserved`);
       }
+
       ticket.set(update);
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
@@ -169,7 +174,6 @@ export class TicketsService {
       }
       ticket.set({ orderId });
       await ticket.save({ session });
-      // TODO: create relation between ticket and order
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
         this.emitEvent(Patterns.TicketUpdated, updatedTicket),
@@ -196,7 +200,6 @@ export class TicketsService {
       }
       ticket.set({ orderId: undefined });
       await ticket.save({ session: manager.session });
-      // TODO: delete relation between ticket and order
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
         this.emitEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
