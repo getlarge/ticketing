@@ -6,8 +6,8 @@ import { parseRelationTuple } from '../relation-tuple-parser.js';
 import { createAccessToPathProxy } from '../util/access-to-path-proxy.js';
 import { TwoWayMap } from '../util/two-way-map.js';
 import { generateReplacerFunction } from './generate-replacer-function.js';
-import { RelationTupleWithReplacements } from './relation-tuple-with-replacements.js';
-import { ReplacementValues } from './replacement-values.js';
+import type { RelationTupleWithReplacements } from './relation-tuple-with-replacements.js';
+import type { ReplacementValues } from './replacement-values.js';
 
 const delimiter = '\u2744';
 

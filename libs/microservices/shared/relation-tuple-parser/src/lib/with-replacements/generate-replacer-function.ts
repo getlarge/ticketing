@@ -1,8 +1,8 @@
 import { get as lodashGet } from 'lodash-es';
 
 import { TwoWayMap } from '../util/two-way-map.js';
-import { ReplaceableString } from './relation-tuple-with-replacements.js';
-import { ReplacementValues } from './replacement-values.js';
+import type { ReplaceableString } from './relation-tuple-with-replacements.js';
+import type { ReplacementValues } from './replacement-values.js';
 
 function findReplacementsInString<T extends ReplacementValues>(
   str: string,

@@ -6,17 +6,39 @@ export type ReplaceableString<
   R extends string | undefined = string,
 > = (replacements: T) => R;
 
-export interface SubjectSetWithReplacements<T extends ReplacementValues> {
+export class SubjectSetWithReplacements<T extends ReplacementValues> {
   namespace: ReplaceableString<T>;
   object: ReplaceableString<T>;
   relation: ReplaceableString<T, string | undefined>;
+
+  constructor(
+    namespace: ReplaceableString<T>,
+    object: ReplaceableString<T>,
+    relation?: ReplaceableString<T, string | undefined>,
+  ) {
+    this.namespace = namespace;
+    this.object = object;
+    this.relation = relation ?? (() => undefined);
+  }
 }
 
-export interface RelationTupleWithReplacements<T extends ReplacementValues> {
+export class RelationTupleWithReplacements<T extends ReplacementValues> {
   namespace: ReplaceableString<T>;
   object: ReplaceableString<T>;
   relation: ReplaceableString<T>;
   subjectIdOrSet: ReplaceableString<T> | SubjectSetWithReplacements<T>;
+
+  constructor(
+    namespace: ReplaceableString<T>,
+    object: ReplaceableString<T>,
+    relation: ReplaceableString<T>,
+    subjectIdOrSet: ReplaceableString<T> | SubjectSetWithReplacements<T>,
+  ) {
+    this.namespace = namespace;
+    this.object = object;
+    this.relation = relation;
+    this.subjectIdOrSet = subjectIdOrSet;
+  }
 }
 
 export const applyReplacements = <T extends ReplacementValues>(
