@@ -1,10 +1,11 @@
 import yargs from 'yargs';
-import { generateOryKratosConfig } from './helpers';
+import {
+  generateOryKratosConfig,
+  generateOryOathkeeperConfig,
+} from './helpers';
 
 interface BaseOptions {
   envFile?: string;
-  configFile?: string;
-  outputFile?: string;
 }
 
 async function main() {
@@ -15,20 +16,6 @@ async function main() {
         demandOption: false,
         example: 'infra/ory/kratos/.env',
         alias: 'e',
-        type: 'string',
-      },
-      configFile: {
-        description: 'Path to template config file',
-        demandOption: false,
-        example: 'infra/ory/kratos/config.yaml',
-        alias: 'c',
-        type: 'string',
-      },
-      outputFile: {
-        description: 'Export file path',
-        demandOption: false,
-        example: 'infra/ory/kratos/kratos.yaml',
-        alias: 'o',
         type: 'string',
       },
     })
@@ -42,8 +29,8 @@ async function main() {
           }
         >,
       ) => {
-        const { configFile, envFile, outputFile } = argv;
-        generateOryKratosConfig(envFile, configFile, outputFile);
+        const { envFile } = argv;
+        generateOryKratosConfig(envFile);
       },
     })
     .command({
@@ -56,6 +43,20 @@ async function main() {
           }
         >,
       ) => {},
+    })
+    .command({
+      command: 'oathkeeper',
+      describe: 'Command to generate Oathkeeper config from template',
+      handler: (
+        argv: yargs.ArgumentsCamelCase<
+          BaseOptions & {
+            _: ['oathkeeper'];
+          }
+        >,
+      ) => {
+        const { envFile } = argv;
+        generateOryOathkeeperConfig(envFile);
+      },
     })
     .demandCommand(1, 'A valid command must be provided')
     .fail((msg, err) => {

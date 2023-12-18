@@ -357,7 +357,7 @@ services:
     networks:
       - apps
     ports:
-      - 'localhost:${NGINX_HTTP_PORT:-8800}:8080'
+      - '127.0.0.1:${NGINX_HTTP_PORT:-8800}:8080'
     restart: always
     profiles:
       - 'services-only'
@@ -386,20 +386,6 @@ services:
       - 'ory-only'
       - 'dev'
 
-  kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v1.0.0
-    environment:
-      - KRATOS_PUBLIC_URL=http://kratos:4433/
-      - KRATOS_BROWSER_URL=http://localhost:4433/
-    ports:
-      - '4455:4455'
-    networks:
-      - ory
-    restart: on-failure
-    profiles:
-      - 'ory-only'
-      - 'dev'
-
   kratos:
     depends_on:
       - kratos-migrate
@@ -410,7 +396,6 @@ services:
     restart: unless-stopped
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
-      - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
     volumes:
       - type: volume
@@ -422,6 +407,25 @@ services:
         target: /etc/config/kratos
     networks:
       - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      # - KRATOS_PUBLIC_URL=http://localhost:4433/
+      - KRATOS_BROWSER_URL=http://localhost:4433
+      - PORT=3000
+      # - KRATOS_BROWSER_URL=http://localhost:4455/.ory/kratos/public
+      # - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
+      # - SECURITY_MODE=jwks
+    ports:
+      - '4455:3000'
+    networks:
+      - ory
+    restart: on-failure
     profiles:
       - 'ory-only'
       - 'dev'
@@ -439,18 +443,65 @@ services:
   # endregion
 
   # region Ory Keto
+  keto-migrate:
+    image: oryd/keto:v0.11.1
+    volumes:
+      - type: bind
+        source: ./infra/ory/keto
+        target: /home/ory
+      - type: volume
+        source: kratos_sqlite_volume
+        target: /var/lib/sqlite
+        read_only: false
+    environment:
+      - LOG_LEVEL=debug
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+    command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
+    restart: on-failure
+    networks:
+      - ory
+
   keto:
-    image: oryd/keto:v0.7.0-alpha.1-sqlite
+    depends_on:
+      - keto-migrate
+    image: oryd/keto:v0.11.1
     ports:
       - '4466:4466' # public
       - '4467:4467' # admin
     command: serve -c /home/ory/keto.yaml
     restart: on-failure
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
     volumes:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+      - type: volume
+        source: kratos_sqlite_volume
+        target: /var/lib/sqlite
+        read_only: false
     profiles:
       - 'ory-only'
       - 'dev'
+
+  # endregion
+
+  # region Ory Oathkeeper
+  # oathkeeper:
+  #   image: oryd/oathkeeper:v0.40
+  #   depends_on:
+  #     - kratos
+  #   ports:
+  #     - 4455:4455
+  #     - 4456:4456
+  #   command: serve proxy -c "/etc/config/oathkeeper/oathkeeper.yaml"
+  #   restart: on-failure
+  #   networks:
+  #     - ory
+  #   volumes:
+  #     - ./infra/ory/oathkeeper:/etc/config/oathkeeper
+  #   profiles:
+  #     - 'ory-only'
+  #     - 'dev'
+
   # endregion

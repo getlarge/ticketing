@@ -1,0 +1,88 @@
+version: v0.40.6
+
+log:
+  level: '##log_level##'
+  format: json
+
+serve:
+  proxy:
+    cors:
+      enabled: true
+      allowed_origins:
+        - '*'
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+      allow_credentials: true
+      debug: true
+
+errors:
+  fallback:
+    - json
+
+  handlers:
+    redirect:
+      enabled: true
+      config:
+        to: '##errors_handlers_redirect_config_to##'
+        when:
+          - error:
+              - unauthorized
+              - forbidden
+            request:
+              header:
+                accept:
+                  - text/html
+    json:
+      enabled: true
+      config:
+        verbose: true
+
+access_rules:
+  repositories:
+    - file:///etc/config/oathkeeper/rules.json
+
+authenticators:
+  anonymous:
+    enabled: true
+    config:
+      subject: guest
+
+  cookie_session:
+    enabled: true
+    config:
+      check_session_url: '##authenticators_cookie_session_config_check_session_url##'
+      preserve_path: true
+      extra_from: '@this'
+      subject_from: 'identity.id'
+      only:
+        - ory_kratos_session
+
+  noop:
+    enabled: true
+
+authorizers:
+  allow:
+    enabled: true
+
+mutators:
+  noop:
+    enabled: true
+
+  id_token:
+    enabled: true
+    config:
+      issuer_url: '##mutators_id_token_config_issuer_url##'
+      jwks_url: file:///etc/config/oathkeeper/id_token.jwks.json
+      claims: |
+        {
+          "session": {{ .Extra | toJson }}
+        }

@@ -92,6 +92,7 @@
     "ory:get:identities": "ts-node --project tools/tsconfig.json tools/ory/get-config.ts identity",
     "ory:get:permissions": "ts-node --project tools/tsconfig.json tools/ory/get-config.ts permission",
     "ory:generate:kratos": "ts-node --project tools/tsconfig.json tools/ory/generate-config.ts kratos",
+    "ory:generate:oathkeeper": "ts-node --project tools/tsconfig.json tools/ory/generate-config.ts oathkeeper",
     "tunnel": "node tools/utils/local-tunnel",
     "cz": "cz",
     "prepare": "husky install",

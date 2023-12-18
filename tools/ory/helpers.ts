@@ -1,200 +1,20 @@
-import 'reflect-metadata';
-import {
-  ClassConstructor,
-  Expose,
-  Transform,
-  plainToClass,
-} from 'class-transformer';
-import {
-  IsArray,
-  IsIn,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-  validateSync,
-} from 'class-validator';
 import dotenv from 'dotenv';
 import { load, dump } from 'js-yaml';
 import { constants, accessSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import {
+  KeywordMappings,
+  KratosMappings,
+  OathkeeperMappings,
+  validateMappings,
+} from './mappings';
 
-interface KeywordMappings {
-  [key: string]: (string | number)[] | string | number;
-}
+export const ORY_INFRA_DIRECTORY = join(__dirname, '..', '..', 'infra', 'ory');
+export const ORY_KRATOS_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'kratos');
+export const ORY_KETO_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'keto');
+export const ORY_OATHKEEPER_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'oathkeeper');
 
-const isUrlOptions: Parameters<typeof IsUrl>[0] = {
-  require_tld: false,
-  require_protocol: true,
-  require_valid_protocol: true,
-  protocols: ['http', 'https'],
-};
-
-const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-
-export const ORY_KRATOS_DIRECTORY = join(
-  __dirname,
-  '..',
-  '..',
-  'infra',
-  'ory',
-  'kratos',
-);
-
-export class KratosMappings implements KeywordMappings {
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_ui_base_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_settings_ui_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_verification_ui_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_recovery_ui_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_login_ui_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_registration_ui_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl({
-    require_tld: false,
-    require_protocol: true,
-    require_valid_protocol: true,
-    protocols: ['http', 'https'],
-  })
-  selfservice_browser_default_return_to?: string;
-
-  @Expose()
-  @IsOptional()
-  @Transform(
-    ({ value }) => (value ? value.split(',').map((v) => v.trim()) : []),
-    { toClassOnly: true },
-  )
-  @IsArray()
-  @IsUrl(isUrlOptions, { each: true })
-  selfservice_allowed_return_urls?: string[];
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_login_after_hook_config_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsIn(httpMethods)
-  selfservice_flows_login_after_hook_config_method?: string = 'POST';
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  selfservice_flows_login_after_hook_config_auth_config_value?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_settings_after_hook_config_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsIn(httpMethods)
-  selfservice_flows_settings_after_hook_config_method?: string = 'POST';
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  selfservice_flows_settings_after_hook_config_auth_config_value?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_registration_after_hook_config_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsIn(httpMethods)
-  selfservice_flows_registration_after_hook_config_method?: string = 'POST';
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  selfservice_flows_registration_after_hook_config_auth_config_value?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  selfservice_flows_verification_after_hook_config_url?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  selfservice_flows_verification_after_hook_config_auth_config_value?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  @Length(16)
-  secrets_cookie?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  @Length(32, 32)
-  secrets_cipher?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  serve_public_base_url?: string = 'http://localhost:4433/';
-
-  @Expose()
-  @IsOptional()
-  @IsUrl(isUrlOptions)
-  serve_admin_base_url?: string = 'http://kratos:4434/';
-
-  [key: string]: (string | number)[] | string | number | undefined;
-}
-
-function validateMappings<T extends object>(
-  mappings: ClassConstructor<T>,
-  processEnv: Record<string, string>,
-) {
-  const validatedConfig = plainToClass(mappings, processEnv, {
-    enableImplicitConversion: true,
-    excludeExtraneousValues: true,
-    exposeDefaultValues: true,
-    exposeUnsetFields: false,
-  });
-  const errors = validateSync(validatedConfig, {
-    skipMissingProperties: false,
-    forbidUnknownValues: true,
-    whitelist: true,
-    validationError: {
-      target: false,
-    },
-  });
-  if (errors.length > 0) {
-    throw new Error(JSON.stringify(errors, null, 2));
-  }
-  return validatedConfig;
-}
+type ConfigFilepath = `${string}.yml` | `${string}.yaml` | `${string}.json`;
 
 function keywordArrayReplace(input: string, mappings: KeywordMappings) {
   Object.keys(mappings).forEach(function (key) {
@@ -227,7 +47,7 @@ function keywordReplace(input: string, mappings: KeywordMappings) {
 }
 
 export function loadFileAndReplaceKeywords(
-  file: string,
+  file: ConfigFilepath,
   mappings: KeywordMappings,
 ) {
   const f = resolve(file);
@@ -242,11 +62,15 @@ export function loadFileAndReplaceKeywords(
   }
 }
 
-export function getOryKratosConfig<M extends KeywordMappings>(
-  configFilepath: string,
+export function getOryConfig<M extends KeywordMappings>(
+  configFilepath: ConfigFilepath,
   mappings?: M,
 ): Record<string, unknown> {
   const oryConfigString = loadFileAndReplaceKeywords(configFilepath, mappings);
+
+  if (configFilepath.endsWith('.json')) {
+    return JSON.parse(oryConfigString);
+  }
   return load(oryConfigString) as Record<string, unknown>;
 }
 
@@ -256,18 +80,69 @@ export function getOryKratosMappings(envFilePath: string): KratosMappings {
   return validateMappings(KratosMappings, processEnv);
 }
 
+export function getOryOathkeeperMappings(
+  envFilePath: string,
+): OathkeeperMappings {
+  const processEnv: Record<string, string> = {};
+  dotenv.config({ path: envFilePath, processEnv });
+  return validateMappings(OathkeeperMappings, processEnv);
+}
+
+function storeGeneratedOryConfig(
+  config: Record<string, unknown>,
+  outputFilePath: ConfigFilepath,
+) {
+  let output: string;
+  if (outputFilePath.endsWith('.json')) {
+    output = JSON.stringify(config, null, 2);
+  } else {
+    output = dump(config, {
+      lineWidth: 120,
+      noRefs: true,
+      sortKeys: true,
+      quotingType: '"',
+    });
+  }
+  writeFileSync(outputFilePath, output);
+}
+
 export function generateOryKratosConfig(
   envFilePath: string = join(ORY_KRATOS_DIRECTORY, '.env'),
-  configFilepath: string = join(ORY_KRATOS_DIRECTORY, 'config.yaml'),
-  outputFilePath: string = join(ORY_KRATOS_DIRECTORY, 'kratos.yaml'),
+  configFilepath: ConfigFilepath = join(
+    ORY_KRATOS_DIRECTORY,
+    'kratos-template.yaml',
+  ) as ConfigFilepath,
+  outputFilePath: ConfigFilepath = join(
+    ORY_KRATOS_DIRECTORY,
+    'kratos.yaml',
+  ) as ConfigFilepath,
 ): void {
   const mappings = getOryKratosMappings(envFilePath);
-  const config = getOryKratosConfig(configFilepath, mappings);
-  const yaml = dump(config, {
-    lineWidth: 120,
-    noRefs: true,
-    sortKeys: true,
-    quotingType: '"',
-  });
-  writeFileSync(outputFilePath, yaml);
+  const config = getOryConfig(configFilepath, mappings);
+  storeGeneratedOryConfig(config, outputFilePath);
+}
+
+export function generateOryOathkeeperConfig(
+  envFilePath: string = join(ORY_OATHKEEPER_DIRECTORY, '.env'),
+  configFilepath: ConfigFilepath = join(
+    ORY_OATHKEEPER_DIRECTORY,
+    'oathkeeper-template.yaml',
+  ) as ConfigFilepath,
+  outputFilePath: ConfigFilepath = join(
+    ORY_OATHKEEPER_DIRECTORY,
+    'oathkeeper.yaml',
+  ) as ConfigFilepath,
+): void {
+  const mappings = getOryOathkeeperMappings(envFilePath);
+  const config = getOryConfig(configFilepath, mappings);
+  storeGeneratedOryConfig(config, outputFilePath);
+
+  const rules = getOryConfig(
+    join(ORY_OATHKEEPER_DIRECTORY, 'rules-template.json') as ConfigFilepath,
+    mappings,
+  );
+  storeGeneratedOryConfig(
+    rules,
+    join(ORY_OATHKEEPER_DIRECTORY, 'rules.json') as ConfigFilepath,
+  );
 }

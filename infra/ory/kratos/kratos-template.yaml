@@ -1,4 +1,4 @@
-version: v0.13.0
+version: v1.0.0
 
 dsn: memory
 
@@ -11,8 +11,7 @@ serve:
     base_url: '##serve_admin_base_url##'
 
 selfservice:
-  default_browser_return_url:
-    '##selfservice_default_browser_return_url##'
+  default_browser_return_url: '##selfservice_default_browser_return_url##'
   allowed_return_urls: @@selfservice_allowed_return_urls@@
 
   methods:
@@ -42,23 +41,23 @@ selfservice:
 
   flows:
     error:
-      ui_url: '##selfservice_flows_ui_base_url##/error'
+      ui_url: '##selfservice_flows_errors_ui_url##'
 
     settings:
-      ui_url: '##selfservice_flows_ui_base_url##/settings'
+      ui_url: '##selfservice_flows_settings_ui_url##'
       privileged_session_max_age: 15m
       required_aal: highest_available
 
     recovery:
       enabled: true
-      ui_url: '##selfservice_flows_ui_base_url##/recovery'
+      ui_url: '##selfservice_flows_recovery_ui_url##'
       use: code
       lifespan: 15m
       notify_unknown_recipients: false
 
     verification:
       enabled: true
-      ui_url: '##selfservice_flows_ui_base_url##/verification'
+      ui_url: '##selfservice_flows_verification_ui_url##'
       use: code
       after:
         default_browser_return_url: '##selfservice_default_browser_return_url##'
@@ -68,7 +67,7 @@ selfservice:
         default_browser_return_url: '##selfservice_default_browser_return_url##'
 
     login:
-      ui_url: '##selfservice_flows_ui_base_url##/login'
+      ui_url: '##selfservice_flows_login_ui_url##'
       lifespan: 10m
       after:
         password:
@@ -114,8 +113,8 @@ selfservice:
             - hook: show_verification_ui
 
 log:
-  level: debug
-  format: text
+  level: '##log_level##'
+  format: json
   leak_sensitive_values: true
 
 secrets:
@@ -145,4 +144,4 @@ courier:
 
 feature_flags:
   cacheable_sessions: false
-  use_continue_with_transitions: true
+  # use_continue_with_transitions: true
