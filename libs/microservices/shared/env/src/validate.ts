@@ -2,11 +2,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { omitBy } from 'lodash-es';
 
-import { BaseEnvironmentVariables } from './base-environment-variables';
-
-export const validate = <T extends BaseEnvironmentVariables>(
-  envClass: ClassConstructor<T>,
-) => {
+export const validate = <T extends object>(envClass: ClassConstructor<T>) => {
   return (config: Record<string, unknown>): T => {
     // eslint-disable-next-line no-param-reassign
     config = omitBy(
