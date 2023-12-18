@@ -1,0 +1,148 @@
+version: v0.13.0
+
+dsn: memory
+
+serve:
+  public:
+    base_url: '##serve_public_base_url##'
+    cors:
+      enabled: true
+  admin:
+    base_url: '##serve_admin_base_url##'
+
+selfservice:
+  default_browser_return_url:
+    '##selfservice_default_browser_return_url##'
+  allowed_return_urls: @@selfservice_allowed_return_urls@@
+
+  methods:
+    password:
+      enabled: true
+      config:
+        haveibeenpwned_enabled: true
+        identifier_similarity_check_enabled: true
+        ignore_network_errors: true
+        max_breaches: 1
+        min_password_length: 8
+    profile:
+      enabled: true
+    totp:
+      config:
+        issuer: Ticketing
+      enabled: true
+    lookup_secret:
+      enabled: true
+    link:
+      enabled: true
+      config:
+        lifespan: 15m
+        base_url: ''
+    code:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: '##selfservice_flows_ui_base_url##/error'
+
+    settings:
+      ui_url: '##selfservice_flows_ui_base_url##/settings'
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    recovery:
+      enabled: true
+      ui_url: '##selfservice_flows_ui_base_url##/recovery'
+      use: code
+      lifespan: 15m
+      notify_unknown_recipients: false
+
+    verification:
+      enabled: true
+      ui_url: '##selfservice_flows_ui_base_url##/verification'
+      use: code
+      after:
+        default_browser_return_url: '##selfservice_default_browser_return_url##'
+
+    logout:
+      after:
+        default_browser_return_url: '##selfservice_default_browser_return_url##'
+
+    login:
+      ui_url: '##selfservice_flows_ui_base_url##/login'
+      lifespan: 10m
+      after:
+        password:
+          hooks:
+            - hook: web_hook
+              config:
+                method: '##selfservice_flows_login_after_hook_config_method##'
+                auth:
+                  type: api_key
+                  config:
+                    value: '##selfservice_flows_login_after_hook_config_auth_config_value##'
+                    in: header
+                    name: X-Ory-API-Key
+                url: '##selfservice_flows_login_after_hook_config_url##'
+                body: file:///etc/config/kratos/after-login.jsonnet
+                can_interrupt: false
+                response:
+                  ignore: false
+                  parse: false
+            - hook: require_verified_address
+
+    registration:
+      lifespan: 10m
+      ui_url: '##selfservice_flows_ui_base_url##/registration'
+      after:
+        password:
+          hooks:
+            - hook: web_hook
+              config:
+                method: '##selfservice_flows_registration_after_hook_config_method##'
+                auth:
+                  type: api_key
+                  config:
+                    value: '##selfservice_flows_registration_after_hook_config_auth_config_value##'
+                    in: header
+                    name: X-Ory-API-Key
+                url: '##selfservice_flows_registration_after_hook_config_url##'
+                body: file:///etc/config/kratos/after-login.jsonnet
+                can_interrupt: true
+                response:
+                  ignore: false
+                  parse: true
+            - hook: show_verification_ui
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - '##secrets_cookie##'
+  cipher:
+    - '##secrets_cipher##'
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    from_name: Ticketing
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+
+feature_flags:
+  cacheable_sessions: false
+  use_continue_with_transitions: true

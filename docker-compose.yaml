@@ -7,6 +7,8 @@ networks:
     driver: bridge
   rabbitmq:
     driver: bridge
+  ory:
+    driver: bridge
   apps:
     driver: bridge
 
@@ -14,8 +16,10 @@ volumes:
   mongo_volume:
   redis_volume:
   rabbitmq_volume:
+  kratos_sqlite_volume:
 
 services:
+  # region Storage
   mongo-primary:
     image: mongo:7
     container_name: ticketing-mongo-primary
@@ -53,6 +57,9 @@ services:
       - 'deps-only'
       - 'dev'
 
+  # endregion
+
+  # region RabbitMQ
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
     container_name: 'ticketing-rabbitmq'
@@ -81,6 +88,9 @@ services:
       - 'deps-only'
       - 'dev'
 
+  # endregion
+
+  # region micro services
   auth-service:
     image: 'ghcr.io/getlarge/ticketing-auth:${AUTH_IMAGE_VERSION:-latest}'
     container_name: auth-service
@@ -89,7 +99,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${AUTH_HTTP_PORT:-3000}
-      SERVER_URL: http://127.0.0.1:${AUTH_HTTP_PORT:-3000}
+      SERVER_URL: http://localhost:${AUTH_HTTP_PORT:-3000}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -133,7 +143,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${EXPIRATION_HTTP_PORT:-3030}
-      SERVER_URL: http://127.0.0.1:${EXPIRATION_HTTP_PORT:-3030}
+      SERVER_URL: http://localhost:${EXPIRATION_HTTP_PORT:-3030}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       RMQ_URL: http://ticketing-rabbitmq:5672
       REDIS_URL: redis://ticketing-redis:6379
@@ -169,7 +179,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${ORDERS_HTTP_PORT:-3020}
-      SERVER_URL: http://127.0.0.1:${ORDERS_HTTP_PORT:-3020}
+      SERVER_URL: http://localhost:${ORDERS_HTTP_PORT:-3020}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -212,7 +222,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${PAYMENTS_HTTP_PORT:-3040}
-      SERVER_URL: http://127.0.0.1:${PAYMENTS_HTTP_PORT:-3040}
+      SERVER_URL: http://localhost:${PAYMENTS_HTTP_PORT:-3040}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -258,7 +268,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${TICKETS_HTTP_PORT:-3010}
-      SERVER_URL: http://127.0.0.1:${TICKETS_HTTP_PORT:-3010}
+      SERVER_URL: http://localhost:${TICKETS_HTTP_PORT:-3010}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -293,6 +303,9 @@ services:
       - 'services-only'
       - 'dev'
 
+  # endregion
+
+  # region Frontend
   ng-client:
     image: 'ghcr.io/getlarge/ticketing-ng-client:${CLIENT_IMAGE_VERSION:-latest}'
     container_name: ng-client
@@ -344,8 +357,100 @@ services:
     networks:
       - apps
     ports:
-      - '127.0.0.1:${NGINX_HTTP_PORT:-8800}:8080'
+      - 'localhost:${NGINX_HTTP_PORT:-8800}:8080'
     restart: always
     profiles:
       - 'services-only'
       - 'dev'
+
+  # endregion
+
+  # region Ory Kratos
+  kratos-migrate:
+    image: oryd/kratos:v1.0.0
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - type: volume
+        source: kratos_sqlite_volume
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./infra/ory/kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://localhost:4433/
+    ports:
+      - '4455:4455'
+    networks:
+      - ory
+    restart: on-failure
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:v1.0.0
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: unless-stopped
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
+    volumes:
+      - type: volume
+        source: kratos_sqlite_volume
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./infra/ory/kratos
+        target: /etc/config/kratos
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+  # endregion
+
+  # region Ory Keto
+  keto:
+    image: oryd/keto:v0.7.0-alpha.1-sqlite
+    ports:
+      - '4466:4466' # public
+      - '4467:4467' # admin
+    command: serve -c /home/ory/keto.yaml
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./infra/ory/keto
+        target: /home/ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+  # endregion

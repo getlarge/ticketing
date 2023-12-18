@@ -6568,6 +6568,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-yaml@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/js-yaml@npm:4.0.9"
+  checksum: e5e5e49b5789a29fdb1f7d204f82de11cb9e8f6cb24ab064c616da5d6e1b3ccfbf95aa5d1498a9fbd3b9e745564e69b4a20b6c530b5a8bbb2d4eb830cda9bc69
+  languageName: node
+  linkType: hard
+
 "@types/jsdom@npm:^16.2.4":
   version: 16.2.15
   resolution: "@types/jsdom@npm:16.2.15"
@@ -8099,14 +8106,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.5.0":
-  version: 1.5.0
-  resolution: "axios@npm:1.5.0"
+"axios@npm:1.6.2, axios@npm:^1.5.1":
+  version: 1.6.2
+  resolution: "axios@npm:1.6.2"
   dependencies:
     follow-redirects: ^1.15.0
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: e7405a5dbbea97760d0e6cd58fecba311b0401ddb4a8efbc4108f5537da9b3f278bde566deb777935a960beec4fa18e7b8353881f2f465e4f2c0e949fead35be
+  checksum: 4a7429e2b784be0f2902ca2680964391eae7236faa3967715f30ea45464b98ae3f1c6f631303b13dfe721b17126b01f486c7644b9ef276bfc63112db9fd379f8
   languageName: node
   linkType: hard
 
@@ -8117,17 +8124,6 @@ __metadata:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.5.1":
-  version: 1.6.2
-  resolution: "axios@npm:1.6.2"
-  dependencies:
-    follow-redirects: ^1.15.0
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: 4a7429e2b784be0f2902ca2680964391eae7236faa3967715f30ea45464b98ae3f1c6f631303b13dfe721b17126b01f486c7644b9ef276bfc63112db9fd379f8
   languageName: node
   linkType: hard
 
@@ -22270,6 +22266,7 @@ __metadata:
     "@types/amqplib": ^0.10.4
     "@types/bull": ^3.15.8
     "@types/jest": 29.4.4
+    "@types/js-yaml": ^4.0.9
     "@types/lodash": ^4.14.176
     "@types/lodash-es": ^4.17.12
     "@types/node": 18.14.2
@@ -22283,7 +22280,7 @@ __metadata:
     amqplib: 0.10.3
     antlr4ng: ^2.0.3
     antlr4ng-cli: ^1.0.6
-    axios: 1.5.0
+    axios: 1.6.2
     bootstrap: ^5.1.3
     bull: 4.8.2
     class-transformer: 0.5.1
@@ -22314,6 +22311,7 @@ __metadata:
     jest-environment-jsdom: 28.1.3
     jest-environment-node: ^29.4.1
     jest-preset-angular: 13.1.4
+    js-yaml: ^4.1.0
     localtunnel: ^2.0.2
     lodash: ^4.17.21
     lodash-es: ^4.17.21

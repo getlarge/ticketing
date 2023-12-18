@@ -150,6 +150,7 @@ export class KratosMappings implements KeywordMappings {
   @Expose()
   @IsOptional()
   @IsString()
+  @Length(16)
   secrets_cookie?: string;
 
   @Expose()
