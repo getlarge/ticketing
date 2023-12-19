@@ -9,6 +9,7 @@
     "@fastify/passport": "2.3.0",
     "@fastify/secure-session": "7.1.0",
     "@fastify/static": "6.11.0",
+    "@jest/globals": "29.7.0",
     "@nestjs-plugins/nestjs-nats-streaming-transport": "1.2.0",
     "@nestjs/axios": "3.0.0",
     "@nestjs/common": "10.2.4",
