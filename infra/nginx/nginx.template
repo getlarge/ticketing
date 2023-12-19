@@ -1,8 +1,7 @@
-
-# limit_req_zone $binary_remote_addr zone=one:2m rate=10r/s;
-# limit_req_log_level notice;
-# limit_req_status 429;
-# limit_req zone=one burst=20 nodelay;
+limit_req_zone $binary_remote_addr zone=one:2m rate=10r/s;
+limit_req_log_level notice;
+limit_req_status 429;
+limit_req zone=one burst=20 nodelay;
 
 client_body_timeout 10s;
 client_header_timeout 10s;
@@ -63,7 +62,7 @@ map $use_cors $allow_methods {
 }
 
 map $use_cors $allow_headers {
-  'true' 'X-Version,X-Access-Token,X-Refresh-Token,Authorization,Refresh,Set-Cookie,DNT,User-Agent,Keep-Alive,Content-Type,Pragma,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept,Range,Upgrade-Insecure-Requests';
+  'true' 'X-Version,X-Access-Token,X-Refresh-Token,Authorization,Cookie,Refresh,Set-Cookie,DNT,User-Agent,Keep-Alive,Content-Type,Pragma,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept,Range,Upgrade-Insecure-Requests';
 }
 
 map $use_cors $expose_headers {

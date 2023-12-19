@@ -16,7 +16,6 @@ volumes:
   mongo_volume:
   redis_volume:
   rabbitmq_volume:
-  kratos_sqlite_volume:
 
 services:
   # region Storage
@@ -371,12 +370,8 @@ services:
   kratos-migrate:
     image: oryd/kratos:v1.0.0
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
     volumes:
-      - type: volume
-        source: kratos_sqlite_volume
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./infra/ory/kratos
         target: /etc/config/kratos
@@ -397,16 +392,24 @@ services:
       - '4434:4434' # admin
     restart: unless-stopped
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
     command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
     volumes:
-      - type: volume
-        source: kratos_sqlite_volume
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./infra/ory/kratos
         target: /etc/config/kratos
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos-postgres:
+    image: postgres:11.8
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratosdb
     networks:
       - ory
     profiles:
@@ -447,13 +450,8 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
-      - type: volume
-        source: kratos_sqlite_volume
-        target: /var/lib/sqlite
-        read_only: false
     environment:
-      - LOG_LEVEL=debug
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
     restart: on-failure
     networks:
@@ -469,15 +467,25 @@ services:
     command: serve -c /home/ory/keto.yaml
     restart: on-failure
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     volumes:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
-      - type: volume
-        source: kratos_sqlite_volume
-        target: /var/lib/sqlite
-        read_only: false
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  keto-postgres:
+    image: postgres:11.8
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=accesscontroldb
+    networks:
+      - ory
     profiles:
       - 'ory-only'
       - 'dev'
