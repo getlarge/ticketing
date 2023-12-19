@@ -1,6 +1,7 @@
 import yargs from 'yargs';
 import {
   generateOryKratosConfig,
+  generateOryKetoConfig,
   generateOryOathkeeperConfig,
 } from './helpers';
 
@@ -42,7 +43,10 @@ async function main() {
             _: ['keto'];
           }
         >,
-      ) => {},
+      ) => {
+        const { envFile } = argv;
+        generateOryKetoConfig(envFile);
+      },
     })
     .command({
       command: 'oathkeeper',

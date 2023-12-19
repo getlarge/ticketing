@@ -96,7 +96,7 @@ selfservice:
                     in: header
                     name: X-Ory-API-Key
                 url: '##selfservice_flows_login_after_hook_config_url##'
-                body: file:///etc/config/kratos/after-login.jsonnet
+                body: '##selfservice_flows_login_after_hook_config_body##'
                 can_interrupt: false
                 response:
                   ignore: false
@@ -119,7 +119,7 @@ selfservice:
                     in: header
                     name: X-Ory-API-Key
                 url: '##selfservice_flows_registration_after_hook_config_url##'
-                body: file:///etc/config/kratos/after-login.jsonnet
+                body: '##selfservice_flows_registration_after_hook_config_body##'
                 can_interrupt: true
                 response:
                   ignore: false
@@ -149,12 +149,12 @@ identity:
   default_schema_id: default
   schemas:
     - id: default
-      url: file:///etc/config/kratos/identity.schema.json
+      url: '##identity_schemas_default##'
 
 courier:
   smtp:
-    from_name: Ticketing
-    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    from_name: '##courier_smtp_from_name##'
+    connection_uri: '##courier_smtp_connection_uri##'
 
 feature_flags:
   cacheable_sessions: false

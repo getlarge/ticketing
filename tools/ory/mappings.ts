@@ -40,13 +40,31 @@ const DEFAULT_SELF_SERVICE_UI_URL = 'http://localhost:4455';
 export class KratosMappings extends KeywordMappings {
   @Expose()
   @IsOptional()
+  @IsString()
+  courier_smtp_from_name?: string = 'Ticketing';
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  courier_smtp_connection_uri?: string =
+    'smtps://test:test@mailslurper:1025/?skip_ssl_verify=true';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  identity_schemas_default?: string =
+    'file:///etc/config/kratos/identity.schema.json';
+
+  @Expose()
+  @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_ui_base_url?: string = DEFAULT_SELF_SERVICE_UI_URL;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
-  selfservice_flows_errors_ui_url?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/error`;
+  selfservice_flows_errors_ui_url?: string =
+    `${DEFAULT_SELF_SERVICE_UI_URL}/error`;
 
   @Expose()
   @IsOptional()
@@ -69,7 +87,8 @@ export class KratosMappings extends KeywordMappings {
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
-  selfservice_flows_login_ui_url?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/login`;
+  selfservice_flows_login_ui_url?: string =
+    `${DEFAULT_SELF_SERVICE_UI_URL}/login`;
 
   @Expose()
   @IsOptional()
@@ -110,12 +129,24 @@ export class KratosMappings extends KeywordMappings {
   @Expose()
   @IsOptional()
   @IsString()
+  selfservice_flows_login_after_hook_config_body?: string =
+    'file:///etc/config/kratos/after-login.jsonnet';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
   selfservice_flows_login_after_hook_config_auth_config_value?: string;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_settings_after_hook_config_url?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  selfservice_flows_settings_after_hook_config_body?: string =
+    'file:///etc/config/kratos/after-login.jsonnet';
 
   @Expose()
   @IsOptional()
@@ -131,6 +162,12 @@ export class KratosMappings extends KeywordMappings {
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_registration_after_hook_config_url?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  selfservice_flows_registration_after_hook_config_body?: string =
+    'file:///etc/config/kratos/after-login.jsonnet';
 
   @Expose()
   @IsOptional()
@@ -206,7 +243,12 @@ export class KratosMappings extends KeywordMappings {
   session_cookie_name?: string = 'ory_kratos_session';
 }
 
-export class KetoMappings extends KeywordMappings {}
+export class KetoMappings extends KeywordMappings {
+  @Expose()
+  @IsOptional()
+  @IsString()
+  namespaces_location?: string = 'file:///home/ory/namespaces.ts';
+}
 
 export class OathkeeperMappings extends KeywordMappings {
   @Expose()

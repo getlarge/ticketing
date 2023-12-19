@@ -1,8 +1,10 @@
+import type { ClassConstructor } from 'class-transformer';
 import dotenv from 'dotenv';
 import { load, dump } from 'js-yaml';
 import { constants, accessSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import {
+  KetoMappings,
   KeywordMappings,
   KratosMappings,
   OathkeeperMappings,
@@ -78,18 +80,27 @@ export function getOryConfig<M extends KeywordMappings>(
   return load(oryConfigString) as Record<string, unknown>;
 }
 
-export function getOryKratosMappings(envFilePath: string): KratosMappings {
+function getOryMappings<T extends KeywordMappings>(
+  cls: ClassConstructor<T>,
+  envFilePath: string,
+): T {
   const processEnv: Record<string, string> = {};
   dotenv.config({ path: envFilePath, processEnv });
-  return validateMappings(KratosMappings, processEnv);
+  return validateMappings(cls, processEnv);
+}
+
+export function getOryKratosMappings(envFilePath: string): KratosMappings {
+  return getOryMappings(KratosMappings, envFilePath);
+}
+
+export function getOryKetoMappings(envFilePath: string): KetoMappings {
+  return getOryMappings(KetoMappings, envFilePath);
 }
 
 export function getOryOathkeeperMappings(
   envFilePath: string,
 ): OathkeeperMappings {
-  const processEnv: Record<string, string> = {};
-  dotenv.config({ path: envFilePath, processEnv });
-  return validateMappings(OathkeeperMappings, processEnv);
+  return getOryMappings(OathkeeperMappings, envFilePath);
 }
 
 function storeGeneratedOryConfig(
@@ -122,6 +133,22 @@ export function generateOryKratosConfig(
   ) as ConfigFilepath,
 ): void {
   const mappings = getOryKratosMappings(envFilePath);
+  const config = getOryConfig(configFilepath, mappings);
+  storeGeneratedOryConfig(config, outputFilePath);
+}
+
+export function generateOryKetoConfig(
+  envFilePath: string = join(ORY_KETO_DIRECTORY, '.env'),
+  configFilepath: ConfigFilepath = join(
+    ORY_KETO_DIRECTORY,
+    'keto-template.yaml',
+  ) as ConfigFilepath,
+  outputFilePath: ConfigFilepath = join(
+    ORY_KETO_DIRECTORY,
+    'keto.yaml',
+  ) as ConfigFilepath,
+): void {
+  const mappings = getOryKetoMappings(envFilePath);
   const config = getOryConfig(configFilepath, mappings);
   storeGeneratedOryConfig(config, outputFilePath);
 }

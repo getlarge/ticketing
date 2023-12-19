@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsString, IsUrl } from 'class-validator';
+import { IsOptional, IsString, IsUrl } from 'class-validator';
 import { decorate } from 'ts-mixer';
 
 export class OryKratosEnvironmentVariables {
@@ -27,7 +27,8 @@ export class OryKratosEnvironmentVariables {
 
   @decorate(Expose())
   @decorate(IsString())
-  ORY_KRATOS_API_KEY: string;
+  @decorate(IsOptional())
+  ORY_KRATOS_API_KEY?: string;
 }
 
 export class OryHydraEnvironmentVariables {
@@ -55,7 +56,8 @@ export class OryHydraEnvironmentVariables {
 
   @decorate(Expose())
   @decorate(IsString())
-  ORY_HYDRA_API_KEY: string;
+  @decorate(IsOptional())
+  ORY_HYDRA_API_KEY?: string;
 }
 
 export class OryKetoEnvironmentVariables {
@@ -83,6 +85,7 @@ export class OryKetoEnvironmentVariables {
 
   @decorate(Expose())
   @decorate(IsString())
+  @decorate(IsOptional())
   ORY_KETO_API_KEY?: string;
 }
 
