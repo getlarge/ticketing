@@ -7,12 +7,14 @@ This repository shows:
 
 - another way to manage shared/common modules (with [Nx](https://nx.dev))
 - tricks to use [Fastify](https://fastify.dev) with [NestJS](https://nestjs.com)
-- how to integrate [Ory network](https://ory.sh) in NestJS and Angular apps
-- how to use RabbitMQ with NestJS
+- tricks to consume and produce ES6 modules with NestJS (and Nx)
+- how to integrate [Ory network](https://ory.sh) in NestJS and Angular apps for authentication and authorization flows
+- how to setup Ory in local and remote working environments
+- how to use [RabbitMQ](https://www.rabbitmq.com) with NestJS
 - how to define/validate environment variables
-- how to Dockerize Nx apps
-- how to integrate Nx into a Kubernetes workflow
-- how to dynamically rebuild docker images based on Nx dependencies graph
+- how to containerize Nx apps with [Docker](https://www.docker.com)
+- how to integrate Nx into a [Kubernetes](https://kubernetes.io) workflow
+- how to dynamically rebuild Docker images based on Nx dependencies graph
 
 ## User story
 
