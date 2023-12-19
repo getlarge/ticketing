@@ -50,6 +50,7 @@ env:
   BUILD_FOLDER: dist
   BUILD_ARTIFACTS: build
   CI_WORKFLOW: ci.yaml
+  CD_WORKFLOW: cd.yaml
 
 jobs:
   init:
@@ -59,7 +60,7 @@ jobs:
       github.event.inputs.workflow_conclusion == 'success'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -225,7 +226,7 @@ jobs:
       NX_HEAD: ${{ needs.init.outputs.head }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ needs.init.outputs.git-ref }}
 

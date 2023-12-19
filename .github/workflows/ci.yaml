@@ -184,7 +184,7 @@ jobs:
       - name: Check if regenerate job should be run
         id: regenerate
         run: |
-          if [[ ${{ steps.branch-name.outputs.current_branch }} != 'main' ]] && \
+          if [[ "${{ steps.branch-name.outputs.current_branch }}" != 'main' ]] && \
             [[ ${{ steps.open-api.outputs.has-changed }} =~ "true" ]] || \
             [[ ${{ steps.package-json.outputs.has-changed }} =~ "true" ]]; then
             echo "should-run=true" >> $GITHUB_OUTPUT
