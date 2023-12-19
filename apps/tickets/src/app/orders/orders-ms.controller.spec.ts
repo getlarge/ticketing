@@ -1,14 +1,18 @@
+/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   createRmqContext,
   MockModel,
+  MockOryPermissionService,
   MockPublisher,
 } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
 
 import { mockOrderEvent } from '../../../test/models/order.mock';
+import { mockTicket } from '../../../test/models/ticket.mock';
 import { TicketsService } from '../tickets/tickets.service';
 import { OrdersMSController } from './orders-ms.controller';
 
@@ -23,6 +27,7 @@ describe('OrdersMSController', () => {
           provide: TicketsService,
           useValue: new TicketsService(
             new MockModel() as any,
+            new MockOryPermissionService() as any,
             new MockPublisher() as any,
           ),
         },
@@ -34,10 +39,11 @@ describe('OrdersMSController', () => {
     it('should call "TicketsService.createOrder" and in case of success ack RMQ message', async () => {
       // ticket coming from tickets-service
       const order = mockOrderEvent();
+      const ticket = mockTicket(order.ticket);
       const context = createRmqContext();
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
-      ticketsService.createOrder = jest.fn();
+      ticketsService.createOrder = jest.fn(() => Promise.resolve(ticket));
       context.getChannelRef().ack = jest.fn();
       //
       await ordersMSController.onCreated(order, context);
@@ -53,7 +59,9 @@ describe('OrdersMSController', () => {
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.createOrder = jest
-        .fn()
+        .fn(() => {
+          throw expectedError;
+        })
         .mockRejectedValueOnce(expectedError);
       const channel = context.getChannelRef() as Channel;
       channel.ack = jest.fn();
@@ -75,7 +83,9 @@ describe('OrdersMSController', () => {
       const context = createRmqContext();
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
-      ticketsService.cancelOrder = jest.fn();
+      ticketsService.cancelOrder = jest.fn(() =>
+        Promise.resolve(mockTicket(order.ticket)),
+      );
       context.getChannelRef().ack = jest.fn();
       //
       await ordersMSController.onCancelled(order, context);
@@ -91,7 +101,9 @@ describe('OrdersMSController', () => {
       const ordersMSController = app.get(OrdersMSController);
       const ticketsService = app.get(TicketsService);
       ticketsService.cancelOrder = jest
-        .fn()
+        .fn(() => {
+          throw expectedError;
+        })
         .mockRejectedValueOnce(expectedError);
       const channel = context.getChannelRef() as Channel;
       channel.ack = jest.fn();

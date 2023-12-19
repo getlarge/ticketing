@@ -7,10 +7,12 @@ export default {
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.spec.json',
+        useESM: true,
       },
     ],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
+  moduleFileExtensions: ['ts', 'mjs', 'js', 'html'],
+  extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/tickets',
   preset: '../../jest.preset.js',
 };

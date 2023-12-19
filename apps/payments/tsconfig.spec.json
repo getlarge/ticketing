@@ -2,10 +2,20 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "moduleResolution": "Bundler",
     "module": "esnext",
+    "target": "es2022",
     "emitDecoratorMetadata": true,
-    "types": ["jest", "node"],
+    "types": [
+      "jest",
+      "node"
+    ],
     "allowJs": true
   },
-  "include": ["**/*.e2e-spec.ts", "**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
+  "include": [
+    "**/*.e2e-spec.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "jest.config.ts"
+  ]
 }

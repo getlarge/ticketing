@@ -19,6 +19,7 @@
     "affected": "nx affected",
     "affected:apps": "ts-node --project tools/tsconfig.json tools/nx/get-projects-cli.ts -t app -p",
     "affected:libs": "ts-node --project tools/tsconfig.json tools/nx/get-projects-cli.ts -t lib -p",
+    "affected:test": "NODE_OPTIONS=--experimental-vm-modules nx affected:test",
     "affected:lint": "nx affected:lint",
     "affected:lint:fast": "ts-node --project tools/tsconfig.json tools/nx/fast-lint.js -v",
     "affected:dep-graph": "nx affected:dep-graph",
