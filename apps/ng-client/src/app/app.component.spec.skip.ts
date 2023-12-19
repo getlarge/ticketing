@@ -23,7 +23,7 @@ describe.skip('AppComponent', () => {
         ]),
       ],
       declarations: [AppComponent],
-      providers: [{ provide: APP_BASE_HREF, useValue: '/' }, ],
+      providers: [{ provide: APP_BASE_HREF, useValue: '/' }, HttpClient],
     }).compileComponents();
   });
 
