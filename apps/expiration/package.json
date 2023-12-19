@@ -29,6 +29,7 @@
     "fastify": "4.22.0",
     "ioredis": "4.28.5",
     "lodash": "4.17.21",
+    "lodash-es": "4.17.21",
     "mongoose": "6.12.0",
     "nestjs-pino": "3.4.0",
     "node-nats-streaming": "0.3.2",
@@ -36,7 +37,8 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
     "ts-mixer": "6.0.1",
-    "url": "0.11.1"
+    "url": "0.11.1",
+    "webpack-node-externals": "3.0.0"
   },
   "peerDependencies": {
     "nats": "1.4.12",

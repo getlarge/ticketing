@@ -22,13 +22,16 @@
     "@nx/webpack": "17.1.3",
     "amqp-connection-manager": "4.1.14",
     "amqplib": "0.10.3",
+    "antlr4ng": "2.0.3",
     "axios": "1.5.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
+    "defekt": "9.3.1",
     "dotenv": "16.3.1",
     "dotenv-expand": "10.0.0",
     "fastify": "4.22.0",
     "lodash": "4.17.21",
+    "lodash-es": "4.17.21",
     "mongoose": "6.12.0",
     "nestjs-keyset-paginator": "3.0.4",
     "nestjs-pino": "3.4.0",
@@ -36,7 +39,9 @@
     "pino-http": "8.5.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
-    "ts-mixer": "6.0.1"
+    "ts-mixer": "6.0.1",
+    "tslib": "2.6.2",
+    "webpack-node-externals": "3.0.0"
   },
   "peerDependencies": {
     "ioredis": "4.28.5",
