@@ -75,9 +75,16 @@ async function bootstrap(): Promise<void> {
   });
   await app.register(fastifyPassport.initialize());
   await app.register(fastifyPassport.secureSession());
-  if (!proxyServerUrls.length) {
+  if (!proxyServerUrls.length && environment === 'development') {
     await app.register(fastifyCors, {
-      origin: '*',
+      origin: (origin, cb) => {
+        const hostname = new URL(origin).hostname;
+        if (hostname === 'localhost') {
+          cb(null, true);
+          return;
+        }
+        cb(new Error('Not allowed'), false);
+      },
       // allowedHeaders: ALLOWED_HEADERS,
       // exposedHeaders: EXPOSED_HEADERS,
       allowedHeaders: '*',
