@@ -28,8 +28,16 @@ export class OryClientService {
     return environment.oryBasePath;
   }
 
+  get uiBasePath(): string {
+    return environment.oryUiBasePath ?? environment.oryBasePath;
+  }
+
+  get loginPath(): string {
+    return `${this.uiBasePath}/login`;
+  }
+
   redirectToLogin(): void {
-    window.location.href = `${this.basePath}/ui/login`;
+    window.location.href = this.loginPath;
   }
 
   createBrowserLoginFlow(): Observable<LoginFlow> {
@@ -69,7 +77,7 @@ export class OryClientService {
         };
       }),
       catchError((error) => {
-        window.location.replace(`${this.basePath}/ui/login`);
+        window.location.replace(this.loginPath);
         console.error(error);
         return throwError(() => error);
       }),

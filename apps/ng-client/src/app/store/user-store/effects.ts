@@ -108,9 +108,7 @@ export class UserStoreEffects {
           }),
           catchError((error) => {
             console.error(error);
-            window.location.replace(
-              `${this.oryClientService.basePath}/ui/login`,
-            );
+            window.location.replace(this.oryClientService.loginPath);
             return of(
               new featureActions.SignInFailureAction({
                 error: transformError(error),
