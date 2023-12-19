@@ -59,6 +59,9 @@ flowchart LR
     E[Expiration API]
     E-R[(Redis)]
     RMQ[RabbitMQ]
+    Kr[Kratos]
+    Ke[Keto]
+    Hy[Hydra]
 
 %% assigning styles to entities
     %%AS,OS,ES,TS,PS:::service
@@ -76,6 +79,10 @@ flowchart LR
     A --> A-M
     end
     subgraph ORY [Ory Network]
+    direction LR
+    Kr
+    Ke
+    Hy
     end
     subgraph TS [Tickets service]
     direction LR
@@ -234,11 +241,14 @@ yarn docker:nginx:build
 # build custom RabbitMQ node
 yarn docker:rmq:build
 
-# start the docker images (mongo, redis, rabbitmq)
+# start the Storage and Broker dependencies (mongo, redis, rabbitmq)
 yarn docker:deps:up
 
-# start Nginx Proxy
+# start Nginx Proxy (for backend services and frontend app)
 yarn docker:proxy:up
+
+# start Ory network (Kratos and Keto with database migrations)
+yarn docker:ory:up
 
 # start backend services
 yarn start:backend
