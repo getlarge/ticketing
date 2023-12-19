@@ -30,7 +30,7 @@ import {
 } from '@ticketing/microservices/shared/redis';
 import { Resources } from '@ticketing/shared/constants';
 
-import { AppConfigService } from '../env';
+import { EnvironmentVariables } from '../env';
 
 @ApiTags(Resources.HEALTH)
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
@@ -41,7 +41,8 @@ export class HealthController {
   readonly microserviceOptions: MicroserviceHealthIndicatorOptions;
 
   constructor(
-    @Inject(ConfigService) private readonly configService: AppConfigService,
+    @Inject(ConfigService)
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
     private readonly health: HealthCheckService,
     private readonly http: HttpHealthIndicator,
     private readonly memory: MemoryHealthIndicator,

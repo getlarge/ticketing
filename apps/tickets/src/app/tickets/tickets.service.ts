@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -8,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
+import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
@@ -18,11 +18,15 @@ import {
 import {
   NextPaginationDto,
   PaginateDto,
+  PermissionNamespaces,
 } from '@ticketing/microservices/shared/models';
+import { transactionManager } from '@ticketing/microservices/shared/mongo';
+import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
-import Paginator from 'nestjs-keyset-paginator';
+import { Paginator } from 'nestjs-keyset-paginator';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import { ORDERS_CLIENT } from '../shared/constants';
@@ -34,25 +38,59 @@ export class TicketsService {
   readonly logger = new Logger(TicketsService.name);
 
   constructor(
-    @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
-    @Inject(ORDERS_CLIENT) private client: ClientProxy,
+    @InjectModel(TicketSchema.name)
+    private readonly ticketModel: Model<TicketDocument>,
+    @Inject(OryPermissionsService)
+    private readonly oryPermissionService: OryPermissionsService,
+    @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
   emitEvent(
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
     event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
   ): Observable<string> {
-    return this.client.emit<string, typeof event>(pattern, event);
+    return this.client.emit(pattern, event);
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
-    const newTicket = await this.ticketModel.create({
-      ...ticket,
-      userId: currentUser.id,
+    await using manager = await transactionManager(this.ticketModel);
+    const res = await manager.wrap<Ticket>(async (session) => {
+      const doc: CreateTicket & { userId: string } = {
+        ...ticket,
+        userId: currentUser.id,
+      };
+      const docs = await this.ticketModel.create([doc], {
+        session,
+      });
+      const newTicket = docs[0].toJSON<Ticket>();
+      this.logger.debug(`Created ticket ${newTicket.id}`);
+
+      const relationTuple = new RelationTuple(
+        PermissionNamespaces[Resources.TICKETS],
+        newTicket.id,
+        'owners',
+        {
+          namespace: PermissionNamespaces[Resources.USERS],
+          object: currentUser.id,
+        },
+      );
+      const relationShipCreated =
+        await this.oryPermissionService.createRelation(relationTuple);
+      if (!relationShipCreated) {
+        throw new BadRequestException(
+          `Could not create relation ${relationTuple}`,
+        );
+      }
+      this.logger.debug(`Created relation ${relationTuple}`);
+
+      await lastValueFrom(this.emitEvent(Patterns.TicketCreated, newTicket));
+      this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
+      return newTicket;
     });
-    const result = newTicket.toJSON<Ticket>();
-    this.emitEvent(Patterns.TicketCreated, result);
-    return result;
+    if (res.error) {
+      throw res.error;
+    }
+    return res.value;
   }
 
   paginate(params: PaginateDto = {}): Promise<{
@@ -96,50 +134,82 @@ export class TicketsService {
     return ticket.toJSON<Ticket>();
   }
 
-  async updateById(
-    id: string,
-    update: UpdateTicket,
-    currenUser: User,
-  ): Promise<Ticket> {
-    const ticket = await this.ticketModel.findOne({ _id: id });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${id} not found`);
-    } else if (ticket.userId !== currenUser.id) {
-      throw new ForbiddenException();
-    } else if (ticket.orderId) {
-      throw new BadRequestException(`Ticket ${id} is currently reserved`);
+  async updateById(id: string, update: UpdateTicket): Promise<Ticket> {
+    await using manager = await transactionManager(this.ticketModel);
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: id })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${id} not found`);
+      } else if (ticket.orderId) {
+        throw new BadRequestException(`Ticket ${id} is currently reserved`);
+      }
+
+      ticket.set(update);
+      await ticket.save({ session });
+      const updatedTicket = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+      );
+      return updatedTicket;
+    });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
     }
-    ticket.set(update);
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    this.emitEvent(Patterns.TicketUpdated, result);
-    return result;
+    return result.value;
   }
 
   async createOrder(event: OrderCreatedEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
     const orderId = event.id;
-    const ticket = await this.ticketModel.findOne({ _id: ticketId });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${ticketId} not found`);
+    await using manager = await transactionManager(this.ticketModel);
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: ticketId })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${ticketId} not found`);
+      }
+      ticket.set({ orderId });
+      await ticket.save({ session });
+      const updatedTicket = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+      );
+      return updatedTicket;
+    });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
     }
-    ticket.set({ orderId });
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    await lastValueFrom(this.emitEvent(Patterns.TicketUpdated, result).pipe());
-    return result;
+    return result.value;
   }
 
   async cancelOrder(event: OrderCancelledEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
-    const ticket = await this.ticketModel.findOne({ _id: ticketId });
-    if (isEmpty(ticket)) {
-      throw new NotFoundException(`Ticket ${ticketId} not found`);
+
+    await using manager = await transactionManager(this.ticketModel);
+    const result = await manager.wrap(async (session) => {
+      const ticket = await this.ticketModel
+        .findOne({ _id: ticketId })
+        .session(session);
+      if (isEmpty(ticket)) {
+        throw new NotFoundException(`Ticket ${ticketId} not found`);
+      }
+      ticket.set({ orderId: undefined });
+      await ticket.save({ session: manager.session });
+      const updatedTicket = ticket.toJSON<Ticket>();
+      await lastValueFrom(
+        this.emitEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
+      );
+      return updatedTicket;
+    });
+    if (result.error) {
+      this.logger.error(result.error);
+      throw result.error;
     }
-    ticket.set({ orderId: undefined });
-    await ticket.save();
-    const result = ticket.toJSON<Ticket>();
-    await lastValueFrom(this.emitEvent(Patterns.TicketUpdated, result).pipe());
-    return result;
+    return result.value;
   }
 }

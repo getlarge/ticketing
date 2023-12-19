@@ -1,0 +1,51 @@
+<div *ngIf="ticket$ | async as ticket; else loading">
+  <div class="modal-header">
+    <h4 class="modal-title">Update Ticket</h4>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group col">
+        <label for="title">Title</label>
+        <input
+          type="text"
+          class="form-control"
+          name="title"
+          [placeholder]="ticket.title"
+          [(ngModel)]="ticketTitle"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group col">
+        <label for="price">Price</label>
+        <input
+          type="number"
+          class="form-control"
+          name="price"
+          [placeholder]="ticket.price"
+          [(ngModel)]="ticketPrice"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="update()">
+      Update Ticket
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="cancel()">
+      Cancel
+    </button>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div>Loading Ticket...</div>
+</ng-template>

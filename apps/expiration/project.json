@@ -9,13 +9,14 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/expiration",
+        "outputFileName": "main.mjs",
         "main": "apps/expiration/src/main.ts",
         "tsConfig": "apps/expiration/tsconfig.app.json",
         "assets": ["apps/expiration/src/assets"],
         "generatePackageJson": true,
         "target": "node",
         "compiler": "tsc",
-        "webpackConfig": "apps/expiration/webpack.config.js",
+        "webpackConfig": "apps/expiration/webpack.config.cjs",
         "isolatedConfig": true,
         "babelUpwardRootMode": true
       },

@@ -24,7 +24,7 @@ export const bearerSecurityScheme: SecuritySchemeObject = {
 };
 
 export const getCookieOptions = (
-  environment: Environment
+  environment: Environment,
 ): CookieSerializeOptions => ({
   secure: !devEnvironments.includes(environment),
   signed: false,
@@ -36,7 +36,9 @@ export const ALLOWED_HEADERS = [
   'X-Version',
   'X-Access-Token',
   'X-Refresh-Token',
+  'Authorization',
   'Set-Cookie',
+  'Cookie',
   'DNT',
   'User-Agent',
   'X-Requested-With',

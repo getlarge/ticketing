@@ -25,7 +25,7 @@ import {
 import { Resources } from '@ticketing/shared/constants';
 import { Connection } from 'mongoose';
 
-import { AppConfigService } from '../env';
+import type { EnvironmentVariables } from '../env';
 
 @ApiTags(Resources.HEALTH)
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
@@ -35,21 +35,22 @@ export class HealthController {
   rssThreshold: number;
 
   constructor(
-    @Inject(ConfigService) private readonly configService: AppConfigService,
+    @Inject(ConfigService)
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
     @Inject(getConnectionToken())
     private readonly mongooseConnection: Connection,
     private readonly health: HealthCheckService,
     private readonly http: HttpHealthIndicator,
     private readonly mongo: MongooseHealthIndicator,
-    private readonly memory: MemoryHealthIndicator
+    private readonly memory: MemoryHealthIndicator,
   ) {
     this.heapUsedThreshold = this.configService.get<number>(
       'HEAP_USED_TRESHOLD',
-      HEALTH_DEFAULT_HEAP_USED_TRESHOLD
+      HEALTH_DEFAULT_HEAP_USED_TRESHOLD,
     );
     this.rssThreshold = this.configService.get<number>(
       'MEMORY_RSS_TRESHOLD',
-      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD
+      HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD,
     );
   }
 

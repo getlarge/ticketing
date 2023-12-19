@@ -24,7 +24,7 @@ export class UserStoreEffects {
   constructor(
     private actions$: Actions,
     private userService: UsersService,
-    private oryClientService: OryClientService
+    private oryClientService: OryClientService,
   ) {}
 
   private isValidSession(x: Session): x is ValidSession {
@@ -62,12 +62,12 @@ export class UserStoreEffects {
             of(
               new featureActions.SignUpFailureAction({
                 error: transformError(error),
-              })
-            )
-          )
-        )
-      )
-    )
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   /**
@@ -81,11 +81,20 @@ export class UserStoreEffects {
           withLatestFrom(this.oryClientService.createBrowserLogoutFlow()),
           switchMap(([session, logoutFlow]) => {
             if (!this.isValidSession(session)) {
-              throw new Error('Session is invalid');
+              return this.oryClientService.disableSession(session.id).pipe(
+                // eslint-disable-next-line max-nested-callbacks
+                switchMap(() => {
+                  return of(
+                    new featureActions.SignInFailureAction({
+                      error: transformError(new Error('Session is invalid')),
+                    }),
+                  );
+                }),
+              );
             }
             LocalStorageService.setObject(
               'user',
-              this.getUserFromSession(session)
+              this.getUserFromSession(session),
             );
             LocalStorageService.set('logoutUrl', logoutFlow.logout_url);
             LocalStorageService.setObject('session', session);
@@ -94,33 +103,32 @@ export class UserStoreEffects {
                 token: '',
                 logoutUrl: logoutFlow.logout_url,
                 session,
-              })
+              }),
             );
           }),
           catchError((error) => {
-            window.location.replace(
-              `${this.oryClientService.basePath}/ui/login`
-            );
+            console.error(error);
+            window.location.replace(this.oryClientService.loginPath);
             return of(
               new featureActions.SignInFailureAction({
                 error: transformError(error),
-              })
+              }),
             );
-          })
+          }),
         );
-      })
-    )
+      }),
+    ),
   );
 
   signInSuccessEffect$ = createEffect(() =>
     this.actions$.pipe(
       ofType<featureActions.SignInSuccessAction>(
-        featureActions.ActionTypes.SIGN_IN_SUCCESS
+        featureActions.ActionTypes.SIGN_IN_SUCCESS,
       ),
       map(() => {
         return new featureActions.LoadCurrentUserAction();
-      })
-    )
+      }),
+    ),
   );
 
   signOutEffect$ = createEffect(() =>
@@ -148,18 +156,18 @@ export class UserStoreEffects {
             return of(
               new featureActions.SignOutFailureAction({
                 error: transformError(error),
-              })
+              }),
             );
-          })
+          }),
         );
-      })
-    )
+      }),
+    ),
   );
 
   loadCurrentUserEffect$ = createEffect(() =>
     this.actions$.pipe(
       ofType<featureActions.LoadCurrentUserAction>(
-        featureActions.ActionTypes.LOAD_CURRENT_USER
+        featureActions.ActionTypes.LOAD_CURRENT_USER,
       ),
       exhaustMap(() => {
         return new Observable<UserDto>((observer) => {
@@ -192,13 +200,13 @@ export class UserStoreEffects {
                 of(
                   new featureActions.LoadCurrentUserFailureAction({
                     error: transformError(err),
-                  })
-                )
-              )
+                  }),
+                ),
+              ),
             );
-          })
+          }),
         );
-      })
-    )
+      }),
+    ),
   );
 }

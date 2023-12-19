@@ -184,7 +184,7 @@ jobs:
       - name: Check if regenerate job should be run
         id: regenerate
         run: |
-          if [[ ${{ steps.branch-name.outputs.current_branch }} != 'main' ]] && \
+          if [[ "${{ steps.branch-name.outputs.current_branch }}" != 'main' ]] && \
             [[ ${{ steps.open-api.outputs.has-changed }} =~ "true" ]] || \
             [[ ${{ steps.package-json.outputs.has-changed }} =~ "true" ]]; then
             echo "should-run=true" >> $GITHUB_OUTPUT
@@ -347,6 +347,7 @@ jobs:
     timeout-minutes: 15
     env:
       NX_CLOUD_DISTRIBUTED_EXECUTION_AGENT_COUNT: ${{ needs.init.outputs.agents-count }}
+      NODE_OPTIONS: --experimental-vm-modules
 
     services:
       mongo:
@@ -463,9 +464,11 @@ jobs:
 
       - name: Run verifications for affected apps
         uses: jameshenry/parallel-bash-commands@v1
+        env:
+          NODE_OPTIONS: --experimental-vm-modules
         with:
-          cmd1: npx nx affected --target=lint --parallel=4 --exclude=workspace --verbose
-          cmd2: npx nx affected --target=test --parallel=4 --exclude=workspace --ci --verbose
+          cmd1: yarn affected:lint --parallel=4 --exclude=workspace --verbose
+          cmd2: yarn affected:test --parallel=4 --exclude=workspace --ci --verbose
           cmd3: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
           # running e2e tests in parallel create conflicts in DB
           # cmd4: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend --ci --verbose

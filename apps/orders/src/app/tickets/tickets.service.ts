@@ -4,16 +4,18 @@ import {
   TicketCreatedEvent,
   TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
+import { Model } from 'mongoose';
 
 import { Ticket } from './models';
-import { Ticket as TicketSchema, TicketDocument, TicketModel } from './schemas';
+import { Ticket as TicketSchema, TicketDocument } from './schemas';
 
 @Injectable()
 export class TicketsService {
   readonly logger = new Logger(TicketsService.name);
 
   constructor(
-    @InjectModel(TicketSchema.name) private ticketModel: TicketModel
+    @InjectModel(TicketSchema.name)
+    private ticketModel: Model<TicketSchema & Document>,
   ) {}
 
   async create(ticket: TicketCreatedEvent['data']): Promise<Ticket> {
@@ -46,7 +48,7 @@ export class TicketsService {
       .exec();
     if (!ticket) {
       throw new NotFoundException(
-        `Ticket ${id} with version ${version} not found`
+        `Ticket ${id} with version ${version} not found`,
       );
     }
     return ticket;
@@ -54,7 +56,7 @@ export class TicketsService {
 
   async updateById(
     id: string,
-    update: TicketUpdatedEvent['data']
+    update: TicketUpdatedEvent['data'],
   ): Promise<Ticket> {
     const ticket = await this.findByEventVersion(update);
     const { title, price, version } = update;

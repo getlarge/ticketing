@@ -1,6 +1,6 @@
+import { jest } from '@jest/globals';
 import { RmqContext } from '@nestjs/microservices';
 import type {
-  Channel,
   Connection,
   Message,
   MessageFields,
@@ -48,7 +48,7 @@ export class RmqMessage implements Message {
   }
 }
 
-class RmqChannel implements Channel {
+class RmqChannel {
   constructor(connection?: Connection) {
     this.connection = connection;
   }

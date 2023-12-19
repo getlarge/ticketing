@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { OrderStatus } from '../../orders/models';
@@ -35,11 +35,11 @@ export class Ticket implements TicketAttrs {
 }
 
 export type TicketDocument = Ticket & Document;
-// export type TicketDocument = Ticket & Document<ObjectId>;
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
 
 export type TicketModel = Model<TicketDocument>;
+
 TicketSchema.methods.isReserved = async function (): Promise<boolean> {
   const orderModel = this.db.model(Order.name) as Model<OrderDocument>;
   const existingOrder = await orderModel.findOne({

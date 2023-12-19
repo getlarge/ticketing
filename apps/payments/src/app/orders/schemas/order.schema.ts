@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { OrderStatus } from '@ticketing/shared/models';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { Order as OrderAttrs } from '../models';

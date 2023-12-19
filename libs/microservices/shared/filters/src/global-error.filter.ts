@@ -48,6 +48,7 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
   }
 
   catchHttpError(exception: T, host: ArgumentsHost): void {
+    this.logger.error(exception);
     const context = host.switchToHttp();
     const response = context.getResponse<FastifyReply>();
     const request = context.getRequest<FastifyRequest>();
@@ -61,7 +62,7 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
       timestamp: new Date().toISOString(),
       details,
     };
-    this.logger.error(errorResponse);
+    this.logger.warn(errorResponse);
     if (response.sent) {
       return;
     }
@@ -69,6 +70,7 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
   }
 
   catchRpcError(exception: T, host: ArgumentsHost): Observable<R> {
+    this.logger.error(exception);
     const context = host.switchToRpc();
     const ctx = context.getContext<RmqContext>();
     const pattern = ctx.getPattern();
@@ -82,7 +84,7 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
       timestamp: new Date().toISOString(),
       details,
     };
-    this.logger.error(errorResponse);
+    this.logger.warn(errorResponse);
     return throwError(() => errorResponse);
   }
 

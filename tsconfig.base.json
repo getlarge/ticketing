@@ -45,11 +45,17 @@
       "@ticketing/microservices/shared/models": [
         "libs/microservices/shared/models/src/index.ts"
       ],
+      "@ticketing/microservices/shared/mongo": [
+        "libs/microservices/shared/mongo/src/index.ts"
+      ],
       "@ticketing/microservices/shared/pipes": [
         "libs/microservices/shared/pipes/src/index.ts"
       ],
       "@ticketing/microservices/shared/redis": [
         "libs/microservices/shared/redis/src/index.ts"
+      ],
+      "@ticketing/microservices/shared/relation-tuple-parser": [
+        "libs/microservices/shared/relation-tuple-parser/src/index.ts"
       ],
       "@ticketing/microservices/shared/rmq": [
         "libs/microservices/shared/rmq/src/index.ts"
@@ -65,5 +71,8 @@
       "@ticketing/shared/models": ["libs/shared/models/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "ts-node": {
+    "esm": true
+  }
 }

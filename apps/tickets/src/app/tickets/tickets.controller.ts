@@ -4,8 +4,8 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
   UsePipes,
@@ -25,20 +25,32 @@ import {
   ApiNestedQuery,
   ApiPaginatedDto,
   CurrentUser,
+  PermissionCheck,
 } from '@ticketing/microservices/shared/decorators';
-import { OryAuthGuard } from '@ticketing/microservices/shared/guards';
+import {
+  OryAuthenticationGuard,
+  OryPermissionGuard,
+} from '@ticketing/microservices/shared/guards';
 import {
   PaginatedDto,
   PaginateDto,
   PaginateQuery,
+  PermissionNamespaces,
 } from '@ticketing/microservices/shared/models';
 import {
   ParseObjectId,
   ParseQuery,
 } from '@ticketing/microservices/shared/pipes';
-import { Actions, Resources } from '@ticketing/shared/constants';
+import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
+import {
+  Actions,
+  CURRENT_USER_KEY,
+  Resources,
+} from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
+import { FastifyRequest } from 'fastify/types/request';
+import { get } from 'lodash-es';
 
 import {
   CreateTicket,
@@ -56,14 +68,14 @@ import { TicketsService } from './tickets.service';
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(OryAuthGuard)
+  @UseGuards(OryAuthenticationGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
       transformOptions: { enableImplicitConversion: true },
       forbidUnknownValues: true,
-    })
+    }),
   )
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -80,7 +92,7 @@ export class TicketsController {
   @Post('')
   create(
     @Body() ticket: CreateTicket,
-    @CurrentUser() currentUser: User
+    @CurrentUser() currentUser: User,
   ): Promise<Ticket> {
     return this.ticketsService.create(ticket, currentUser);
   }
@@ -91,7 +103,7 @@ export class TicketsController {
       transform: true,
       transformOptions: { enableImplicitConversion: true },
       // forbidUnknownValues: true, //! FIX issue with query parsing process
-    })
+    }),
   )
   @ApiOperation({
     description: 'Filter tickets',
@@ -101,7 +113,7 @@ export class TicketsController {
   @ApiPaginatedDto(TicketDto, 'Tickets found')
   @Get('')
   find(
-    @Query(ParseQuery) paginate: PaginateQuery
+    @Query(ParseQuery) paginate: PaginateQuery,
   ): Promise<PaginatedDto<Ticket>> {
     return this.ticketsService.find(paginate);
   }
@@ -120,14 +132,28 @@ export class TicketsController {
     return this.ticketsService.findById(id);
   }
 
-  @UseGuards(OryAuthGuard)
+  @PermissionCheck((ctx) => {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+    const resourceId = get(req, 'params.id');
+    return relationTupleToString({
+      namespace: PermissionNamespaces[Resources.TICKETS],
+      object: resourceId,
+      relation: 'owners',
+      subjectIdOrSet: {
+        namespace: PermissionNamespaces[Resources.USERS],
+        object: currentUserId,
+      },
+    });
+  })
+  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
       exceptionFactory: requestValidationErrorFactory,
       transformOptions: { enableImplicitConversion: true },
       forbidUnknownValues: true,
-    })
+    }),
   )
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -141,12 +167,11 @@ export class TicketsController {
     description: 'Ticket updated',
     type: TicketDto,
   })
-  @Put(':id')
+  @Patch(':id')
   updateById(
     @Param('id', ParseObjectId) id: string,
     @Body() ticket: UpdateTicket,
-    @CurrentUser() user: User
   ): Promise<Ticket> {
-    return this.ticketsService.updateById(id, ticket, user);
+    return this.ticketsService.updateById(id, ticket);
   }
 }

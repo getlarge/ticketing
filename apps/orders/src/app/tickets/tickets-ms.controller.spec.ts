@@ -1,5 +1,7 @@
+/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   createRmqContext,
@@ -34,7 +36,7 @@ describe('TicketsMSController', () => {
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
-      ticketsService.create = jest.fn();
+      ticketsService.create = jest.fn(() => Promise.resolve(ticket));
       context.getChannelRef().ack = jest.fn();
       //
       await ticketsController.onCreated(ticket, context);
@@ -50,7 +52,11 @@ describe('TicketsMSController', () => {
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
-      ticketsService.create = jest.fn().mockRejectedValueOnce(expectedError);
+      ticketsService.create = jest
+        .fn(() => {
+          throw expectedError;
+        })
+        .mockRejectedValueOnce(expectedError);
       const channel = context.getChannelRef() as Channel;
       channel.ack = jest.fn();
       channel.nack = jest.fn();
@@ -72,7 +78,7 @@ describe('TicketsMSController', () => {
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
-      ticketsService.updateById = jest.fn();
+      ticketsService.updateById = jest.fn(() => Promise.resolve(ticket));
       context.getChannelRef().ack = jest.fn();
       //
       await ticketsController.onUpdated(ticket, context);
@@ -89,7 +95,9 @@ describe('TicketsMSController', () => {
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
       ticketsService.updateById = jest
-        .fn()
+        .fn(() => {
+          throw expectedError;
+        })
         .mockRejectedValueOnce(expectedError);
       const channel = context.getChannelRef() as Channel;
       channel.ack = jest.fn();

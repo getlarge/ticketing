@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { jest } from '@jest/globals';
+import EventEmitter from 'node:events';
 
-import * as EventEmitter from 'events';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class MockModel<T> extends EventEmitter {
   // new(doc?: AnyKeys<T> & AnyObject, fields?: any | null, options?: boolean | AnyObject): EnforceDocument<T, TMethods, TVirtuals>;
 
-  public aggregate = jest.fn().mockResolvedValueOnce([]);
+  public aggregate = jest.fn().mockResolvedValueOnce([] as never);
 
   /** Base Mongoose instance the model uses. */
   // base: typeof mongoose;
@@ -13,39 +14,39 @@ export class MockModel<T> extends EventEmitter {
 
   baseModelName: string | undefined;
 
-  public bulkWrite = jest.fn().mockResolvedValueOnce({} as T);
+  public bulkWrite = jest.fn().mockResolvedValueOnce({} as never);
 
   /**
    * Sends multiple `save()` calls in a single `bulkWrite()`. This is faster than
    * sending multiple `save()` calls because with `bulkSave()` there is only one
    * network round trip to the MongoDB server.
    */
-  public bulkSave = jest.fn().mockResolvedValueOnce([] as T[]);
+  public bulkSave = jest.fn().mockResolvedValueOnce([] as never);
 
   /** Collection the model uses. */
   // collection: Collection;
 
   /** Creates a `count` query: counts the number of documents that match `filter`. */
-  public count = jest.fn().mockResolvedValueOnce(0);
+  public count = jest.fn().mockResolvedValueOnce(0 as never);
 
   /** Creates a `countDocuments` query: counts the number of documents that match `filter`. */
-  public countDocuments = jest.fn().mockResolvedValueOnce(0);
+  public countDocuments = jest.fn().mockResolvedValueOnce(0 as never);
 
   /** Creates a new document or documents */
-  public create = jest.fn().mockResolvedValueOnce({});
+  public create = jest.fn().mockResolvedValueOnce({} as never);
 
   /**
    * Create the collection for this model. By default, if no indexes are specified,
    * mongoose will not create the collection for the model until any documents are
    * created. Use this method to create the collection explicitly.
    */
-  public createCollection = jest.fn().mockResolvedValueOnce({});
+  public createCollection = jest.fn().mockResolvedValueOnce({} as never);
 
   /**
    * Similar to `ensureIndexes()`, except for it uses the [`createIndex`](http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#createIndex)
    * function.
    */
-  public createIndexes = jest.fn().mockResolvedValueOnce(undefined);
+  public createIndexes = jest.fn().mockResolvedValueOnce(undefined as never);
 
   /** Connection the model uses. */
   // db: Connection;
@@ -68,7 +69,7 @@ export class MockModel<T> extends EventEmitter {
    * Sends `createIndex` commands to mongo for each index declared in the schema.
    * The `createIndex` commands are sent in series.
    */
-  public ensureIndexes = jest.fn().mockResolvedValueOnce(undefined);
+  public ensureIndexes = jest.fn().mockResolvedValueOnce(undefined as never);
 
   /**
    * Event emitter that reports any errors that occurred. Useful for global error
@@ -97,10 +98,10 @@ export class MockModel<T> extends EventEmitter {
    * [`connection.model()`](/docs/api.html#connection_Connection-model), so you
    * don't need to call it.
    */
-  public init = jest.fn().mockResolvedValueOnce({});
+  public init = jest.fn().mockResolvedValueOnce({} as never);
 
   /** Inserts one or more new documents as a single `insertMany` call to the MongoDB server. */
-  public insertMany = jest.fn().mockResolvedValueOnce({});
+  public insertMany = jest.fn().mockResolvedValueOnce({} as never);
 
   /**
    * Lists the indexes currently defined in MongoDB. This may or may not be
@@ -114,7 +115,7 @@ export class MockModel<T> extends EventEmitter {
   modelName: string;
 
   /** Populates document references. */
-  public populate = jest.fn().mockResolvedValueOnce({});
+  public populate = jest.fn().mockResolvedValueOnce({} as never);
 
   /* Makes the indexes in MongoDB match the indexes defined in this model's
    * schema. This function will drop any indexes that are not defined in
@@ -131,7 +132,7 @@ export class MockModel<T> extends EventEmitter {
   public diffIndexes = jest.fn().mockReturnValueOnce([]);
 
   /** Casts and validates the given object against this model's schema, passing the given `context` to custom validators. */
-  public validate = jest.fn().mockResolvedValueOnce(undefined);
+  public validate = jest.fn().mockResolvedValueOnce(undefined as never);
 
   /** Watches the underlying collection for changes using [MongoDB change streams](https://docs.mongodb.com/manual/changeStreams/). */
   public watch = jest.fn().mockReturnValueOnce({});
@@ -156,7 +157,7 @@ export class MockModel<T> extends EventEmitter {
    * Returns true if at least one document exists in the database that matches
    * the given `filter`, and false otherwise.
    */
-  public exists = jest.fn().mockResolvedValueOnce(true);
+  public exists = jest.fn().mockResolvedValueOnce(true as never);
 
   /** Creates a `find` query: gets a list of documents that match `filter`. */
   public find = jest.fn().mockReturnValueOnce([{}]);
@@ -180,11 +181,11 @@ export class MockModel<T> extends EventEmitter {
   public findOneAndReplace = jest.fn().mockReturnValueOnce({});
 
   /** Creates a `findOneAndUpdate` query: atomically find the first document that matches `filter` and apply `update`. */
-  public findOneAndUpdate = jest.fn().mockResolvedValueOnce({});
+  public findOneAndUpdate = jest.fn().mockResolvedValueOnce({} as never);
 
-  public geoSearch = jest.fn().mockResolvedValueOnce({});
+  public geoSearch = jest.fn().mockResolvedValueOnce({} as never);
 
-  public remove = jest.fn().mockResolvedValueOnce({});
+  public remove = jest.fn().mockResolvedValueOnce({} as never);
 
   /** Schema the model uses. */
   // schema: Schema;
@@ -196,5 +197,5 @@ export class MockModel<T> extends EventEmitter {
   public updateOne = jest.fn().mockReturnValueOnce({});
 
   /** Creates a Query, applies the passed conditions, and returns the Query. */
-  public where = jest.fn().mockResolvedValueOnce({});
+  public where = jest.fn().mockResolvedValueOnce({} as never);
 }

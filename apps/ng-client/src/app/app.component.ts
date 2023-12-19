@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AlertService } from '@ticketing/ng/alert';
 import { Resources } from '@ticketing/shared/constants';
-import { User } from '@ticketing/shared/models';
+import type { User } from '@ticketing/shared/models';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 import {
@@ -11,7 +11,7 @@ import {
   UserStoreActions,
   UserStoreSelectors,
 } from './store';
-import { RootState } from './store/root-state';
+import type { RootState } from './store/root-state';
 
 @Component({
   selector: 'ticketing-root',

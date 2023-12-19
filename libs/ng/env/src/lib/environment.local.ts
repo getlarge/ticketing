@@ -13,9 +13,14 @@ export const environment: Environment = {
   version,
   apiVersion,
   versioningType: VersioningType.HEADER,
-  apiBaseDomain: 'localhost:8080',
+  apiBaseDomain: '127.0.0.1:8080',
   // apiBaseDomain: 'ticketing.dev',
   useUnsafeConnection: true,
   stripePublishableKey: '',
-  oryBasePath: 'http://localhost:4000',
+  // when using Ory network with tunnel
+  // oryBasePath: 'http://localhost:4000',
+  // oryUiBasePath: 'http://localhost:4000/ui',
+  // when deploying Ory Kratos locally
+  oryBasePath: 'http://127.0.0.1:4433',
+  oryUiBasePath: 'http://127.0.0.1:4455',
 };

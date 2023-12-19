@@ -7,6 +7,8 @@ networks:
     driver: bridge
   rabbitmq:
     driver: bridge
+  ory:
+    driver: bridge
   apps:
     driver: bridge
 
@@ -16,22 +18,25 @@ volumes:
   rabbitmq_volume:
 
 services:
-  mongo:
-    image: mongo:latest
-    container_name: ticketing-mongo
-    hostname: ticketing-mongo
-    # volumes:
-    #   - mongo_volume:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: example=value
+  # region Storage
+  mongo-primary:
+    image: mongo:7
+    container_name: ticketing-mongo-primary
+    hostname: ticketing-mongo-primary
+    volumes:
+      - mongo_volume:/data/db
     networks:
       - mongo
     ports:
       - '${MONGO_PORT:-27017}:27017'
-    mem_limit: 256m
-    memswap_limit: 512m
-    restart: always
+    command: mongod --replSet rs0
+    healthcheck:
+      test: |
+        mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok }"
+      start_period: 0s
+      interval: 500ms
+      timeout: 5s
+      retries: 5
     profiles:
       - 'deps-only'
       - 'dev'
@@ -40,8 +45,8 @@ services:
     image: redis:alpine
     container_name: ticketing-redis
     hostname: ticketing-redis
-    # volumes:
-    #   - redis_volume:/data
+    volumes:
+      - redis_volume:/data
     networks:
       - redis
     ports:
@@ -53,6 +58,9 @@ services:
       - 'deps-only'
       - 'dev'
 
+  # endregion
+
+  # region RabbitMQ
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
     container_name: 'ticketing-rabbitmq'
@@ -81,6 +89,9 @@ services:
       - 'deps-only'
       - 'dev'
 
+  # endregion
+
+  # region micro services
   auth-service:
     image: 'ghcr.io/getlarge/ticketing-auth:${AUTH_IMAGE_VERSION:-latest}'
     container_name: auth-service
@@ -89,7 +100,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${AUTH_HTTP_PORT:-3000}
-      SERVER_URL: http://127.0.0.1:${AUTH_HTTP_PORT:-3000}
+      SERVER_URL: http://localhost:${AUTH_HTTP_PORT:-3000}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -99,7 +110,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/auth
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/auth
       ORY_ACTION_API_KEY: ${ORY_ACTION_API_KEY}
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
@@ -110,7 +121,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${AUTH_HTTP_PORT:-3000}:${AUTH_HTTP_PORT:-3000}'
@@ -133,7 +144,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${EXPIRATION_HTTP_PORT:-3030}
-      SERVER_URL: http://127.0.0.1:${EXPIRATION_HTTP_PORT:-3030}
+      SERVER_URL: http://localhost:${EXPIRATION_HTTP_PORT:-3030}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       RMQ_URL: http://ticketing-rabbitmq:5672
       REDIS_URL: redis://ticketing-redis:6379
@@ -169,7 +180,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${ORDERS_HTTP_PORT:-3020}
-      SERVER_URL: http://127.0.0.1:${ORDERS_HTTP_PORT:-3020}
+      SERVER_URL: http://localhost:${ORDERS_HTTP_PORT:-3020}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -179,7 +190,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/orders
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/orders
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
@@ -189,7 +200,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${ORDERS_HTTP_PORT:-3020}:${ORDERS_HTTP_PORT:-3020}'
@@ -212,7 +223,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${PAYMENTS_HTTP_PORT:-3040}
-      SERVER_URL: http://127.0.0.1:${PAYMENTS_HTTP_PORT:-3040}
+      SERVER_URL: http://localhost:${PAYMENTS_HTTP_PORT:-3040}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -222,7 +233,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/payments
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/payments
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_ENDPOINT_SECRET: ${STRIPE_ENDPOINT_SECRET}
@@ -235,7 +246,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${PAYMENTS_HTTP_PORT:-3040}:${PAYMENTS_HTTP_PORT:-3040}'
@@ -258,7 +269,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       PORT: ${TICKETS_HTTP_PORT:-3010}
-      SERVER_URL: http://127.0.0.1:${TICKETS_HTTP_PORT:-3010}
+      SERVER_URL: http://localhost:${TICKETS_HTTP_PORT:-3010}
       PROXY_SERVER_URLS: ${PROXY_SERVER_URLS:-http://ticketing.dev}
       FRONTEND_URL: ${FRONTEND_URL:-http://ticketing.dev}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-ES256}
@@ -268,7 +279,7 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       SESSION_KEY: ${SESSION_KEY}
       RMQ_URL: http://ticketing-rabbitmq:5672
-      MONGODB_URI: mongodb://ticketing-mongo:27017/tickets
+      MONGODB_URI: mongodb://ticketing-mongo-primary:27017/tickets
       ORY_API_KEY: ${ORY_API_KEY}
       ORY_BASE_PATH: ${ORY_BASE_PATH}
     healthcheck:
@@ -278,7 +289,7 @@ services:
       start_period: 10s
       retries: 2
     depends_on:
-      - mongo
+      - mongo-primary
       - rabbitmq
     ports:
       - '${TICKETS_HTTP_PORT:-3010}:${TICKETS_HTTP_PORT:-3010}'
@@ -293,6 +304,9 @@ services:
       - 'services-only'
       - 'dev'
 
+  # endregion
+
+  # region Frontend
   ng-client:
     image: 'ghcr.io/getlarge/ticketing-ng-client:${CLIENT_IMAGE_VERSION:-latest}'
     container_name: ng-client
@@ -349,3 +363,151 @@ services:
     profiles:
       - 'services-only'
       - 'dev'
+
+  # endregion
+
+  # region Ory Kratos
+  kratos-migrate:
+    image: oryd/kratos:v1.0.0
+    environment:
+      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
+    volumes:
+      - type: bind
+        source: ./infra/ory/kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:v1.0.0
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: unless-stopped
+    environment:
+      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
+    command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
+    volumes:
+      - type: bind
+        source: ./infra/ory/kratos
+        target: /etc/config/kratos
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos-postgres:
+    image: postgres:11.8
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratosdb
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433
+      - PORT=4455
+    ports:
+      - '4455:4455'
+    networks:
+      - ory
+    restart: on-failure
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+  # endregion
+
+  # region Ory Keto
+  keto-migrate:
+    image: oryd/keto:v0.11.1
+    volumes:
+      - type: bind
+        source: ./infra/ory/keto
+        target: /home/ory
+    environment:
+      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
+    command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
+    restart: on-failure
+    networks:
+      - ory
+
+  keto:
+    depends_on:
+      - keto-migrate
+    image: oryd/keto:v0.11.1
+    ports:
+      - '4466:4466' # public
+      - '4467:4467' # admin
+    command: serve -c /home/ory/keto.yaml
+    restart: on-failure
+    environment:
+      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
+    volumes:
+      - type: bind
+        source: ./infra/ory/keto
+        target: /home/ory
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  keto-postgres:
+    image: postgres:11.8
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=accesscontroldb
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  # endregion
+
+  # region Ory Oathkeeper
+  # oathkeeper:
+  #   image: oryd/oathkeeper:v0.40
+  #   depends_on:
+  #     - kratos
+  #   ports:
+  #     - 4455:4455
+  #     - 4456:4456
+  #   command: serve proxy -c "/etc/config/oathkeeper/oathkeeper.yaml"
+  #   restart: on-failure
+  #   networks:
+  #     - ory
+  #   volumes:
+  #     - ./infra/ory/oathkeeper:/etc/config/oathkeeper
+  #   profiles:
+  #     - 'ory-only'
+  #     - 'dev'
+
+  # endregion

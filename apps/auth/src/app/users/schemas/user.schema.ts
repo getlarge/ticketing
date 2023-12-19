@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { User as UserAttrs } from '../models';
@@ -22,7 +22,7 @@ export class User extends UserAttrs {
   })
   declare email: string;
 
-  @Prop({ type: String, required: true, unique: true })
+  @Prop({ type: String, required: false, unique: true })
   declare identityId: string;
 }
 

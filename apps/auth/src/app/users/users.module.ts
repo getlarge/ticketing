@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OryModule } from '@ticketing/microservices/ory-client';
+import { OryAuthenticationModule } from '@ticketing/microservices/ory-client';
 import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 
-import { AppConfigService } from '../env';
+import { EnvironmentVariables } from '../env';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -28,7 +28,9 @@ import { UsersService } from './users.service';
       session: true,
     }),
     JwtModule.registerAsync({
-      useFactory: (configService: AppConfigService) => ({
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
         privateKey: configService.get('JWT_PRIVATE_KEY'),
         publicKey: configService.get('JWT_PUBLIC_KEY'),
         signOptions: {
@@ -40,11 +42,17 @@ import { UsersService } from './users.service';
       }),
       inject: [ConfigService],
     }),
-    OryModule.forRootAsync({
+    OryAuthenticationModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: AppConfigService) => ({
-        accessToken: configService.get('ORY_API_KEY'),
-        basePath: configService.get('ORY_BASE_PATH'),
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
+        kratosAccessToken: configService.get('ORY_KRATOS_API_KEY'),
+        kratosPublicApiPath: configService.get('ORY_KRATOS_PUBLIC_URL'),
+        kratosAdminApiPath: configService.get('ORY_KRATOS_ADMIN_URL'),
+        hydraAccessToken: configService.get('ORY_HYDRA_API_KEY'),
+        hydraAdminApiPath: configService.get('ORY_HYDRA_ADMIN_URL'),
+        hydraPublicApiPath: configService.get('ORY_HYDRA_PUBLIC_URL'),
       }),
     }),
   ],

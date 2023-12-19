@@ -28,9 +28,10 @@ import { Logger } from 'nestjs-pino';
 import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
-import { AppConfigService } from './app/env';
+import { EnvironmentVariables } from './app/env';
 import { APP_FOLDER, DEFAULT_PORT } from './app/shared/constants';
 
+// eslint-disable-next-line max-lines-per-function
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -43,7 +44,8 @@ async function bootstrap(): Promise<void> {
     { bufferLogs: true, abortOnError: false },
   );
 
-  const configService = app.get<AppConfigService>(ConfigService);
+  const configService =
+    app.get<ConfigService<EnvironmentVariables, true>>(ConfigService);
   const port = configService.get('PORT', DEFAULT_PORT, { infer: true });
   const environment = configService.get('NODE_ENV', { infer: true });
   const swaggerUiPrefix = configService.get('SWAGGER_PATH', { infer: true });
@@ -54,10 +56,6 @@ async function bootstrap(): Promise<void> {
   const logger = app.get(Logger);
   app.useLogger(logger);
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
-  // app.useStaticAssets({
-  //   root: resolve(`dist/${APP_FOLDER}/public`),
-  //   prefix: '/',
-  // });
 
   // Fastify
   await app.register(fastifyHelmet, {
@@ -76,9 +74,17 @@ async function bootstrap(): Promise<void> {
   });
   await app.register(fastifyPassport.initialize());
   await app.register(fastifyPassport.secureSession());
-  if (!proxyServerUrls.length) {
+  if (!proxyServerUrls.length && environment === 'production') {
     await app.register(fastifyCors, {
-      origin: '*',
+      origin: (origin, cb) => {
+        const hostname = new URL(origin).hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          cb(null, true);
+          return;
+        }
+        cb(new Error('Not allowed'), false);
+      },
+      credentials: true,
       // allowedHeaders: ALLOWED_HEADERS,
       // exposedHeaders: EXPOSED_HEADERS,
       allowedHeaders: '*',

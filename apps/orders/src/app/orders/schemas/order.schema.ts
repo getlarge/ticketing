@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { Document, Model, Schema as MongooseSchema } from 'mongoose';
 
-import { TicketDocument } from '../../tickets/schemas';
+import { Ticket } from '../../tickets/schemas';
 import { Order as OrderAttrs, OrderStatus } from '../models';
 
 @Schema({
@@ -24,7 +24,7 @@ export class Order implements Omit<OrderAttrs, 'expiresAt'> {
     type: MongooseSchema.Types.ObjectId,
     ref: 'Ticket',
   })
-  ticket: TicketDocument;
+  ticket: Ticket & Document;
 
   @Prop({
     type: String,

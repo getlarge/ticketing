@@ -9,7 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AppConfigService, EnvironmentVariables } from './env';
+import { EnvironmentVariables } from './env';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 
@@ -23,7 +23,9 @@ import { UsersModule } from './users/users.module';
     }),
     LoggerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: AppConfigService) => ({
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
         pinoHttp: {
           transport:
             process.env.NODE_ENV !== 'production'
@@ -38,7 +40,9 @@ import { UsersModule } from './users/users.module';
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: AppConfigService) => ({
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
