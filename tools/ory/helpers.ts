@@ -31,8 +31,12 @@ function keywordStringReplace(input: string, mappings: KeywordMappings) {
   Object.keys(mappings).forEach(function (key) {
     const regex = new RegExp(`##${key}##`, 'g');
     const mapping = mappings[key];
-    if (typeof mapping === 'string') {
-      input = input.replace(regex, mapping);
+    if (
+      typeof mapping === 'string' ||
+      typeof mapping === 'number' ||
+      typeof mapping === 'boolean'
+    ) {
+      input = input.replace(regex, mapping.toString());
     }
   });
   return input;

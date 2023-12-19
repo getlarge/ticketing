@@ -1,8 +1,8 @@
 
-limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
-limit_req_log_level notice;
-limit_req_status 429;
-limit_req zone=one burst=20 nodelay;
+# limit_req_zone $binary_remote_addr zone=one:2m rate=10r/s;
+# limit_req_log_level notice;
+# limit_req_status 429;
+# limit_req zone=one burst=20 nodelay;
 
 client_body_timeout 10s;
 client_header_timeout 10s;
@@ -42,6 +42,7 @@ map $http_x_version $req_version {
 map $http_origin $use_cors {
     default "";
     "~(^|^http:\/\/)(localhost$|localhost:[0-9]{1,4}$)" 'true';
+    "~(^|^http:\/\/)(127.0.0.1:[0-9]{1,4}$)" 'true';
     "(https?:\/\/)($DOMAIN)" 'true';
     "~*(https?:\/\/)(.+\.)*($DOMAIN)" 'true';
     "~*(^|^https?:\/\/)(.+\.)*(ticketing.(dev|ovh|com))" 'true';

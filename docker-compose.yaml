@@ -24,6 +24,8 @@ services:
     image: mongo:7
     container_name: ticketing-mongo-primary
     hostname: ticketing-mongo-primary
+    volumes:
+      - mongo_volume:/data/db
     networks:
       - mongo
     ports:
@@ -44,8 +46,8 @@ services:
     image: redis:alpine
     container_name: ticketing-redis
     hostname: ticketing-redis
-    # volumes:
-    #   - redis_volume:/data
+    volumes:
+      - redis_volume:/data
     networks:
       - redis
     ports:
@@ -415,14 +417,10 @@ services:
     image: oryd/kratos-selfservice-ui-node:v1.0.0
     environment:
       - KRATOS_PUBLIC_URL=http://kratos:4433
-      # - KRATOS_PUBLIC_URL=http://localhost:4433/
-      - KRATOS_BROWSER_URL=http://localhost:4433
-      - PORT=3000
-      # - KRATOS_BROWSER_URL=http://localhost:4455/.ory/kratos/public
-      # - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
-      # - SECURITY_MODE=jwks
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433
+      - PORT=4455
     ports:
-      - '4455:3000'
+      - '4455:4455'
     networks:
       - ory
     restart: on-failure

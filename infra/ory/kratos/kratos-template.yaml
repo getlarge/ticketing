@@ -6,7 +6,21 @@ serve:
   public:
     base_url: '##serve_public_base_url##'
     cors:
-      enabled: true
+      enabled: ##serve_public_cors_enabled##
+      allowed_origins: @@serve_public_cors_allowed_origins@@
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Cookie
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
   admin:
     base_url: '##serve_admin_base_url##'
 

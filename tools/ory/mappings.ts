@@ -3,10 +3,12 @@ import {
   ClassConstructor,
   Expose,
   Transform,
+  Type,
   plainToClass,
 } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsIn,
   IsOptional,
   IsString,
@@ -21,7 +23,7 @@ export class KeywordMappings {
   @IsString()
   log_level?: string = 'debug';
 
-  [key: string]: (string | number)[] | string | number;
+  [key: string]: (string | number)[] | string | number | boolean;
 }
 
 const isUrlOptions: Parameters<typeof IsUrl>[0] = {
@@ -39,43 +41,41 @@ export class KratosMappings extends KeywordMappings {
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
-  selfservice_flows_ui_base_url: string = DEFAULT_SELF_SERVICE_UI_URL;
+  selfservice_flows_ui_base_url?: string = DEFAULT_SELF_SERVICE_UI_URL;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
-  selfservice_flows_errors_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/error`;
+  selfservice_flows_errors_ui_url?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/error`;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_settings_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/settings`;
+    `${DEFAULT_SELF_SERVICE_UI_URL}/settings`;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_verification_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/verification`;
+    `${DEFAULT_SELF_SERVICE_UI_URL}/verification`;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_recovery_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/recovery`;
+    `${DEFAULT_SELF_SERVICE_UI_URL}/recovery`;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
-  selfservice_flows_login_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/login`;
+  selfservice_flows_login_ui_url?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/login`;
 
   @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_registration_ui_url?: string =
-    `${this.selfservice_flows_ui_base_url}/register`;
+    `${DEFAULT_SELF_SERVICE_UI_URL}/register`;
 
   @Expose()
   @IsOptional()
@@ -170,9 +170,40 @@ export class KratosMappings extends KeywordMappings {
   serve_public_base_url?: string = 'http://localhost:4433/';
 
   @Expose()
+  @Transform(({ value }) => value === 'true', { toClassOnly: true })
+  @Type(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  serve_public_cors_enabled?: boolean = false;
+
+  @Expose()
+  @Transform(
+    ({ value }) => (value ? value.split(',').map((v) => v.trim()) : []),
+    { toClassOnly: true },
+  )
+  @IsOptional()
+  @IsString({ each: true })
+  serve_public_cors_allowed_origins?: string[] = [
+    'http://localhost:4200',
+    'http://localhost:4433',
+    'http://localhost:4455',
+    'http://localhost:8080',
+  ];
+
+  @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   serve_admin_base_url?: string = 'http://kratos:4434/';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  session_cookie_domain?: string = 'localhost';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  session_cookie_name?: string = 'ory_kratos_session';
 }
 
 export class KetoMappings extends KeywordMappings {}
