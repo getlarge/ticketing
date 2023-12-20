@@ -1,28 +1,61 @@
 import type {
   PermissionApiCheckPermissionRequest,
+  PermissionApiExpandPermissionsRequest,
   RelationQuery,
   Relationship,
 } from '@ory/client';
 import {
   isRelationTuple,
+  isRelationTupleWithReplacements,
   RelationTuple,
   RelationTupleWithReplacements,
   ReplacementValues,
 } from '@ticketing/microservices/shared/relation-tuple-parser';
+import { get } from 'lodash-es';
 
-export function createRelationQuery(tuple: RelationTuple): RelationQuery;
+export function createRelationQuery(
+  tuple: Partial<RelationTuple>,
+): RelationQuery;
 export function createRelationQuery<T extends ReplacementValues>(
-  tuple: RelationTupleWithReplacements<T>,
+  tuple: Partial<RelationTupleWithReplacements<T>>,
   replacements: T,
 ): RelationQuery;
 export function createRelationQuery<
   T extends ReplacementValues,
-  U extends RelationTuple | RelationTupleWithReplacements<T>,
+  U extends Partial<RelationTuple | RelationTupleWithReplacements<T>>,
 >(
   tuple: U,
   replacements?: U extends RelationTupleWithReplacements<T> ? T : never,
 ): RelationQuery {
-  return createRelationTuple(tuple, replacements);
+  const { subjectIdOrSet } = tuple;
+  const result: RelationQuery = {};
+
+  const resolveTupleProperty = (property: string): string | undefined => {
+    const factory = get(tuple, property);
+    if (typeof factory === 'function') {
+      return factory(replacements ?? ({} as T));
+    }
+    if (typeof factory === 'string') {
+      return factory;
+    }
+    return undefined;
+  };
+
+  result.namespace = resolveTupleProperty('namespace');
+  result.object = resolveTupleProperty('object');
+  result.relation = resolveTupleProperty('relation');
+
+  if (typeof subjectIdOrSet === 'object' && subjectIdOrSet) {
+    result.subject_set = {
+      namespace: resolveTupleProperty('subjectIdOrSet.namespace') ?? '',
+      object: resolveTupleProperty('subjectIdOrSet.object') ?? '',
+      relation: resolveTupleProperty('subjectIdOrSet.relation') ?? '',
+    };
+  } else {
+    result.subject_id = resolveTupleProperty('subjectIdOrSet') ?? '';
+  }
+
+  return result;
 }
 
 export function createRelationTuple(tuple: RelationTuple): Relationship;
@@ -81,17 +114,41 @@ export function createRelationTuple<
   return result;
 }
 
+type PermissionTuple = Pick<
+  RelationTuple,
+  'namespace' | 'object' | 'relation'
+> &
+  Partial<Pick<RelationTuple, 'subjectIdOrSet'>>;
+
+type PermissionTupleWithReplacements<T extends ReplacementValues> = Pick<
+  RelationTupleWithReplacements<T>,
+  'namespace' | 'object' | 'relation'
+> &
+  Partial<Pick<RelationTupleWithReplacements<T>, 'subjectIdOrSet'>>;
+
 export function createPermissionCheckQuery(
-  tuple: RelationTuple,
+  tuple: PermissionTuple,
 ): PermissionApiCheckPermissionRequest;
 export function createPermissionCheckQuery<T extends ReplacementValues>(
-  tuple: RelationTupleWithReplacements<T>,
+  tuple: PermissionTupleWithReplacements<T>,
   replacements: T,
 ): PermissionApiCheckPermissionRequest;
 export function createPermissionCheckQuery<T extends ReplacementValues>(
-  tuple: RelationTuple | RelationTupleWithReplacements<T>,
+  tuple: PermissionTuple | PermissionTupleWithReplacements<T>,
   replacements?: T,
 ): PermissionApiCheckPermissionRequest {
+  if (isRelationTuple(tuple)) {
+    tuple.subjectIdOrSet = tuple.subjectIdOrSet ?? '';
+  } else if (isRelationTupleWithReplacements(tuple)) {
+    tuple.subjectIdOrSet =
+      tuple.subjectIdOrSet ??
+      function () {
+        return '';
+      };
+  } else {
+    throw new TypeError('Invalid permission tuple');
+  }
+
   const relationship = createRelationTuple(tuple, replacements);
 
   const result: PermissionApiCheckPermissionRequest = {
@@ -105,6 +162,7 @@ export function createPermissionCheckQuery<T extends ReplacementValues>(
       value: relationship.subject_id,
       enumerable: true,
     });
+    delete relationship.subject_id;
   } else if (relationship.subject_set) {
     Object.defineProperties(result, {
       subjectSetNamespace: {
@@ -120,6 +178,32 @@ export function createPermissionCheckQuery<T extends ReplacementValues>(
         enumerable: true,
       },
     });
+    delete relationship.subject_set;
   }
   return result;
+}
+
+export function createExpandPermissionQuery<T extends ReplacementValues>(
+  tuple: PermissionTuple | PermissionTupleWithReplacements<T>,
+  replacements?: T,
+): PermissionApiExpandPermissionsRequest {
+  if (isRelationTuple(tuple)) {
+    tuple.subjectIdOrSet = tuple.subjectIdOrSet ?? '';
+  } else if (isRelationTupleWithReplacements(tuple)) {
+    tuple.subjectIdOrSet =
+      tuple.subjectIdOrSet ??
+      function () {
+        return '';
+      };
+  } else {
+    throw new TypeError('Invalid permission tuple');
+  }
+
+  const relationship = createRelationTuple(tuple, replacements);
+
+  return {
+    namespace: relationship.namespace,
+    object: relationship.object,
+    relation: relationship.relation,
+  };
 }

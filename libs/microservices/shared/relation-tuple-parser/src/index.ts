@@ -1,6 +1,9 @@
 export { RelationTupleSyntaxError } from './lib/errors/relation-tuple-syntax.error.js';
 export { UnknownError } from './lib/errors/unknown.error.js';
-export { isRelationTuple } from './lib/is-relation-tuple.js';
+export {
+  isRelationTuple,
+  isRelationTupleWithReplacements,
+} from './lib/is-relation-tuple.js';
 export { RelationTuple, SubjectSet } from './lib/relation-tuple.js';
 export {
   parseRelationTuple,
