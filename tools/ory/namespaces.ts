@@ -1,4 +1,4 @@
-import { Namespace, Context } from '@ory/permission-namespace-types';
+import type { Namespace, Context } from '@ory/permission-namespace-types';
 
 class User implements Namespace {}
 

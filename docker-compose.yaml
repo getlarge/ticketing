@@ -450,6 +450,9 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+      - type: bind
+        source: ./tools/ory/namespaces.ts
+        target: /home/ory/namespaces.ts
     environment:
       - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
@@ -472,6 +475,9 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+      - type: bind
+        source: ./tools/ory/namespaces.ts
+        target: /home/ory/namespaces.ts
     networks:
       - ory
     profiles:
