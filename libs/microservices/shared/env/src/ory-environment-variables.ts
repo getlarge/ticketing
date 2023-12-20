@@ -12,7 +12,8 @@ export class OryKratosEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_KRATOS_ADMIN_URL: string;
+  @decorate(IsOptional())
+  ORY_KRATOS_ADMIN_URL?: string = 'http://localhost:4434';
 
   @decorate(Expose())
   @decorate(
@@ -23,7 +24,8 @@ export class OryKratosEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_KRATOS_PUBLIC_URL: string;
+  @decorate(IsOptional())
+  ORY_KRATOS_PUBLIC_URL?: string = 'http://localhost:4433';
 
   @decorate(Expose())
   @decorate(IsString())
@@ -41,7 +43,8 @@ export class OryHydraEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_HYDRA_ADMIN_URL: string;
+  @decorate(IsOptional())
+  ORY_HYDRA_ADMIN_URL?: string = 'http://localhost:4445';
 
   @decorate(Expose())
   @decorate(
@@ -52,7 +55,8 @@ export class OryHydraEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_HYDRA_PUBLIC_URL: string;
+  @decorate(IsOptional())
+  ORY_HYDRA_PUBLIC_URL?: string = 'http://localhost:4444';
 
   @decorate(Expose())
   @decorate(IsString())
@@ -70,7 +74,7 @@ export class OryKetoEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_KETO_ADMIN_URL: string;
+  ORY_KETO_ADMIN_URL?: string = 'http://localhost:4467';
 
   @decorate(Expose())
   @decorate(
@@ -81,7 +85,7 @@ export class OryKetoEnvironmentVariables {
       require_tld: false,
     }),
   )
-  ORY_KETO_PUBLIC_URL: string;
+  ORY_KETO_PUBLIC_URL?: string = 'http://localhost:4466';
 
   @decorate(Expose())
   @decorate(IsString())
@@ -90,8 +94,8 @@ export class OryKetoEnvironmentVariables {
 }
 
 export class OryActionEnvironmentVariables {
+  // should be set in the HTTP header x-ory-api-key from the action webhook
   @decorate(Expose())
   @decorate(IsString())
-  // should be set in the HTTP header x-ory-api-key from the action webhook
-  ORY_ACTION_API_KEY: string;
+  ORY_ACTION_API_KEY?: string = '';
 }
