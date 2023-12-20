@@ -1,22 +1,21 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { CommandFactory } from 'nest-commander';
 
 import { AppModule } from './app/app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
-  );
+async function bootstrap(): Promise<void> {
+  Logger.log('Starting permissions-manager', process.argv);
+  await CommandFactory.run(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+    enablePositionalOptions: true,
+    enablePassThroughOptions: true,
+    cliName: 'permissions-manager',
+    version: '0.0.1',
+    usePlugins: true,
+  });
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
