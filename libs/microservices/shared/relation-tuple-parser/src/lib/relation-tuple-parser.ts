@@ -62,6 +62,7 @@ export const parseRelationTuple = (
 };
 
 type RelationTupleString =
+  | `${string}:${string}#${string}`
   | `${string}:${string}#${string}@${string}`
   | `${string}:${string}#${string}@${string}:${string}`
   | `${string}:${string}#${string}@${string}:${string}#${string}`
@@ -70,9 +71,12 @@ type RelationTupleString =
   | `${string}:${string}#${string}@(${string}:${string}#${string})`;
 
 export const relationTupleToString = (
-  tuple: RelationTuple,
+  tuple: Partial<RelationTuple>,
 ): RelationTupleString => {
   const base: `${string}:${string}#${string}` = `${tuple.namespace}:${tuple.object}#${tuple.relation}`;
+  if (!tuple.subjectIdOrSet) {
+    return base;
+  }
   if (typeof tuple.subjectIdOrSet === 'string') {
     return `${base}@${tuple.subjectIdOrSet}`;
   }
