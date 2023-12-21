@@ -7,7 +7,7 @@ import {
 import { Command, CommandRunner, Option } from 'nest-commander';
 
 interface CommandOptions {
-  tuple?: RelationTuple;
+  tuple: RelationTuple;
 }
 
 @Command({ name: 'create', description: 'Create relationship on Ory Keto' })
@@ -17,13 +17,14 @@ export class CreateRelationCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
-  async run(passedParams: string[], options?: CommandOptions): Promise<void> {
+  async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { tuple } = options;
     const isCreated = await this.oryPermissionsService.createRelation(tuple);
     if (!isCreated) {
       throw new Error('Failed to create relation');
     }
-    this.logger.debug('Created relation', tuple);
+    this.logger.debug('Created relation');
+    this.logger.log(tuple);
   }
 
   @Option({

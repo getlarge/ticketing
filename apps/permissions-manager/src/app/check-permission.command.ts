@@ -10,26 +10,23 @@ interface CommandOptions {
   tuple: RelationTuple;
 }
 
-@Command({ name: 'delete', description: 'Delete relationship on Ory Keto' })
-export class DeleteRelationCommand extends CommandRunner {
-  readonly logger = new Logger(DeleteRelationCommand.name);
+@Command({ name: 'check', description: 'Check permission on Ory Keto' })
+export class CheckPermissionCommand extends CommandRunner {
+  readonly logger = new Logger(CheckPermissionCommand.name);
 
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { tuple } = options;
-    const isDeleted = await this.oryPermissionsService.deleteRelation(tuple);
-    if (!isDeleted) {
-      throw new Error('Failed to delete relation');
-    }
-    this.logger.debug('Deleted relation', tuple);
-    this.logger.log(tuple);
+    const isAllowed = await this.oryPermissionsService.checkPermission(tuple);
+    this.logger.log(`Permission ${isAllowed ? 'granted' : 'denied'}`);
   }
 
   @Option({
     flags: '-t, --tuple [string]',
-    description: 'Relationship tuple to delete, using Zanzibar notation',
+    description:
+      'Relationship tuple to check permission from, using Zanzibar notation',
     required: true,
   })
   parseRelationTuple(val: string): RelationTuple {

@@ -29,7 +29,9 @@ describe('CreateRelationCommand', () => {
       };
 
       await expect(
-        service.run(['--tuple', 'Group:admin#members@User:1']),
+        service.run(['--tuple', 'Group:admin#members@User:1'], {
+          tuple: expectedTuple,
+        }),
       ).resolves.toBeUndefined();
       expect(service['oryPermissionsService'].createRelation).toBeCalledWith(
         expectedTuple,

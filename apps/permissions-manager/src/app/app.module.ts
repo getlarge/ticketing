@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OryPermissionsModule } from '@ticketing/microservices/ory-client';
 import { validate } from '@ticketing/microservices/shared/env';
 
+import { CheckPermissionCommand } from './check-permission.command';
 import { CreateRelationCommand } from './create-relation.command';
 import { DeleteRelationCommand } from './delete-relation.command';
 import { EnvironmentVariables } from './env';
@@ -25,6 +26,10 @@ import { EnvironmentVariables } from './env';
       }),
     }),
   ],
-  providers: [CreateRelationCommand, DeleteRelationCommand],
+  providers: [
+    CreateRelationCommand,
+    DeleteRelationCommand,
+    CheckPermissionCommand,
+  ],
 })
 export class AppModule {}
