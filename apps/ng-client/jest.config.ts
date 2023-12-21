@@ -3,14 +3,15 @@ export default {
   globals: {},
   coverageDirectory: '../../coverage/apps/ng-client',
   transform: {
-    '^.+\\.(ts|mjs|js|html)$': [
-      'jest-preset-angular',
-      {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
-        stringifyContentPathRegex: '\\.(html|svg)$',
-        useESM: true,
-      },
-    ],
+    // enabling this breaks the tests
+    // '^.+\\.(ts|mjs|js|html)$': [
+    //   'jest-preset-angular',
+    //   {
+    //     tsconfig: '<rootDir>/tsconfig.spec.json',
+    //     stringifyContentPathRegex: '\\.(html|svg)$',
+    //     useESM: true,
+    //   },
+    // ],
     '^.+\\.[tjm]s$': [
       'ts-jest',
       {

@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "module": "esnext",
     "target": "es2022",
     "emitDecoratorMetadata": true,
