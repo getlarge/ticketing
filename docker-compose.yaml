@@ -76,7 +76,6 @@ services:
     volumes:
       - ./infra/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       # - ./infra/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
-      # - ./infra/rabbitmq/logs:/var/log/rabbitmq/log
       - ./infra/rabbitmq/etc/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - rabbitmq_volume:/var/lib/rabbitmq/mnesia/rabbit@ticketing-rabbitmq
     ports:
@@ -90,6 +89,9 @@ services:
     profiles:
       - 'deps-only'
       - 'dev'
+    # for docker on linux
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
   # endregion
 

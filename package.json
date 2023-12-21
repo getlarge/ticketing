@@ -55,7 +55,7 @@
     "docker:deps:down": "docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile deps-only down",
     "docker:deps:clean": "docker volume rm ticketing_mongo_volume ; docker volume rm ticketing_redis_volume ; docker volume rm ticketing_rabbitmq_volume",
     "docker:deps:log": "docker compose -p ticketing logs -f --tail=100",
-    "docker:ory:up": "docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile ory-only up -d",
+    "docker:ory:up": "yarn ory:generate:kratos ; yarn ory:generate:keto ; docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile ory-only up -d",
     "docker:ory:down": "docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile ory-only down",
     "docker:ory:clean": "docker volume rm ticketing_keto_postgres_volume ; docker volume rm ticketing_kratos_postgres_volume",
     "k8s:jwt-secret": "kubectl create secret generic jwt-secret --from-env-file ./keys/.env",
