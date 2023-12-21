@@ -29,7 +29,9 @@
             }
           }
         },
-        "tags": ["tickets"],
+        "tags": [
+          "tickets"
+        ],
         "security": [
           {
             "session": []
@@ -136,7 +138,9 @@
             }
           }
         },
-        "tags": ["tickets"]
+        "tags": [
+          "tickets"
+        ]
       }
     },
     "/api/tickets/{id}": {
@@ -166,7 +170,9 @@
             }
           }
         },
-        "tags": ["tickets"]
+        "tags": [
+          "tickets"
+        ]
       },
       "patch": {
         "operationId": "TicketsController_updateById",
@@ -204,7 +210,9 @@
             }
           }
         },
-        "tags": ["tickets"],
+        "tags": [
+          "tickets"
+        ],
         "security": [
           {
             "session": []
@@ -234,9 +242,6 @@
     },
     {
       "url": "http://localhost:8080"
-    },
-    {
-      "url": "http://ticketing.dev"
     }
   ],
   "components": {
@@ -270,7 +275,10 @@
             ]
           }
         },
-        "required": ["key", "value"]
+        "required": [
+          "key",
+          "value"
+        ]
       },
       "PaginatedDto": {
         "type": "object",
@@ -284,7 +292,9 @@
             }
           }
         },
-        "required": ["next"]
+        "required": [
+          "next"
+        ]
       },
       "CreateTicketDto": {
         "type": "object",
@@ -301,7 +311,10 @@
             "minimum": 0
           }
         },
-        "required": ["title", "price"]
+        "required": [
+          "title",
+          "price"
+        ]
       },
       "TicketDto": {
         "type": "object",
@@ -334,7 +347,13 @@
             "description": "Ticket reservation order id"
           }
         },
-        "required": ["id", "title", "price", "version", "userId"]
+        "required": [
+          "id",
+          "title",
+          "price",
+          "version",
+          "userId"
+        ]
       },
       "StartKeyDto": {
         "type": "object",
@@ -353,7 +372,10 @@
             ]
           }
         },
-        "required": ["key", "value"]
+        "required": [
+          "key",
+          "value"
+        ]
       },
       "SortDto": {
         "type": "object",
@@ -367,11 +389,23 @@
             "type": "number"
           }
         },
-        "required": ["field", "order"]
+        "required": [
+          "field",
+          "order"
+        ]
       },
       "FilterOperatorType": {
         "type": "string",
-        "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"]
+        "enum": [
+          "eq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "regex",
+          "in",
+          "nin"
+        ]
       },
       "FilterDto": {
         "type": "object",
@@ -415,7 +449,16 @@
           "mode": {
             "oneOf": [
               {
-                "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"],
+                "enum": [
+                  "eq",
+                  "gt",
+                  "gte",
+                  "lt",
+                  "lte",
+                  "regex",
+                  "in",
+                  "nin"
+                ],
                 "default": "eq"
               },
               {
@@ -424,7 +467,11 @@
             ]
           }
         },
-        "required": ["name", "value", "operator"]
+        "required": [
+          "name",
+          "value",
+          "operator"
+        ]
       },
       "ProjectionDto": {
         "type": "object",
@@ -440,7 +487,10 @@
             "maximum": 1
           }
         },
-        "required": ["name", "mode"]
+        "required": [
+          "name",
+          "mode"
+        ]
       },
       "UpdateTicketDto": {
         "type": "object",

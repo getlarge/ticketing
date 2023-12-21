@@ -61,9 +61,6 @@
     },
     {
       "url": "http://localhost:8080"
-    },
-    {
-      "url": "http://ticketing.dev"
     }
   ],
   "components": {
