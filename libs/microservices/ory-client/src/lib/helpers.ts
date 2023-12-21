@@ -72,11 +72,6 @@ export function createRelationQuery<
   result.relation = resolveTupleProperty('relation', tuple, replacements);
 
   if (typeof subjectIdOrSet === 'object' && subjectIdOrSet) {
-    //          subjectId?: string;
-    //      subjectSetNamespace?: string;
-    //  subjectSetObject?: string;
-    //  subjectSetRelation?: string;
-
     result.subject_set = {
       namespace:
         resolveTupleProperty('subjectIdOrSet.namespace', tuple, replacements) ??

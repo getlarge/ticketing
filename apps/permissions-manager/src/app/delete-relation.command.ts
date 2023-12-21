@@ -17,13 +17,14 @@ export class DeleteRelationCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
+
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { tuple } = options;
     const isDeleted = await this.oryPermissionsService.deleteRelation(tuple);
     if (!isDeleted) {
       throw new Error('Failed to delete relation');
     }
-    this.logger.debug('Deleted relation', tuple);
+    this.logger.debug('Deleted relation');
     this.logger.log(tuple);
   }
 

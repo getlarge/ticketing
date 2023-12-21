@@ -17,6 +17,7 @@ export class CheckPermissionCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
+
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { tuple } = options;
     const isAllowed = await this.oryPermissionsService.checkPermission(tuple);

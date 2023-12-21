@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   type RelationTuple,
-  parseRelationTuple,
+  parseRelationTupleString,
 } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Command, CommandRunner, Option } from 'nest-commander';
 
@@ -18,6 +18,7 @@ export class ExpandPermissionsCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
+
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { depth, tuple } = options;
     const tree = await this.oryPermissionsService.expandPermissions(
@@ -36,9 +37,7 @@ export class ExpandPermissionsCommand extends CommandRunner {
   parseRelationTuple(
     val: string,
   ): Pick<RelationTuple, 'namespace' | 'object' | 'relation'> {
-    const parts = val.split('@');
-    const tupleString = `${parts.shift()}@dummy_subject_set`;
-    const res = parseRelationTuple(tupleString);
+    const res = parseRelationTupleString(val);
     if (res.hasError()) {
       throw res.error;
     }

@@ -20,6 +20,7 @@ export class GetRelationsCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
+
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const {
       namespace,

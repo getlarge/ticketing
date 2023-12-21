@@ -17,6 +17,7 @@ export class CreateRelationCommand extends CommandRunner {
   constructor(private readonly oryPermissionsService: OryPermissionsService) {
     super();
   }
+
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { tuple } = options;
     const isCreated = await this.oryPermissionsService.createRelation(tuple);
