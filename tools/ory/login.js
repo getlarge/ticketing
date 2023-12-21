@@ -4,7 +4,7 @@ const readline = require('node:readline');
 const { inspect } = require('node:util');
 
 const axiosInstance = axios.create({
-  baseURL: process.env.ORY_BASE_PATH,
+  baseURL: process.env.ORY_BASE_PATH || 'http://localhost:4433',
 });
 
 async function initLoginFlow() {
