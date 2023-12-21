@@ -363,6 +363,9 @@ services:
     profiles:
       - 'services-only'
       - 'dev'
+    # for docker on linux
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
   # endregion
 
@@ -403,6 +406,9 @@ services:
     profiles:
       - 'ory-only'
       - 'dev'
+    # for docker on linux
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
   kratos-postgres:
     image: postgres:11.8
