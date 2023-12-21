@@ -7,6 +7,7 @@ import { CheckPermissionCommand } from './check-permission.command';
 import { CreateRelationCommand } from './create-relation.command';
 import { DeleteRelationCommand } from './delete-relation.command';
 import { EnvironmentVariables } from './env';
+import { ExpandPermissionsCommand } from './expand-permissions.command';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EnvironmentVariables } from './env';
     CreateRelationCommand,
     DeleteRelationCommand,
     CheckPermissionCommand,
+    ExpandPermissionsCommand,
   ],
 })
 export class AppModule {}
