@@ -84,13 +84,27 @@ type RelationTupleString =
  * @description use Regex to parse a string into a RelationTuple instead of using antlr
  * @warn regex does not handle parentheses in subject parts
  **/
-export function parseRelationTupleString(input: string): RelationTuple | null {
+export function parseRelationTupleString(
+  input: string,
+): Result<RelationTuple, RelationTupleSyntaxError | UnknownError> {
   const regex =
     /^([^:]+)(?::([^#]+))?(?:#([^@]+)(?:@([^:]+)(?::([^#]+))?(?:#([^()]+(?:\([^()]+\))?)?)?)?)?$/;
   const match = input.match(regex);
 
   if (!match) {
-    return null;
+    return error(
+      new RelationTupleSyntaxError({
+        data: {
+          errors: [
+            {
+              wholeInput: input,
+              line: 1,
+              charPositionInLine: 0,
+            },
+          ],
+        },
+      }),
+    );
   }
 
   const [
@@ -103,29 +117,33 @@ export function parseRelationTupleString(input: string): RelationTuple | null {
     subjectRelation,
   ] = match;
 
-  const result: RelationTuple = {
-    namespace,
-    object,
-    relation,
-    subjectIdOrSet: '',
-  };
+  try {
+    const result: RelationTuple = {
+      namespace,
+      object,
+      relation,
+      subjectIdOrSet: '',
+    };
 
-  if (subjectRelation) {
-    result.subjectIdOrSet = {
-      namespace: idOrNamespace || '',
-      object: subjectObject || '',
-      relation: subjectRelation,
-    };
-  } else if (subjectObject) {
-    result.subjectIdOrSet = {
-      namespace: idOrNamespace || '',
-      object: subjectObject,
-    };
-  } else if (idOrNamespace) {
-    result.subjectIdOrSet = idOrNamespace;
+    if (subjectRelation) {
+      result.subjectIdOrSet = {
+        namespace: idOrNamespace || '',
+        object: subjectObject || '',
+        relation: subjectRelation,
+      };
+    } else if (subjectObject) {
+      result.subjectIdOrSet = {
+        namespace: idOrNamespace || '',
+        object: subjectObject,
+      };
+    } else if (idOrNamespace) {
+      result.subjectIdOrSet = idOrNamespace;
+    }
+
+    return value(result);
+  } catch (e) {
+    return error(new UnknownError({ data: e }));
   }
-
-  return result;
 }
 
 export const relationTupleToString = (
