@@ -3,7 +3,18 @@ import {
   relationTupleToString,
 } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { CustomError } from '@ticketing/shared/errors';
-import { isAxiosError } from 'axios';
+import type { AxiosError } from 'axios';
+
+/**
+ * @description replacement of isAxiosError from axios, required as it is not exported in ESM build
+ * @param error
+ * @returns
+ */
+function isAxiosError(error: unknown): error is AxiosError {
+  return (
+    typeof error === 'object' && !!error && !!(error as AxiosError).isAxiosError
+  );
+}
 
 export class OryError extends CustomError {
   constructor(
@@ -17,7 +28,7 @@ export class OryError extends CustomError {
 
   static parseError(error: unknown): string {
     if (isAxiosError(error)) {
-      return error.response?.data?.error?.message ?? error.message;
+      return error.cause?.message ?? error.message;
     }
     if (error instanceof Error) {
       return error.message;
@@ -37,7 +48,7 @@ export class OryError extends CustomError {
 
   getDetails(): Record<string, unknown> {
     if (isAxiosError(this.error)) {
-      return this.error.response?.data ?? {};
+      return (this.error.response?.data ?? {}) as Record<string, unknown>;
     }
     return {};
   }
