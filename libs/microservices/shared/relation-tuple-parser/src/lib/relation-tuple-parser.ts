@@ -61,14 +61,72 @@ export const parseRelationTuple = (
   }
 };
 
+type Namespace = string;
+type TupleObject = string;
+type Relation = string;
+type SubjectId = string;
+type SubjectNamespace = string;
+type SubjectObject = string;
+type SubjectRelation = string;
+
 type RelationTupleString =
-  | `${string}:${string}#${string}`
-  | `${string}:${string}#${string}@${string}`
-  | `${string}:${string}#${string}@${string}:${string}`
-  | `${string}:${string}#${string}@${string}:${string}#${string}`
-  | `${string}:${string}#${string}@(${string})`
-  | `${string}:${string}#${string}@(${string}:${string})`
-  | `${string}:${string}#${string}@(${string}:${string}#${string})`;
+  | `${Namespace}`
+  | `${Namespace}:${TupleObject}`
+  | `${Namespace}:${TupleObject}#${Relation}`
+  | `${Namespace}:${TupleObject}#${Relation}@${SubjectId}`
+  | `${Namespace}:${TupleObject}#${Relation}@${SubjectNamespace}:${SubjectObject}`
+  | `${Namespace}:${TupleObject}#${Relation}@${SubjectNamespace}:${SubjectObject}#${SubjectRelation}`
+  | `${Namespace}:${TupleObject}#${Relation}@(${SubjectId})`
+  | `${Namespace}:${TupleObject}#${Relation}@(${SubjectNamespace}:${SubjectObject})`
+  | `${Namespace}:${TupleObject}#${Relation}@(${SubjectNamespace}:${SubjectObject}#${SubjectRelation})`;
+
+/**
+ * @description use Regex to parse a string into a RelationTuple instead of using antlr
+ * @warn regex does not handle parentheses in subject parts
+ **/
+export function parseRelationTupleString(input: string): RelationTuple | null {
+  const regex =
+    /^([^:]+)(?::([^#]+))?(?:#([^@]+)(?:@([^:]+)(?::([^#]+))?(?:#([^()]+(?:\([^()]+\))?)?)?)?)?$/;
+  const match = input.match(regex);
+
+  if (!match) {
+    return null;
+  }
+
+  const [
+    ,
+    namespace,
+    object,
+    relation,
+    idOrNamespace,
+    subjectObject,
+    subjectRelation,
+  ] = match;
+
+  const result: RelationTuple = {
+    namespace,
+    object,
+    relation,
+    subjectIdOrSet: '',
+  };
+
+  if (subjectRelation) {
+    result.subjectIdOrSet = {
+      namespace: idOrNamespace || '',
+      object: subjectObject || '',
+      relation: subjectRelation,
+    };
+  } else if (subjectObject) {
+    result.subjectIdOrSet = {
+      namespace: idOrNamespace || '',
+      object: subjectObject,
+    };
+  } else if (idOrNamespace) {
+    result.subjectIdOrSet = idOrNamespace;
+  }
+
+  return result;
+}
 
 export const relationTupleToString = (
   tuple: Partial<RelationTuple>,
