@@ -159,7 +159,8 @@ describe('parseRelationTuple tests', () => {
           `performance tests :: with subject :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
         );
 
-        expect(avgInMs).toBeLessThan(0.5);
+        const expectation = process.env['CI'] ? 1.5 : 0.5;
+        expect(avgInMs).toBeLessThan(expectation);
       });
 
       it('with subjectSet', () => {
@@ -187,7 +188,8 @@ describe('parseRelationTuple tests', () => {
           `performance tests :: with subjectSet :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
         );
 
-        expect(avgInMs).toBeLessThan(0.7);
+        const expectation = process.env['CI'] ? 1.5 : 0.5;
+        expect(avgInMs).toBeLessThan(expectation);
       });
     });
 
