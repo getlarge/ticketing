@@ -6,13 +6,11 @@ export type PermissionObjects = {
 };
 
 export const PermissionNamespaces = {
-  [Resources.USERS]: 'User',
-  [Resources.TICKETS]: 'Ticket',
+  [Resources.GROUPS]: 'Group',
   [Resources.ORDERS]: 'Order',
   [Resources.PAYMENTS]: 'Payment',
+  [Resources.TICKETS]: 'Ticket',
+  [Resources.USERS]: 'User',
 };
 
 export type PermissionNamespaces = typeof PermissionNamespaces;
-
-// TODO: add relations / namespace ?
-// TODO: add permissions / namespace ?

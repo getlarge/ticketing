@@ -7,12 +7,13 @@ export enum Services {
 }
 
 export enum Resources {
-  HEALTH = 'health',
-  USERS = 'users',
-  TICKETS = 'tickets',
   EXPIRATION = 'expiration',
+  HEALTH = 'health',
+  GROUPS = 'groups',
   ORDERS = 'orders',
   PAYMENTS = 'payments',
+  TICKETS = 'tickets',
+  USERS = 'users',
 }
 
 export enum Actions {
