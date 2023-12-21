@@ -71,7 +71,8 @@ export class OryPermissionsService {
 
   async deleteRelation(tuple: Partial<RelationTuple>): Promise<boolean> {
     try {
-      const relationQuery = this.createFlattenRelationQuery(tuple);
+      const relationQuery = this.createRelationQuery(tuple);
+      //! the type of RelationshipApiDeleteRelationshipsRequest is wrong in @ory/client
       await this.relationShipApi.deleteRelationships(relationQuery);
       return true;
     } catch (e) {

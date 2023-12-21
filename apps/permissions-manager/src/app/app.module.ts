@@ -4,6 +4,7 @@ import { OryPermissionsModule } from '@ticketing/microservices/ory-client';
 import { validate } from '@ticketing/microservices/shared/env';
 
 import { CreateRelationCommand } from './create-relation.command';
+import { DeleteRelationCommand } from './delete-relation.command';
 import { EnvironmentVariables } from './env';
 
 @Module({
@@ -24,6 +25,6 @@ import { EnvironmentVariables } from './env';
       }),
     }),
   ],
-  providers: [CreateRelationCommand],
+  providers: [CreateRelationCommand, DeleteRelationCommand],
 })
 export class AppModule {}

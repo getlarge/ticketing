@@ -1,10 +1,8 @@
-import { Logger } from '@nestjs/common';
 import { CommandFactory } from 'nest-commander';
 
 import { AppModule } from './app/app.module';
 
 async function bootstrap(): Promise<void> {
-  Logger.log('Starting permissions-manager', process.argv);
   await CommandFactory.run(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
     enablePositionalOptions: true,
