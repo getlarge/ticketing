@@ -14,7 +14,7 @@ const PERMISSION_CHECKS_METADATA_KEY = Symbol('PermissionChecksKey');
 const PERMISSION_CHECK_METADATA_KEY = Symbol('PermissionCheckKey');
 
 export const PermissionChecks = (
-  relationTupleFactories: (string | ((ctx: ExecutionContext) => string))[],
+  ...relationTupleFactories: (string | ((ctx: ExecutionContext) => string))[]
 ): CustomDecorator<typeof PERMISSION_CHECKS_METADATA_KEY> => {
   const valueToSet: PermissionCheckMetadataType[] = [];
 
