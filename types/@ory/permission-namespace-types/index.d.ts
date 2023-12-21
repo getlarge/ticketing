@@ -11,7 +11,7 @@ declare interface Object {}
 declare interface IArguments {}
 declare interface RegExp {}
 
-declare interface Array<T extends namespace> {
+declare interface Array<T extends INamespace> {
   /**
    * Checks whether the elements of this Array have a Relation to the given Subject
    * @example
@@ -66,7 +66,7 @@ interface INamespace {
   permits?: { [method: string]: (ctx: IContext) => boolean };
 }
 
-declare module '@ory/keto-namespace-types' {
+declare module '@ory/permission-namespace-types' {
   export type Context = IContext;
 
   export type Namespace = INamespace;
@@ -75,52 +75,4 @@ declare module '@ory/keto-namespace-types' {
     A extends Namespace,
     R extends keyof A['related'],
   > = A['related'][R] extends Array<infer T> ? T : never;
-}
-//
-//
-
-import { Namespace, Context } from '@ory/permission-namespace-types';
-
-class User implements Namespace {}
-
-class Ticket implements Namespace {
-  related: {
-    owners: User[];
-  };
-
-  permits = {
-    edit: (ctx: Context) => this.related.owners.includes(ctx.subject),
-    order: (ctx: Context) => !this.related.owners.includes(ctx.subject),
-  };
-}
-
-class Order implements Namespace {
-  related: {
-    parents: Ticket[];
-    owners: User[];
-  };
-
-  permits = {
-    view: (ctx: Context): boolean =>
-      this.related.parents.traverse((t) =>
-        t.related.owners.includes(ctx.subject),
-      ) || this.related.owners.includes(ctx.subject),
-
-    edit: (ctx: Context) => this.related.owners.includes(ctx.subject),
-  };
-}
-
-class Payment implements Namespace {
-  related: {
-    parents: Order[];
-    owners: User[];
-  };
-
-  permits = {
-    view: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.parents.traverse((t) => t.permits.view(ctx)),
-
-    edit: (ctx: Context) => this.related.owners.includes(ctx.subject),
-  };
 }

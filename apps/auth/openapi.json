@@ -29,7 +29,9 @@
             }
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       }
     },
     "/api/users/on-sign-in": {
@@ -60,7 +62,9 @@
             }
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       }
     },
     "/api/users/sign-up": {
@@ -91,7 +95,9 @@
             }
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       }
     },
     "/api/users/current-user": {
@@ -112,7 +118,9 @@
             }
           }
         },
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "security": [
           {
             "session": []
@@ -142,9 +150,6 @@
     },
     {
       "url": "http://localhost:8080"
-    },
-    {
-      "url": "http://ticketing.dev"
     }
   ],
   "components": {
@@ -168,7 +173,9 @@
             "type": "string"
           }
         },
-        "required": ["email"]
+        "required": [
+          "email"
+        ]
       },
       "OryIdentityDto": {
         "type": "object",
@@ -218,7 +225,12 @@
             "type": "string"
           }
         },
-        "required": ["id", "schema_id", "schema_url", "traits"]
+        "required": [
+          "id",
+          "schema_id",
+          "schema_url",
+          "traits"
+        ]
       },
       "OnOrySignUpDto": {
         "type": "object",
@@ -232,7 +244,9 @@
             ]
           }
         },
-        "required": ["identity"]
+        "required": [
+          "identity"
+        ]
       },
       "OnOrySignInDto": {
         "type": "object",
@@ -246,7 +260,9 @@
             ]
           }
         },
-        "required": ["identity"]
+        "required": [
+          "identity"
+        ]
       },
       "UserCredentialsDto": {
         "type": "object",
@@ -264,7 +280,10 @@
             "format": "email"
           }
         },
-        "required": ["password", "email"]
+        "required": [
+          "password",
+          "email"
+        ]
       },
       "UserDto": {
         "type": "object",
@@ -284,7 +303,11 @@
             "format": "uuid"
           }
         },
-        "required": ["email", "id", "identityId"]
+        "required": [
+          "email",
+          "id",
+          "identityId"
+        ]
       }
     }
   },

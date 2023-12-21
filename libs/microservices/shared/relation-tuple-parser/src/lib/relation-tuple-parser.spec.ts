@@ -3,6 +3,7 @@
 import { RelationTuple } from './relation-tuple.js';
 import {
   parseRelationTuple,
+  parseRelationTupleString,
   relationTupleToString,
 } from './relation-tuple-parser.js';
 
@@ -131,61 +132,123 @@ describe('parseRelationTuple tests', () => {
     });
   });
 
-  describe.skip('performance tests', () => {
-    it('with subject', () => {
-      const relationTuples = Array.from({ length: 100 }, (_, i) =>
-        generateRelationTuple(i, false),
-      );
+  describe('performance tests', () => {
+    describe('parseRelationTuple', () => {
+      it('with subject', () => {
+        const relationTuples = Array.from({ length: 100 }, (_, i) =>
+          generateRelationTuple(i, false),
+        );
 
-      const result = relationTuples.map((tuple) => {
-        const start = process.hrtime.bigint();
-        const res = parseRelationTuple(tuple);
-        const end = process.hrtime.bigint();
+        const result = relationTuples.map((tuple) => {
+          const start = process.hrtime.bigint();
+          const res = parseRelationTuple(tuple);
+          const end = process.hrtime.bigint();
 
-        expect(res.unwrapOrThrow()).toBeDefined();
+          expect(res.unwrapOrThrow()).toBeDefined();
 
-        return end - start;
+          return end - start;
+        });
+
+        const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
+        const avgInNs = Number(sumInNs) / result.length;
+
+        const sumInMs = nsToMs(sumInNs);
+        const avgInMs = nsToMs(avgInNs);
+
+        console.info(
+          `performance tests :: with subject :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
+        );
+
+        const expectation = process.env['CI'] ? 1.5 : 0.5;
+        expect(avgInMs).toBeLessThan(expectation);
       });
 
-      const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
-      const avgInNs = Number(sumInNs) / result.length;
+      it('with subjectSet', () => {
+        const relationTuples = Array.from({ length: 100 }, (_, i) =>
+          generateRelationTuple(i, true),
+        );
 
-      const sumInMs = nsToMs(sumInNs);
-      const avgInMs = nsToMs(avgInNs);
+        const result = relationTuples.map((tuple) => {
+          const start = process.hrtime.bigint();
+          const res = parseRelationTuple(tuple);
+          const end = process.hrtime.bigint();
 
-      console.info(
-        `performance tests :: with subject :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
-      );
+          expect(res.unwrapOrThrow()).toBeDefined();
 
-      expect(avgInMs).toBeLessThan(0.5);
+          return end - start;
+        });
+
+        const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
+        const avgInNs = Number(sumInNs) / result.length;
+
+        const sumInMs = nsToMs(sumInNs);
+        const avgInMs = nsToMs(avgInNs);
+
+        console.info(
+          `performance tests :: with subjectSet :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
+        );
+
+        const expectation = process.env['CI'] ? 1.5 : 0.5;
+        expect(avgInMs).toBeLessThan(expectation);
+      });
     });
 
-    it('with subjectSet', () => {
-      const relationTuples = Array.from({ length: 100 }, (_, i) =>
-        generateRelationTuple(i, true),
-      );
+    describe('parseRelationTupleString', () => {
+      it('with subject', () => {
+        const relationTuples = Array.from({ length: 100 }, (_, i) =>
+          generateRelationTuple(i, false),
+        );
 
-      const result = relationTuples.map((tuple) => {
-        const start = process.hrtime.bigint();
-        const res = parseRelationTuple(tuple);
-        const end = process.hrtime.bigint();
+        const result = relationTuples.map((tuple) => {
+          const start = process.hrtime.bigint();
+          const res = parseRelationTupleString(tuple);
+          const end = process.hrtime.bigint();
 
-        expect(res.unwrapOrThrow()).toBeDefined();
+          expect(res.unwrapOrThrow()).toBeDefined();
 
-        return end - start;
+          return end - start;
+        });
+
+        const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
+        const avgInNs = Number(sumInNs) / result.length;
+
+        const sumInMs = nsToMs(sumInNs);
+        const avgInMs = nsToMs(avgInNs);
+
+        console.info(
+          `performance tests :: with subject :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
+        );
+
+        expect(avgInMs).toBeLessThan(0.5);
       });
 
-      const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
-      const avgInNs = Number(sumInNs) / result.length;
+      it('with subjectSet', () => {
+        const relationTuples = Array.from({ length: 100 }, (_, i) =>
+          generateRelationTuple(i, true),
+        );
 
-      const sumInMs = nsToMs(sumInNs);
-      const avgInMs = nsToMs(avgInNs);
+        const result = relationTuples.map((tuple) => {
+          const start = process.hrtime.bigint();
+          const res = parseRelationTupleString(tuple);
+          const end = process.hrtime.bigint();
 
-      console.info(
-        `performance tests :: with subjectSet :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
-      );
+          expect(res.unwrapOrThrow()).toBeDefined();
 
-      expect(avgInMs).toBeLessThan(0.7);
+          return end - start;
+        });
+
+        const sumInNs = Number(result.reduce((a, b) => a + b, BigInt(0)));
+        const avgInNs = Number(sumInNs) / result.length;
+
+        const sumInMs = nsToMs(sumInNs);
+        const avgInMs = nsToMs(avgInNs);
+
+        console.info(
+          `performance tests :: with subjectSet :: Execution for ${result.length} elements took: ${sumInMs}ms (avg: ${avgInMs}ms)`,
+        );
+
+        expect(avgInMs).toBeLessThan(0.7);
+      });
     });
   });
 

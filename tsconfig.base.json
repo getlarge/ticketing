@@ -69,7 +69,9 @@
       "@ticketing/shared/constants": ["libs/shared/constants/src/index.ts"],
       "@ticketing/shared/errors": ["libs/shared/errors/src/index.ts"],
       "@ticketing/shared/models": ["libs/shared/models/src/index.ts"]
-    }
+    },
+    "typeRoots": ["node_modules/@types", "types"],
+    "types": ["@ory/permission-namespace-types"]
   },
   "exclude": ["node_modules", "tmp"],
   "ts-node": {

@@ -12,6 +12,7 @@ import {
 import { CURRENT_USER_KEY } from '@ticketing/shared/constants';
 import type { FastifyRequest } from 'fastify/types/request';
 
+import { OryError } from './ory.error';
 import { OryAuthenticationModuleOptions } from './ory.interfaces';
 
 @Injectable()
@@ -96,7 +97,8 @@ export class OryAuthenticationService {
       });
       return !!session?.identity;
     } catch (e) {
-      this.logger.error(e);
+      const error = new OryError(e);
+      this.logger.error(error);
       return false;
     }
   }

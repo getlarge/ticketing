@@ -4,10 +4,10 @@ import { ModuleMetadata, Type } from '@nestjs/common/interfaces';
 export interface IOryAuthenticationModuleOptions {
   kratosAdminApiPath: string;
   kratosPublicApiPath: string;
-  kratosAccessToken: string;
+  kratosAccessToken?: string;
   hydraAdminApiPath: string;
   hydraPublicApiPath: string;
-  hydraAccessToken: string;
+  hydraAccessToken?: string;
 }
 
 export interface OryAuthenticationModuleOptionsFactory {
@@ -44,7 +44,7 @@ export class OryAuthenticationModuleOptions
 export interface IOryPermissionsModuleOptions {
   ketoPublicApiPath: string;
   ketoAdminApiPath: string;
-  ketoAccessToken: string;
+  ketoAccessToken?: string;
 }
 
 export interface OryPermissionsModuleOptionsFactory {

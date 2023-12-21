@@ -16,6 +16,8 @@ volumes:
   mongo_volume:
   redis_volume:
   rabbitmq_volume:
+  kratos_postgres_volume:
+  keto_postgres_volume:
 
 services:
   # region Storage
@@ -363,6 +365,9 @@ services:
     profiles:
       - 'services-only'
       - 'dev'
+    # for docker on linux
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
   # endregion
 
@@ -403,13 +408,18 @@ services:
     profiles:
       - 'ory-only'
       - 'dev'
+    # for docker on linux
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
 
   kratos-postgres:
-    image: postgres:11.8
+    image: postgres:16
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratosdb
+    volumes:
+      - kratos_postgres_volume:/var/lib/postgresql/data
     networks:
       - ory
     profiles:
@@ -450,6 +460,9 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+      - type: bind
+        source: ./tools/ory/namespaces.ts
+        target: /home/ory/namespaces.ts
     environment:
       - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
@@ -472,6 +485,9 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+      - type: bind
+        source: ./tools/ory/namespaces.ts
+        target: /home/ory/namespaces.ts
     networks:
       - ory
     profiles:
@@ -479,11 +495,13 @@ services:
       - 'dev'
 
   keto-postgres:
-    image: postgres:11.8
+    image: postgres:16
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=accesscontroldb
+    volumes:
+      - keto_postgres_volume:/var/lib/postgresql/data
     networks:
       - ory
     profiles:
