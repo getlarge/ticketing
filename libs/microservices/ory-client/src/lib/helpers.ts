@@ -11,7 +11,44 @@ import {
   RelationTupleWithReplacements,
   ReplacementValues,
 } from '@ticketing/microservices/shared/relation-tuple-parser';
-import { get } from 'lodash-es';
+import { get, omitBy } from 'lodash-es';
+
+type RelationQueryFlat = Omit<RelationQuery, 'subject_set' | 'subject_id'> & {
+  subjectSetNamespace?: string;
+  subjectSetObject?: string;
+  subjectSetRelation?: string;
+  subjectId?: string;
+};
+
+type PermissionTuple = Pick<
+  RelationTuple,
+  'namespace' | 'object' | 'relation'
+> &
+  Partial<Pick<RelationTuple, 'subjectIdOrSet'>>;
+
+type PermissionTupleWithReplacements<T extends ReplacementValues> = Pick<
+  RelationTupleWithReplacements<T>,
+  'namespace' | 'object' | 'relation'
+> &
+  Partial<Pick<RelationTupleWithReplacements<T>, 'subjectIdOrSet'>>;
+
+const resolveTupleProperty = <
+  T extends ReplacementValues,
+  U extends Partial<RelationTuple | RelationTupleWithReplacements<T>>,
+>(
+  property: string,
+  tuple: U,
+  replacements?: U extends RelationTupleWithReplacements<T> ? T : never,
+): string | undefined => {
+  const factory = get(tuple, property);
+  if (typeof factory === 'function') {
+    return factory(replacements ?? ({} as T));
+  }
+  if (typeof factory === 'string') {
+    return factory;
+  }
+  return undefined;
+};
 
 export function createRelationQuery(
   tuple: Partial<RelationTuple>,
@@ -30,32 +67,71 @@ export function createRelationQuery<
   const { subjectIdOrSet } = tuple;
   const result: RelationQuery = {};
 
-  const resolveTupleProperty = (property: string): string | undefined => {
-    const factory = get(tuple, property);
-    if (typeof factory === 'function') {
-      return factory(replacements ?? ({} as T));
-    }
-    if (typeof factory === 'string') {
-      return factory;
-    }
-    return undefined;
-  };
-
-  result.namespace = resolveTupleProperty('namespace');
-  result.object = resolveTupleProperty('object');
-  result.relation = resolveTupleProperty('relation');
+  result.namespace = resolveTupleProperty('namespace', tuple, replacements);
+  result.object = resolveTupleProperty('object', tuple, replacements);
+  result.relation = resolveTupleProperty('relation', tuple, replacements);
 
   if (typeof subjectIdOrSet === 'object' && subjectIdOrSet) {
+    //          subjectId?: string;
+    //      subjectSetNamespace?: string;
+    //  subjectSetObject?: string;
+    //  subjectSetRelation?: string;
+
     result.subject_set = {
-      namespace: resolveTupleProperty('subjectIdOrSet.namespace') ?? '',
-      object: resolveTupleProperty('subjectIdOrSet.object') ?? '',
-      relation: resolveTupleProperty('subjectIdOrSet.relation') ?? '',
+      namespace:
+        resolveTupleProperty('subjectIdOrSet.namespace', tuple, replacements) ??
+        '',
+      object:
+        resolveTupleProperty('subjectIdOrSet.object', tuple, replacements) ??
+        '',
+      relation:
+        resolveTupleProperty('subjectIdOrSet.relation', tuple, replacements) ??
+        '',
     };
   } else {
-    result.subject_id = resolveTupleProperty('subjectIdOrSet') ?? '';
+    result.subject_id =
+      resolveTupleProperty('subjectIdOrSet', tuple, replacements) ?? '';
   }
 
-  return result;
+  return omitBy(result, (v) => !v);
+}
+
+export function createFlattenRelationQuery(
+  tuple: Partial<RelationTuple>,
+): RelationQueryFlat;
+export function createFlattenRelationQuery<T extends ReplacementValues>(
+  tuple: Partial<RelationTupleWithReplacements<T>>,
+  replacements: T,
+): RelationQueryFlat;
+export function createFlattenRelationQuery<
+  T extends ReplacementValues,
+  U extends Partial<RelationTuple | RelationTupleWithReplacements<T>>,
+>(
+  tuple: U,
+  replacements?: U extends RelationTupleWithReplacements<T> ? T : never,
+): RelationQueryFlat {
+  const { subjectIdOrSet } = tuple;
+  const result: RelationQueryFlat = {};
+
+  result.namespace = resolveTupleProperty('namespace', tuple, replacements);
+  result.object = resolveTupleProperty('object', tuple, replacements);
+  result.relation = resolveTupleProperty('relation', tuple, replacements);
+
+  if (typeof subjectIdOrSet === 'object' && subjectIdOrSet) {
+    result.subjectSetObject =
+      resolveTupleProperty('subjectIdOrSet.object', tuple, replacements) ?? '';
+    result.subjectSetNamespace =
+      resolveTupleProperty('subjectIdOrSet.namespace', tuple, replacements) ??
+      '';
+    result.subjectSetRelation =
+      resolveTupleProperty('subjectIdOrSet.relation', tuple, replacements) ??
+      '';
+  } else {
+    result.subjectId =
+      resolveTupleProperty('subjectIdOrSet', tuple, replacements) ?? '';
+  }
+
+  return omitBy(result, (v) => !v);
 }
 
 export function createRelationTuple(tuple: RelationTuple): Relationship;
@@ -113,18 +189,6 @@ export function createRelationTuple<
 
   return result;
 }
-
-type PermissionTuple = Pick<
-  RelationTuple,
-  'namespace' | 'object' | 'relation'
-> &
-  Partial<Pick<RelationTuple, 'subjectIdOrSet'>>;
-
-type PermissionTupleWithReplacements<T extends ReplacementValues> = Pick<
-  RelationTupleWithReplacements<T>,
-  'namespace' | 'object' | 'relation'
-> &
-  Partial<Pick<RelationTupleWithReplacements<T>, 'subjectIdOrSet'>>;
 
 export function createPermissionCheckQuery(
   tuple: PermissionTuple,

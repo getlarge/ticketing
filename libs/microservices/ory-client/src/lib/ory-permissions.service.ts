@@ -10,6 +10,7 @@ import { type RelationTuple } from '@ticketing/microservices/shared/relation-tup
 
 import {
   createExpandPermissionQuery,
+  createFlattenRelationQuery,
   createPermissionCheckQuery,
   createRelationQuery,
   createRelationTuple,
@@ -43,6 +44,8 @@ export class OryPermissionsService {
 
   createRelationQuery = createRelationQuery;
 
+  createFlattenRelationQuery = createFlattenRelationQuery;
+
   createRelationTuple = createRelationTuple;
 
   createPermissionCheckQuery = createPermissionCheckQuery;
@@ -68,7 +71,7 @@ export class OryPermissionsService {
 
   async deleteRelation(tuple: Partial<RelationTuple>): Promise<boolean> {
     try {
-      const relationQuery = this.createRelationQuery(tuple);
+      const relationQuery = this.createFlattenRelationQuery(tuple);
       await this.relationShipApi.deleteRelationships(relationQuery);
       return true;
     } catch (e) {
@@ -78,11 +81,16 @@ export class OryPermissionsService {
     }
   }
 
-  async getRelations(tuple: Partial<RelationTuple>): Promise<Relationships> {
+  async getRelations(
+    tuple: Partial<RelationTuple>,
+    pagination: { pageSize?: number; pageToken?: string } = {},
+  ): Promise<Relationships> {
     try {
-      const relationQuery = this.createRelationQuery(tuple);
-      const { data } =
-        await this.relationShipApi.getRelationships(relationQuery);
+      const relationQuery = this.createFlattenRelationQuery(tuple);
+      const { data } = await this.relationShipApi.getRelationships({
+        ...relationQuery,
+        ...pagination,
+      });
       return data;
     } catch (e) {
       const error = new OryPermissionError(e, tuple);
@@ -120,7 +128,6 @@ export class OryPermissionsService {
     } catch (e) {
       const error = new OryPermissionError(e, relationTuple);
       this.logger.error(error);
-      this.logger.error(e);
       return {
         type: 'unspecified',
       };
