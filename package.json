@@ -57,7 +57,7 @@
     "docker:deps:log": "docker compose -p ticketing logs -f --tail=100",
     "docker:ory:up": "docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile ory-only up -d",
     "docker:ory:down": "docker compose -f docker-compose.yaml -p ticketing --env-file .env --profile ory-only down",
-    "docker:ory:clean": "docker volume rm ticketing_kratos_sqlite_volume",
+    "docker:ory:clean": "docker volume rm ticketing_keto_postgres_volume ; docker volume rm ticketing_kratos_postgres_volume",
     "k8s:jwt-secret": "kubectl create secret generic jwt-secret --from-env-file ./keys/.env",
     "k8s:stripe-secret": "kubectl create secret generic stripe-secret --from-env-file ./infra/k8s/apps/.env.stripe",
     "k8s:dev:deps": "skaffold dev --module deps --port-forward",

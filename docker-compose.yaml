@@ -16,6 +16,8 @@ volumes:
   mongo_volume:
   redis_volume:
   rabbitmq_volume:
+  kratos_postgres_volume:
+  keto_postgres_volume:
 
 services:
   # region Storage
@@ -411,11 +413,13 @@ services:
     #   - "host.docker.internal:host-gateway"
 
   kratos-postgres:
-    image: postgres:11.8
+    image: postgres:16
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratosdb
+    volumes:
+      - kratos_postgres_volume:/var/lib/postgresql/data
     networks:
       - ory
     profiles:
@@ -491,11 +495,13 @@ services:
       - 'dev'
 
   keto-postgres:
-    image: postgres:11.8
+    image: postgres:16
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=accesscontroldb
+    volumes:
+      - keto_postgres_volume:/var/lib/postgresql/data
     networks:
       - ory
     profiles:
