@@ -16,7 +16,8 @@
         "tsConfig": "apps/permissions-manager/tsconfig.app.json",
         "assets": ["apps/permissions-manager/src/assets"],
         "isolatedConfig": true,
-        "webpackConfig": "apps/permissions-manager/webpack.config.cjs"
+        "webpackConfig": "apps/permissions-manager/webpack.config.cjs",
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {},
