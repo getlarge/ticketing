@@ -1,6 +1,27 @@
-import type { Namespace, Context } from '@ory/permission-namespace-types';
+import type {
+  Namespace,
+  Context,
+  SubjectSet,
+} from '@ory/permission-namespace-types';
 
 class User implements Namespace {}
+
+class Group implements Namespace {
+  related: {
+    members: User[];
+  };
+}
+
+class Moderation implements Namespace {
+  related: {
+    editors: SubjectSet<Group, 'members'>[];
+  };
+
+  permits = {
+    view: (ctx: Context) => this.related.editors.includes(ctx.subject),
+    edit: (ctx: Context) => this.related.editors.includes(ctx.subject),
+  };
+}
 
 class Ticket implements Namespace {
   related: {
