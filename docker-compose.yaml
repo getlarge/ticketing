@@ -513,6 +513,7 @@ services:
   # endregion
 
   # region Ory Oathkeeper
+
   # oathkeeper:
   #   image: oryd/oathkeeper:v0.40
   #   depends_on:

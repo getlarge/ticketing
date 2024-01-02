@@ -18,8 +18,8 @@ class Moderation implements Namespace {
   };
 
   permits = {
-    view: (ctx: Context) => this.related.editors.includes(ctx.subject),
     edit: (ctx: Context) => this.related.editors.includes(ctx.subject),
+    view: (ctx: Context) => this.permits.edit(ctx.subject),
   };
 }
 

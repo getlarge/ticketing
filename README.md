@@ -40,6 +40,9 @@ journey
 ## Architecture
 
 ```mermaid
+---
+title: Ticketing architecture
+---
 flowchart LR
 %% defining styles
     classDef app fill:#f7e081,stroke:#333,stroke-width:1px
@@ -103,60 +106,99 @@ flowchart LR
 
 ```
 
-## Models
+## Entities
 
 ```mermaid
+---
+title: Ticketing entities
+---
+erDiagram
+    User ||--o{ Ticket : owns
+    User ||--o{ Order : owns
+    User ||--o{ Payment : owns
+    Ticket ||--o| Order : "bound to"
+    Order ||--o| Payment : "bound to"
+
+    User {
+        int id PK
+        string email "unique"
+    }
+    Ticket {
+        string id PK
+        string title
+        float price
+        int version
+        string userId FK
+        string orderId FK "Optional"
+    }
+    Order {
+        string id PK
+        string status
+        int version
+        string ticketId FK
+        string userId FK
+    }
+    Payment {
+        string id PK
+        string orderId FK
+        string stripeId "Charge ID from Stripe"
+        int version
+    }
+```
+
+## Permissions
+
+Permissions are granted or denied using Ory Permissions (Keto) [policies](https://www.ory.sh/docs/keto/).
+
+```mermaid
+---
+title: Entities namespaces and relationships
+---
 classDiagram
-direction RL
-class User {
-    <<interface>>
-    +id : int
-    +email : string
-    -password : string
-}
+    note for User "Base entity for all users"
+    class User {
+        <<interface>>
+    }
 
-class Ticket {
-    <<interface>>
-    +id : string
-    +title : string
-    +price : float
-    +version : int
-    +userId : User
-    +orderId ?: Order
-}
+    note for Group "Users can be members of a group"
+    class Group {
+        <<interface>>
+        +related.members: User[]
+    }
 
-class Order {
-    <<interface>>
-    +id : string
-    +title : string
-    +status : OrderStatus
-    +version : int
-    +ticketId : Ticket
-    +userId : User
-}
+    note for Ticket "Users (in owners) are allowed to edit. \nHowever Ticket owners cannot order a ticket. \nImplicitly, anyone can view tickets"
+    class Ticket {
+        <<interface>>
+        +related.owners: User[]
+        +permits.edit(ctx: Context): boolean
+        +permits.order(ctx: Context): boolean
+    }
 
-class OrderStatus{
-    <<enumeration>>
-    Created
-    Cancelled
-    Complete
-    AwaitingPayment
-}
+    note for Order "Order is bound to a ticket. \nUsers (in owners) are allowed to view and edit. \n Order's Ticket owners are allowed to view."
+    class Order {
+        <<interface>>
+        +related.owners: User[]
+        +related.parents: Tickets[]
+        +permits.edit(ctx: Context): boolean
+        +permits.view(ctx: Context): boolean
+    }
 
-class Payment {
-    <<interface>>
-    +id : string
-    +orderId : string
-    +stripeId : OrderStatus
-    +version : int
-}
+    note for Payment "Payment is bound to a Ticket's Order. \nUsers (in owners) are allowed to view and edit. \n Payment can be viewed by Order's Ticket owners."
+    class Payment {
+        <<interface>>
+        +related.owners: User[]
+        +related.parents: Order[]
+        +permits.edit(ctx: Context): boolean
+        +permits.view(ctx: Context): boolean
+    }
 
-User "1" --> "*" Ticket
-User "1" --> "*" Order
-Ticket "1" --> "1" Order
-Order ..> OrderStatus
-Payment "1" --> "1" Order
-
+    note for Moderation "Only Users from specific Group can access Moderation.\n"
+    class Moderation {
+        <<interface>>
+        +related.editors: Group.members[]
+        +permits.edit(ctx: Context): boolean
+        +permits.view(ctx: Context): boolean
+    }
 ```
 
 ## Events
