@@ -155,46 +155,77 @@ Permissions are granted or denied using Ory Permissions (Keto) [policies](https:
 title: Entities namespaces and relationships
 ---
 classDiagram
-    note for User "Base entity for all users"
-    class User {
-        <<interface>>
+
+    NamespaceRelations *-- Namespace
+    NamespacePermissions *-- Namespace
+    Namespace <|-- User
+    Namespace <|-- Group
+    Namespace <|-- Ticket
+    Namespace <|-- Order
+    Namespace <|-- Payment
+    Namespace <|-- Moderation
+    Group o-- User : "members"
+    Ticket o-- User : "owners"
+    Order o-- User : "owners"
+    Order *-- Ticket : "parents"
+    Payment o-- User : "owners"
+    Payment *-- Order : "parents"
+    Moderation o-- Group : "editors"
+
+    class Context {
+      <<Interface>>
+      subject: never;
     }
 
-    note for Group "Users can be members of a group"
+    class NamespaceRelations {
+        <<Interface>>
+        +[relation: string]: INamespace[]
+    }
+
+    class NamespacePermissions {
+        <<Interface>>
+        +[method: string]: (ctx: Context) => boolean
+    }
+
+    class Namespace {
+        <<Interface>>
+        -related?: NamespaceRelations
+        -permits?: NamespacePermissions
+    }
+
+    class User {
+    }
+
+    note for Group "<i>Users</i> can be <b>members</b> of a <i>Group</i>"
     class Group {
-        <<interface>>
         +related.members: User[]
     }
 
-    note for Ticket "Users (in owners) are allowed to edit. \nHowever Ticket owners cannot order a ticket. \nImplicitly, anyone can view tickets"
+    note for Ticket "<i>Users</i> (in owners) are allowed to <b>edit</b>. \nHowever <i>Ticket</i> <b>owners</b> cannot <b>order</b> a Ticket. \nImplicitly, anyone can <b>view</b> Tickets"
     class Ticket {
-        <<interface>>
         +related.owners: User[]
         +permits.edit(ctx: Context): boolean
         +permits.order(ctx: Context): boolean
     }
 
-    note for Order "Order is bound to a ticket. \nUsers (in owners) are allowed to view and edit. \n Order's Ticket owners are allowed to view."
+    note for Order "<i>Order</i> is bound to a <i>Ticket</i>. \n<i>Users</i> (in <b>owners</b>) are allowed to <b>view and edit</b>. \n <i>Order's Ticket</i> <b>owners</b> are allowed to <b>view</b>."
     class Order {
-        <<interface>>
         +related.owners: User[]
         +related.parents: Tickets[]
         +permits.edit(ctx: Context): boolean
         +permits.view(ctx: Context): boolean
     }
 
-    note for Payment "Payment is bound to a Ticket's Order. \nUsers (in owners) are allowed to view and edit. \n Payment can be viewed by Order's Ticket owners."
+    note for Payment "<i>Payment</i> is bound to a Ticket's <i>Order</i>. \n<i>Users</i> (in <b>owners</b>) are allowed to <b>view and edit</b>. \n<i>Payment</i> can be <b>viewed</b> by <i>Order's Ticket</i> <b>owners</b>."
     class Payment {
-        <<interface>>
         +related.owners: User[]
         +related.parents: Order[]
         +permits.edit(ctx: Context): boolean
         +permits.view(ctx: Context): boolean
     }
 
-    note for Moderation "Only Users from specific Group can access Moderation.\n"
+    note for Moderation "Only <i>Users</i> from specific <i>Group</i> can <b>view and edit</b> <i>Moderation</i>.\n"
     class Moderation {
-        <<interface>>
         +related.editors: Group.members[]
         +permits.edit(ctx: Context): boolean
         +permits.view(ctx: Context): boolean
