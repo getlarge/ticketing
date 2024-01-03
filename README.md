@@ -163,14 +163,12 @@ classDiagram
     Namespace <|-- Ticket
     Namespace <|-- Order
     Namespace <|-- Payment
-    Namespace <|-- Moderation
     Group o-- User : "members"
     Ticket o-- User : "owners"
     Order o-- User : "owners"
     Order *-- Ticket : "parents"
     Payment o-- User : "owners"
     Payment *-- Order : "parents"
-    Moderation o-- Group : "editors"
 
     class Context {
       <<Interface>>
@@ -220,13 +218,6 @@ classDiagram
     class Payment {
         +related.owners: User[]
         +related.parents: Order[]
-        +permits.edit(ctx: Context): boolean
-        +permits.view(ctx: Context): boolean
-    }
-
-    note for Moderation "Only <i>Users</i> from specific <i>Group</i> can <b>view and edit</b> <i>Moderation</i>.\n"
-    class Moderation {
-        +related.editors: Group.members[]
         +permits.edit(ctx: Context): boolean
         +permits.view(ctx: Context): boolean
     }
