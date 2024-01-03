@@ -1,4 +1,6 @@
-export const APP_FOLDER = 'apps/expiration';
+import { join } from "node:path";
+
+export const APP_FOLDER = join('apps', 'expiration');
 export const DEFAULT_PORT = 3030;
 export const DEFAULT_SERVER_URL = `http://localhost:${DEFAULT_PORT}`;
 export const ORDERS_QUEUE = 'orders-queue';

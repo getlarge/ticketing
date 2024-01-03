@@ -25,7 +25,7 @@ import {
   ApiNestedQuery,
   ApiPaginatedDto,
   CurrentUser,
-  PermissionCheck,
+  PermissionChecks,
 } from '@ticketing/microservices/shared/decorators';
 import {
   OryAuthenticationGuard,
@@ -66,7 +66,7 @@ import { TicketsService } from './tickets.service';
 @ApiTags(Resources.TICKETS)
 @ApiExtraModels(PaginatedDto)
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(private readonly ticketsService: TicketsService) { }
 
   @UseGuards(OryAuthenticationGuard)
   @UsePipes(
@@ -132,20 +132,22 @@ export class TicketsController {
     return this.ticketsService.findById(id);
   }
 
-  @PermissionCheck((ctx) => {
-    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req, 'params.id');
-    return relationTupleToString({
-      namespace: PermissionNamespaces[Resources.TICKETS],
-      object: resourceId,
-      relation: 'owners',
-      subjectIdOrSet: {
-        namespace: PermissionNamespaces[Resources.USERS],
-        object: currentUserId,
-      },
-    });
-  })
+  @PermissionChecks(
+    (ctx) => {
+      const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+      const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+      const resourceId = get(req, 'params.id');
+      return relationTupleToString({
+        namespace: PermissionNamespaces[Resources.TICKETS],
+        object: resourceId,
+        relation: 'owners',
+        subjectIdOrSet: {
+          namespace: PermissionNamespaces[Resources.USERS],
+          object: currentUserId,
+        },
+      });
+    }
+  )
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @UsePipes(
     new ValidationPipe({

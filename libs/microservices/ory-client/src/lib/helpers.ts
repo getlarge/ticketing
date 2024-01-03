@@ -72,17 +72,26 @@ export function createRelationQuery<
   result.relation = resolveTupleProperty('relation', tuple, replacements);
 
   if (typeof subjectIdOrSet === 'object' && subjectIdOrSet) {
-    result.subject_set = {
-      namespace:
-        resolveTupleProperty('subjectIdOrSet.namespace', tuple, replacements) ??
-        '',
-      object:
-        resolveTupleProperty('subjectIdOrSet.object', tuple, replacements) ??
-        '',
-      relation:
-        resolveTupleProperty('subjectIdOrSet.relation', tuple, replacements) ??
-        '',
-    };
+    result.subject_set = omitBy(
+      {
+        namespace:
+          resolveTupleProperty(
+            'subjectIdOrSet.namespace',
+            tuple,
+            replacements,
+          ) ?? '',
+        object:
+          resolveTupleProperty('subjectIdOrSet.object', tuple, replacements) ??
+          '',
+        relation:
+          resolveTupleProperty(
+            'subjectIdOrSet.relation',
+            tuple,
+            replacements,
+          ) ?? '',
+      },
+      (v) => !v,
+    ) as unknown as RelationQuery['subject_set'];
   } else {
     result.subject_id =
       resolveTupleProperty('subjectIdOrSet', tuple, replacements) ?? '';
