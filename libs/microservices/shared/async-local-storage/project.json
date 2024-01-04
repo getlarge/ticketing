@@ -1,0 +1,25 @@
+{
+  "name": "microservices-shared-async-local-storage",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/microservices/shared/async-local-storage/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/microservices/shared/async-local-storage/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/async-local-storage/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:lib", "platform:server"]
+}
