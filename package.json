@@ -149,7 +149,6 @@
     "defekt": "^9.3.1",
     "dotenv": "16.3.1",
     "dotenv-expand": "10.0.0",
-    "fastify": "4.22.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "mongoose": "^6.1.0",
