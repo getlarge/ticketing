@@ -51,6 +51,44 @@
       "options": {
         "jestConfig": "apps/moderation/jest.config.ts"
       }
+    },
+    "refresh-pkg-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tools/tsconfig.json tools/utils/regenerate-pkg-json-cli.ts -p moderation -v"
+      }
+    },
+    "dotenv-push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/moderation && dotenv-vault push"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-pull": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node tools/utils/dotenv-pull.js -p moderation -v"]
+      },
+      "parallel": false,
+      "cwd": "."
+    },
+    "dotenv-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/moderation && dotenv-vault build"]
+      },
+      "cwd": ".",
+      "parallel": false
+    },
+    "dotenv-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cd apps/moderation && dotenv-vault keys"]
+      },
+      "cwd": ".",
+      "parallel": false
     }
   },
   "tags": ["scope:moderation", "type:app", "platform:server"]
