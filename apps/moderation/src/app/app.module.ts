@@ -1,6 +1,5 @@
 import {
   BeforeApplicationShutdown,
-  Inject,
   Logger,
   MiddlewareConsumer,
   Module,
@@ -13,7 +12,6 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import {
   AsyncLocalStorageModule,
-  AsyncLocalStorageService,
 } from '@ticketing/microservices/shared/async-local-storage';
 import { validate } from '@ticketing/microservices/shared/env';
 
