@@ -39,7 +39,7 @@ const clientFactory = (
     prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
     isGlobalPrefetchCount: false,
     queue: `${consumerService}_QUEUE`,
-    replyQueue: getReplyQueueName(consumerService, Services.TICKETS_SERVICE),
+    replyQueue: getReplyQueueName(consumerService, Services.ORDERS_SERVICE),
     queueOptions: {
       durable: true,
       exclusive: false,

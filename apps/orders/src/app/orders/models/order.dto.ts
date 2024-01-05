@@ -41,7 +41,7 @@ export class OrderDto extends Order {
 
   @ApiProperty({
     description:
-      'Order version represented by a number incremented at each updated',
+      'Order version represented by a number incremented at each update',
     required: true,
   })
   declare version: number;

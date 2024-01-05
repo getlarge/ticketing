@@ -27,7 +27,7 @@ export class TicketDto extends Ticket {
 
   @ApiProperty({
     description:
-      'Ticket version represented by a number incremented at each updated',
+      'Ticket version represented by a number incremented at each update',
     required: true,
   })
   declare version: number;

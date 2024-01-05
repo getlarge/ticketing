@@ -45,7 +45,12 @@ export class KratosMappings extends KeywordMappings {
 
   @Expose()
   @IsOptional()
-  @IsUrl(isUrlOptions)
+  @IsUrl({
+    require_tld: false,
+    require_protocol: true,
+    require_valid_protocol: true,
+    protocols: ['smtp', 'smtps'],
+  })
   courier_smtp_connection_uri?: string =
     'smtps://test:test@mailslurper:1025/?skip_ssl_verify=true';
 
