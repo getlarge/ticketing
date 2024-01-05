@@ -10,9 +10,8 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import {
-  AsyncLocalStorageModule,
-} from '@ticketing/microservices/shared/async-local-storage';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AsyncLocalStorageModule } from '@ticketing/microservices/shared/async-local-storage';
 import { validate } from '@ticketing/microservices/shared/env';
 
 import { AppController } from './app.controller';
@@ -29,19 +28,27 @@ import { RequestContextMiddleware } from './middlewares/request-context.middlewa
       validate: validate(EnvironmentVariables),
     }),
     AsyncLocalStorageModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '/',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule
   implements
-    OnModuleDestroy,
-    OnModuleInit,
-    OnApplicationBootstrap,
-    OnApplicationShutdown,
-    BeforeApplicationShutdown,
-    NestModule
-{
+  OnModuleDestroy,
+  OnModuleInit,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  BeforeApplicationShutdown,
+  NestModule {
   readonly logger = new Logger(AppModule.name);
 
   configure(consumer: MiddlewareConsumer): void {
