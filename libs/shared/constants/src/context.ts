@@ -1,6 +1,7 @@
 export enum Services {
   AUTH_SERVICE = 'AUTH_SERVICE',
   EXPIRATION_SERVICE = 'EXPIRATION_SERVICE',
+  MODERATION_SERVICE = 'MODERATION_SERVICE',
   ORDERS_SERVICE = 'ORDERS_SERVICE',
   PAYMENTS_SERVICE = 'PAYMENTS_SERVICE',
   TICKETS_SERVICE = 'TICKETS_SERVICE',
@@ -10,6 +11,7 @@ export enum Resources {
   EXPIRATION = 'expiration',
   HEALTH = 'health',
   GROUPS = 'groups',
+  MODERATIONS = 'moderations',
   ORDERS = 'orders',
   PAYMENTS = 'payments',
   TICKETS = 'tickets',
