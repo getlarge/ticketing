@@ -15,7 +15,6 @@ import { Ticket } from '../../tickets/schemas';
       return omit(ret, ['_id', '__v']);
     },
   },
-  versionKey: 'version',
 })
 export class Moderation implements ModerationAttrs {
   @Prop({ type: String, virtual: true })
@@ -47,9 +46,6 @@ export class Moderation implements ModerationAttrs {
     required: false,
   })
   rejectionReason?: string;
-
-  @Prop({ type: Number })
-  version: number;
 }
 
 export type ModerationDocument = Moderation & Document;
