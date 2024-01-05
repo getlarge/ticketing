@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
 import {
+  IsEnum,
   IsMongoId,
   IsNumber,
   IsOptional,
@@ -18,6 +19,12 @@ export const ticketConstraints = {
   },
 };
 
+export enum TicketStatus {
+  WaitingModeration = 'waiting_moderation',
+  Approved = 'approved',
+  Rejected = 'rejected',
+}
+
 export class Ticket {
   @Expose()
   @IsMongoId()
@@ -32,6 +39,10 @@ export class Ticket {
   @IsNumber()
   @Min(ticketConstraints.price.min)
   price: number;
+
+  @Expose()
+  @IsEnum(TicketStatus)
+  status: TicketStatus = TicketStatus.WaitingModeration;
 
   @Expose()
   @IsNumber()

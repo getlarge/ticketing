@@ -1,4 +1,4 @@
-import { Ticket } from '@ticketing/shared/models';
+import { Ticket, TicketStatus } from '@ticketing/shared/models';
 import { Types } from 'mongoose';
 
 export const mockTicket = (
@@ -14,5 +14,6 @@ export const mockTicket = (
   userId: opts.userId || new Types.ObjectId().toHexString(),
   version: opts.version || 0,
   price: opts.price || 1,
+  status: TicketStatus.WaitingModeration,
   title: opts.title || 'ticket title',
 });

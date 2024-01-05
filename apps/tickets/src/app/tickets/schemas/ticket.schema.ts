@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { TicketStatus } from '@ticketing/shared/models';
 import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { Ticket as TicketAttrs, ticketContraints } from '../models';
+
 @Schema({
   toJSON: {
     transform(doc: TicketDocument, ret: TicketAttrs) {
@@ -30,6 +32,14 @@ export class Ticket implements TicketAttrs {
 
   @Prop({ type: Number })
   version: number;
+
+  @Prop({
+    type: String,
+    required: true,
+    enum: Object.values(TicketStatus),
+    default: TicketStatus.WaitingModeration,
+  })
+  status: TicketStatus;
 
   @Prop({
     type: String,

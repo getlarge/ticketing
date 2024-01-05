@@ -336,7 +336,16 @@
           },
           "version": {
             "type": "number",
-            "description": "Ticket version represented by a number incremented at each updated"
+            "description": "Ticket version represented by a number incremented at each update"
+          },
+          "status": {
+            "type": "string",
+            "description": "Ticket status",
+            "enum": [
+              "waiting_moderation",
+              "approved",
+              "rejected"
+            ]
           },
           "userId": {
             "type": "string",
@@ -352,6 +361,7 @@
           "title",
           "price",
           "version",
+          "status",
           "userId"
         ]
       },
