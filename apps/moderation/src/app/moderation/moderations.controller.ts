@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Param, Patch, UseGuards, } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { PermissionChecks } from '@ticketing/microservices/shared/decorators';
-import { OryAuthenticationGuard, OryPermissionGuard } from '@ticketing/microservices/shared/guards';
+import {
+  OryAuthenticationGuard,
+  OryPermissionGuard,
+} from '@ticketing/microservices/shared/guards';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
@@ -22,7 +25,10 @@ const adminPermission = (currentUserId: string): string =>
     },
   });
 
-const moderationPermission = (currentUserId: string, moderationId: string): string =>
+const moderationPermission = (
+  currentUserId: string,
+  moderationId: string,
+): string =>
   relationTupleToString({
     namespace: PermissionNamespaces[Resources.MODERATIONS],
     object: moderationId,
@@ -35,7 +41,7 @@ const moderationPermission = (currentUserId: string, moderationId: string): stri
 
 @Controller(Resources.MODERATIONS)
 export class ModerationsController {
-  constructor(private readonly moderationService: ModerationsService) { }
+  constructor(private readonly moderationService: ModerationsService) {}
 
   // TODO: use PaginateQuery and PaginatedDto<ModerationDto>
   @PermissionChecks((ctx) => {
@@ -71,7 +77,7 @@ export class ModerationsController {
   @Patch(':id')
   updateById(
     @Param('id', ParseObjectId) id: string,
-    @Body() update: UpdateModerationDto
+    @Body() update: UpdateModerationDto,
   ): Promise<ModerationDto> {
     return this.moderationService.updateById(id, update);
   }

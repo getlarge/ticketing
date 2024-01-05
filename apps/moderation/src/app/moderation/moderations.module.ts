@@ -2,10 +2,14 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OryAuthenticationModule, OryPermissionsModule } from '@ticketing/microservices/ory-client';
+import {
+  OryAuthenticationModule,
+  OryPermissionsModule,
+} from '@ticketing/microservices/ory-client';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
 
+import { ContentGuardModule } from '../content-guard/content-guard.module';
 import { EnvironmentVariables } from '../env';
 import { QueueNames } from '../shared/queues';
 import { ModerationsController } from './moderations.controller';
@@ -18,12 +22,20 @@ import { Moderation, ModerationSchema } from './schemas';
     MongooseModule.forFeature([
       { name: Moderation.name, schema: ModerationSchema },
     ]),
+    ContentGuardModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
+        openAIApiKey: configService.get('OPENAI_API_KEY'),
+      }),
+    }),
     BullModule.registerQueueAsync({
       name: QueueNames.MODERATE_TICKET,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const { port, hostname, password } = new URL(
-          configService.get('REDIS_URL')
+          configService.get('REDIS_URL'),
         );
         const redisOptions: RedisOptions = {
           port: configService.get<number>('REDIS_PORT') || +port,
@@ -46,7 +58,7 @@ import { Moderation, ModerationSchema } from './schemas';
     OryAuthenticationModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (
-        configService: ConfigService<EnvironmentVariables, true>
+        configService: ConfigService<EnvironmentVariables, true>,
       ) => ({
         kratosAccessToken: configService.get('ORY_KRATOS_API_KEY'),
         kratosPublicApiPath: configService.get('ORY_KRATOS_PUBLIC_URL'),
@@ -59,7 +71,7 @@ import { Moderation, ModerationSchema } from './schemas';
     OryPermissionsModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (
-        configService: ConfigService<EnvironmentVariables, true>
+        configService: ConfigService<EnvironmentVariables, true>,
       ) => ({
         ketoAccessToken: configService.get('ORY_KETO_API_KEY'),
         ketoPublicApiPath: configService.get('ORY_KETO_PUBLIC_URL'),
@@ -70,4 +82,4 @@ import { Moderation, ModerationSchema } from './schemas';
   controllers: [ModerationsController],
   providers: [ModerationsProcessor, ModerationsService],
 })
-export class ModerationsModule { }
+export class ModerationsModule {}
