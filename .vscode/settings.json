@@ -9,5 +9,5 @@
     "**/Thumbs.db": true,
     "**/node_modules": true
   },
-  "vsicons.presets.nestjs": true
+  "prettier.prettierPath": "./node_modules/prettier"
 }

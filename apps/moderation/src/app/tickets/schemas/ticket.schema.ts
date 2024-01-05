@@ -51,7 +51,7 @@ export type TicketModel = Model<TicketDocument>;
 
 TicketSchema.methods.isModerated = async function (): Promise<boolean> {
   const moderationModel = this.db.model(
-    Moderation.name
+    Moderation.name,
   ) as Model<ModerationDocument>;
   const existingModeration = await moderationModel.findOne({
     ticket: this as TicketDocument,

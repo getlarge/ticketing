@@ -1,5 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Moderation, ModerationStatus, ModerationTicket } from '@ticketing/shared/models';
+import {
+  Moderation,
+  ModerationStatus,
+  ModerationTicket,
+} from '@ticketing/shared/models';
 
 export class ModerationTicketDto extends ModerationTicket {
   @ApiProperty({

@@ -29,8 +29,8 @@ export class TicketsService {
     @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
     @Inject('TICKETS_CLIENT') private ticketsClient: ClientProxy,
-    @Inject('ORDERS_CLIENT') private ordersClient: ClientProxy
-  ) { }
+    @Inject('ORDERS_CLIENT') private ordersClient: ClientProxy,
+  ) {}
 
   async create(body: Ticket): Promise<void> {
     const ticket = await this.ticketModel.create(body);
@@ -43,11 +43,11 @@ export class TicketsService {
 
   private emitEvent(
     pattern: Patterns.TicketApproved | Patterns.TicketRejected,
-    event: TicketApprovedEvent['data'] | TicketRejectedEvent['data']
+    event: TicketApprovedEvent['data'] | TicketRejectedEvent['data'],
   ): Observable<[string, string]> {
     return zip(
       this.ticketsClient.emit<string, typeof event>(pattern, event),
-      this.ordersClient.emit<string, typeof event>(pattern, event)
+      this.ordersClient.emit<string, typeof event>(pattern, event),
     );
   }
 
@@ -55,7 +55,7 @@ export class TicketsService {
   async onApproved(event: InternalTicketApprovedEvent): Promise<void> {
     this.logger.debug(`onApproved ${JSON.stringify(event)}`);
     await firstValueFrom(
-      this.emitEvent(Patterns.TicketApproved, event.ticket).pipe()
+      this.emitEvent(Patterns.TicketApproved, event.ticket).pipe(),
     );
   }
 
@@ -63,7 +63,7 @@ export class TicketsService {
   async onRejected(event: InternalTicketRejectedEvent): Promise<void> {
     this.logger.debug(`onRejected ${JSON.stringify(event)}`);
     await firstValueFrom(
-      this.emitEvent(Patterns.TicketApproved, event.ticket,).pipe()
+      this.emitEvent(Patterns.TicketApproved, event.ticket).pipe(),
     );
   }
 }

@@ -1,9 +1,19 @@
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsMongoId, IsNotEmptyObject, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmptyObject,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 import { Ticket } from './ticket';
 
-export class ModerationTicket implements Pick<Ticket, 'id' | 'title' | 'price' | 'version'> {
+export class ModerationTicket
+  implements Pick<Ticket, 'id' | 'title' | 'price' | 'version'>
+{
   @Expose()
   @IsMongoId()
   id: string;
@@ -21,7 +31,6 @@ export class ModerationTicket implements Pick<Ticket, 'id' | 'title' | 'price' |
   @IsOptional()
   version: number;
 }
-
 
 export enum ModerationStatus {
   Pending = 'pending',

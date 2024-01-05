@@ -18,7 +18,7 @@ import { TicketsMSController } from './tickets-ms.controller';
 
 const clientFactory = (
   configService: AppConfigService,
-  consumerService: Services
+  consumerService: Services,
 ): CustomClientOptions => {
   const options: AmqpOptions = {
     urls: [configService.get('RMQ_URL') as string],
@@ -82,4 +82,4 @@ const clientFactory = (
   providers: [TicketsService],
   exports: [],
 })
-export class TicketsModule { }
+export class TicketsModule {}

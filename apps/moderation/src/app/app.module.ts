@@ -50,19 +50,20 @@ import { TicketsModule } from './tickets/tickets.module';
       }),
     }),
     TicketsModule,
-    ModerationsModule
+    ModerationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule
   implements
-  OnModuleDestroy,
-  OnModuleInit,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  BeforeApplicationShutdown,
-  NestModule {
+    OnModuleDestroy,
+    OnModuleInit,
+    OnApplicationBootstrap,
+    OnApplicationShutdown,
+    BeforeApplicationShutdown,
+    NestModule
+{
   readonly logger = new Logger(AppModule.name);
 
   configure(consumer: MiddlewareConsumer): void {

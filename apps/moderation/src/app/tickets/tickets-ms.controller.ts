@@ -20,8 +20,8 @@ export class TicketsMSController {
   readonly logger = new Logger(TicketsMSController.name);
 
   constructor(
-    @Inject(TicketsService) private readonly ticketsService: TicketsService
-  ) { }
+    @Inject(TicketsService) private readonly ticketsService: TicketsService,
+  ) {}
 
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.TicketCreated, Transport.RMQ)
@@ -33,10 +33,10 @@ export class TicketsMSController {
         exceptionFactory: requestValidationErrorFactory,
         forbidUnknownValues: true,
         whitelist: true,
-      })
+      }),
     )
     data: Ticket,
-    @Ctx() context: RmqContext
+    @Ctx() context: RmqContext,
   ): Promise<void> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;

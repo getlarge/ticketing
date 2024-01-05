@@ -16,7 +16,9 @@ describe('AppController', () => {
   describe('getData', () => {
     it('should return "Hello Moderation API"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Hello Moderation API' });
+      expect(appController.getData()).toEqual({
+        message: 'Hello Moderation API',
+      });
     });
   });
 });

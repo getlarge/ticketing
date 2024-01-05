@@ -8,7 +8,7 @@ export const mockTicketEvent = (
     title?: string;
     price?: number;
     version?: number;
-  } = {}
+  } = {},
 ): Ticket => ({
   id: opts.id || new Types.ObjectId().toHexString(),
   userId: opts.userId || new Types.ObjectId().toHexString(),

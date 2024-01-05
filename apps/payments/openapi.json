@@ -1,37 +1,139 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/payments": {
+    "/api/orders": {
       "post": {
-        "operationId": "PaymentsController_create",
-        "summary": "Create payment request - Scope : payments:create_one",
-        "description": "Attempt to charge for a ticket order",
+        "operationId": "OrdersController_create",
+        "summary": "Create an order - Scope : orders:create_one",
+        "description": "Request creation of an order",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreatePaymentDto"
+                "$ref": "#/components/schemas/CreateOrderDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Charge created",
+            "description": "Order created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaymentDto"
+                  "$ref": "#/components/schemas/OrderDto"
                 }
               }
             }
           }
         },
-        "tags": [
-          "payments"
+        "tags": ["orders"],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "OrdersController_find",
+        "summary": "Find orders - Scope : orders:read_many",
+        "description": "Request user orders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Orders found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["orders"],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_findById",
+        "summary": "Find an order - Scope : orders:read_one",
+        "description": "Request an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
+        "responses": {
+          "200": {
+            "description": "Order found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["orders"],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "OrdersController_cancelById",
+        "summary": "Cancel an order - Scope : orders:delete_one",
+        "description": "Cancel an order by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["orders"],
         "security": [
           {
             "session": []
@@ -44,20 +146,20 @@
     }
   },
   "info": {
-    "title": "Payments API",
-    "description": "Ticketing payments API description",
+    "title": "Orders API",
+    "description": "Ticketing orders API description",
     "version": "0.2.0",
     "contact": {}
   },
   "tags": [
     {
-      "name": "payments",
+      "name": "orders",
       "description": ""
     }
   ],
   "servers": [
     {
-      "url": "http://localhost:3040"
+      "url": "http://localhost:3020"
     },
     {
       "url": "http://localhost:8080"
@@ -77,50 +179,80 @@
       }
     },
     "schemas": {
-      "CreatePaymentDto": {
+      "CreateOrderDto": {
         "type": "object",
         "properties": {
-          "orderId": {
+          "ticketId": {
             "type": "string",
-            "description": "Order for which payment is attempted"
-          },
-          "token": {
-            "type": "string",
-            "description": "Stripe token",
-            "example": "tok_visa"
+            "description": "Ticket to order"
           }
         },
-        "required": [
-          "orderId",
-          "token"
-        ]
+        "required": ["ticketId"]
       },
-      "PaymentDto": {
+      "TicketDto": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "description": "Charge internal identifier"
+            "description": "Ticket database identifier"
           },
-          "orderId": {
+          "title": {
             "type": "string",
-            "description": "Reference to the order"
+            "description": "Ticket title",
+            "minLength": 3,
+            "maxLength": 56
           },
-          "stripeId": {
-            "type": "string",
-            "description": "Reference to the stripe charge"
+          "price": {
+            "type": "number",
+            "description": "Ticket price",
+            "minimum": 0
           },
           "version": {
             "type": "number",
-            "description": "Payment version represented by a number incremented at each update"
+            "description": "Ticket version represented by a number incremented at each update"
           }
         },
-        "required": [
-          "id",
-          "orderId",
-          "stripeId",
-          "version"
-        ]
+        "required": ["id", "title", "price", "version"]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": ["created", "cancelled", "awaiting:payment", "complete"]
+      },
+      "OrderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order database identifier"
+          },
+          "ticket": {
+            "description": "Ticket ordered reference",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketDto"
+              }
+            ]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User who created the order"
+          },
+          "status": {
+            "description": "Order status",
+            "example": "complete",
+            "default": "created",
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Order expiration date"
+          },
+          "version": {
+            "type": "number",
+            "description": "Order version represented by a number incremented at each update"
+          }
+        },
+        "required": ["id", "ticket", "userId", "status", "version"]
       }
     }
   },

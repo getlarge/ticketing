@@ -21,10 +21,7 @@ import {
 } from '../shared/events';
 import { ModerateTicket, QueueNames } from '../shared/queues';
 import { UpdateModerationDto } from './models';
-import {
-  Moderation as ModerationSchema,
-  ModerationDocument,
-} from './schemas';
+import { Moderation as ModerationSchema, ModerationDocument } from './schemas';
 
 @Injectable()
 export class ModerationsService {
@@ -33,10 +30,11 @@ export class ModerationsService {
   constructor(
     @InjectModel(ModerationSchema.name)
     private moderationModel: Model<ModerationDocument>,
-    @Inject(OryPermissionsService) private readonly oryPermissionsService: OryPermissionsService,
+    @Inject(OryPermissionsService)
+    private readonly oryPermissionsService: OryPermissionsService,
     @InjectQueue(QueueNames.MODERATE_TICKET)
-    private readonly moderationProcessor: Queue<ModerateTicket>
-  ) { }
+    private readonly moderationProcessor: Queue<ModerateTicket>,
+  ) {}
 
   @OnEvent(TICKET_CREATED_EVENT, { async: true })
   async onTicketCreated(event: TicketCreatedEvent): Promise<void> {
@@ -49,7 +47,7 @@ export class ModerationsService {
       if (existingModeration) {
         // TODO: check whether moderation is pending,
         throw new Error(
-          `Ticket moderation already exists - ${existingModeration.id}`
+          `Ticket moderation already exists - ${existingModeration.id}`,
         );
       }
       const res = await this.moderationModel.create(
@@ -59,7 +57,7 @@ export class ModerationsService {
             status: ModerationStatus.Pending,
           },
         ],
-        { session }
+        { session },
       );
       await res[0].populate('ticket');
       const moderation = res[0].toJSON<Moderation>();
@@ -73,11 +71,13 @@ export class ModerationsService {
           namespace: PermissionNamespaces[Resources.GROUPS],
           object: 'admin',
           relation: 'members',
-        }
+        },
       );
-      await this.oryPermissionsService.createRelation(relationTupleWithAdminGroup);
+      await this.oryPermissionsService.createRelation(
+        relationTupleWithAdminGroup,
+      );
       this.logger.debug(
-        `Created relation ${relationTupleWithAdminGroup.toString()}`
+        `Created relation ${relationTupleWithAdminGroup.toString()}`,
       );
 
       const job = await this.moderationProcessor.add(
@@ -89,7 +89,7 @@ export class ModerationsService {
           jobId: moderation.id,
           removeOnComplete: true,
           removeOnFail: true,
-        }
+        },
       );
       this.logger.debug(`Created job ${job.id}`);
       return moderation;
@@ -124,7 +124,7 @@ export class ModerationsService {
       .findOne({
         _id: id,
       })
-      .populate('ticket')
+      .populate('ticket');
 
     if (!moderation) {
       throw new NotFoundException(`Moderation not found - ${id}`);
@@ -134,14 +134,14 @@ export class ModerationsService {
 
   async updateById(
     id: string,
-    update: UpdateModerationDto
+    update: UpdateModerationDto,
   ): Promise<Moderation> {
     const existingModeration = await this.moderationModel.findOne({
       _id: id,
     });
     existingModeration.set(update);
-    const moderation = await existingModeration.save()
-    await moderation.populate('ticket')
+    const moderation = await existingModeration.save();
+    await moderation.populate('ticket');
     return moderation.toJSON<Moderation>();
   }
 }

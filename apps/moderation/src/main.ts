@@ -27,7 +27,7 @@ async function bootstrap(): Promise<void> {
       trustProxy: true,
       bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 1048576,
     }),
-    { bufferLogs: true, abortOnError: false }
+    { bufferLogs: true, abortOnError: false },
   );
 
   const configService =
