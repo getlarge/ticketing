@@ -132,6 +132,7 @@ export class TicketsController {
     return this.ticketsService.findById(id);
   }
 
+  // TODO: check permission for ticket orderId if present
   @PermissionChecks(
     (ctx) => {
       const req = ctx.switchToHttp().getRequest<FastifyRequest>();

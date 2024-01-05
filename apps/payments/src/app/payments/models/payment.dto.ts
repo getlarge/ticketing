@@ -22,7 +22,7 @@ export class PaymentDto extends Payment {
 
   @ApiProperty({
     description:
-      'Payment version represented by a number incremented at each updated',
+      'Payment version represented by a number incremented at each update',
     required: true,
   })
   declare version: number;
