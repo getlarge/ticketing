@@ -19,7 +19,7 @@ class Moderation implements Namespace {
 
   permits = {
     edit: (ctx: Context) => this.related.editors.includes(ctx.subject),
-    view: (ctx: Context) => this.permits.edit(ctx.subject),
+    view: (ctx: Context) => this.permits.edit(ctx),
   };
 }
 
@@ -30,7 +30,7 @@ class Ticket implements Namespace {
 
   permits = {
     edit: (ctx: Context) => this.related.owners.includes(ctx.subject),
-    order: (ctx: Context) => !this.related.owners.includes(ctx.subject),
+    order: (ctx: Context) => !this.permits.edit(ctx),
   };
 }
 
