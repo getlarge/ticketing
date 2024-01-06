@@ -1,22 +1,29 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
-import { Moderation, ModerationStatus } from '@ticketing/shared/models';
+import {
+  Moderation,
+  ModerationStatus,
+  TicketStatus,
+} from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
 import { Model } from 'mongoose';
 
 import {
   type TicketApprovedEvent,
   type TicketCreatedEvent,
+  type TicketManualReviewRequiredEvent,
   type TicketRejectedEvent,
+  EventsMap,
   TICKET_APPROVED_EVENT,
   TICKET_CREATED_EVENT,
+  TICKET_MANUAL_REVIEW_REQUIRED_EVENT,
   TICKET_REJECTED_EVENT,
 } from '../shared/events';
 import { ModerateTicket, QueueNames } from '../shared/queues';
@@ -30,11 +37,80 @@ export class ModerationsService {
   constructor(
     @InjectModel(ModerationSchema.name)
     private moderationModel: Model<ModerationDocument>,
+    @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
     @Inject(OryPermissionsService)
     private readonly oryPermissionsService: OryPermissionsService,
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
   ) {}
+
+  private emitEventAsync<T extends keyof EventsMap>(
+    eventName: T,
+    event: EventsMap[T],
+  ): Promise<unknown> {
+    return this.eventEmitter.emitAsync(eventName, event);
+  }
+
+  async find(): Promise<Moderation[]> {
+    // TODO: use Paginator from nestjs-keyset-paginator
+    // ? only return moderations with status pending ?
+    const moderations = await this.moderationModel.find();
+    return moderations.map((moderation) => moderation.toJSON<Moderation>());
+  }
+
+  async findById(id: string): Promise<Moderation> {
+    const moderation = await this.moderationModel
+      .findOne({
+        _id: id,
+      })
+      .populate('ticket');
+
+    if (!moderation) {
+      throw new NotFoundException(`Moderation not found - ${id}`);
+    }
+    return moderation.toJSON<Moderation>();
+  }
+
+  async updateById(
+    id: string,
+    update: UpdateModerationDto,
+  ): Promise<Moderation> {
+    const existingModeration = await this.moderationModel.findOne({
+      _id: id,
+    });
+    existingModeration.set(update);
+    const moderation = await existingModeration.save();
+    await moderation.populate('ticket');
+    return moderation.toJSON<Moderation>();
+  }
+
+  async approveById(id: string): Promise<Moderation> {
+    const moderation = await this.findById(id);
+    await this.emitEventAsync(TICKET_APPROVED_EVENT, {
+      moderation: { ...moderation, status: ModerationStatus.Approved },
+      ticket: { ...moderation.ticket, status: TicketStatus.Approved },
+      ctx: {},
+    });
+    return { ...moderation, status: ModerationStatus.Approved };
+  }
+
+  async rejectById(id: string, rejectionReason: string): Promise<Moderation> {
+    const moderation = await this.findById(id);
+    await this.emitEventAsync(TICKET_REJECTED_EVENT, {
+      moderation: {
+        ...moderation,
+        status: ModerationStatus.Rejected,
+        rejectionReason,
+      },
+      ticket: { ...moderation.ticket, status: TicketStatus.Rejected },
+      ctx: {},
+    });
+    return {
+      ...moderation,
+      status: ModerationStatus.Rejected,
+      rejectionReason,
+    };
+  }
 
   @OnEvent(TICKET_CREATED_EVENT, { async: true })
   async onTicketCreated(event: TicketCreatedEvent): Promise<void> {
@@ -101,6 +177,7 @@ export class ModerationsService {
     this.logger.log(`onTicketApproved ${JSON.stringify(event)}`);
     await this.updateById(event.moderation.id, {
       status: ModerationStatus.Approved,
+      rejectionReason: undefined,
     });
   }
 
@@ -109,39 +186,18 @@ export class ModerationsService {
     this.logger.log(`onTicketRejected ${JSON.stringify(event)}`);
     await this.updateById(event.moderation.id, {
       status: ModerationStatus.Rejected,
+      rejectionReason: event.moderation.rejectionReason,
     });
   }
 
-  async find(): Promise<Moderation[]> {
-    // TODO: use Paginator from nestjs-keyset-paginator
-    // ? only return moderations with status pending ?
-    const moderations = await this.moderationModel.find();
-    return moderations.map((moderation) => moderation.toJSON<Moderation>());
-  }
-
-  async findById(id: string): Promise<Moderation> {
-    const moderation = await this.moderationModel
-      .findOne({
-        _id: id,
-      })
-      .populate('ticket');
-
-    if (!moderation) {
-      throw new NotFoundException(`Moderation not found - ${id}`);
-    }
-    return moderation.toJSON<Moderation>();
-  }
-
-  async updateById(
-    id: string,
-    update: UpdateModerationDto,
-  ): Promise<Moderation> {
-    const existingModeration = await this.moderationModel.findOne({
-      _id: id,
+  @OnEvent(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, { async: true })
+  async onTicketManualReviewRequired(
+    event: TicketManualReviewRequiredEvent,
+  ): Promise<void> {
+    this.logger.log(`onTicketManualReviewRequired ${JSON.stringify(event)}`);
+    await this.updateById(event.moderation.id, {
+      status: ModerationStatus.RequiresManualReview,
+      rejectionReason: event.moderation.rejectionReason,
     });
-    existingModeration.set(update);
-    const moderation = await existingModeration.save();
-    await moderation.populate('ticket');
-    return moderation.toJSON<Moderation>();
   }
 }

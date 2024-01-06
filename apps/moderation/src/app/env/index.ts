@@ -8,12 +8,13 @@ import {
   RedisEnvironmentVariables,
   RmqEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
-import { Exclude, Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { Exclude } from 'class-transformer';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Mixin } from 'ts-mixer';
+
+import { ModerationEnvironmentVariables } from './moderation-environment-variables';
 
 export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
@@ -28,6 +29,7 @@ class OryEnvironmentVariables extends Mixin(
 
 export class EnvironmentVariables extends Mixin(
   BaseEnvironmentVariables,
+  ModerationEnvironmentVariables,
   MongoEnvironmentVariables,
   RedisEnvironmentVariables,
   RmqEnvironmentVariables,
@@ -40,8 +42,4 @@ export class EnvironmentVariables extends Mixin(
   APP_NAME?: string = 'moderation';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
-
-  @Expose()
-  @IsString()
-  OPENAI_API_KEY?: string = '';
 }

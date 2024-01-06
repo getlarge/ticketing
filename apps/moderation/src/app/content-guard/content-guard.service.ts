@@ -4,7 +4,7 @@ import { firstValueFrom, map } from 'rxjs';
 
 import { ContentGuardModuleOptions } from './content-guard.interfaces';
 
-interface IOpenAIModerationResponse {
+export interface IOpenAIModerationResponse {
   id: `modr-${string}`;
   model: `text-moderation-${string}`;
   results: {

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ExecutionContext,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { PermissionChecks } from '@ticketing/microservices/shared/decorators';
 import {
   OryAuthenticationGuard,
@@ -11,11 +19,13 @@ import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
 
-import { ModerationDto, UpdateModerationDto } from './models';
+import { ModerationDto, RejectModerationDto } from './models';
 import { ModerationsService } from './moderations.service';
 
-const adminPermission = (currentUserId: string): string =>
-  relationTupleToString({
+const adminPermission = (ctx: ExecutionContext): string => {
+  const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+  const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+  return relationTupleToString({
     namespace: PermissionNamespaces[Resources.GROUPS],
     object: 'admin',
     relation: 'members',
@@ -24,12 +34,13 @@ const adminPermission = (currentUserId: string): string =>
       object: currentUserId,
     },
   });
+};
 
-const moderationPermission = (
-  currentUserId: string,
-  moderationId: string,
-): string =>
-  relationTupleToString({
+const moderationPermission = (ctx: ExecutionContext): string => {
+  const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+  const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+  const moderationId = get(req.params, 'id');
+  return relationTupleToString({
     namespace: PermissionNamespaces[Resources.MODERATIONS],
     object: moderationId,
     relation: 'editors',
@@ -38,47 +49,41 @@ const moderationPermission = (
       object: currentUserId,
     },
   });
+};
 
 @Controller(Resources.MODERATIONS)
 export class ModerationsController {
   constructor(private readonly moderationService: ModerationsService) {}
 
   // TODO: use PaginateQuery and PaginatedDto<ModerationDto>
-  @PermissionChecks((ctx) => {
-    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    return adminPermission(currentUserId);
-  })
+  @PermissionChecks(adminPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Get()
   find(): Promise<ModerationDto[]> {
     return this.moderationService.find();
   }
 
-  @PermissionChecks((ctx) => {
-    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
-    return moderationPermission(currentUserId, resourceId);
-  })
+  @PermissionChecks(moderationPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Get(':id')
   findById(@Param('id', ParseObjectId) id: string): Promise<ModerationDto> {
     return this.moderationService.findById(id);
   }
 
-  @PermissionChecks((ctx) => {
-    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
-    return moderationPermission(currentUserId, resourceId);
-  })
+  @PermissionChecks(moderationPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
-  @Patch(':id')
-  updateById(
+  @Patch(':id/approve')
+  approveById(@Param('id', ParseObjectId) id: string): Promise<ModerationDto> {
+    return this.moderationService.approveById(id);
+  }
+
+  @PermissionChecks(moderationPermission)
+  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
+  @Patch(':id/reject')
+  rejectById(
     @Param('id', ParseObjectId) id: string,
-    @Body() update: UpdateModerationDto,
+    @Body() { rejectionReason }: RejectModerationDto,
   ): Promise<ModerationDto> {
-    return this.moderationService.updateById(id, update);
+    return this.moderationService.rejectById(id, rejectionReason);
   }
 }

@@ -1,11 +1,11 @@
-import { Moderation, Ticket } from '@ticketing/shared/models';
+import { Moderation, ModerationTicket } from '@ticketing/shared/models';
 
 export enum QueueNames {
   MODERATE_TICKET = 'moderate-ticket',
 }
 
 export interface ModerateTicket {
-  ticket: Ticket;
+  ticket: ModerationTicket;
   moderation: Moderation;
   ctx?: Record<string, unknown>;
 }

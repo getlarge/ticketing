@@ -36,6 +36,7 @@ export enum ModerationStatus {
   Pending = 'pending',
   Approved = 'approved',
   Rejected = 'rejected',
+  RequiresManualReview = 'requires_manual_review',
 }
 
 export class Moderation {

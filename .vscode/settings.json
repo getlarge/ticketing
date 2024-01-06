@@ -9,5 +9,5 @@
     "**/Thumbs.db": true,
     "**/node_modules": true
   },
-  "prettier.prettierPath": "./node_modules/prettier"
+  "prettier.prettierPath": ""
 }
