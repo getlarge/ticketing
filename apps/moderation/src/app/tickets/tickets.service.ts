@@ -42,7 +42,16 @@ export class TicketsService {
       ticket: ticket.toJSON(),
       ctx: {},
     };
-    this.eventEmitter.emit(TICKET_CREATED_EVENT, event);
+    try {
+      const response = await this.eventEmitter.emitAsync(
+        TICKET_CREATED_EVENT,
+        event,
+      );
+      this.logger.debug(`after create ${JSON.stringify(response)}`);
+    } catch (e) {
+      await this.ticketModel.deleteOne({ _id: ticket.id });
+      throw e;
+    }
   }
 
   async updateById<S extends TicketStatus>(
@@ -58,37 +67,41 @@ export class TicketsService {
     return updatedTicket.toJSON() as TicketWithStatus<S>;
   }
 
-  private emitEvent(
+  private sendMessage(
     pattern: Patterns.TicketApproved | Patterns.TicketRejected,
     event: TicketApprovedEvent['data'] | TicketRejectedEvent['data'],
   ): Observable<[string, string]> {
     return zip(
-      this.ticketsClient.emit<string, typeof event>(pattern, event),
-      this.ordersClient.emit<string, typeof event>(pattern, event),
+      this.ticketsClient.send<string, typeof event>(pattern, event),
+      this.ordersClient.send<string, typeof event>(pattern, event),
     );
   }
 
-  @OnEvent(TICKET_APPROVED_EVENT, { async: true })
+  @OnEvent(TICKET_APPROVED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onApproved(event: InternalTicketApprovedEvent): Promise<void> {
     this.logger.debug(`onApproved ${JSON.stringify(event)}`);
     const ticket = await this.updateById(
       event.ticket.id,
       TicketStatus.Approved,
     );
-    await firstValueFrom(
-      this.emitEvent(Patterns.TicketApproved, ticket).pipe(),
-    );
+    await firstValueFrom(this.sendMessage(Patterns.TicketApproved, ticket));
   }
 
-  @OnEvent(TICKET_REJECTED_EVENT, { async: true })
+  @OnEvent(TICKET_REJECTED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onRejected(event: InternalTicketRejectedEvent): Promise<void> {
     this.logger.debug(`onRejected ${JSON.stringify(event)}`);
     const ticket = await this.updateById(
       event.ticket.id,
       TicketStatus.Rejected,
     );
-    await firstValueFrom(
-      this.emitEvent(Patterns.TicketApproved, ticket).pipe(),
-    );
+    await firstValueFrom(this.sendMessage(Patterns.TicketRejected, ticket));
   }
 }

@@ -13,7 +13,7 @@ import {
   TicketStatus,
 } from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import {
   type TicketApprovedEvent,
@@ -112,13 +112,17 @@ export class ModerationsService {
     };
   }
 
-  @OnEvent(TICKET_CREATED_EVENT, { async: true })
+  @OnEvent(TICKET_CREATED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onTicketCreated(event: TicketCreatedEvent): Promise<void> {
     this.logger.log(`onTicketCreated ${JSON.stringify(event)}`);
     await using manager = await transactionManager(this.moderationModel);
     await manager.wrap(async (session) => {
       const existingModeration = await this.moderationModel.findOne({
-        ticket: event.ticket,
+        'ticket.$id': event.ticket.id,
       });
       if (existingModeration) {
         // TODO: check whether moderation is pending,
@@ -129,7 +133,10 @@ export class ModerationsService {
       const res = await this.moderationModel.create(
         [
           {
-            ticket: event.ticket,
+            ticket: {
+              $ref: 'Ticket',
+              $id: Types.ObjectId.createFromHexString(event.ticket.id),
+            },
             status: ModerationStatus.Pending,
           },
         ],
@@ -172,7 +179,11 @@ export class ModerationsService {
     });
   }
 
-  @OnEvent(TICKET_APPROVED_EVENT, { async: true })
+  @OnEvent(TICKET_APPROVED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onTicketApproved(event: TicketApprovedEvent): Promise<void> {
     this.logger.log(`onTicketApproved ${JSON.stringify(event)}`);
     await this.updateById(event.moderation.id, {
@@ -181,7 +192,11 @@ export class ModerationsService {
     });
   }
 
-  @OnEvent(TICKET_REJECTED_EVENT, { async: true })
+  @OnEvent(TICKET_REJECTED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onTicketRejected(event: TicketRejectedEvent): Promise<void> {
     this.logger.log(`onTicketRejected ${JSON.stringify(event)}`);
     await this.updateById(event.moderation.id, {
@@ -190,7 +205,11 @@ export class ModerationsService {
     });
   }
 
-  @OnEvent(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, { async: true })
+  @OnEvent(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, {
+    async: true,
+    promisify: true,
+    suppressErrors: false,
+  })
   async onTicketManualReviewRequired(
     event: TicketManualReviewRequiredEvent,
   ): Promise<void> {

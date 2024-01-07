@@ -1,7 +1,7 @@
 import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
@@ -24,7 +24,7 @@ export class TicketsMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketCreated, Transport.RMQ)
+  @MessagePattern(Patterns.TicketApproved, Transport.RMQ)
   async onCreated(
     @Payload(
       new ValidationPipe({
@@ -49,13 +49,13 @@ export class TicketsMSController {
       channel.ack(message);
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketUpdated, Transport.RMQ)
+  @MessagePattern(Patterns.TicketUpdated, Transport.RMQ)
   async onUpdated(
     @Payload(
       new ValidationPipe({
@@ -80,7 +80,7 @@ export class TicketsMSController {
       channel.ack(message);
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }

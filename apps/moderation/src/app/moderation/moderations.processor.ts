@@ -34,11 +34,11 @@ export class ModerationsProcessor extends WorkerHost {
     super();
   }
 
-  private emitEvent<T extends keyof EventsMap>(
+  private async emitEventAsync<T extends keyof EventsMap>(
     eventName: T,
     event: EventsMap[T],
-  ): void {
-    this.eventEmitter.emit(eventName, event);
+  ): Promise<void> {
+    await this.eventEmitter.emitAsync(eventName, event);
   }
 
   async process(
@@ -50,7 +50,7 @@ export class ModerationsProcessor extends WorkerHost {
     const { status, rejectionReason } = await this.moderateTicket(job.data);
     switch (status) {
       case ModerationStatus.Approved:
-        this.emitEvent(TICKET_APPROVED_EVENT, {
+        await this.emitEventAsync(TICKET_APPROVED_EVENT, {
           ctx,
           moderation: {
             ...moderation,
@@ -60,7 +60,7 @@ export class ModerationsProcessor extends WorkerHost {
         });
         break;
       case ModerationStatus.Rejected:
-        this.emitEvent(TICKET_REJECTED_EVENT, {
+        await this.emitEventAsync(TICKET_REJECTED_EVENT, {
           ctx,
           moderation: {
             ...moderation,
@@ -72,7 +72,7 @@ export class ModerationsProcessor extends WorkerHost {
         break;
       case ModerationStatus.RequiresManualReview:
         //  TODO: notify moderation team
-        this.emitEvent(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, {
+        await this.emitEventAsync(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, {
           ctx,
           moderation: {
             ...moderation,

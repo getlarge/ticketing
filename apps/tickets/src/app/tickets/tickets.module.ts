@@ -20,10 +20,11 @@ import { CURRENT_USER_KEY, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { AppConfigService, EnvironmentVariables } from '../env';
-import { ORDERS_CLIENT } from '../shared/constants';
+import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
+import { TicketsMSController } from './tickets-ms.controller';
 
 const MongooseFeatures = MongooseModule.forFeatureAsync([
   {
@@ -37,37 +38,58 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
   },
 ]);
 
+const clientFactory = (
+  configService: AppConfigService,
+  consumerService: Services,
+): CustomClientOptions => {
+  const options: AmqpOptions = {
+    urls: [configService.get('RMQ_URL') as string],
+    persistent: true,
+    noAck: true,
+    prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
+    isGlobalPrefetchCount: false,
+    queue: `${consumerService}_QUEUE`,
+    replyQueue: getReplyQueueName(consumerService, Services.TICKETS_SERVICE),
+    queueOptions: {
+      durable: true,
+      exclusive: false,
+      autoDelete: false,
+    },
+    socketOptions: {
+      keepAlive: true,
+      heartbeatIntervalInSeconds: 30,
+      reconnectTimeInSeconds: 1,
+    },
+  };
+  return {
+    customClass: AmqpClient,
+    options,
+  };
+};
+
 const OrdersClient = ClientsModule.registerAsync([
   {
     name: ORDERS_CLIENT,
     inject: [ConfigService],
     useFactory: (configService: AppConfigService) => {
-      const options: AmqpOptions = {
-        urls: [configService.get('RMQ_URL') as string],
-        persistent: true,
-        noAck: true,
-        prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
-        isGlobalPrefetchCount: false,
-        queue: `${Services.ORDERS_SERVICE}_QUEUE`,
-        replyQueue: getReplyQueueName(
-          Services.ORDERS_SERVICE,
-          Services.TICKETS_SERVICE,
-        ),
-        queueOptions: {
-          durable: true,
-          exclusive: false,
-          autoDelete: false,
-        },
-        socketOptions: {
-          keepAlive: true,
-          heartbeatIntervalInSeconds: 30,
-          reconnectTimeInSeconds: 1,
-        },
-      };
-      const clientOptions: CustomClientOptions = {
-        customClass: AmqpClient,
-        options,
-      };
+      const clientOptions = clientFactory(
+        configService,
+        Services.ORDERS_SERVICE,
+      );
+      return { ...clientOptions, transport: Transport.RMQ };
+    },
+  },
+]);
+
+const ModerationsClient = ClientsModule.registerAsync([
+  {
+    name: MODERATIONS_CLIENT,
+    inject: [ConfigService],
+    useFactory: (configService: AppConfigService) => {
+      const clientOptions = clientFactory(
+        configService,
+        Services.MODERATION_SERVICE,
+      );
       return { ...clientOptions, transport: Transport.RMQ };
     },
   },
@@ -81,6 +103,7 @@ const OrdersClient = ClientsModule.registerAsync([
       session: true,
     }),
     OrdersClient,
+    ModerationsClient,
     OryAuthenticationModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (
@@ -105,7 +128,7 @@ const OrdersClient = ClientsModule.registerAsync([
       }),
     }),
   ],
-  controllers: [TicketsController],
+  controllers: [TicketsController, TicketsMSController],
   providers: [
     {
       provide: APP_FILTER,
@@ -115,6 +138,6 @@ const OrdersClient = ClientsModule.registerAsync([
     TicketsService,
     JwtStrategy,
   ],
-  exports: [MongooseFeatures, OrdersClient, TicketsService],
+  exports: [MongooseFeatures, OrdersClient, ModerationsClient, TicketsService],
 })
 export class TicketsModule {}

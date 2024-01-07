@@ -1,7 +1,7 @@
 import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
@@ -24,7 +24,7 @@ export class TicketsMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketCreated, Transport.RMQ)
+  @MessagePattern(Patterns.TicketCreated, Transport.RMQ)
   async onCreated(
     @Payload(
       new ValidationPipe({
@@ -48,8 +48,9 @@ export class TicketsMSController {
       await this.ticketsService.create(data);
       channel.ack(message);
     } catch (e) {
+      console.error(e);
       // TODO: requeue when error is timeout or connection error
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }

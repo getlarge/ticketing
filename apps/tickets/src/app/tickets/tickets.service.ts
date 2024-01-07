@@ -12,8 +12,6 @@ import {
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,
-  TicketCreatedEvent,
-  TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
 import {
   NextPaginationDto,
@@ -27,9 +25,9 @@ import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
-import { lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
-import { ORDERS_CLIENT } from '../shared/constants';
+import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
 import { CreateTicket, Ticket, UpdateTicket } from './models';
 import { Ticket as TicketSchema, TicketDocument } from './schemas';
 
@@ -42,15 +40,9 @@ export class TicketsService {
     private readonly ticketModel: Model<TicketDocument>,
     @Inject(OryPermissionsService)
     private readonly oryPermissionService: OryPermissionsService,
-    @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
+    @Inject(ORDERS_CLIENT) private readonly ordersClient: ClientProxy,
+    @Inject(MODERATIONS_CLIENT) private readonly moderationClient: ClientProxy,
   ) {}
-
-  emitEvent(
-    pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
-    event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
-  ): Observable<string> {
-    return this.client.emit(pattern, event);
-  }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
     await using manager = await transactionManager(this.ticketModel);
@@ -83,7 +75,9 @@ export class TicketsService {
       }
       this.logger.debug(`Created relation ${relationTuple}`);
 
-      await lastValueFrom(this.emitEvent(Patterns.TicketCreated, newTicket));
+      await lastValueFrom(
+        this.moderationClient.send(Patterns.TicketCreated, newTicket),
+      );
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
       return newTicket;
     });
@@ -134,6 +128,22 @@ export class TicketsService {
     return ticket.toJSON<Ticket>();
   }
 
+  /**
+   * @description this method is used to update the status of a ticket internally only
+   */
+  async updateStatusById(
+    id: string,
+    status: Ticket['status'],
+  ): Promise<Ticket> {
+    const ticket = await this.ticketModel.findOne({ _id: id });
+    if (isEmpty(ticket)) {
+      throw new NotFoundException(`Ticket ${id} not found`);
+    }
+    ticket.set({ status });
+    await ticket.save();
+    return ticket.toJSON<Ticket>();
+  }
+
   async updateById(id: string, update: UpdateTicket): Promise<Ticket> {
     await using manager = await transactionManager(this.ticketModel);
     const result = await manager.wrap(async (session) => {
@@ -150,7 +160,7 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
       );
       return updatedTicket;
     });
@@ -176,7 +186,7 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
       );
       return updatedTicket;
     });
@@ -202,7 +212,7 @@ export class TicketsService {
       await ticket.save({ session: manager.session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
+        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
       );
       return updatedTicket;
     });
