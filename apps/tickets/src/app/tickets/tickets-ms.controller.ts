@@ -62,8 +62,9 @@ export class TicketsMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Ticket,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{ ok: boolean }> {
     await this.updateStatusById(data, context);
+    return { ok: true };
   }
 
   @ApiExcludeEndpoint()
@@ -72,7 +73,8 @@ export class TicketsMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Ticket,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{ ok: boolean }> {
     await this.updateStatusById(data, context);
+    return { ok: true };
   }
 }

@@ -70,10 +70,10 @@ export class TicketsService {
   private sendMessage(
     pattern: Patterns.TicketApproved | Patterns.TicketRejected,
     event: TicketApprovedEvent['data'] | TicketRejectedEvent['data'],
-  ): Observable<[string, string]> {
+  ): Observable<[{ ok: boolean }, Ticket]> {
     return zip(
-      this.ticketsClient.send<string, typeof event>(pattern, event),
-      this.ordersClient.send<string, typeof event>(pattern, event),
+      this.ticketsClient.send(pattern, event),
+      this.ordersClient.send(pattern, event),
     );
   }
 

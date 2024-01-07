@@ -37,7 +37,7 @@ export class TicketsMSController {
     )
     data: Ticket,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{ ok: boolean }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -47,6 +47,7 @@ export class TicketsMSController {
     try {
       await this.ticketsService.create(data);
       channel.ack(message);
+      return { ok: true };
     } catch (e) {
       console.error(e);
       // TODO: requeue when error is timeout or connection error
