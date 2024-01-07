@@ -39,7 +39,7 @@ export class TicketsMSController {
 
   private async updateStatusById(
     data: Ticket,
-    @Ctx() context: RmqContext,
+    context: RmqContext,
   ): Promise<void> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;

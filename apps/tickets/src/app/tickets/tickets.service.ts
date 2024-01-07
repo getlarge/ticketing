@@ -9,7 +9,6 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
-  EventsMap,
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,

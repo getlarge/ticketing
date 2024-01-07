@@ -138,15 +138,19 @@ export class ModerationsProcessor extends WorkerHost {
         flagged ? 'flagged' : 'not flagged'
       } by OpenAI`,
     );
+    this.logger.verbose(categories, category_scores);
     if (flagged) {
       const thresholdConfig = this.categoryThresholds;
-      const uncertainCategories = Object.entries(category_scores).filter(
-        ([category, score]) => score < thresholdConfig[category],
-      );
+      const uncertainCategories = Object.entries(category_scores)
+        .filter(
+          ([category, score]) =>
+            categories[category] === true && score < thresholdConfig[category],
+        )
+        .map(([category]) => category);
       if (uncertainCategories.length) {
-        const rejectionReason = `Ticket title classification requires manual review : ${uncertainCategories
-          .map(([category]) => category)
-          .join(', ')}`;
+        const rejectionReason = `Ticket title classification requires manual review : ${uncertainCategories.join(
+          ', ',
+        )}`;
         this.logger.debug(rejectionReason);
         return {
           status: ModerationStatus.RequiresManualReview,

@@ -87,7 +87,7 @@ export class ModerationsController {
   @Patch(':id/reject')
   rejectById(
     @Param('id', ParseObjectId) id: string,
-    @Body() { rejectionReason }: RejectModerationDto,
+    @Body() { rejectionReason }: RejectModerationDto = {},
   ): Promise<ModerationDto> {
     return this.moderationService.rejectById(id, rejectionReason);
   }
