@@ -1,14 +1,13 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { NextPaginationDto } from '@ticketing/ng/open-api';
-import { Ticket } from '@ticketing/shared/models';
+import { NextPaginationDto, TicketDto } from '@ticketing/ng/open-api';
 
 import { Paginate, TicketFilter } from '../../models';
 
-export const featureAdapter = createEntityAdapter<Ticket>({
+export const featureAdapter = createEntityAdapter<TicketDto>({
   selectId: (model) => model.id,
 });
 
-export interface State extends EntityState<Ticket> {
+export interface State extends EntityState<TicketDto> {
   isLoading: boolean;
   error: string | undefined;
   currentFilter: TicketFilter;

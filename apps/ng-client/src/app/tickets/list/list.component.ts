@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
+import { TicketDto } from '@ticketing/ng/open-api';
 import { Resources } from '@ticketing/shared/constants';
-import { Ticket, User } from '@ticketing/shared/models';
+import { User } from '@ticketing/shared/models';
 import { Observable, of } from 'rxjs';
 
 import { TicketFilter } from '../../models';
@@ -23,7 +24,7 @@ import { UpdateTicketModalComponent } from '../update-ticket-modal/update-ticket
 })
 export class TicketListComponent implements OnInit {
   users$!: Observable<User[]>;
-  tickets$!: Observable<Ticket[]>;
+  tickets$!: Observable<TicketDto[]>;
   currentFilter$!: Observable<TicketFilter>;
   isLoading$!: Observable<boolean>;
 

@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActionsSubject, Store } from '@ngrx/store';
-import { UpdateTicketDto } from '@ticketing/ng/open-api';
-import { Ticket } from '@ticketing/shared/models';
+import { TicketDto, UpdateTicketDto } from '@ticketing/ng/open-api';
 import { Observable } from 'rxjs';
 
 import {
@@ -18,7 +17,7 @@ import {
 export class UpdateTicketModalComponent implements OnInit {
   @Input() ticketId!: string | null;
 
-  ticket$!: Observable<Ticket | undefined>;
+  ticket$!: Observable<TicketDto | undefined>;
 
   ticketPrice = 0;
   ticketTitle = '';

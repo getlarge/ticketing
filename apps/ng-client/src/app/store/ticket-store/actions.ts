@@ -3,9 +3,9 @@ import { Action } from '@ngrx/store';
 import {
   CreateTicketDto,
   NextPaginationDto,
+  TicketDto,
   UpdateTicketDto,
 } from '@ticketing/ng/open-api';
-import { Ticket } from '@ticketing/shared/models';
 
 import { Paginate, TicketFilter } from '../../models';
 
@@ -39,7 +39,7 @@ export class LoadTicketsAction implements Action {
 export class LoadTicketsSuccessAction implements Action {
   readonly type = ActionTypes.LOAD_TICKETS_SUCCESS;
   constructor(
-    public payload: { tickets: Ticket[]; next: NextPaginationDto[] }
+    public payload: { tickets: TicketDto[]; next: NextPaginationDto[] },
   ) {}
 }
 
@@ -55,7 +55,7 @@ export class LoadTicketAction implements Action {
 
 export class LoadTicketSuccessAction implements Action {
   readonly type = ActionTypes.LOAD_TICKET_SUCCESS;
-  constructor(public payload: { ticket: Ticket }) {}
+  constructor(public payload: { ticket: TicketDto }) {}
 }
 
 export class LoadTicketFailureAction implements Action {
@@ -70,7 +70,7 @@ export class CreateTicketAction implements Action {
 
 export class CreateTicketSuccessAction implements Action {
   readonly type = ActionTypes.CREATE_TICKET_SUCCESS;
-  constructor(public payload: { ticket: Ticket }) {}
+  constructor(public payload: { ticket: TicketDto }) {}
 }
 
 export class CreateTicketFailureAction implements Action {
@@ -90,7 +90,7 @@ export class UpdateTicketAction implements Action {
 
 export class UpdateTicketSuccessAction implements Action {
   readonly type = ActionTypes.UPDATE_TICKET_SUCCESS;
-  constructor(public payload: { ticket: Update<Ticket> }) {}
+  constructor(public payload: { ticket: Update<TicketDto> }) {}
 }
 
 export class UpdateTicketFailureAction implements Action {

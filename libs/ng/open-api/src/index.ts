@@ -20,5 +20,6 @@ export {
   ProjectionDto,
   SortDto,
   StartKeyDto,
+  TicketDto,
   UpdateTicketDto,
 } from './lib/generated/tickets/models';

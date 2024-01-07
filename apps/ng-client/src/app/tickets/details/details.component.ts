@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { AlertService } from '@ticketing/ng/alert';
+import { TicketDto } from '@ticketing/ng/open-api';
 import { Resources } from '@ticketing/shared/constants';
-import { Ticket } from '@ticketing/shared/models';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 import {
@@ -20,7 +20,7 @@ import {
   styleUrls: ['./details.component.css'],
 })
 export class TicketDetailsComponent implements OnInit, OnDestroy {
-  ticket$!: Observable<Ticket | undefined>;
+  ticket$!: Observable<TicketDto | undefined>;
   destroy$: Subject<boolean> = new Subject<boolean>();
   Resources = Resources;
 
@@ -71,13 +71,13 @@ export class TicketDetailsComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  purchaseTicket(ticket: Ticket): void {
+  purchaseTicket(ticket: TicketDto): void {
     this.store.dispatch(
       new OrderStoreActions.CreateOrderAction({ ticketId: ticket.id }),
     );
   }
 
-  isAvailable(ticket: Ticket): boolean {
+  isAvailable(ticket: TicketDto): boolean {
     return !ticket.orderId;
   }
 }

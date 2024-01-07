@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export interface TicketDto {
-
   /**
    * Ticket database identifier
    */
@@ -18,6 +17,11 @@ export interface TicketDto {
   price: number;
 
   /**
+   * Ticket status
+   */
+  status: 'waiting_moderation' | 'approved' | 'rejected';
+
+  /**
    * Ticket title
    */
   title: string;
@@ -28,7 +32,7 @@ export interface TicketDto {
   userId: string;
 
   /**
-   * Ticket version represented by a number incremented at each updated
+   * Ticket version represented by a number incremented at each update
    */
   version: number;
 }

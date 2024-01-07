@@ -4,9 +4,11 @@ import { featureAdapter, initialState, State } from './state';
 // eslint-disable-next-line max-lines-per-function
 export function featureReducer(
   state = initialState,
-  action: ActionsUnion
+  action: ActionsUnion,
 ): State {
   switch (action.type) {
+    case ActionTypes.CREATE_TICKET:
+    case ActionTypes.UPDATE_TICKET:
     case ActionTypes.LOAD_TICKETS: {
       return {
         ...state,
@@ -28,13 +30,6 @@ export function featureReducer(
         error: action.payload?.error,
       };
     }
-    case ActionTypes.CREATE_TICKET: {
-      return {
-        ...state,
-        isLoading: true,
-        error: undefined,
-      };
-    }
     case ActionTypes.CREATE_TICKET_SUCCESS: {
       return featureAdapter.addOne(action.payload.ticket, {
         ...state,
@@ -42,18 +37,12 @@ export function featureReducer(
         error: undefined,
       });
     }
+    case ActionTypes.UPDATE_TICKET_FAILURE:
     case ActionTypes.CREATE_TICKET_FAILURE: {
       return {
         ...state,
         isLoading: false,
         error: action.payload.error,
-      };
-    }
-    case ActionTypes.UPDATE_TICKET: {
-      return {
-        ...state,
-        isLoading: true,
-        error: undefined,
       };
     }
     case ActionTypes.UPDATE_TICKET_SUCCESS: {
@@ -62,13 +51,6 @@ export function featureReducer(
         isLoading: false,
         error: undefined,
       });
-    }
-    case ActionTypes.UPDATE_TICKET_FAILURE: {
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload.error,
-      };
     }
     case ActionTypes.SELECT_TICKET: {
       return {
