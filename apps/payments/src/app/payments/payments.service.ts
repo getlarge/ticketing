@@ -18,7 +18,7 @@ import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-pa
 import { Resources } from '@ticketing/shared/constants';
 import { OrderStatus, User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 
 import { Order as OrderSchema, OrderDocument } from '../orders/schemas';
 import { ORDERS_CLIENT } from '../shared/constants';
@@ -120,12 +120,14 @@ export class PaymentsService {
       );
       await this.createRelationShip(relationTupleWithUser);
 
-      // 7. emit payment:create event
+      // 7. send payment:create event
       await firstValueFrom(
-        this.client.emit<
-          PaymentCreatedEvent['name'],
-          PaymentCreatedEvent['data']
-        >(Patterns.PaymentCreated, payment),
+        this.client
+          .send<PaymentCreatedEvent['name'], PaymentCreatedEvent['data']>(
+            Patterns.PaymentCreated,
+            payment,
+          )
+          .pipe(timeout(5000)),
       );
       return payment;
     });

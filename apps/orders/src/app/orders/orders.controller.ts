@@ -56,7 +56,7 @@ export class OrdersController {
     return relationTupleToString({
       namespace: PermissionNamespaces[Resources.TICKETS],
       object: resourceId,
-      relation: 'owners',
+      relation: 'order',
       subjectIdOrSet: {
         namespace: PermissionNamespaces[Resources.USERS],
         object: currentUserId,

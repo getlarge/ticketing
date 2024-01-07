@@ -124,7 +124,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.createOrder = jest.fn();
       //
       await lastValueFrom(
-        orderRmqPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250)),
+        orderRmqPublisher.send(Patterns.OrderCreated, order).pipe(delay(250)),
       );
       expect(ticketsService.createOrder).not.toBeCalled();
       expect(exceptionFilter.catch).toBeCalled();
@@ -136,7 +136,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.createOrder = jest.fn();
       //
       await lastValueFrom(
-        orderRmqPublisher.emit(Patterns.OrderCreated, order).pipe(delay(250)),
+        orderRmqPublisher.send(Patterns.OrderCreated, order).pipe(delay(250)),
       );
       expect(ticketsService.createOrder).toBeCalled();
     }, 6000);
@@ -149,7 +149,7 @@ describe('OrdersMSController (e2e)', () => {
       ticketsService.cancelOrder = jest.fn();
       //
       await lastValueFrom(
-        orderRmqPublisher.emit(Patterns.OrderCancelled, order).pipe(delay(250)),
+        orderRmqPublisher.send(Patterns.OrderCancelled, order).pipe(delay(250)),
       );
       expect(ticketsService.cancelOrder).toBeCalled();
     }, 6000);

@@ -42,14 +42,13 @@ describe('OrdersService', () => {
     ordersService = app.get(OrdersService);
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     ticketModel = app.get<Model<TicketDocument>>(
-      getModelToken(TicketSchema.name)
+      getModelToken(TicketSchema.name),
     );
   });
 
   describe('expireById()', () => {
     it(`should expire a ticket, update status and send ${Patterns.OrderCancelled} event`, async () => {
       const ticketEvent = mockTicketEvent();
-      ticketEvent.userId;
       const ticket = await ticketModel.create({
         ...ticketEvent,
         _id: ticketEvent.id,
@@ -60,14 +59,14 @@ describe('OrdersService', () => {
         expiresAt: new Date(),
         status: OrderStatus.Created,
       });
-      ordersService.emitEvent = jest.fn();
+      ordersService['sendEvent'] = jest.fn();
       //
       const updatedOrder = await ordersService.expireById(order._id.toString());
       const updatedDBOrder = await orderModel.findById(order._id);
       expect(updatedDBOrder.status).toBe(OrderStatus.Cancelled);
-      expect(ordersService.emitEvent).toBeCalledWith(
+      expect(ordersService['sendEvent']).toBeCalledWith(
         Patterns.OrderCancelled,
-        updatedOrder
+        updatedOrder,
       );
     });
   });

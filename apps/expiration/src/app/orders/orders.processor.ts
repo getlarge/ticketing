@@ -33,12 +33,10 @@ export class OrdersProcessor {
     const { data } = job;
     this.logger.debug(`Expire order ${data.id}`);
     await lastValueFrom(
-      this.client
-        .emit<
-          ExpirationCompletedEvent['name'],
-          ExpirationCompletedEvent['data']
-        >(Patterns.ExpirationCompleted, data)
-        .pipe(),
+      this.client.emit<
+        ExpirationCompletedEvent['name'],
+        ExpirationCompletedEvent['data']
+      >(Patterns.ExpirationCompleted, data),
     );
   }
 

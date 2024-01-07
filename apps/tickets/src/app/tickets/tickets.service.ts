@@ -25,7 +25,7 @@ import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, timeout } from 'rxjs';
 
 import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
 import { CreateTicket, Ticket, UpdateTicket } from './models';
@@ -76,7 +76,9 @@ export class TicketsService {
       this.logger.debug(`Created relation ${relationTuple}`);
 
       await lastValueFrom(
-        this.moderationClient.send(Patterns.TicketCreated, newTicket),
+        this.moderationClient
+          .send(Patterns.TicketCreated, newTicket)
+          .pipe(timeout(5000)),
       );
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
       return newTicket;
@@ -160,7 +162,9 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
+        this.ordersClient
+          .send(Patterns.TicketUpdated, updatedTicket)
+          .pipe(timeout(5000)),
       );
       return updatedTicket;
     });
@@ -186,7 +190,9 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
+        this.ordersClient
+          .send(Patterns.TicketUpdated, updatedTicket)
+          .pipe(timeout(5000)),
       );
       return updatedTicket;
     });
@@ -212,7 +218,9 @@ export class TicketsService {
       await ticket.save({ session: manager.session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.ordersClient.send(Patterns.TicketUpdated, updatedTicket),
+        this.ordersClient
+          .send(Patterns.TicketUpdated, updatedTicket)
+          .pipe(timeout(5000)),
       );
       return updatedTicket;
     });

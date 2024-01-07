@@ -1,4 +1,10 @@
-import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Logger,
+  ValidationPipe,
+  ValidationPipeOptions,
+} from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -13,7 +19,16 @@ import { Ticket } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
+import { TicketDto } from './models';
 import { TicketsService } from './tickets.service';
+
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
 
 @Controller()
 export class TicketsMSController {
@@ -26,18 +41,10 @@ export class TicketsMSController {
   @ApiExcludeEndpoint()
   @MessagePattern(Patterns.TicketApproved, Transport.RMQ)
   async onCreated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Ticket,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -45,8 +52,9 @@ export class TicketsMSController {
       data,
     });
     try {
-      await this.ticketsService.create(data);
+      const ticket = await this.ticketsService.create(data);
       channel.ack(message);
+      return ticket;
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
@@ -57,18 +65,10 @@ export class TicketsMSController {
   @ApiExcludeEndpoint()
   @MessagePattern(Patterns.TicketUpdated, Transport.RMQ)
   async onUpdated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Ticket,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -76,8 +76,9 @@ export class TicketsMSController {
       data,
     });
     try {
-      await this.ticketsService.updateById(data.id, data);
+      const ticket = await this.ticketsService.updateById(data.id, data);
       channel.ack(message);
+      return ticket;
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);

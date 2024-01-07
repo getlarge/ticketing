@@ -3,7 +3,6 @@ import {
   ClassConstructor,
   Expose,
   Transform,
-  Type,
   plainToClass,
 } from 'class-transformer';
 import {
@@ -212,8 +211,9 @@ export class KratosMappings extends KeywordMappings {
   serve_public_base_url?: string = 'http://localhost:4433/';
 
   @Expose()
-  @Transform(({ value }) => value === 'true', { toClassOnly: true })
-  @Type(() => Boolean)
+  @Transform(({ obj, key }) => obj[key] === 'true' || obj[key] === true, {
+    toClassOnly: true,
+  })
   @IsOptional()
   @IsBoolean()
   serve_public_cors_enabled?: boolean = false;

@@ -178,12 +178,12 @@ describe('OrdersController (e2e)', () => {
         payload: order,
       });
       expect(statusCode).toBe(400);
-      expect(expirationRmqClient.emit).not.toBeCalled();
-      expect(paymentRmqClient.emit).not.toBeCalled();
-      expect(ticketRmqClient.emit).not.toBeCalled();
+      expect(expirationRmqClient.send).not.toBeCalled();
+      expect(paymentRmqClient.send).not.toBeCalled();
+      expect(ticketRmqClient.send).not.toBeCalled();
     });
 
-    it('should create an order with valid ticket and emit a "created" event', async () => {
+    it('should create an order with valid ticket and send a "created" event', async () => {
       const userId = new Types.ObjectId().toString('hex');
       const session = createSigninSession(app, {
         email: defaultUserEmail,
@@ -210,12 +210,12 @@ describe('OrdersController (e2e)', () => {
       expect(body.ticket).toEqual(expect.objectContaining({ id: ticketId }));
       orders = await orderModel.find({ ticket });
       expect(orders.length).toBe(1);
-      expect(expirationRmqClient.emit).toBeCalledWith(
+      expect(expirationRmqClient.send).toBeCalledWith(
         Patterns.OrderCreated,
         body,
       );
-      expect(paymentRmqClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
-      expect(ticketRmqClient.emit).toBeCalledWith(Patterns.OrderCreated, body);
+      expect(paymentRmqClient.send).toBeCalledWith(Patterns.OrderCreated, body);
+      expect(ticketRmqClient.send).toBeCalledWith(Patterns.OrderCreated, body);
     });
   });
 
@@ -341,7 +341,7 @@ describe('OrdersController (e2e)', () => {
   describe('/orders/:id (DELETE)', () => {
     const baseUrl = '/orders';
 
-    it('should cancel an order and return 200 and emit a "cancelled" event', async () => {
+    it('should cancel an order and return 200 and send a "cancelled" event', async () => {
       const userId = new Types.ObjectId().toString('hex');
       const session = createSigninSession(app, {
         email: defaultUserEmail,
@@ -370,15 +370,15 @@ describe('OrdersController (e2e)', () => {
       expect(body.ticket).toEqual(
         expect.objectContaining({ id: ticket._id.toString() }),
       );
-      expect(expirationRmqClient.emit).toBeCalledWith(
+      expect(expirationRmqClient.send).toBeCalledWith(
         Patterns.OrderCancelled,
         body,
       );
-      expect(paymentRmqClient.emit).toBeCalledWith(
+      expect(paymentRmqClient.send).toBeCalledWith(
         Patterns.OrderCancelled,
         body,
       );
-      expect(ticketRmqClient.emit).toBeCalledWith(
+      expect(ticketRmqClient.send).toBeCalledWith(
         Patterns.OrderCancelled,
         body,
       );
