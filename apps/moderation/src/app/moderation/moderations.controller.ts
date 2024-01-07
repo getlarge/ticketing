@@ -7,6 +7,9 @@ import {
   Patch,
   Query,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import { PermissionChecks } from '@ticketing/microservices/shared/decorators';
 import {
@@ -17,6 +20,7 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
+import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
 
@@ -56,6 +60,14 @@ const moderationPermission = (ctx: ExecutionContext): string => {
   });
 };
 
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
+
 @Controller(Resources.MODERATIONS)
 export class ModerationsController {
   constructor(private readonly moderationService: ModerationsService) {}
@@ -64,7 +76,10 @@ export class ModerationsController {
   @PermissionChecks(adminPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Get()
-  find(@Query() params?: FilterModerationsDto): Promise<ModerationDto[]> {
+  find(
+    @Query(new ValidationPipe(validationPipeOptions))
+    params?: FilterModerationsDto,
+  ): Promise<ModerationDto[]> {
     return this.moderationService.find(params);
   }
 
@@ -82,6 +97,7 @@ export class ModerationsController {
     return this.moderationService.approveById(id);
   }
 
+  @UsePipes(new ValidationPipe(validationPipeOptions))
   @PermissionChecks(moderationPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Patch(':id/reject')
