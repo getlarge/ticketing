@@ -42,7 +42,7 @@ describe('OrdersService', () => {
     ordersService = app.get(OrdersService);
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     ticketModel = app.get<Model<TicketDocument>>(
-      getModelToken(TicketSchema.name)
+      getModelToken(TicketSchema.name),
     );
   });
 
@@ -66,7 +66,7 @@ describe('OrdersService', () => {
       expect(updatedDBOrder.status).toBe(OrderStatus.Cancelled);
       expect(ordersService['sendEvent']).toBeCalledWith(
         Patterns.OrderCancelled,
-        updatedOrder
+        updatedOrder,
       );
     });
   });

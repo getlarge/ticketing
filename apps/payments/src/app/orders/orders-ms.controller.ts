@@ -1,7 +1,7 @@
 import { Controller, Inject, Logger } from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
@@ -23,7 +23,7 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCreated, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
@@ -34,16 +34,17 @@ export class OrdersMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.create(data);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
@@ -54,11 +55,12 @@ export class OrdersMSController {
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.cancel(data);
-    } finally {
       channel.ack(message);
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 }

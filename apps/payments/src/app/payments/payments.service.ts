@@ -120,9 +120,9 @@ export class PaymentsService {
       );
       await this.createRelationShip(relationTupleWithUser);
 
-      // 7. emit payment:create event
+      // 7. send payment:create event
       await firstValueFrom(
-        this.client.emit<
+        this.client.send<
           PaymentCreatedEvent['name'],
           PaymentCreatedEvent['data']
         >(Patterns.PaymentCreated, payment),
