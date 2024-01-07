@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { PermissionChecks } from '@ticketing/microservices/shared/decorators';
@@ -19,7 +20,11 @@ import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
 
-import { ModerationDto, RejectModerationDto } from './models';
+import {
+  FilterModerationsDto,
+  ModerationDto,
+  RejectModerationDto,
+} from './models';
 import { ModerationsService } from './moderations.service';
 
 const adminPermission = (ctx: ExecutionContext): string => {
@@ -59,8 +64,8 @@ export class ModerationsController {
   @PermissionChecks(adminPermission)
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Get()
-  find(): Promise<ModerationDto[]> {
-    return this.moderationService.find();
+  find(@Query() params?: FilterModerationsDto): Promise<ModerationDto[]> {
+    return this.moderationService.find(params);
   }
 
   @PermissionChecks(moderationPermission)

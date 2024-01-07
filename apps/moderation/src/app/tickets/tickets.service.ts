@@ -33,17 +33,16 @@ export class TicketsService {
   ) {}
 
   async create(body: Ticket): Promise<void> {
-    const ticket = await this.ticketModel.create(body);
+    const ticket = await this.ticketModel.create({
+      ...body,
+      _id: body.id,
+    });
     const event: InternalTicketCreatedEvent = {
       ticket: ticket.toJSON(),
       ctx: {},
     };
     try {
-      const response = await this.eventEmitter.emitAsync(
-        TICKET_CREATED_EVENT,
-        event,
-      );
-      this.logger.debug(`after create ${JSON.stringify(response)}`);
+      await this.eventEmitter.emitAsync(TICKET_CREATED_EVENT, event);
     } catch (e) {
       await this.ticketModel.deleteOne({ _id: ticket.id });
       throw e;

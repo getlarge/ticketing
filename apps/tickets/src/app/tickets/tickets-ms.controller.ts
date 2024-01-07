@@ -51,7 +51,7 @@ export class TicketsMSController {
       await this.ticketsService.updateStatusById(data.id, data.status);
       channel.ack(message);
     } catch (e) {
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }

@@ -10,7 +10,7 @@ export const IsThresholdDecorator = (): PropertyDecorator => {
 export class ModerationEnvironmentVariables {
   @decorate(Expose())
   @decorate(IsString())
-  OPENAI_API_KEY?: string = '';
+  OPENAI_API_KEY: string;
 
   @decorate(IsThresholdDecorator())
   MODERATION_HATE_THRESHOLD?: number = 0.5;

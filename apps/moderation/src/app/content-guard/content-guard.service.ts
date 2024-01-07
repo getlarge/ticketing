@@ -67,7 +67,7 @@ export class ContentGuardService implements OnModuleInit {
           .get<string>(
             'https://raw.githubusercontent.com/chucknorris-io/swear-words/master/en',
           )
-          .pipe(map((response) => response.data.split('\n'))),
+          .pipe(map((response) => response.data.trim().split('\n'))),
       );
     }
   }

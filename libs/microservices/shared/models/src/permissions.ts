@@ -7,6 +7,7 @@ export type PermissionObjects = {
 
 export const PermissionNamespaces = {
   [Resources.GROUPS]: 'Group',
+  [Resources.MODERATIONS]: 'Moderation',
   [Resources.ORDERS]: 'Order',
   [Resources.PAYMENTS]: 'Payment',
   [Resources.TICKETS]: 'Ticket',

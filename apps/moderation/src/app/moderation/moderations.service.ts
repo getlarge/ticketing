@@ -27,7 +27,7 @@ import {
   TICKET_REJECTED_EVENT,
 } from '../shared/events';
 import { ModerateTicket, QueueNames } from '../shared/queues';
-import { UpdateModerationDto } from './models';
+import { FilterModerationsDto, UpdateModerationDto } from './models';
 import { Moderation as ModerationSchema, ModerationDocument } from './schemas';
 
 @Injectable()
@@ -51,10 +51,11 @@ export class ModerationsService {
     return this.eventEmitter.emitAsync(eventName, event);
   }
 
-  async find(): Promise<Moderation[]> {
+  async find(params: FilterModerationsDto = {}): Promise<Moderation[]> {
     // TODO: use Paginator from nestjs-keyset-paginator
-    // ? only return moderations with status pending ?
-    const moderations = await this.moderationModel.find();
+    const moderations = await this.moderationModel.find({
+      ...(params?.status && { status: params.status }),
+    });
     return moderations.map((moderation) => moderation.toJSON<Moderation>());
   }
 
@@ -133,10 +134,7 @@ export class ModerationsService {
       const res = await this.moderationModel.create(
         [
           {
-            ticket: {
-              $ref: 'Ticket',
-              $id: Types.ObjectId.createFromHexString(event.ticket.id),
-            },
+            ticket: Types.ObjectId.createFromHexString(event.ticket.id),
             status: ModerationStatus.Pending,
           },
         ],
@@ -156,9 +154,14 @@ export class ModerationsService {
           relation: 'members',
         },
       );
-      await this.oryPermissionsService.createRelation(
+      const relationCreated = await this.oryPermissionsService.createRelation(
         relationTupleWithAdminGroup,
       );
+      if (!relationCreated) {
+        throw new Error(
+          `Could not create relation ${relationTupleWithAdminGroup.toString()}`,
+        );
+      }
       this.logger.debug(
         `Created relation ${relationTupleWithAdminGroup.toString()}`,
       );
