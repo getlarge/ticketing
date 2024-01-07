@@ -14,12 +14,8 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import {
-  ExpirationCompletedEvent,
-  Patterns,
-} from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { Payment } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
@@ -44,7 +40,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.ExpirationCompleted, Transport.RMQ)
   async onExpiration(
-    @Payload() data: ExpirationCompletedEvent['data'],
+    @Payload() data: EventsMap[Patterns.ExpirationCompleted],
     @Ctx() context: RmqContext,
   ): Promise<void> {
     const channel = context.getChannelRef() as Channel;
@@ -67,7 +63,7 @@ export class OrdersMSController {
   @MessagePattern(Patterns.PaymentCreated, Transport.RMQ)
   async onPaymentCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Payment,
+    data: EventsMap[Patterns.PaymentCreated],
     @Ctx() context: RmqContext,
   ): Promise<OrderDto> {
     const channel = context.getChannelRef() as Channel;

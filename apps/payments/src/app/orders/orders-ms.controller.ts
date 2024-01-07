@@ -7,8 +7,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { Patterns } from '@ticketing/microservices/shared/events';
-import { Order } from '@ticketing/shared/models';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
@@ -25,7 +24,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @MessagePattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
-    @Payload() data: Order,
+    @Payload() data: EventsMap[Patterns.OrderCreated],
     @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;
@@ -49,7 +48,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @MessagePattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
-    @Payload() data: Order,
+    @Payload() data: EventsMap[Patterns.OrderCancelled],
     @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;

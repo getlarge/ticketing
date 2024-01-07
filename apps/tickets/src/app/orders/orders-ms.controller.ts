@@ -13,9 +13,8 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { Patterns } from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { Order } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
@@ -42,7 +41,7 @@ export class OrdersMSController {
   @MessagePattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Order,
+    data: EventsMap[Patterns.OrderCreated],
     @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
@@ -66,7 +65,7 @@ export class OrdersMSController {
   @MessagePattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Order,
+    data: EventsMap[Patterns.OrderCancelled],
     @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;

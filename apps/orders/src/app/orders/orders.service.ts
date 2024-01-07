@@ -10,8 +10,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
-  OrderCancelledEvent,
-  OrderCreatedEvent,
+  EventsMap,
   Patterns,
   PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
@@ -56,9 +55,12 @@ export class OrdersService {
     );
   }
 
-  private sendEvent(
-    pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
-    event: OrderCreatedEvent['data'] | OrderCancelledEvent['data'],
+  private sendEvent<
+    P extends Patterns.OrderCreated | Patterns.OrderCancelled,
+    E extends EventsMap[P],
+  >(
+    pattern: P,
+    event: E,
   ): Observable<[Ticket, { ok: boolean }, { ok: boolean }]> {
     return zip(
       this.ticketsClient.send(pattern, event).pipe(timeout(5000)),

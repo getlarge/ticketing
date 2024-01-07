@@ -9,9 +9,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
+  EventsMap,
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,
+  TicketCreatedEvent,
+  TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
 import {
   NextPaginationDto,
@@ -77,7 +80,10 @@ export class TicketsService {
 
       await lastValueFrom(
         this.moderationClient
-          .send(Patterns.TicketCreated, newTicket)
+          .send<TicketCreatedEvent['name'], TicketCreatedEvent['data']>(
+            Patterns.TicketCreated,
+            newTicket,
+          )
           .pipe(timeout(5000)),
       );
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
@@ -163,7 +169,10 @@ export class TicketsService {
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
         this.ordersClient
-          .send(Patterns.TicketUpdated, updatedTicket)
+          .send<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
+            Patterns.TicketUpdated,
+            updatedTicket,
+          )
           .pipe(timeout(5000)),
       );
       return updatedTicket;
@@ -191,7 +200,10 @@ export class TicketsService {
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
         this.ordersClient
-          .send(Patterns.TicketUpdated, updatedTicket)
+          .send<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
+            Patterns.TicketUpdated,
+            updatedTicket,
+          )
           .pipe(timeout(5000)),
       );
       return updatedTicket;
@@ -205,7 +217,6 @@ export class TicketsService {
 
   async cancelOrder(event: OrderCancelledEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
-
     await using manager = await transactionManager(this.ticketModel);
     const result = await manager.wrap(async (session) => {
       const ticket = await this.ticketModel
@@ -219,7 +230,10 @@ export class TicketsService {
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
         this.ordersClient
-          .send(Patterns.TicketUpdated, updatedTicket)
+          .send<TicketUpdatedEvent['name'], TicketUpdatedEvent['data']>(
+            Patterns.TicketUpdated,
+            updatedTicket,
+          )
           .pipe(timeout(5000)),
       );
       return updatedTicket;

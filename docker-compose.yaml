@@ -471,6 +471,9 @@ services:
     restart: on-failure
     networks:
       - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
 
   keto:
     depends_on:
