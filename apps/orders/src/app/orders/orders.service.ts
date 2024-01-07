@@ -19,10 +19,10 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
-import { User } from '@ticketing/shared/models';
+import { Ticket, User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
-import { lastValueFrom, Observable, zip } from 'rxjs';
+import { lastValueFrom, Observable, timeout, zip } from 'rxjs';
 
 import type { EnvironmentVariables } from '../env';
 import {
@@ -56,14 +56,14 @@ export class OrdersService {
     );
   }
 
-  emitEvent(
+  private sendEvent(
     pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
     event: OrderCreatedEvent['data'] | OrderCancelledEvent['data'],
-  ): Observable<[string, string, string]> {
+  ): Observable<[Ticket, { ok: boolean }, { ok: boolean }]> {
     return zip(
-      this.ticketsClient.emit<string, typeof event>(pattern, event),
-      this.expirationClient.emit<string, typeof event>(pattern, event),
-      this.paymentsClient.emit<string, typeof event>(pattern, event),
+      this.ticketsClient.send(pattern, event).pipe(timeout(5000)),
+      this.expirationClient.send(pattern, event).pipe(timeout(5000)),
+      this.paymentsClient.send(pattern, event).pipe(timeout(5000)),
     );
   }
 
@@ -153,7 +153,7 @@ export class OrdersService {
       await this.createRelationShip(relationTupleWithUser);
       this.logger.debug(`Created relation ${relationTupleWithUser.toString()}`);
       // 7. Publish an event
-      await lastValueFrom(this.emitEvent(Patterns.OrderCreated, order));
+      await lastValueFrom(this.sendEvent(Patterns.OrderCreated, order));
       this.logger.debug(`Sent event ${Patterns.OrderCreated}`);
       return order;
     });
@@ -207,7 +207,7 @@ export class OrdersService {
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
+        this.sendEvent(Patterns.OrderCancelled, updatedOrder),
       );
       return updatedOrder;
     });
@@ -235,7 +235,7 @@ export class OrdersService {
 
       const relationTuple = new RelationTuple(
         PermissionNamespaces[Resources.ORDERS],
-        order.id,
+        updatedOrder.id,
         'parents',
         {
           namespace: PermissionNamespaces[Resources.TICKETS],
@@ -245,7 +245,7 @@ export class OrdersService {
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
+        this.sendEvent(Patterns.OrderCancelled, updatedOrder),
       );
       return updatedOrder;
     });
@@ -263,7 +263,7 @@ export class OrdersService {
     order.set({ status: OrderStatus.Complete });
     await order.save();
     const result = order.toJSON<Order>();
-    //? TODO: this.emitEvent(Patterns.OrderComplete, result);
+    //? TODO: this.sendEvent(Patterns.OrderComplete, result);
     return result;
   }
 }

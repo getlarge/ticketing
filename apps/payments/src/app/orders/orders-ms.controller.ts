@@ -1,7 +1,7 @@
 import { Controller, Inject, Logger } from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
@@ -23,42 +23,50 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCreated, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.create(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.ordersService.cancel(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 }

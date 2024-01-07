@@ -311,6 +311,10 @@ yarn docker:deps:up
 # start Nginx Proxy (for backend services and frontend app)
 yarn docker:proxy:up
 
+# Generate Ory network configuration from .env
+yarn ory:generate:kratos
+yarn ory:generate:keto
+
 # start Ory network (Kratos and Keto with database migrations)
 yarn docker:ory:up
 

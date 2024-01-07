@@ -8,7 +8,6 @@ import { loadEnv } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 import { MockClient } from '@ticketing/microservices/shared/testing';
 import { Model, Types } from 'mongoose';
-import { of } from 'rxjs';
 
 import { ORDERS_CLIENT } from '../src/app/shared/constants';
 import {
@@ -53,7 +52,7 @@ describe('TicketsService', () => {
   });
 
   beforeEach(() => {
-    ordersRmqPublisher.emit.mockReset();
+    ordersRmqPublisher.send.mockReset();
   });
 
   describe('create()', () => {
@@ -79,7 +78,7 @@ describe('TicketsService', () => {
       await ticketsService.create(ticket, currentUser);
       const tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketCreated,
         expect.anything(),
       );
@@ -115,14 +114,10 @@ describe('TicketsService', () => {
       });
       //
       await expect(
-        ticketsService.updateById(
-          ticket._id.toString(),
-          {
-            price: 200,
-            version: 200,
-          } as any,
-          currentUser,
-        ),
+        ticketsService.updateById(ticket._id.toString(), {
+          price: 200,
+          version: 200,
+        } as any),
       ).rejects.toThrow();
     });
 
@@ -136,12 +131,11 @@ describe('TicketsService', () => {
       const updatedTicket = await ticketsService.updateById(
         ticket._id.toString(),
         { price: 200 },
-        currentUser,
       );
       expect(updatedTicket.price).not.toEqual(ticket.price);
       expect(updatedTicket.price).toEqual(200);
       expect(updatedTicket.version).toEqual(ticket.version + 1);
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketUpdated,
         expect.anything(),
       );
@@ -159,13 +153,12 @@ describe('TicketsService', () => {
       const order = mockOrderEvent({
         ticket: { ...fakeTicket, id: ticket._id.toString() },
       });
-      ordersRmqPublisher.emit = jest.fn().mockReturnValue(of(''));
       //
       const updatedTicket = await ticketsService.createOrder(order);
       const foundTicket = await ticketModel.findOne({ _id: updatedTicket.id });
       expect(updatedTicket.orderId).toEqual(order.id);
       expect(foundTicket.orderId).toEqual(order.id);
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketUpdated,
         expect.anything(),
       );
@@ -183,13 +176,12 @@ describe('TicketsService', () => {
       const order = mockOrderEvent({
         ticket: { ...fakeTicket, id: ticket._id.toString() },
       });
-      ordersRmqPublisher.emit = jest.fn().mockReturnValue(of(''));
       //
       const updatedTicket = await ticketsService.cancelOrder(order);
       const foundTicket = await ticketModel.findOne({ _id: updatedTicket.id });
       expect(updatedTicket.orderId).toBeUndefined();
       expect(foundTicket.orderId).toBeUndefined();
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketUpdated,
         expect.anything(),
       );

@@ -4,6 +4,7 @@ import {
   Logger,
   UseFilters,
   ValidationPipe,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import {
   Ctx,
@@ -22,6 +23,14 @@ import type { Message } from 'amqplib';
 
 import { OrderService } from './orders.service';
 
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
+
 @UseFilters(GlobalErrorFilter)
 @Controller()
 export class OrdersMSController {
@@ -34,58 +43,51 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
+
     try {
       await this.orderService.createJob(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.orderService.cancelJob(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 }

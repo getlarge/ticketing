@@ -135,7 +135,7 @@ describe('TicketsMSController (e2e)', () => {
       //
       await lastValueFrom(
         ticketRmqPublisher
-          .emit(Patterns.TicketCreated, ticket)
+          .send(Patterns.TicketCreated, ticket)
           .pipe(delay(500)),
       );
       expect(ticketsService.create).not.toBeCalled();
@@ -149,7 +149,7 @@ describe('TicketsMSController (e2e)', () => {
       //
       await lastValueFrom(
         ticketRmqPublisher
-          .emit(Patterns.TicketCreated, ticket)
+          .send(Patterns.TicketCreated, ticket)
           .pipe(delay(500)),
       );
       expect(ticketsService.create).toBeCalled();
