@@ -56,14 +56,14 @@ export class OrdersService {
     );
   }
 
-  emitEvent(
+  private sendEvent(
     pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
     event: OrderCreatedEvent['data'] | OrderCancelledEvent['data'],
   ): Observable<[string, string, string]> {
     return zip(
-      this.ticketsClient.emit<string, typeof event>(pattern, event),
-      this.expirationClient.emit<string, typeof event>(pattern, event),
-      this.paymentsClient.emit<string, typeof event>(pattern, event),
+      this.ticketsClient.send<string, typeof event>(pattern, event),
+      this.expirationClient.send<string, typeof event>(pattern, event),
+      this.paymentsClient.send<string, typeof event>(pattern, event),
     );
   }
 
@@ -153,7 +153,7 @@ export class OrdersService {
       await this.createRelationShip(relationTupleWithUser);
       this.logger.debug(`Created relation ${relationTupleWithUser.toString()}`);
       // 7. Publish an event
-      await lastValueFrom(this.emitEvent(Patterns.OrderCreated, order));
+      await lastValueFrom(this.sendEvent(Patterns.OrderCreated, order));
       this.logger.debug(`Sent event ${Patterns.OrderCreated}`);
       return order;
     });
@@ -207,7 +207,7 @@ export class OrdersService {
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
+        this.sendEvent(Patterns.OrderCancelled, updatedOrder),
       );
       return updatedOrder;
     });
@@ -245,7 +245,7 @@ export class OrdersService {
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
-        this.emitEvent(Patterns.OrderCancelled, updatedOrder),
+        this.sendEvent(Patterns.OrderCancelled, updatedOrder),
       );
       return updatedOrder;
     });
@@ -263,7 +263,7 @@ export class OrdersService {
     order.set({ status: OrderStatus.Complete });
     await order.save();
     const result = order.toJSON<Order>();
-    //? TODO: this.emitEvent(Patterns.OrderComplete, result);
+    //? TODO: this.sendEvent(Patterns.OrderComplete, result);
     return result;
   }
 }

@@ -4,6 +4,7 @@ import {
   Logger,
   UseFilters,
   ValidationPipe,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import {
   Ctx,
@@ -22,6 +23,14 @@ import type { Message } from 'amqplib';
 
 import { OrderService } from './orders.service';
 
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
+
 @UseFilters(GlobalErrorFilter)
 @Controller()
 export class OrdersMSController {
@@ -34,15 +43,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
   ): Promise<void> {
@@ -63,15 +64,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
   ): Promise<void> {

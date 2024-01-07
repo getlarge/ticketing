@@ -38,7 +38,6 @@ export class OrdersProcessor {
           ExpirationCompletedEvent['name'],
           ExpirationCompletedEvent['data']
         >(Patterns.ExpirationCompleted, data)
-        .pipe(),
     );
   }
 
