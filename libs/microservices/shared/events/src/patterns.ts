@@ -1,4 +1,4 @@
-export enum Patterns {
+export const enum Patterns {
   TicketCreated = 'ticket.created',
   TicketUpdated = 'ticket.updated',
   OrderCreated = 'order.created',

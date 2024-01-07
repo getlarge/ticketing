@@ -9,6 +9,6 @@ export interface TicketCreatedEvent extends Event {
 }
 
 export interface TicketUpdatedEvent extends Event {
-  subject: Patterns.TicketUpdated;
+  name: Patterns.TicketUpdated;
   data: Ticket;
 }
