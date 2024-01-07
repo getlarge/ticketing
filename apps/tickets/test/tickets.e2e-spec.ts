@@ -162,7 +162,7 @@ describe('TicketsController (e2e)', () => {
 
       tickets = await ticketModel.find();
       expect(tickets.length).toBe(1);
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketCreated,
         body,
       );
@@ -358,7 +358,7 @@ describe('TicketsController (e2e)', () => {
       expect(body.id).toEqual(id);
       expect(body.title).toEqual(ticketUpdate.title);
       expect(body.price).toEqual(ticketUpdate.price);
-      expect(ordersRmqPublisher.emit).toBeCalledWith(
+      expect(ordersRmqPublisher.send).toBeCalledWith(
         Patterns.TicketUpdated,
         body,
       );

@@ -45,11 +45,11 @@ export class TicketsService {
     @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
-  emitEvent(
+  private sendEvent(
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
     event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
   ): Observable<string> {
-    return this.client.emit(pattern, event);
+    return this.client.send(pattern, event);
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
@@ -83,7 +83,7 @@ export class TicketsService {
       }
       this.logger.debug(`Created relation ${relationTuple}`);
 
-      await lastValueFrom(this.emitEvent(Patterns.TicketCreated, newTicket));
+      await lastValueFrom(this.sendEvent(Patterns.TicketCreated, newTicket));
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
       return newTicket;
     });
@@ -150,7 +150,7 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+        this.sendEvent(Patterns.TicketUpdated, updatedTicket),
       );
       return updatedTicket;
     });
@@ -176,7 +176,7 @@ export class TicketsService {
       await ticket.save({ session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket),
+        this.sendEvent(Patterns.TicketUpdated, updatedTicket),
       );
       return updatedTicket;
     });
@@ -202,7 +202,7 @@ export class TicketsService {
       await ticket.save({ session: manager.session });
       const updatedTicket = ticket.toJSON<Ticket>();
       await lastValueFrom(
-        this.emitEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
+        this.sendEvent(Patterns.TicketUpdated, updatedTicket).pipe(),
       );
       return updatedTicket;
     });

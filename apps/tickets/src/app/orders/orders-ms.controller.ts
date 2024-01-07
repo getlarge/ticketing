@@ -1,7 +1,13 @@
-import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Logger,
+  ValidationPipe,
+  ValidationPipeOptions,
+} from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
@@ -15,6 +21,14 @@ import type { Message } from 'amqplib';
 
 import { TicketsService } from '../tickets/tickets.service';
 
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
+
 @Controller()
 export class OrdersMSController {
   readonly logger = new Logger(OrdersMSController.name);
@@ -24,17 +38,9 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCreated, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
   ): Promise<void> {
@@ -49,23 +55,15 @@ export class OrdersMSController {
       channel.ack(message);
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
+  @MessagePattern(Patterns.OrderCancelled, Transport.RMQ)
   async onCancelled(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-        whitelist: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
   ): Promise<void> {
@@ -80,7 +78,7 @@ export class OrdersMSController {
       channel.ack(message);
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
-      channel.nack(message);
+      channel.nack(message, false, false);
       throw e;
     }
   }
