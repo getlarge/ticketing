@@ -27,7 +27,9 @@ export class OrdersMSController {
   async onCreated(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -37,6 +39,7 @@ export class OrdersMSController {
     try {
       await this.ordersService.create(data);
       channel.ack(message);
+      return { ok: true };
     } catch (e) {
       channel.nack(message, false, false);
       throw e;
@@ -48,7 +51,9 @@ export class OrdersMSController {
   async onCancelled(
     @Payload() data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -58,6 +63,7 @@ export class OrdersMSController {
     try {
       await this.ordersService.cancel(data);
       channel.ack(message);
+      return { ok: true };
     } catch (e) {
       channel.nack(message, false, false);
       throw e;

@@ -46,18 +46,23 @@ export class OrdersMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
+
     try {
       await this.orderService.createJob(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 
@@ -67,18 +72,22 @@ export class OrdersMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<{
+    ok: boolean;
+  }> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
     this.logger.debug(`received message on ${pattern}`, {
       data,
     });
-    // TODO: conditional ack
     try {
       await this.orderService.cancelJob(data);
-    } finally {
       channel.ack(message);
+      return { ok: true };
+    } catch (e) {
+      channel.nack(message, false, false);
+      throw e;
     }
   }
 }

@@ -19,10 +19,10 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
-import { User } from '@ticketing/shared/models';
+import { Ticket, User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
-import { lastValueFrom, Observable, zip } from 'rxjs';
+import { lastValueFrom, Observable, timeout, zip } from 'rxjs';
 
 import type { EnvironmentVariables } from '../env';
 import {
@@ -59,11 +59,11 @@ export class OrdersService {
   private sendEvent(
     pattern: Patterns.OrderCreated | Patterns.OrderCancelled,
     event: OrderCreatedEvent['data'] | OrderCancelledEvent['data'],
-  ): Observable<[string, string, string]> {
+  ): Observable<[Ticket, { ok: boolean }, { ok: boolean }]> {
     return zip(
-      this.ticketsClient.send<string, typeof event>(pattern, event),
-      this.expirationClient.send<string, typeof event>(pattern, event),
-      this.paymentsClient.send<string, typeof event>(pattern, event),
+      this.ticketsClient.send(pattern, event).pipe(timeout(5000)),
+      this.expirationClient.send(pattern, event).pipe(timeout(5000)),
+      this.paymentsClient.send(pattern, event).pipe(timeout(5000)),
     );
   }
 

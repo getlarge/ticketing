@@ -27,7 +27,7 @@ import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
-import { lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom, Observable, timeout } from 'rxjs';
 
 import { ORDERS_CLIENT } from '../shared/constants';
 import { CreateTicket, Ticket, UpdateTicket } from './models';
@@ -48,8 +48,8 @@ export class TicketsService {
   private sendEvent(
     pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
     event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
-  ): Observable<string> {
-    return this.client.send(pattern, event);
+  ): Observable<Ticket> {
+    return this.client.send(pattern, event).pipe(timeout(5000));
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {

@@ -19,6 +19,7 @@ import { Order } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
+import { TicketDto } from '../tickets/models';
 import { TicketsService } from '../tickets/tickets.service';
 
 const validationPipeOptions: ValidationPipeOptions = {
@@ -43,7 +44,7 @@ export class OrdersMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -51,8 +52,9 @@ export class OrdersMSController {
       data,
     });
     try {
-      await this.ticketsService.createOrder(data);
+      const ticket = await this.ticketsService.createOrder(data);
       channel.ack(message);
+      return ticket;
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
@@ -66,7 +68,7 @@ export class OrdersMSController {
     @Payload(new ValidationPipe(validationPipeOptions))
     data: Order,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -74,8 +76,9 @@ export class OrdersMSController {
       data,
     });
     try {
-      await this.ticketsService.cancelOrder(data);
+      const ticket = await this.ticketsService.cancelOrder(data);
       channel.ack(message);
+      return ticket;
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);

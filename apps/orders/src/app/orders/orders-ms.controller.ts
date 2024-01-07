@@ -17,6 +17,7 @@ import { Payment } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
+import { OrderDto } from './models';
 import { OrdersService } from './orders.service';
 
 @Controller()
@@ -45,7 +46,6 @@ export class OrdersMSController {
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
-      throw e;
     }
   }
 
@@ -62,7 +62,7 @@ export class OrdersMSController {
     )
     data: Payment,
     @Ctx() context: RmqContext,
-  ): Promise<void> {
+  ): Promise<OrderDto> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -70,8 +70,9 @@ export class OrdersMSController {
       data,
     });
     try {
-      await this.ordersService.complete(data);
+      const order = await this.ordersService.complete(data);
       channel.ack(message);
+      return order;
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
