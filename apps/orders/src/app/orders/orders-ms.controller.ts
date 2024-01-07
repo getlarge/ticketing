@@ -1,4 +1,10 @@
-import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Logger,
+  ValidationPipe,
+  ValidationPipeOptions,
+} from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
@@ -19,6 +25,13 @@ import type { Message } from 'amqplib';
 
 import { OrderDto } from './models';
 import { OrdersService } from './orders.service';
+
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+};
 
 @Controller()
 export class OrdersMSController {
@@ -52,14 +65,7 @@ export class OrdersMSController {
   @ApiExcludeEndpoint()
   @MessagePattern(Patterns.PaymentCreated, Transport.RMQ)
   async onPaymentCreated(
-    @Payload(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: requestValidationErrorFactory,
-        forbidUnknownValues: true,
-      }),
-    )
+    @Payload(new ValidationPipe(validationPipeOptions))
     data: Payment,
     @Ctx() context: RmqContext,
   ): Promise<OrderDto> {

@@ -235,7 +235,7 @@ export class OrdersService {
 
       const relationTuple = new RelationTuple(
         PermissionNamespaces[Resources.ORDERS],
-        order.id,
+        updatedOrder.id,
         'parents',
         {
           namespace: PermissionNamespaces[Resources.TICKETS],
