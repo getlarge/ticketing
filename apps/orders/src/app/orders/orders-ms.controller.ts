@@ -59,6 +59,7 @@ export class OrdersMSController {
     } catch (e) {
       // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
+      throw e;
     }
   }
 
