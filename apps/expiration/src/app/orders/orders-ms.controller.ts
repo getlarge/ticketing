@@ -14,7 +14,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { Patterns } from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { Order } from '@ticketing/shared/models';
@@ -44,7 +44,7 @@ export class OrdersMSController {
   @EventPattern(Patterns.OrderCreated, Transport.RMQ)
   async onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Order,
+    data: EventsMap[Patterns.OrderCreated],
     @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;

@@ -9,11 +9,10 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
+  EventsMap,
   OrderCancelledEvent,
   OrderCreatedEvent,
   Patterns,
-  TicketCreatedEvent,
-  TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
 import {
   NextPaginationDto,
@@ -45,10 +44,10 @@ export class TicketsService {
     @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
-  private sendEvent(
-    pattern: Patterns.TicketCreated | Patterns.TicketUpdated,
-    event: TicketCreatedEvent['data'] | TicketUpdatedEvent['data'],
-  ): Observable<Ticket> {
+  private sendEvent<
+    P extends Patterns.TicketCreated | Patterns.TicketUpdated,
+    E extends EventsMap[P],
+  >(pattern: P, event: E): Observable<Ticket> {
     return this.client.send(pattern, event).pipe(timeout(5000));
   }
 
@@ -189,7 +188,6 @@ export class TicketsService {
 
   async cancelOrder(event: OrderCancelledEvent['data']): Promise<Ticket> {
     const ticketId = event.ticket.id;
-
     await using manager = await transactionManager(this.ticketModel);
     const result = await manager.wrap(async (session) => {
       const ticket = await this.ticketModel
