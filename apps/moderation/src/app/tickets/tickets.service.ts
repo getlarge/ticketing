@@ -2,14 +2,10 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Patterns,
-  TicketApprovedEvent,
-  TicketRejectedEvent,
-} from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { Ticket, TicketStatus } from '@ticketing/shared/models';
 import type { Model } from 'mongoose';
-import { firstValueFrom, Observable, zip } from 'rxjs';
+import { firstValueFrom, lastValueFrom, Observable, timeout, zip } from 'rxjs';
 
 import {
   type TicketApprovedEvent as InternalTicketApprovedEvent,
@@ -67,14 +63,14 @@ export class TicketsService {
     return updatedTicket.toJSON() as TicketWithStatus<S>;
   }
 
-  private sendMessage(
-    pattern: Patterns.TicketApproved | Patterns.TicketRejected,
-    event: TicketApprovedEvent['data'] | TicketRejectedEvent['data'],
-  ): Observable<[{ ok: boolean }, Ticket]> {
-    return zip(
-      this.ticketsClient.send(pattern, event),
-      this.ordersClient.send(pattern, event),
-    );
+  private sendMessage<
+    R extends object,
+    P extends Patterns.TicketApproved | Patterns.TicketRejected =
+      | Patterns.TicketApproved
+      | Patterns.TicketRejected,
+    E extends EventsMap[P] = EventsMap[P],
+  >(client: ClientProxy, pattern: P, event: E): Observable<R> {
+    return client.send(pattern, event).pipe(timeout(5000));
   }
 
   @OnEvent(TICKET_APPROVED_EVENT, {
@@ -88,7 +84,20 @@ export class TicketsService {
       event.ticket.id,
       TicketStatus.Approved,
     );
-    await firstValueFrom(this.sendMessage(Patterns.TicketApproved, ticket));
+    await lastValueFrom(
+      zip(
+        this.sendMessage<{ ok: boolean }>(
+          this.ticketsClient,
+          Patterns.TicketApproved,
+          ticket,
+        ),
+        this.sendMessage<Ticket>(
+          this.ordersClient,
+          Patterns.TicketApproved,
+          ticket,
+        ),
+      ),
+    );
   }
 
   @OnEvent(TICKET_REJECTED_EVENT, {
@@ -102,6 +111,12 @@ export class TicketsService {
       event.ticket.id,
       TicketStatus.Rejected,
     );
-    await firstValueFrom(this.sendMessage(Patterns.TicketRejected, ticket));
+    await firstValueFrom(
+      this.sendMessage<{ ok: boolean }>(
+        this.ticketsClient,
+        Patterns.TicketRejected,
+        ticket,
+      ),
+    );
   }
 }

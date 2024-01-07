@@ -7,9 +7,8 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { Patterns } from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { Ticket } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
@@ -35,7 +34,7 @@ export class TicketsMSController {
         whitelist: true,
       }),
     )
-    data: Ticket,
+    data: EventsMap[Patterns.TicketCreated],
     @Ctx() context: RmqContext,
   ): Promise<{ ok: boolean }> {
     const channel = context.getChannelRef() as Channel;

@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import {
   Ctx,
-  EventPattern,
+  MessagePattern,
   Payload,
   RmqContext,
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { Patterns } from '@ticketing/microservices/shared/events';
+import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { Ticket } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
@@ -57,10 +57,10 @@ export class TicketsMSController {
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketApproved, Transport.RMQ)
+  @MessagePattern(Patterns.TicketApproved, Transport.RMQ)
   async onApproved(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Ticket,
+    data: EventsMap[Patterns.TicketApproved],
     @Ctx() context: RmqContext,
   ): Promise<{ ok: boolean }> {
     await this.updateStatusById(data, context);
@@ -68,10 +68,10 @@ export class TicketsMSController {
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.TicketRejected, Transport.RMQ)
+  @MessagePattern(Patterns.TicketRejected, Transport.RMQ)
   async onRejected(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Ticket,
+    data: EventsMap[Patterns.TicketApproved],
     @Ctx() context: RmqContext,
   ): Promise<{ ok: boolean }> {
     await this.updateStatusById(data, context);
