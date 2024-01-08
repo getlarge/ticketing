@@ -6,7 +6,7 @@
     "moduleResolution": "Bundler",
     "module": "esnext",
     "target": "es2022",
-    "types": ["node"]
+    "types": ["node", "redlock"]
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
   "include": ["src/**/*.ts"]
