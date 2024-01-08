@@ -1,4 +1,5 @@
 import { BullModule } from '@nestjs/bullmq';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -6,11 +7,12 @@ import {
   OryAuthenticationModule,
   OryPermissionsModule,
 } from '@ticketing/microservices/ory-client';
+import { redisStore } from 'cache-manager-ioredis-yet';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
 
 import { ContentGuardModule } from '../content-guard/content-guard.module';
-import { EnvironmentVariables } from '../env';
+import { AppConfigService, EnvironmentVariables } from '../env';
 import { QueueNames } from '../shared/queues';
 import { ModerationsController } from './moderations.controller';
 import { ModerationsProcessor } from './moderations.processor';
@@ -52,6 +54,30 @@ import { Moderation, ModerationSchema } from './schemas';
         return {
           connection: redisOptions,
           sharedConnection: true,
+        };
+      },
+    }),
+    CacheModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: AppConfigService) => {
+        const { port, hostname, password } = new URL(
+          configService.get('REDIS_URL'),
+        );
+        const redisOptions: RedisOptions = {
+          port: configService.get<number>('REDIS_PORT') || +port,
+          host: configService.get<string>('REDIS_HOSTNAME') || hostname,
+          db: configService.get<number>('REDIS_DB'),
+          password: configService.get<string>('REDIS_PASSWORD') || password,
+          retryStrategy(times: number): number {
+            return Math.min(times * 500, 2000);
+          },
+          reconnectOnError(): boolean | 1 | 2 {
+            return 1;
+          },
+        };
+        const store = await redisStore(redisOptions);
+        return {
+          store,
         };
       },
     }),

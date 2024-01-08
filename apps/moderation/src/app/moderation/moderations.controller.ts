@@ -1,3 +1,4 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
   ValidationPipeOptions,
@@ -21,6 +23,7 @@ import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { ModerationStatus } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
 
@@ -74,6 +77,21 @@ export class ModerationsController {
 
   // TODO: use PaginateQuery and PaginatedDto<ModerationDto>
   @PermissionChecks(adminPermission)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL((ctx) => {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const query = (get(req, 'query') as FilterModerationsDto) ?? {};
+    switch (query?.status) {
+      case ModerationStatus.Approved:
+      case ModerationStatus.Rejected:
+        return 60;
+      case ModerationStatus.Pending:
+      case ModerationStatus.RequiresManualReview:
+        return 10;
+      default:
+        return 5;
+    }
+  })
   @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
   @Get()
   find(

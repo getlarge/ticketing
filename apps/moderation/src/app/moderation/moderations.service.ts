@@ -1,4 +1,5 @@
 import { InjectQueue } from '@nestjs/bullmq';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,6 +14,7 @@ import {
   TicketStatus,
 } from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
+import type { Cache } from 'cache-manager';
 import { Model, Types } from 'mongoose';
 
 import {
@@ -42,6 +44,7 @@ export class ModerationsService {
     private readonly oryPermissionsService: OryPermissionsService,
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   private emitEventAsync<T extends keyof EventsMap>(
@@ -52,24 +55,38 @@ export class ModerationsService {
   }
 
   async find(params: FilterModerationsDto = {}): Promise<Moderation[]> {
-    // TODO: use Paginator from nestjs-keyset-paginator
     const moderations = await this.moderationModel.find({
       ...(params?.status && { status: params.status }),
     });
     return moderations.map((moderation) => moderation.toJSON<Moderation>());
   }
 
-  async findById(id: string): Promise<Moderation> {
-    const moderation = await this.moderationModel
-      .findOne({
-        _id: id,
-      })
-      .populate('ticket');
-
-    if (!moderation) {
-      throw new NotFoundException(`Moderation not found - ${id}`);
-    }
-    return moderation.toJSON<Moderation>();
+  findById(id: string): Promise<Moderation> {
+    return this.cacheManager.wrap(
+      `moderation:${id}`,
+      async () => {
+        const moderation = await this.moderationModel
+          .findOne({
+            _id: id,
+          })
+          .populate('ticket');
+        if (!moderation) {
+          throw new NotFoundException(`Moderation not found - ${id}`);
+        }
+        return moderation.toJSON<Moderation>();
+      },
+      (moderation) => {
+        switch (moderation?.status) {
+          case ModerationStatus.Approved:
+          case ModerationStatus.Rejected:
+            return 60 * 1000;
+          case ModerationStatus.Pending:
+          case ModerationStatus.RequiresManualReview:
+          default:
+            return 10 * 1000;
+        }
+      },
+    );
   }
 
   async updateById(
