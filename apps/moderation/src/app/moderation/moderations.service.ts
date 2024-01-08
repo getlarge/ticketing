@@ -83,7 +83,7 @@ export class ModerationsService {
           case ModerationStatus.Pending:
           case ModerationStatus.RequiresManualReview:
           default:
-            return 10 * 1000;
+            return 5 * 1000;
         }
       },
     );

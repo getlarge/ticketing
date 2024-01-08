@@ -87,7 +87,6 @@ export class ModerationsController {
         return 60;
       case ModerationStatus.Pending:
       case ModerationStatus.RequiresManualReview:
-        return 10;
       default:
         return 5;
     }
