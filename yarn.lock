@@ -20329,10 +20329,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:^0.1.13, reflect-metadata@npm:^0.1.2":
+"reflect-metadata@npm:^0.1.2":
   version: 0.1.14
   resolution: "reflect-metadata@npm:0.1.14"
   checksum: 155ad339319cec3c2d9d84719f730f8b6a6cd2a074733ec29dbae6c89d48a2914c7d07a2350212594f3aae160fa4da4f903e6512f27ceaf968443a7c692bcad0
+  languageName: node
+  linkType: hard
+
+"reflect-metadata@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "reflect-metadata@npm:0.2.1"
+  checksum: 772f552a544e04b999c1bf2c868225fef10032274e9d9e315bc3e7a687a504b8b115fa71966665b9619acfd323123a941f892b593250140da809330d41564181
   languageName: node
   linkType: hard
 
@@ -22456,7 +22463,7 @@ __metadata:
     pino-pretty: 10.2.3
     prettier: 3.1.1
     redoc-cli: ^0.13.0
-    reflect-metadata: ^0.1.13
+    reflect-metadata: ^0.2.1
     regenerator-runtime: 0.13.7
     rxjs: 7.8.1
     stripe: 8.222.0
