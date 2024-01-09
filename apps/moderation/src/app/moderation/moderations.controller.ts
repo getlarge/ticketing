@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Query,
+  UseFilters,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -27,6 +28,7 @@ import { ModerationStatus } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
 
+import { GenericExceptionFilter } from '../filters/exceptions.filter';
 import {
   FilterModerationsDto,
   ModerationDto,
@@ -72,6 +74,7 @@ const validationPipeOptions: ValidationPipeOptions = {
 };
 
 @Controller(Resources.MODERATIONS)
+@UseFilters(GenericExceptionFilter)
 export class ModerationsController {
   constructor(private readonly moderationService: ModerationsService) {}
 

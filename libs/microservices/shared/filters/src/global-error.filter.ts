@@ -1,5 +1,5 @@
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { ArgumentsHost } from '@nestjs/common/interfaces';
+import { ArgumentsHost, ExceptionFilter } from '@nestjs/common/interfaces';
 import { RmqContext, RpcException } from '@nestjs/microservices';
 import { ErrorResponse, isCustomError } from '@ticketing/shared/errors';
 import type { FastifyReply, FastifyRequest } from 'fastify';
@@ -35,7 +35,7 @@ function hasDetailsProperty(error: unknown): error is { details: any } {
 }
 
 @Catch()
-export class GlobalErrorFilter<T = unknown, R = unknown> {
+export class GlobalErrorFilter<T = unknown, R = unknown> implements ExceptionFilter<T> {
   protected logger = new Logger(GlobalErrorFilter.name);
 
   catch(exception: T, host: ArgumentsHost): void | Observable<R> {

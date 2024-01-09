@@ -8,6 +8,7 @@ import { GenericError } from './generic-error';
  * - A request that is being throttled.
  * - A request that is being rate limited.
  * - A request that is being blocked by a firewall.
+ * - A request that is being timed out.
  */
 export class RetriableError extends GenericError {
   public readonly name = 'RetriableError';
