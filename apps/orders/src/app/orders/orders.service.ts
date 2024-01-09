@@ -72,26 +72,14 @@ export class OrdersService {
   private async createRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    const relationShipCreated =
-      await this.oryPermissionsService.createRelation(relationTuple);
-    if (!relationShipCreated) {
-      throw new BadRequestException(
-        `Could not create relation ${relationTuple}`,
-      );
-    }
+    await this.oryPermissionsService.createRelation(relationTuple);
     this.logger.debug(`Created relation ${relationTuple.toString()}`);
   }
 
   private async deleteRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    const relationShipDeleted =
-      await this.oryPermissionsService.deleteRelation(relationTuple);
-    if (!relationShipDeleted) {
-      throw new BadRequestException(
-        `Could not delete relation ${relationTuple}`,
-      );
-    }
+    await this.oryPermissionsService.deleteRelation(relationTuple);
     this.logger.debug(`Deleted relation ${relationTuple.toString()}`);
   }
 

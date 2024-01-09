@@ -5,9 +5,6 @@ import { Mixin } from 'ts-mixer';
 
 export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
-// const __dirname = dirname(fileURLToPath(import.meta.url));
-// const pkgPath = join(__dirname, '..', '..', '..', '..', '..', 'package.json');
-
 export class EnvironmentVariables extends Mixin(OryKetoEnvironmentVariables) {
   @Exclude()
   // private pkg: { [key: string]: unknown; name?: string; version?: string } =

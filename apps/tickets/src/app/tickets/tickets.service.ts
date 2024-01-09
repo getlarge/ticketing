@@ -73,13 +73,7 @@ export class TicketsService {
           object: currentUser.id,
         },
       );
-      const relationShipCreated =
-        await this.oryPermissionService.createRelation(relationTuple);
-      if (!relationShipCreated) {
-        throw new BadRequestException(
-          `Could not create relation ${relationTuple}`,
-        );
-      }
+      await this.oryPermissionService.createRelation(relationTuple);
       this.logger.debug(`Created relation ${relationTuple}`);
 
       await lastValueFrom(this.sendEvent(Patterns.TicketCreated, newTicket));
