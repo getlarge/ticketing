@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { LazyModuleLoader, NestFactory } from '@nestjs/core';
 import { CustomStrategy } from '@nestjs/microservices';
 import {
   FastifyAdapter,
@@ -66,6 +66,44 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new GlobalInterceptor());
   app.useGlobalPipes(new GlobalPipe());
   app.useGlobalFilters(new GlobalFilter());
+
+  const lazyModuleLoader = app.get(LazyModuleLoader);
+  const { RmqManagerModule, RmqManagerService } = await import(
+    '@ticketing/microservices/shared/rmq'
+  );
+  const moduleRef = await lazyModuleLoader.load(() =>
+    RmqManagerModule.forRoot({
+      apiUrl: configService.get('RMQ_MANAGEMENT_API_URL'),
+      username: 'guest',
+      password: 'guest',
+    }),
+  );
+  const rmqManager = moduleRef.get(RmqManagerService);
+
+  const pattern = 'MODERATION_SERVICE$';
+  const deadLetterExchange = 'MODERATION_SERVICE_DEAD_LETTER_EXCHANGE';
+  const definition = {
+    'message-ttl': 30000,
+    'max-length': 1000,
+    'dead-letter-exchange': deadLetterExchange,
+  };
+  const policyName = 'MODERATION_SERVICE_DLX_POLICY';
+  const vhost = '/';
+  await rmqManager.setPolicy(
+    policyName,
+    {
+      pattern,
+      definition,
+    },
+    vhost,
+  );
+
+  await rmqManager.setExchange(
+    deadLetterExchange,
+    { autoDelete: false, durable: true },
+    'topic',
+    vhost,
+  );
 
   await microService.listen();
   await app.listen(DEFAULT_PORT, '0.0.0.0', () => {
