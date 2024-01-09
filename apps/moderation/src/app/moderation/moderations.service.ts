@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
+import {
+  isOryError,
+  OryPermissionsService,
+} from '@ticketing/microservices/ory-client';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
@@ -188,16 +191,9 @@ export class ModerationsService {
             relation: 'members',
           },
         );
-        const relationCreated = await this.oryPermissionsService.createRelation(
+        await this.oryPermissionsService.createRelation(
           relationTupleWithAdminGroup,
         );
-        if (!relationCreated) {
-          throw new AcceptableError(
-            `Could not create relation ${relationTupleWithAdminGroup.toString()}`,
-            HttpStatus.BAD_REQUEST,
-            TICKET_CREATED_EVENT,
-          );
-        }
         this.logger.debug(
           `Created relation ${relationTupleWithAdminGroup.toString()}`,
         );
@@ -227,6 +223,14 @@ export class ModerationsService {
         throw new RecoverableError(
           e.message,
           HttpStatus.SERVICE_UNAVAILABLE,
+          TICKET_CREATED_EVENT,
+        );
+      }
+      if (isOryError(e)) {
+        this.logger.error(e.getDetails());
+        throw new AcceptableError(
+          `Could not create relation`,
+          HttpStatus.BAD_REQUEST,
           TICKET_CREATED_EVENT,
         );
       }

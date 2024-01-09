@@ -43,13 +43,7 @@ export class PaymentsService {
   private async createRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    const relationShipCreated =
-      await this.oryPermissionsService.createRelation(relationTuple);
-    if (!relationShipCreated) {
-      throw new BadRequestException(
-        `Could not create relation ${relationTuple}`,
-      );
-    }
+    await this.oryPermissionsService.createRelation(relationTuple);
     this.logger.debug(`Created relation ${relationTuple.toString()}`);
   }
 

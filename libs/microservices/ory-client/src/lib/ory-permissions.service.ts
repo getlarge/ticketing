@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   Configuration,
   ExpandedPermissionTree,
@@ -15,11 +15,11 @@ import {
   createRelationQuery,
   createRelationTuple,
 } from './helpers';
-import { OryPermissionError } from './ory.error';
+import { OryError } from './ory.error';
 import { OryPermissionsModuleOptions } from './ory.interfaces';
 
 @Injectable()
-export class OryPermissionsService {
+export class OryPermissionsService implements OnModuleInit {
   readonly logger = new Logger(OryPermissionsService.name);
   private readonly relationShipApi: RelationshipApi;
   private readonly permissionApi: PermissionApi;
@@ -42,6 +42,33 @@ export class OryPermissionsService {
     );
   }
 
+  onModuleInit(): void {
+    this.relationShipApi['axios'].defaults.validateStatus = (
+      status: number,
+    ) => {
+      return status >= 200 && status < 300;
+    };
+    this.relationShipApi['axios'].interceptors.response.use(
+      (response) => response,
+      (error) => {
+        // TODO: retry on 429
+        const oryError = new OryError(error);
+        return Promise.reject(oryError);
+      },
+    );
+
+    this.permissionApi['axios'].defaults.validateStatus = (status: number) => {
+      return status >= 200 && status < 300;
+    };
+    this.permissionApi['axios'].interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const oryError = new OryError(error);
+        return Promise.reject(oryError);
+      },
+    );
+  }
+
   createRelationQuery = createRelationQuery;
 
   createFlattenRelationQuery = createFlattenRelationQuery;
@@ -53,66 +80,39 @@ export class OryPermissionsService {
   createExpandPermissionQuery = createExpandPermissionQuery;
 
   async createRelation(tuple: Partial<RelationTuple>): Promise<boolean> {
-    try {
-      const createRelationshipBody = this.createRelationQuery(tuple);
-      await this.relationShipApi.createRelationship({
-        createRelationshipBody,
-      });
-      return true;
-    } catch (e) {
-      const error = new OryPermissionError(e, tuple);
-      this.logger.error(error);
-      return false;
-    }
+    const createRelationshipBody = this.createRelationQuery(tuple);
+    await this.relationShipApi.createRelationship({
+      createRelationshipBody,
+    });
+    return true;
   }
   // TODO: write a batch create method with rollback on error
   // async createRelations(tuples: RelationTuple[]): Promise<boolean> {
   // }
 
   async deleteRelation(tuple: Partial<RelationTuple>): Promise<boolean> {
-    try {
-      const relationQuery = this.createRelationQuery(tuple);
-      //! the type of RelationshipApiDeleteRelationshipsRequest is wrong in @ory/client
-      await this.relationShipApi.deleteRelationships(relationQuery);
-      return true;
-    } catch (e) {
-      const error = new OryPermissionError(e, tuple);
-      this.logger.error(error);
-      return false;
-    }
+    const relationQuery = this.createRelationQuery(tuple);
+    //! the type of RelationshipApiDeleteRelationshipsRequest is wrong in @ory/client
+    await this.relationShipApi.deleteRelationships(relationQuery);
+    return true;
   }
 
   async getRelations(
     tuple: Partial<RelationTuple>,
     pagination: { pageSize?: number; pageToken?: string } = {},
   ): Promise<Relationships> {
-    try {
-      const relationQuery = this.createFlattenRelationQuery(tuple);
-      const { data } = await this.relationShipApi.getRelationships({
-        ...relationQuery,
-        ...pagination,
-      });
-      return data;
-    } catch (e) {
-      const error = new OryPermissionError(e, tuple);
-      this.logger.error(error);
-      return {
-        relation_tuples: [],
-        next_page_token: '',
-      };
-    }
+    const relationQuery = this.createFlattenRelationQuery(tuple);
+    const { data } = await this.relationShipApi.getRelationships({
+      ...relationQuery,
+      ...pagination,
+    });
+    return data;
   }
 
   async checkPermission(relationTuple: RelationTuple): Promise<boolean> {
     const checkRequest = this.createPermissionCheckQuery(relationTuple);
-    try {
-      const { data } = await this.permissionApi.checkPermission(checkRequest);
-      return data.allowed;
-    } catch (e) {
-      const error = new OryPermissionError(e, relationTuple);
-      this.logger.error(error);
-      return false;
-    }
+    const { data } = await this.permissionApi.checkPermission(checkRequest);
+    return data.allowed;
   }
 
   async expandPermissions(
@@ -120,18 +120,10 @@ export class OryPermissionsService {
     maxDepth = 3,
   ): Promise<ExpandedPermissionTree> {
     const checkRequest = this.createExpandPermissionQuery(relationTuple);
-    try {
-      const { data } = await this.permissionApi.expandPermissions({
-        ...checkRequest,
-        maxDepth,
-      });
-      return data;
-    } catch (e) {
-      const error = new OryPermissionError(e, relationTuple);
-      this.logger.error(error);
-      return {
-        type: 'unspecified',
-      };
-    }
+    const { data } = await this.permissionApi.expandPermissions({
+      ...checkRequest,
+      maxDepth,
+    });
+    return data;
   }
 }

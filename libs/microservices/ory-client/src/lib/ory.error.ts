@@ -30,6 +30,9 @@ export class OryError extends CustomError {
     if (isAxiosError(error)) {
       return error.cause?.message ?? error.message;
     }
+    if (isOryError(error)) {
+      return error.errorMessage;
+    }
     if (error instanceof Error) {
       return error.message;
     }
@@ -41,14 +44,21 @@ export class OryError extends CustomError {
   }
 
   get statusCode(): number {
-    return isAxiosError(this.error)
-      ? this.error.response?.status ?? this.defaultStatus
-      : this.defaultStatus;
+    if (isAxiosError(this.error)) {
+      return this.error.response?.status ?? this.defaultStatus;
+    }
+    if (isOryError(this.error)) {
+      return this.error.statusCode;
+    }
+    return this.defaultStatus;
   }
 
   getDetails(): Record<string, unknown> {
     if (isAxiosError(this.error)) {
       return (this.error.response?.data ?? {}) as Record<string, unknown>;
+    }
+    if (isOryError(this.error)) {
+      return this.error.getDetails();
     }
     return {};
   }
@@ -56,6 +66,10 @@ export class OryError extends CustomError {
   serializeErrors(): { message: string; field?: string }[] {
     return [{ message: this.errorMessage }];
   }
+}
+
+export function isOryError(error: unknown): error is OryError {
+  return error instanceof OryError;
 }
 
 export class OryPermissionError extends OryError {
