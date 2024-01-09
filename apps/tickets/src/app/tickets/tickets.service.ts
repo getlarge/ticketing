@@ -23,11 +23,19 @@ import {
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
+import { isErrorResponse, RetriableError } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
-import { lastValueFrom, timeout } from 'rxjs';
+import {
+  catchError,
+  lastValueFrom,
+  retry,
+  throwError,
+  timeout,
+  timer,
+} from 'rxjs';
 
 import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
 import { CreateTicket, Ticket, UpdateTicket } from './models';
@@ -83,7 +91,27 @@ export class TicketsService {
             Patterns.TicketCreated,
             newTicket,
           )
-          .pipe(timeout(5000)),
+          .pipe(
+            retry({
+              count: 5,
+              delay: (error: Error, retryCount: number) => {
+                const scalingDuration = 500;
+                if (
+                  isErrorResponse(error) &&
+                  error.name === RetriableError.name
+                ) {
+                  this.logger.debug(`retry attempt #${retryCount}`);
+                  return timer(retryCount * scalingDuration);
+                }
+                throw error;
+              },
+            }),
+            timeout(8000),
+            catchError((err) => {
+              this.logger.error(err);
+              return throwError(() => err);
+            }),
+          ),
       );
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
       return newTicket;
