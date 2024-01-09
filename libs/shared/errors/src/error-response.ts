@@ -8,21 +8,36 @@ import {
   validateSync,
 } from 'class-validator';
 
+type ErrorResponsePartial = Pick<
+  ErrorResponse,
+  'statusCode' | 'path' | 'errors'
+> &
+  Partial<ErrorResponse>;
+
 export class ErrorResponse {
   @IsNumber()
   statusCode: number;
 
   @IsString()
+  @IsOptional()
+  name?: string = 'ErrorResponse';
+
+  @IsString()
   path: string;
 
   @IsDateString()
-  timestamp: string;
+  @IsOptional()
+  timestamp: string = new Date().toISOString();
 
   @IsNotEmpty()
   errors: { message: string; field?: string }[];
 
   @IsOptional()
   details?: Record<string, unknown>;
+
+  constructor(partial: ErrorResponsePartial) {
+    Object.assign(this, partial);
+  }
 }
 
 export const isErrorResponse = (error: unknown): error is ErrorResponse =>
