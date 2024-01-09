@@ -15,6 +15,7 @@ import {
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import {
+  isRecoverableError,
   requestValidationErrorFactory,
 } from '@ticketing/shared/errors';
 import type { Channel } from 'amqp-connection-manager';
@@ -58,6 +59,11 @@ export class TicketsMSController {
       channel.ack(message);
       return { ok: true };
     } catch (e) {
+      if (isRecoverableError(e)) {
+        channel.nack(message, false, true);
+      } else {
+        channel.nack(message, false, false);
+      }
       channel.nack(message, false, false);
       throw e;
     }
