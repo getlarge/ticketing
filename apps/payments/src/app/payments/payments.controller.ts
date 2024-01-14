@@ -1,4 +1,10 @@
 import {
+  OryAuthorizationGuard,
+  OryPermissionChecks,
+} from '@getlarge/keto-client-wrapper';
+import { relationTupleToString } from '@getlarge/keto-relations-parser';
+import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
+import {
   Body,
   Controller,
   HttpStatus,
@@ -16,16 +22,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
-import {
-  CurrentUser,
-  PermissionCheck,
-} from '@ticketing/microservices/shared/decorators';
-import {
-  OryAuthenticationGuard,
-  OryPermissionGuard,
-} from '@ticketing/microservices/shared/guards';
+import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
-import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
 import {
   Actions,
   CURRENT_USER_KEY,
@@ -44,7 +42,7 @@ import { PaymentsService } from './payments.service';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @PermissionCheck((ctx) => {
+  @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
     const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
     const resourceId = get(req.body as CreatePayment, 'orderId');
@@ -58,7 +56,38 @@ export class PaymentsController {
       },
     });
   })
-  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
+  @UseGuards(
+    OryAuthenticationGuard({
+      cookieResolver: (ctx) =>
+        ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
+      isValidSession: (x) => {
+        return (
+          !!x?.identity &&
+          typeof x.identity.traits === 'object' &&
+          !!x.identity.traits &&
+          'email' in x.identity.traits &&
+          typeof x.identity.metadata_public === 'object' &&
+          !!x.identity.metadata_public &&
+          'id' in x.identity.metadata_public &&
+          typeof x.identity.metadata_public.id === 'string'
+        );
+      },
+      sessionTokenResolver: (ctx) =>
+        ctx
+          .switchToHttp()
+          .getRequest<FastifyRequest>()
+          .headers?.authorization?.replace('Bearer ', ''),
+      postValidationHook: (ctx, session) => {
+        ctx.switchToHttp().getRequest().session = session;
+        ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
+          id: session.identity.metadata_public['id'],
+          email: session.identity.traits.email,
+          identityId: session.identity.id,
+        };
+      },
+    }),
+    OryAuthorizationGuard({}),
+  )
   @UsePipes(
     new ValidationPipe({
       transform: true,

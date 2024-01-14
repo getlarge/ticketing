@@ -1,9 +1,9 @@
-import { jest } from '@jest/globals';
 import {
-  OryPermissionsModule,
-  OryPermissionsService,
-} from '@ticketing/microservices/ory-client';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+  OryRelationshipsModule,
+  OryRelationshipsService,
+} from '@getlarge/keto-client-wrapper';
+import { RelationTuple } from '@getlarge/keto-relations-parser';
+import { jest } from '@jest/globals';
 import { MockOryPermissionService } from '@ticketing/microservices/shared/testing';
 import { CommandTestFactory } from 'nest-commander-testing';
 
@@ -15,17 +15,16 @@ describe('CreateRelationCommand', () => {
   beforeAll(async () => {
     const app = await CommandTestFactory.createTestingCommand({
       imports: [
-        OryPermissionsModule.forRootAsync({
+        OryRelationshipsModule.forRootAsync({
           useFactory: () => ({
-            ketoPublicApiPath: 'http://localhost:4466',
-            ketoAdminApiPath: 'http://localhost:4467',
-            ketoAccessToken: '',
+            basePath: 'http://localhost:4467',
+            accessToken: '',
           }),
         }),
       ],
       providers: [CreateRelationCommand],
     })
-      .overrideProvider(OryPermissionsService)
+      .overrideProvider(OryRelationshipsService)
       .useClass(MockOryPermissionService)
       .compile();
 

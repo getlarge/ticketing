@@ -1,3 +1,8 @@
+import {
+  OryPermissionsModule,
+  OryRelationshipsModule,
+} from '@getlarge/keto-client-wrapper';
+import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -8,15 +13,9 @@ import {
 } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
-import {
-  OryAuthenticationModule,
-  OryPermissionsModule,
-} from '@ticketing/microservices/ory-client';
-import { PassportModule } from '@ticketing/microservices/shared/fastify-passport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
-import { JwtStrategy } from '@ticketing/microservices/shared/guards';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
-import { CURRENT_USER_KEY, Services } from '@ticketing/shared/constants';
+import { Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { AppConfigService, EnvironmentVariables } from '../env';
@@ -49,10 +48,6 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
 @Module({
   imports: [
     MongooseFeatures,
-    PassportModule.register({
-      assignProperty: CURRENT_USER_KEY,
-      session: true,
-    }),
     ClientsModule.registerAsync([
       {
         name: ORDERS_CLIENT,
@@ -84,22 +79,16 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
             customClass: AmqpClient,
             options,
           };
-
           return { ...clientOptions, transport: Transport.RMQ };
         },
       },
     ]),
-    OryAuthenticationModule.forRootAsync({
+    OryFrontendModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (
         configService: ConfigService<EnvironmentVariables, true>,
       ) => ({
-        kratosAccessToken: configService.get('ORY_KRATOS_API_KEY'),
-        kratosPublicApiPath: configService.get('ORY_KRATOS_PUBLIC_URL'),
-        kratosAdminApiPath: configService.get('ORY_KRATOS_ADMIN_URL'),
-        hydraAccessToken: configService.get('ORY_HYDRA_API_KEY'),
-        hydraPublicApiPath: configService.get('ORY_HYDRA_PUBLIC_URL'),
-        hydraAdminApiPath: configService.get('ORY_HYDRA_ADMIN_URL'),
+        basePath: configService.get('ORY_KRATOS_PUBLIC_URL'),
       }),
     }),
     OryPermissionsModule.forRootAsync({
@@ -107,9 +96,16 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
       useFactory: (
         configService: ConfigService<EnvironmentVariables, true>,
       ) => ({
-        ketoAccessToken: configService.get('ORY_KETO_API_KEY'),
-        ketoPublicApiPath: configService.get('ORY_KETO_PUBLIC_URL'),
-        ketoAdminApiPath: configService.get('ORY_KETO_ADMIN_URL'),
+        basePath: configService.get('ORY_KETO_PUBLIC_URL'),
+      }),
+    }),
+    OryRelationshipsModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
+        accessToken: configService.get('ORY_KETO_API_KEY'),
+        basePath: configService.get('ORY_KETO_ADMIN_URL'),
       }),
     }),
   ],
@@ -120,7 +116,6 @@ const MongooseFeatures = MongooseModule.forFeatureAsync([
       useExisting: GlobalErrorFilter,
     },
     GlobalErrorFilter,
-    JwtStrategy,
     StripeService,
     PaymentsService,
   ],
