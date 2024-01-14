@@ -18,6 +18,23 @@
     {
       "files": ["*.js", "*.jsx", "*.cjs"],
       "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "buildTargets": ["build"],
+            "checkMissingDependencies": true,
+            "checkObsoleteDependencies": true,
+            "checkVersionMismatches": true,
+            "includeTransitiveDependencies": false,
+            "ignoredDependencies": ["@jest/globals", "@nestjs/testing"]
+          }
+        ]
+      }
     }
   ]
 }

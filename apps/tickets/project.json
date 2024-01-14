@@ -56,7 +56,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/tickets/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/tickets/**/*.ts",
+          "apps/tickets/**/package.json",
+          "apps/tickets/**/project.json"
+        ]
       }
     },
     "test": {

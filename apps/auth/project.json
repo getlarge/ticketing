@@ -56,7 +56,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/auth/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/auth/**/*.ts",
+          "apps/auth/**/package.json",
+          "apps/auth/**/project.json"
+        ]
       }
     },
     "test": {
