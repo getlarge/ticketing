@@ -33,7 +33,7 @@ runs:
         token: ${{ inputs.token }}
 
     - name: Set up Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
 
@@ -50,7 +50,7 @@ runs:
     # follow advice in https://gist.github.com/belgattitude/042f9caf10d029badbde6cf9d43e400a
     - name: Cache / restore yarn cache
       id: yarn-cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ steps.yarn-config.outputs.CACHE_FOLDER }}
         key: yarn-cache-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ hashFiles('**/yarn.lock', '.yarnrc.yml') }}
@@ -59,7 +59,7 @@ runs:
 
     - name: ♻️ Cache / restore yarn install state
       id: yarn-install-state-cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .yarn/ci-cache/
         key: yarn-install-state-cache-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}

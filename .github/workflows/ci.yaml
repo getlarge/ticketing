@@ -125,7 +125,7 @@ jobs:
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         id: set-shas
         uses:
-          nrwl/nx-set-shas@v3
+          nrwl/nx-set-shas@v4
 
           # get commits count and increment by 1 for safety
       - name: Find depth of NX_BASE
@@ -449,7 +449,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v3
+        uses: nrwl/nx-set-shas@v4
 
       - run: npx nx-cloud start-ci-run
 
