@@ -18,7 +18,7 @@ export async function getAffectedProjects(
     throw new Error(`Supported project types are ${supportedProjectTypes}`);
   }
   const { stdout } = await execAsync(
-    `nx print-affected --type=${searchType} --select=projects --exclude=platform,tools --base=${base} --head=${head}`,
+    `nx print-affected --type=${searchType} --select=projects --exclude=workspace,tools --base=${base} --head=${head}`,
   );
   return stdout;
 }

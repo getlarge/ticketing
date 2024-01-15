@@ -10,7 +10,7 @@ const getAffectedProjects = (projects = []) => {
     return projects;
   }
   const affectedLibs = execSync(
-    `npx nx print-affected --type=lib --select=projects --exclude=platform`,
+    `npx nx print-affected --type=lib --select=projects --exclude=workspace`,
     { encoding: 'utf8' }
   );
   const affectedApps = execSync(

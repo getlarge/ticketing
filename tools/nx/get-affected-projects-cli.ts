@@ -50,7 +50,7 @@ import { getAffectedProjects } from './get-affected-projects';
     if (plain) {
       console.log(projects);
     } else {
-      console.log(JSON.stringify(projects.split(',')));
+      console.log(JSON.stringify(projects.split(',').sort()));
     }
     process.exit(0);
   } catch (error) {

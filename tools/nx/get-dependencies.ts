@@ -22,7 +22,8 @@ export async function getProjects(searchType = 'app'): Promise<string[]> {
       const { type } = graph.nodes[name];
       return type === searchType ? name : null;
     })
-    .filter((e) => !!e && !excludedProjects.includes(e));
+    .filter((e) => !!e && !excludedProjects.includes(e))
+    .sort();
 }
 
 export async function getProjectDependenciesFiles({
@@ -57,7 +58,7 @@ export async function getProjectDependenciesFiles({
     deps.flatMap((c) => getOneDependency(c));
 
   const libTargets: string[] = getAllDependencies(
-    getTargetDependencies(projectName)
+    getTargetDependencies(projectName),
   ).map(({ target }) => target);
   const libsDependencies = Array.from(new Set(libTargets));
 
@@ -73,13 +74,13 @@ export async function getProjectDependenciesFiles({
     return files.filter(
       (file) =>
         !exclude.some((val) => minimatch(file, val, { matchBase: true })) &&
-        include.some((val) => minimatch(file, val, { matchBase: true }))
+        include.some((val) => minimatch(file, val, { matchBase: true })),
     );
   };
 
   const appDependenciesFiles = getFilesFromNode(getNode(projectName));
   const libsDependenciesFiles = libsDependencies.flatMap((target) =>
-    getFilesFromNode(getNode(target))
+    getFilesFromNode(getNode(target)),
   );
   const dependenciesFiles = [...appDependenciesFiles, ...libsDependenciesFiles];
 
