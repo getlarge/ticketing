@@ -1,13 +1,15 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { OryPermissionsService } from '@getlarge/keto-client-wrapper';
 import { jest } from '@jest/globals';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   createRmqContext,
   MockModel,
-  MockOryPermissionService,
+  MockOryPermissionsService,
+  MockOryRelationshipsService,
   MockPublisher,
 } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
@@ -30,11 +32,15 @@ describe('OrdersMSController', () => {
             new MockModel() as any,
             new MockModel() as any,
             new ConfigService({ EXPIRATION_WINDOW_SECONDS: 15 * 60 }),
-            new MockOryPermissionService() as any,
+            new MockOryRelationshipsService() as any,
             new MockPublisher() as any,
             new MockPublisher() as any,
             new MockPublisher() as any,
           ),
+        },
+        {
+          provide: OryPermissionsService,
+          useValue: new MockOryPermissionsService() as any,
         },
       ],
     }).compile();

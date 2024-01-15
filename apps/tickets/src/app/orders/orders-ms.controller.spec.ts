@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   createRmqContext,
   MockModel,
-  MockOryPermissionService,
+  MockOryRelationshipsService,
   MockPublisher,
 } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
@@ -27,7 +27,7 @@ describe('OrdersMSController', () => {
           provide: TicketsService,
           useValue: new TicketsService(
             new MockModel() as any,
-            new MockOryPermissionService() as any,
+            new MockOryRelationshipsService() as any,
             new MockPublisher() as any,
           ),
         },
