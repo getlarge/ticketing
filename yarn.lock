@@ -3801,44 +3801,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/keto-client-wrapper@npm:0.0.1":
-  version: 0.0.1
-  resolution: "@getlarge/keto-client-wrapper@npm:0.0.1"
+"@getlarge/keto-client-wrapper@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/keto-client-wrapper@npm:0.0.2"
   dependencies:
-    "@getlarge/keto-relations-parser": 0.0.1
+    "@getlarge/keto-relations-parser": 0.0.2
+    defekt: ^9.3.1
+    lodash.get: ^4.4.2
+    tslib: ^2.3.0
+  peerDependencies:
     "@nestjs/axios": ^3.0.1
     "@nestjs/common": ^10.0.2
     "@nestjs/core": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-    defekt: ^9.3.1
-    lodash.get: ^4.4.2
-    tslib: ^2.3.0
-  checksum: 4f58f96d6bec9328ab1401e7dde76860554996e3970f78b601d97e9028c8ae1c539bf9de0e3ab47d86ba8f56f2f6b89e37d144c8c18944a46cc31ddd4281dca8
+  checksum: d38a03c5eb818a41646b9f3e3c2b07713c624f2e58e3b6c9faf3e7340fd1d47bc7764e7ab550788803b3948a892b14b3eb11286e0a98b994ce396848dda79cbe
   languageName: node
   linkType: hard
 
-"@getlarge/keto-relations-parser@npm:0.0.1":
-  version: 0.0.1
-  resolution: "@getlarge/keto-relations-parser@npm:0.0.1"
+"@getlarge/keto-relations-parser@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/keto-relations-parser@npm:0.0.2"
   dependencies:
     defekt: ^9.3.1
     lodash.get: ^4.4.2
     tslib: ^2.3.0
-  checksum: 64087eef5f0f37b45f20084019e2bd9dad84d62616ba8ae95da7e6cf73702b10dc1808e087ff70a64123ae869da294835756bdac96b407c3c8a3ac457ef32174
+  checksum: 98a25663324717202e2d9dcb49daa5f589006300c5a89fec2245bbac1aed74b9701cb5d0eca2aabba5ad316ab0452a9670756d6cfa15df1785c9e40f3f4bd872
   languageName: node
   linkType: hard
 
-"@getlarge/kratos-client-wrapper@npm:0.0.1":
-  version: 0.0.1
-  resolution: "@getlarge/kratos-client-wrapper@npm:0.0.1"
+"@getlarge/kratos-client-wrapper@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.0.2"
   dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
     "@nestjs/axios": ^3.0.1
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-    tslib: ^2.3.0
-  checksum: cb382c7882b22163879fe804188fad10b0d6a8a2f37817c5a16c0adab0147cd94ca79d08af78d9f398d29635863fa6a463993f1f5325e5482003e5adb7e621a0
+  checksum: adfa8f2c43c4ccb339f96bcda665730eec695a5828ca4438600181e646ddb8ec443b710d9747b2bf20d260e029f7cc0f1616998a8e611053c7b9c0f0764e657e
   languageName: node
   linkType: hard
 
@@ -4391,18 +4393,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/axios@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@nestjs/axios@npm:3.0.1"
-  peerDependencies:
-    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
-    axios: ^1.3.1
-    reflect-metadata: ^0.1.12
-    rxjs: ^6.0.0 || ^7.0.0
-  checksum: 01cebc64efa7a1d9df7a9053fbc5124986a95078789a0f280a2a61c31601a70a35745e07fc385497b4f85c7bdb6216a3575728646f1e6e684c038ac31900129c
-  languageName: node
-  linkType: hard
-
 "@nestjs/bull-shared@npm:^10.0.1":
   version: 10.0.1
   resolution: "@nestjs/bull-shared@npm:10.0.1"
@@ -4450,27 +4440,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^10.0.2":
-  version: 10.3.0
-  resolution: "@nestjs/common@npm:10.3.0"
-  dependencies:
-    iterare: 1.2.1
-    tslib: 2.6.2
-    uid: 2.0.2
-  peerDependencies:
-    class-transformer: "*"
-    class-validator: "*"
-    reflect-metadata: ^0.1.12
-    rxjs: ^7.1.0
-  peerDependenciesMeta:
-    class-transformer:
-      optional: true
-    class-validator:
-      optional: true
-  checksum: c5444cb46bd4f4a4d28b5031f7c28a0cf9863bc2d5518910bfed6a49734f59e1ea08dd4651e2117ae82df81c933ef84f0963c5cdeee5ef1608cf1bd36ee291c5
-  languageName: node
-  linkType: hard
-
 "@nestjs/config@npm:3.1.1":
   version: 3.1.1
   resolution: "@nestjs/config@npm:3.1.1"
@@ -4511,34 +4480,6 @@ __metadata:
     "@nestjs/websockets":
       optional: true
   checksum: eb34108e284991b84c9a31ef0f1969f8d5b6a1d2ecae04b924ee585bd1e04de29776fbce26c5242edad349d932e49a1e4c4d6ac8d893735e12eddd299d8220d4
-  languageName: node
-  linkType: hard
-
-"@nestjs/core@npm:^10.0.2":
-  version: 10.3.0
-  resolution: "@nestjs/core@npm:10.3.0"
-  dependencies:
-    "@nuxtjs/opencollective": 0.3.2
-    fast-safe-stringify: 2.1.1
-    iterare: 1.2.1
-    path-to-regexp: 3.2.0
-    tslib: 2.6.2
-    uid: 2.0.2
-  peerDependencies:
-    "@nestjs/common": ^10.0.0
-    "@nestjs/microservices": ^10.0.0
-    "@nestjs/platform-express": ^10.0.0
-    "@nestjs/websockets": ^10.0.0
-    reflect-metadata: ^0.1.12
-    rxjs: ^7.1.0
-  peerDependenciesMeta:
-    "@nestjs/microservices":
-      optional: true
-    "@nestjs/platform-express":
-      optional: true
-    "@nestjs/websockets":
-      optional: true
-  checksum: 7677b9fb97c8dec512c2a736c273ef08698b377af8c046bc5aad442ba3d35acbc17d177e76bf44a66678cae2ced2d265183e85be4190c501a195f16496df6396
   languageName: node
   linkType: hard
 
@@ -5601,15 +5542,6 @@ __metadata:
   dependencies:
     axios: ^0.27.2
   checksum: a81bd2da93dd4bc1e630d6817453eac380c8ce4c5a5f13d52f4f7bc762f1c8444af8e32ddf6b33b96ca846a77b6d30dfbc3e6c86a36a539ff168849b2647e72e
-  languageName: node
-  linkType: hard
-
-"@ory/client@npm:^1.4.9":
-  version: 1.5.1
-  resolution: "@ory/client@npm:1.5.1"
-  dependencies:
-    axios: ^0.27.2
-  checksum: acadd44f3d855827e4ada02f5b504a176e5b3c013e7db993bb70bdb62cab9c98354982bc36b74eadc083cbaabb87c17a99d60c226d854b80270979d185a9f93c
   languageName: node
   linkType: hard
 
@@ -8263,17 +8195,6 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 4a7429e2b784be0f2902ca2680964391eae7236faa3967715f30ea45464b98ae3f1c6f631303b13dfe721b17126b01f486c7644b9ef276bfc63112db9fd379f8
-  languageName: node
-  linkType: hard
-
-"axios@npm:1.6.5":
-  version: 1.6.5
-  resolution: "axios@npm:1.6.5"
-  dependencies:
-    follow-redirects: ^1.15.4
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: e28d67b2d9134cb4608c44d8068b0678cfdccc652742e619006f27264a30c7aba13b2cd19c6f1f52ae195b5232734925928fb192d5c85feea7edd2f273df206d
   languageName: node
   linkType: hard
 
@@ -13421,16 +13342,6 @@ __metadata:
     debug:
       optional: true
   checksum: 584da22ec5420c837bd096559ebfb8fe69d82512d5585004e36a3b4a6ef6d5905780e0c74508c7b72f907d1fa2b7bd339e613859e9c304d0dc96af2027fd0231
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.15.4":
-  version: 1.15.5
-  resolution: "follow-redirects@npm:1.15.5"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 5ca49b5ce6f44338cbfc3546823357e7a70813cecc9b7b768158a1d32c1e62e7407c944402a918ea8c38ae2e78266312d617dc68783fac502cbb55e1047b34ec
   languageName: node
   linkType: hard
 
@@ -22464,9 +22375,9 @@ __metadata:
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
-    "@getlarge/keto-client-wrapper": 0.0.1
-    "@getlarge/keto-relations-parser": 0.0.1
-    "@getlarge/kratos-client-wrapper": 0.0.1
+    "@getlarge/keto-client-wrapper": 0.0.2
+    "@getlarge/keto-relations-parser": 0.0.2
+    "@getlarge/kratos-client-wrapper": 0.0.2
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0

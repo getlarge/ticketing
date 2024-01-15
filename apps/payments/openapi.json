@@ -112,7 +112,7 @@
           },
           "version": {
             "type": "number",
-            "description": "Payment version represented by a number incremented at each updated"
+            "description": "Payment version represented by a number incremented at each update"
           }
         },
         "required": [

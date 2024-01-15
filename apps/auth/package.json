@@ -6,7 +6,7 @@
     "@fastify/helmet": "11.0.0",
     "@fastify/passport": "2.3.0",
     "@fastify/secure-session": "7.1.0",
-    "@getlarge/kratos-client-wrapper": "0.0.1",
+    "@getlarge/kratos-client-wrapper": "0.0.2",
     "@nestjs/axios": "3.0.0",
     "@nestjs/common": "10.2.4",
     "@nestjs/config": "3.1.1",
