@@ -13,6 +13,7 @@
     "allowJs": true
   },
   "include": [
+    "**/*.ts",
     "**/*.e2e-spec.ts",
     "**/*.mock.ts",
     "**/*.spec.ts",

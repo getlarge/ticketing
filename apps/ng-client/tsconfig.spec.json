@@ -11,13 +11,11 @@
     ],
     "strictPropertyInitialization": false
   },
-  "files": [
-    "src/test-setup.ts"
-  ],
   "include": [
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.d.ts",
-    "jest.config.ts"
+    "jest.config.ts",
+    "src/test-setup.ts"
   ]
 }
