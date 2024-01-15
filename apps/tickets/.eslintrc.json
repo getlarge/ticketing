@@ -30,7 +30,7 @@
             "checkMissingDependencies": true,
             "checkObsoleteDependencies": true,
             "checkVersionMismatches": true,
-            "includeTransitiveDependencies": false,
+            "includeTransitiveDependencies": true,
             "ignoredDependencies": ["@jest/globals", "@nestjs/testing"]
           }
         ]
