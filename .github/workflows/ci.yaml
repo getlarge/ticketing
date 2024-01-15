@@ -291,9 +291,22 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Regenerate backend apps package.json
-        if: needs.init.outputs.should-update-packages == 'true'
-        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn refresh-pkg-json
+      # this step now goes in conflict with package.json regeneration via ESLint @nx/dependency-checks rule
+      # - name: Regenerate backend apps package.json
+      #   if: needs.init.outputs.should-update-packages == 'true'
+      #   run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn refresh-pkg-json
+
+      # - name: Add, commit and push backend package.json
+      #   if: needs.init.outputs.should-update-packages == 'true'
+      #   id: commit-pkg
+      #   uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+      #     commit_message: 'chore: regenerate backend package*.json [skip ci]'
+      #     file_pattern: 'apps/**/package*.json'
+      #     commit_options: '--no-verify'
+
+      # - if: steps.commit-pkg.outputs.changes_detected == 'true'
+      #   run: echo "BASE_DEPTH=$((${{ env.BASE_DEPTH }} + 1))" >> $GITHUB_ENV
 
       - name: Regenerate frontend models
         if: needs.init.outputs.should-update-models == 'true'
@@ -302,18 +315,6 @@ jobs:
       - name: Run prettier
         if: needs.init.outputs.should-update-models == 'true'
         run: npx nx format:write --projects=shared-ng-open-api
-
-      - name: Add, commit and push backend package.json
-        if: needs.init.outputs.should-update-packages == 'true'
-        id: commit-pkg
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 'chore: regenerate backend package*.json [skip ci]'
-          file_pattern: 'apps/**/package*.json'
-          commit_options: '--no-verify'
-
-      - if: steps.commit-pkg.outputs.changes_detected == 'true'
-        run: echo "BASE_DEPTH=$((${{ env.BASE_DEPTH }} + 1))" >> $GITHUB_ENV
 
       - name: Add, commit and push generated models
         if: needs.init.outputs.should-update-models == 'true'
