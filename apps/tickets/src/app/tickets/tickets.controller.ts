@@ -1,4 +1,10 @@
 import {
+  OryAuthorizationGuard,
+  OryPermissionChecks,
+} from '@getlarge/keto-client-wrapper';
+import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
+import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
+import {
   Body,
   Controller,
   Get,
@@ -10,6 +16,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,12 +32,7 @@ import {
   ApiNestedQuery,
   ApiPaginatedDto,
   CurrentUser,
-  PermissionChecks,
 } from '@ticketing/microservices/shared/decorators';
-import {
-  OryAuthenticationGuard,
-  OryPermissionGuard,
-} from '@ticketing/microservices/shared/guards';
 import {
   PaginatedDto,
   PaginateDto,
@@ -41,7 +43,6 @@ import {
   ParseObjectId,
   ParseQuery,
 } from '@ticketing/microservices/shared/pipes';
-import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
 import {
   Actions,
   CURRENT_USER_KEY,
@@ -49,7 +50,7 @@ import {
 } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
-import { FastifyRequest } from 'fastify/types/request';
+import type { FastifyRequest } from 'fastify/types/request';
 import { get } from 'lodash-es';
 
 import {
@@ -62,21 +63,54 @@ import {
 } from './models';
 import { TicketsService } from './tickets.service';
 
+const AuthenticationGuard = OryAuthenticationGuard({
+  cookieResolver: (ctx) =>
+    ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
+  isValidSession: (x) => {
+    return (
+      !!x?.identity &&
+      typeof x.identity.traits === 'object' &&
+      !!x.identity.traits &&
+      'email' in x.identity.traits &&
+      typeof x.identity.metadata_public === 'object' &&
+      !!x.identity.metadata_public &&
+      'id' in x.identity.metadata_public &&
+      typeof x.identity.metadata_public.id === 'string'
+    );
+  },
+  sessionTokenResolver: (ctx) =>
+    ctx
+      .switchToHttp()
+      .getRequest<FastifyRequest>()
+      .headers?.authorization?.replace('Bearer ', ''),
+  postValidationHook: (ctx, session) => {
+    ctx.switchToHttp().getRequest().session = session;
+    // eslint-disable-next-line security/detect-object-injection
+    ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
+      id: session.identity.metadata_public['id'],
+      email: session.identity.traits.email,
+      identityId: session.identity.id,
+    };
+  },
+});
+
+const AuthorizationGuard = OryAuthorizationGuard({});
+
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  exceptionFactory: requestValidationErrorFactory,
+  transformOptions: { enableImplicitConversion: true },
+  forbidUnknownValues: true,
+};
+
 @Controller(Resources.TICKETS)
 @ApiTags(Resources.TICKETS)
 @ApiExtraModels(PaginatedDto)
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) { }
+  constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(OryAuthenticationGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      exceptionFactory: requestValidationErrorFactory,
-      transformOptions: { enableImplicitConversion: true },
-      forbidUnknownValues: true,
-    }),
-  )
+  @UseGuards(AuthenticationGuard)
+  @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -133,31 +167,18 @@ export class TicketsController {
   }
 
   // TODO: check permission for ticket orderId if present
-  @PermissionChecks(
-    (ctx) => {
-      const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-      const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-      const resourceId = get(req, 'params.id');
-      return relationTupleToString({
-        namespace: PermissionNamespaces[Resources.TICKETS],
-        object: resourceId,
-        relation: 'owners',
-        subjectIdOrSet: {
-          namespace: PermissionNamespaces[Resources.USERS],
-          object: currentUserId,
-        },
-      });
-    }
-  )
-  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      exceptionFactory: requestValidationErrorFactory,
-      transformOptions: { enableImplicitConversion: true },
-      forbidUnknownValues: true,
-    }),
-  )
+  @OryPermissionChecks((ctx) => {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+    const resourceId = get(req, 'params.id');
+    return relationTupleBuilder()
+      .subject(PermissionNamespaces[Resources.USERS], currentUserId)
+      .isIn('owners')
+      .of(PermissionNamespaces[Resources.TICKETS], resourceId)
+      .toString();
+  })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({

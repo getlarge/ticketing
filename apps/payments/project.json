@@ -55,7 +55,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/payments/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/payments/**/*.ts",
+          "apps/payments/**/package.json",
+          "apps/payments/**/project.json"
+        ]
       }
     },
     "test": {

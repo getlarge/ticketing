@@ -3763,7 +3763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/static@npm:^6.11.0":
+"@fastify/static@npm:^6.12.0":
   version: 6.12.0
   resolution: "@fastify/static@npm:6.12.0"
   dependencies:
@@ -3798,6 +3798,49 @@ __metadata:
   peerDependencies:
     commander: ^11.1.0
   checksum: 012bc53177647dea17e5f4f688fbcd8901d3bf971aebf4cc905f60b1f6910f82e407ae3e7494dea56cfa07d70e7826e8ca4a9d40950deeef25a5bdcd7382b93a
+  languageName: node
+  linkType: hard
+
+"@getlarge/keto-client-wrapper@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/keto-client-wrapper@npm:0.0.2"
+  dependencies:
+    "@getlarge/keto-relations-parser": 0.0.2
+    defekt: ^9.3.1
+    lodash.get: ^4.4.2
+    tslib: ^2.3.0
+  peerDependencies:
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@nestjs/core": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+  checksum: d38a03c5eb818a41646b9f3e3c2b07713c624f2e58e3b6c9faf3e7340fd1d47bc7764e7ab550788803b3948a892b14b3eb11286e0a98b994ce396848dda79cbe
+  languageName: node
+  linkType: hard
+
+"@getlarge/keto-relations-parser@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/keto-relations-parser@npm:0.0.2"
+  dependencies:
+    defekt: ^9.3.1
+    lodash.get: ^4.4.2
+    tslib: ^2.3.0
+  checksum: 98a25663324717202e2d9dcb49daa5f589006300c5a89fec2245bbac1aed74b9701cb5d0eca2aabba5ad316ab0452a9670756d6cfa15df1785c9e40f3f4bd872
+  languageName: node
+  linkType: hard
+
+"@getlarge/kratos-client-wrapper@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.0.2"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+  checksum: adfa8f2c43c4ccb339f96bcda665730eec695a5828ca4438600181e646ddb8ec443b710d9747b2bf20d260e029f7cc0f1616998a8e611053c7b9c0f0764e657e
   languageName: node
   linkType: hard
 
@@ -7795,24 +7838,6 @@ __metadata:
   version: 0.3.2
   resolution: "ansicolors@npm:0.3.2"
   checksum: e84fae7ebc27ac96d9dbb57f35f078cd6dde1b7046b0f03f73dcefc9fbb1f2e82e3685d083466aded8faf038f9fa9ebb408d215282bcd7aaa301d5ac3c486815
-  languageName: node
-  linkType: hard
-
-"antlr4ng-cli@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "antlr4ng-cli@npm:1.0.6"
-  bin:
-    antlr4ng: index.js
-  checksum: f776bf997d1dc373a4d32ad3d312c9eb3822e670e7bc7a8fab17ef20f2f4521e4e3cc99efc5ffb5d4ba8e3932a8a5e38d4d1ae30565523fb4ad8b15391d46f67
-  languageName: node
-  linkType: hard
-
-"antlr4ng@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "antlr4ng@npm:2.0.3"
-  peerDependencies:
-    antlr4ng-cli: ^1.0.0
-  checksum: 9a69db48b7a31f9295ad33902c912b407bd941d2e4424f948032488343c71ee79258711202e0350c1c68635862f9ae5b564d736f4d64f80f30ca1a99cce68f5c
   languageName: node
   linkType: hard
 
@@ -16619,7 +16644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.get@npm:^4":
+"lodash.get@npm:^4, lodash.get@npm:^4.4.2":
   version: 4.4.2
   resolution: "lodash.get@npm:4.4.2"
   checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
@@ -20329,17 +20354,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:^0.1.2":
+"reflect-metadata@npm:^0.1.13, reflect-metadata@npm:^0.1.2":
   version: 0.1.14
   resolution: "reflect-metadata@npm:0.1.14"
   checksum: 155ad339319cec3c2d9d84719f730f8b6a6cd2a074733ec29dbae6c89d48a2914c7d07a2350212594f3aae160fa4da4f903e6512f27ceaf968443a7c692bcad0
-  languageName: node
-  linkType: hard
-
-"reflect-metadata@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "reflect-metadata@npm:0.2.1"
-  checksum: 772f552a544e04b999c1bf2c868225fef10032274e9d9e315bc3e7a687a504b8b115fa71966665b9619acfd323123a941f892b593250140da809330d41564181
   languageName: node
   linkType: hard
 
@@ -22355,8 +22373,11 @@ __metadata:
     "@fastify/helmet": 11.0.0
     "@fastify/passport": 2.3.0
     "@fastify/secure-session": 7.1.0
-    "@fastify/static": ^6.11.0
+    "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
+    "@getlarge/keto-client-wrapper": 0.0.2
+    "@getlarge/keto-relations-parser": 0.0.2
+    "@getlarge/kratos-client-wrapper": 0.0.2
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0
@@ -22409,8 +22430,6 @@ __metadata:
     "@typescript-eslint/parser": 6.14.0
     amqp-connection-manager: 4.1.14
     amqplib: 0.10.3
-    antlr4ng: ^2.0.3
-    antlr4ng-cli: ^1.0.6
     axios: 1.6.2
     bootstrap: ^5.1.3
     bull: 4.8.2
@@ -22463,7 +22482,7 @@ __metadata:
     pino-pretty: 10.2.3
     prettier: 3.1.1
     redoc-cli: ^0.13.0
-    reflect-metadata: ^0.2.1
+    reflect-metadata: ^0.1.13
     regenerator-runtime: 0.13.7
     rxjs: 7.8.1
     stripe: 8.222.0

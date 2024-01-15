@@ -1,3 +1,8 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  relationTupleBuilder,
+} from '@getlarge/keto-relations-parser';
 import {
   BadRequestException,
   Inject,
@@ -7,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   EventsMap,
   OrderCancelledEvent,
@@ -20,7 +24,6 @@ import {
   PermissionNamespaces,
 } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
 import { User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
@@ -39,8 +42,8 @@ export class TicketsService {
   constructor(
     @InjectModel(TicketSchema.name)
     private readonly ticketModel: Model<TicketDocument>,
-    @Inject(OryPermissionsService)
-    private readonly oryPermissionService: OryPermissionsService,
+    @Inject(OryRelationshipsService)
+    private readonly oryRelationshipsService: OryRelationshipsService,
     @Inject(ORDERS_CLIENT) private readonly client: ClientProxy,
   ) {}
 
@@ -64,17 +67,17 @@ export class TicketsService {
       const newTicket = docs[0].toJSON<Ticket>();
       this.logger.debug(`Created ticket ${newTicket.id}`);
 
-      const relationTuple = new RelationTuple(
-        PermissionNamespaces[Resources.TICKETS],
-        newTicket.id,
-        'owners',
-        {
-          namespace: PermissionNamespaces[Resources.USERS],
-          object: currentUser.id,
-        },
-      );
-      await this.oryPermissionService.createRelation(relationTuple);
-      this.logger.debug(`Created relation ${relationTuple}`);
+      const relationTuple = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.USERS], currentUser.id)
+        .isIn('owners')
+        .of(PermissionNamespaces[Resources.TICKETS], newTicket.id)
+        .toJSON();
+      const createRelationshipBody =
+        createRelationQuery(relationTuple).unwrapOrThrow();
+      await this.oryRelationshipsService.createRelationship({
+        createRelationshipBody,
+      });
+      this.logger.debug(`Created relation ${relationTuple.toString()}`);
 
       await lastValueFrom(this.sendEvent(Patterns.TicketCreated, newTicket));
       this.logger.debug(`Sent event ${Patterns.TicketCreated}`);

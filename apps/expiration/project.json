@@ -56,7 +56,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/expiration/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/expiration/**/*.ts",
+          "apps/expiration/**/package.json",
+          "apps/expiration/**/project.json"
+        ]
       }
     },
     "test": {

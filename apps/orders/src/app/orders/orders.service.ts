@@ -1,3 +1,9 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  RelationTuple,
+  relationTupleBuilder,
+} from '@getlarge/keto-relations-parser';
 import {
   BadRequestException,
   Inject,
@@ -8,7 +14,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   EventsMap,
   Patterns,
@@ -16,7 +21,6 @@ import {
 } from '@ticketing/microservices/shared/events';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
 import { Ticket, User } from '@ticketing/shared/models';
 import { isEmpty } from 'lodash-es';
@@ -43,8 +47,8 @@ export class OrdersService {
     @InjectModel(TicketSchema.name) private ticketModel: Model<TicketDocument>,
     @Inject(ConfigService)
     private configService: ConfigService<EnvironmentVariables, true>,
-    @Inject(OryPermissionsService)
-    private oryPermissionsService: OryPermissionsService,
+    @Inject(OryRelationshipsService)
+    private oryRelationshipsService: OryRelationshipsService,
     @Inject(TICKETS_CLIENT) private ticketsClient: ClientProxy,
     @Inject(EXPIRATION_CLIENT) private expirationClient: ClientProxy,
     @Inject(PAYMENTS_CLIENT) private paymentsClient: ClientProxy,
@@ -72,14 +76,20 @@ export class OrdersService {
   private async createRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    await this.oryPermissionsService.createRelation(relationTuple);
+    const createRelationshipBody =
+      createRelationQuery(relationTuple).unwrapOrThrow();
+    await this.oryRelationshipsService.createRelationship({
+      createRelationshipBody,
+    });
     this.logger.debug(`Created relation ${relationTuple.toString()}`);
   }
 
   private async deleteRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    await this.oryPermissionsService.deleteRelation(relationTuple);
+    const relationshipQuery =
+      createRelationQuery(relationTuple).unwrapOrThrow();
+    await this.oryRelationshipsService.deleteRelationships(relationshipQuery);
     this.logger.debug(`Deleted relation ${relationTuple.toString()}`);
   }
 
@@ -117,29 +127,19 @@ export class OrdersService {
       const order = res[0].toJSON<Order>();
       this.logger.debug(`Created order ${order.id}`);
       // 5. Create a relation between the ticket and the order
-      const relationTupleWithTicket = new RelationTuple(
-        PermissionNamespaces[Resources.ORDERS],
-        order.id,
-        'parents',
-        {
-          namespace: PermissionNamespaces[Resources.TICKETS],
-          object: ticket.id,
-        },
-      );
+      const relationTupleWithTicket = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.TICKETS], ticket.id)
+        .isIn('parents')
+        .of(PermissionNamespaces[Resources.ORDERS], order.id);
       await this.createRelationShip(relationTupleWithTicket);
       this.logger.debug(
         `Created relation ${relationTupleWithTicket.toString()}`,
       );
       // 6. Create a relation between the user and the order
-      const relationTupleWithUser = new RelationTuple(
-        PermissionNamespaces[Resources.ORDERS],
-        order.id,
-        'owners',
-        {
-          namespace: PermissionNamespaces[Resources.USERS],
-          object: order.userId,
-        },
-      );
+      const relationTupleWithUser = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.USERS], order.userId)
+        .isIn('owners')
+        .of(PermissionNamespaces[Resources.ORDERS], order.id);
       await this.createRelationShip(relationTupleWithUser);
       this.logger.debug(`Created relation ${relationTupleWithUser.toString()}`);
       // 7. Publish an event
@@ -185,15 +185,10 @@ export class OrdersService {
       await order.save({ session });
       const updatedOrder = order.toJSON<Order>();
 
-      const relationTuple = new RelationTuple(
-        PermissionNamespaces[Resources.ORDERS],
-        order.id,
-        'parents',
-        {
-          namespace: PermissionNamespaces[Resources.TICKETS],
-          object: order.ticket.id,
-        },
-      );
+      const relationTuple = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.TICKETS], order.ticket.id)
+        .isIn('parents')
+        .of(PermissionNamespaces[Resources.ORDERS], order.id);
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
@@ -223,15 +218,10 @@ export class OrdersService {
       await order.save({ session });
       const updatedOrder = order.toJSON<Order>();
 
-      const relationTuple = new RelationTuple(
-        PermissionNamespaces[Resources.ORDERS],
-        updatedOrder.id,
-        'parents',
-        {
-          namespace: PermissionNamespaces[Resources.TICKETS],
-          object: order.ticket.id,
-        },
-      );
+      const relationTuple = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.TICKETS], order.ticket.id)
+        .isIn('parents')
+        .of(PermissionNamespaces[Resources.ORDERS], id);
       await this.deleteRelationShip(relationTuple);
 
       await lastValueFrom(
