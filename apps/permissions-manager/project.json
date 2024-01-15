@@ -52,7 +52,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/permissions-manager/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/permissions-manager/**/*.ts",
+          "apps/permissions-manager/**/package.json",
+          "apps/permissions-manager/**/project.json"
+        ]
       }
     },
     "test": {

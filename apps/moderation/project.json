@@ -42,7 +42,11 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/moderation/**/*.ts"]
+        "lintFilePatterns": [
+          "apps/moderation/**/*.ts",
+          "apps/moderation/**/package.json",
+          "apps/moderation/**/project.json"
+        ]
       }
     },
     "test": {

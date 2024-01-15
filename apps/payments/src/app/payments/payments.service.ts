@@ -1,3 +1,9 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  RelationTuple,
+  relationTupleBuilder,
+} from '@getlarge/keto-relations-parser';
 import {
   BadRequestException,
   Inject,
@@ -7,14 +13,12 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
 import {
   Patterns,
   PaymentCreatedEvent,
 } from '@ticketing/microservices/shared/events';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
 import { OrderStatus, User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
@@ -34,8 +38,8 @@ export class PaymentsService {
     @InjectModel(OrderSchema.name) private orderModel: Model<OrderDocument>,
     @InjectModel(PaymentSchema.name)
     private paymentModel: Model<PaymentDocument>,
-    @Inject(OryPermissionsService)
-    private readonly oryPermissionsService: OryPermissionsService,
+    @Inject(OryRelationshipsService)
+    private readonly oryRelationshipsService: OryRelationshipsService,
     @Inject(StripeService) private readonly stripeService: StripeService,
     @Inject(ORDERS_CLIENT) private client: ClientProxy,
   ) {}
@@ -43,7 +47,11 @@ export class PaymentsService {
   private async createRelationShip(
     relationTuple: RelationTuple,
   ): Promise<void> {
-    await this.oryPermissionsService.createRelation(relationTuple);
+    const createRelationshipBody =
+      createRelationQuery(relationTuple).unwrapOrThrow();
+    await this.oryRelationshipsService.createRelationship({
+      createRelationshipBody,
+    });
     this.logger.debug(`Created relation ${relationTuple.toString()}`);
   }
 
@@ -91,27 +99,17 @@ export class PaymentsService {
       );
       const payment = res[0].toJSON<Payment>();
       // 5. create a relation between the order and the payment
-      const relationTupleWithOrder = new RelationTuple(
-        PermissionNamespaces[Resources.PAYMENTS],
-        payment.id,
-        'parents',
-        {
-          namespace: PermissionNamespaces[Resources.ORDERS],
-          object: orderId,
-        },
-      );
+      const relationTupleWithOrder = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.ORDERS], orderId)
+        .isIn('parents')
+        .of(PermissionNamespaces[Resources.PAYMENTS], payment.id);
       await this.createRelationShip(relationTupleWithOrder);
 
       // 6. create a relation between the user and the payment
-      const relationTupleWithUser = new RelationTuple(
-        PermissionNamespaces[Resources.PAYMENTS],
-        payment.id,
-        'owners',
-        {
-          namespace: PermissionNamespaces[Resources.USERS],
-          object: currentUser.id,
-        },
-      );
+      const relationTupleWithUser = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.USERS], currentUser.id)
+        .isIn('owners')
+        .of(PermissionNamespaces[Resources.PAYMENTS], payment.id);
       await this.createRelationShip(relationTupleWithUser);
 
       // 7. send payment:create event

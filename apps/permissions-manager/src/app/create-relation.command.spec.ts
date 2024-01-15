@@ -1,32 +1,35 @@
-import { jest } from '@jest/globals';
 import {
-  OryPermissionsModule,
-  OryPermissionsService,
-} from '@ticketing/microservices/ory-client';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
-import { MockOryPermissionService } from '@ticketing/microservices/shared/testing';
+  OryRelationshipsModule,
+  OryRelationshipsService,
+} from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  RelationTuple,
+} from '@getlarge/keto-relations-parser';
+import { jest } from '@jest/globals';
+import { MockOryRelationshipsService } from '@ticketing/microservices/shared/testing';
 import { CommandTestFactory } from 'nest-commander-testing';
 
 import { CreateRelationCommand } from './create-relation.command';
 
 describe('CreateRelationCommand', () => {
   let service: CreateRelationCommand;
+  const mockOryRelationshipsService = new MockOryRelationshipsService();
 
   beforeAll(async () => {
     const app = await CommandTestFactory.createTestingCommand({
       imports: [
-        OryPermissionsModule.forRootAsync({
+        OryRelationshipsModule.forRootAsync({
           useFactory: () => ({
-            ketoPublicApiPath: 'http://localhost:4466',
-            ketoAdminApiPath: 'http://localhost:4467',
-            ketoAccessToken: '',
+            basePath: 'http://localhost:4467',
+            accessToken: '',
           }),
         }),
       ],
       providers: [CreateRelationCommand],
     })
-      .overrideProvider(OryPermissionsService)
-      .useClass(MockOryPermissionService)
+      .overrideProvider(OryRelationshipsService)
+      .useValue(mockOryRelationshipsService)
       .compile();
 
     service = app.get<CreateRelationCommand>(CreateRelationCommand);
@@ -34,7 +37,7 @@ describe('CreateRelationCommand', () => {
 
   describe('run', () => {
     it('should process tuple and create relationship', async () => {
-      const expectedTuple: RelationTuple = {
+      const tuple: RelationTuple = {
         namespace: 'Group',
         object: 'admin',
         relation: 'members',
@@ -43,18 +46,19 @@ describe('CreateRelationCommand', () => {
           object: '1',
         },
       };
-      service['oryPermissionsService'].createRelation = jest
+      const expectedQuery = createRelationQuery(tuple).unwrapOrThrow();
+      mockOryRelationshipsService.createRelationship = jest
         .fn(() => Promise.resolve(true))
         .mockResolvedValue(true);
 
       await expect(
         service.run(['--tuple', 'Group:admin#members@User:1'], {
-          tuple: expectedTuple,
+          tuple: expectedQuery,
         }),
       ).resolves.toBeUndefined();
-      expect(service['oryPermissionsService'].createRelation).toBeCalledWith(
-        expectedTuple,
-      );
+      expect(mockOryRelationshipsService.createRelationship).toBeCalledWith({
+        createRelationshipBody: expectedQuery,
+      });
     });
   });
 });

@@ -1,3 +1,8 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  relationTupleBuilder,
+} from '@getlarge/keto-relations-parser';
 import { InjectQueue } from '@nestjs/bullmq';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
@@ -9,13 +14,8 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  isOryError,
-  OryPermissionsService,
-} from '@ticketing/microservices/ory-client';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
-import { RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
 import { Resources } from '@ticketing/shared/constants';
 import {
   AcceptableError,
@@ -56,8 +56,8 @@ export class ModerationsService {
     @InjectModel(ModerationSchema.name)
     private moderationModel: Model<ModerationDocument>,
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
-    @Inject(OryPermissionsService)
-    private readonly oryPermissionsService: OryPermissionsService,
+    @Inject(OryRelationshipsService)
+    private readonly oryRelationshipsService: OryRelationshipsService,
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
@@ -181,19 +181,17 @@ export class ModerationsService {
         const moderation = res[0].toJSON<Moderation>();
         this.logger.debug(`Created moderation ${moderation.id}`);
 
-        const relationTupleWithAdminGroup = new RelationTuple(
-          PermissionNamespaces[Resources.MODERATIONS],
-          moderation.id,
-          'editors',
-          {
-            namespace: PermissionNamespaces[Resources.GROUPS],
-            object: 'admin',
-            relation: 'members',
-          },
-        );
-        await this.oryPermissionsService.createRelation(
+        const relationTupleWithAdminGroup = relationTupleBuilder()
+          .subject(PermissionNamespaces[Resources.GROUPS], 'admin', 'members')
+          .isIn('editors')
+          .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id)
+          .toJSON();
+        const createRelationshipBody = createRelationQuery(
           relationTupleWithAdminGroup,
-        );
+        ).unwrapOrThrow();
+        await this.oryRelationshipsService.createRelationship({
+          createRelationshipBody,
+        });
         this.logger.debug(
           `Created relation ${relationTupleWithAdminGroup.toString()}`,
         );
@@ -226,7 +224,8 @@ export class ModerationsService {
           TICKET_CREATED_EVENT,
         );
       }
-      if (isOryError(e)) {
+      // TODO: isOryError
+      if ('getDetails' in e && typeof e.getDetails === 'function') {
         this.logger.error(e.getDetails());
         throw new AcceptableError(
           `Could not create relation`,

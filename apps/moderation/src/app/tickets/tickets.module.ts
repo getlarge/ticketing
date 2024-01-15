@@ -51,8 +51,8 @@ const clientFactory = (
       { name: 'Moderation', schema: ModerationSchema },
       { name: 'Ticket', schema: TicketSchema },
     ]),
-    // this client is used to send ticket moderation events to the tickets micro-service
     ClientsModule.registerAsync([
+      // this client is used to send ticket moderation events to the tickets micro-service
       {
         name: 'TICKETS_CLIENT',
         inject: [ConfigService],
@@ -63,9 +63,7 @@ const clientFactory = (
           };
         },
       },
-    ]),
-    // this client is used to send ticket moderation events to the orders micro-service
-    ClientsModule.registerAsync([
+      // this client is used to send ticket moderation events to the orders micro-service
       {
         name: 'ORDERS_CLIENT',
         inject: [ConfigService],

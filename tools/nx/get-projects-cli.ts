@@ -34,7 +34,12 @@ import { getProjects } from './get-dependencies';
     const { plain, type } = argv;
     const projects = await getProjects(type);
     if (plain) {
-      console.log(projects.map((p) => p.trim()).join(','));
+      console.log(
+        projects
+          .map((p) => p.trim())
+          .sort()
+          .join(','),
+      );
     } else {
       console.log(JSON.stringify(projects));
     }

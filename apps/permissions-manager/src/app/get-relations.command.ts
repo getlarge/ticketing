@@ -1,7 +1,10 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createFlattenRelationQuery,
+  RelationTuple,
+} from '@getlarge/keto-relations-parser';
 import { Logger } from '@nestjs/common';
-import { Relationship } from '@ory/client';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
-import { type RelationTuple } from '@ticketing/microservices/shared/relation-tuple-parser';
+import type { Relationship } from '@ory/client';
 import { Command, CommandRunner, Option } from 'nest-commander';
 
 interface CommandOptions {
@@ -17,7 +20,9 @@ interface CommandOptions {
 export class GetRelationsCommand extends CommandRunner {
   readonly logger = new Logger(GetRelationsCommand.name);
 
-  constructor(private readonly oryPermissionsService: OryPermissionsService) {
+  constructor(
+    private readonly oryRelationshipsService: OryRelationshipsService,
+  ) {
     super();
   }
 
@@ -58,8 +63,13 @@ export class GetRelationsCommand extends CommandRunner {
     tuple: Partial<RelationTuple>,
     options: { pageToken?: string; pageSize?: number } = { pageSize: 50 },
   ): AsyncIterable<{ relationships: Relationship[]; pageToken: string }> {
-    const { relation_tuples, next_page_token } =
-      await this.oryPermissionsService.getRelations(tuple);
+    const relationQuery = createFlattenRelationQuery(tuple).unwrapOrThrow();
+    const { data } = await this.oryRelationshipsService.getRelationships({
+      ...relationQuery,
+      ...options,
+    });
+    const { relation_tuples, next_page_token } = data;
+
     yield { relationships: relation_tuples, pageToken: next_page_token };
 
     if (next_page_token) {

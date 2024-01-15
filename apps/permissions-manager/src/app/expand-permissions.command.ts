@@ -1,13 +1,14 @@
-import { Logger } from '@nestjs/common';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
+import { OryPermissionsService } from '@getlarge/keto-client-wrapper';
 import {
-  type RelationTuple,
-  parseRelationTupleString,
-} from '@ticketing/microservices/shared/relation-tuple-parser';
+  createExpandPermissionQuery,
+  parseRelationTuple,
+} from '@getlarge/keto-relations-parser';
+import { Logger } from '@nestjs/common';
+import { PermissionApiExpandPermissionsRequest } from '@ory/client';
 import { Command, CommandRunner, Option } from 'nest-commander';
 
 interface CommandOptions {
-  tuple: Pick<RelationTuple, 'namespace' | 'object' | 'relation'>;
+  tuple: PermissionApiExpandPermissionsRequest;
   depth: number;
 }
 
@@ -21,10 +22,10 @@ export class ExpandPermissionsCommand extends CommandRunner {
 
   async run(passedParams: string[], options: CommandOptions): Promise<void> {
     const { depth, tuple } = options;
-    const tree = await this.oryPermissionsService.expandPermissions(
-      tuple,
-      depth,
-    );
+    const tree = await this.oryPermissionsService.expandPermissions({
+      ...tuple,
+      maxDepth: depth,
+    });
     this.logger.log(tree);
   }
 
@@ -34,16 +35,14 @@ export class ExpandPermissionsCommand extends CommandRunner {
       'Relationship tuple to expand from, using Zanzibar notation (without subject)',
     required: true,
   })
-  parseRelationTuple(
-    val: string,
-  ): Pick<RelationTuple, 'namespace' | 'object' | 'relation'> {
-    const res = parseRelationTupleString(val);
+  parseRelationTuple(val: string): PermissionApiExpandPermissionsRequest {
+    const res = parseRelationTuple(val);
     if (res.hasError()) {
       throw res.error;
     }
     const tuple = res.unwrapOrThrow();
     delete tuple.subjectIdOrSet;
-    return tuple;
+    return createExpandPermissionQuery(tuple).unwrapOrThrow();
   }
 
   @Option({

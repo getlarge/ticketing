@@ -1,11 +1,19 @@
 import {
+  OryAuthorizationGuard,
+  OryPermissionChecks,
+} from '@getlarge/keto-client-wrapper';
+import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
+import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
+import {
   Body,
+  CanActivate,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
   Post,
+  Type,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -19,17 +27,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
-import {
-  CurrentUser,
-  PermissionCheck,
-} from '@ticketing/microservices/shared/decorators';
-import {
-  OryAuthenticationGuard,
-  OryPermissionGuard,
-} from '@ticketing/microservices/shared/guards';
+import { CurrentUser } from '@ticketing/microservices/shared/decorators';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
-import { relationTupleToString } from '@ticketing/microservices/shared/relation-tuple-parser';
 import {
   Actions,
   CURRENT_USER_KEY,
@@ -43,27 +43,56 @@ import { get } from 'lodash-es';
 import { CreateOrder, CreateOrderDto, Order, OrderDto } from './models';
 import { OrdersService } from './orders.service';
 
+const AuthenticationGuard = (): Type<CanActivate> =>
+  OryAuthenticationGuard({
+    cookieResolver: (ctx) =>
+      ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
+    isValidSession: (x) => {
+      return (
+        !!x?.identity &&
+        typeof x.identity.traits === 'object' &&
+        !!x.identity.traits &&
+        'email' in x.identity.traits &&
+        typeof x.identity.metadata_public === 'object' &&
+        !!x.identity.metadata_public &&
+        'id' in x.identity.metadata_public &&
+        typeof x.identity.metadata_public.id === 'string'
+      );
+    },
+    sessionTokenResolver: (ctx) =>
+      ctx
+        .switchToHttp()
+        .getRequest<FastifyRequest>()
+        .headers?.authorization?.replace('Bearer ', ''),
+    postValidationHook: (ctx, session) => {
+      ctx.switchToHttp().getRequest().session = session;
+      ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
+        id: session.identity.metadata_public['id'],
+        email: session.identity.traits.email,
+        identityId: session.identity.id,
+      };
+    },
+  });
+
+const AuthorizationGuard = (): Type<CanActivate> => OryAuthorizationGuard({});
+
 @Controller(Resources.ORDERS)
 @ApiTags(Resources.ORDERS)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   // TODO: check if ticket is reserved via Ory by adding orders to the tickets relations
-  @PermissionCheck((ctx) => {
+  @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
     const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
     const resourceId = get(req.body as CreateOrder, 'ticketId');
-    return relationTupleToString({
-      namespace: PermissionNamespaces[Resources.TICKETS],
-      object: resourceId,
-      relation: 'order',
-      subjectIdOrSet: {
-        namespace: PermissionNamespaces[Resources.USERS],
-        object: currentUserId,
-      },
-    });
+    return relationTupleBuilder()
+      .subject(PermissionNamespaces[Resources.USERS], currentUserId)
+      .isIn('order')
+      .of(PermissionNamespaces[Resources.TICKETS], resourceId)
+      .toString();
   })
-  @UseGuards(OryAuthenticationGuard, OryPermissionGuard)
+  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -92,7 +121,7 @@ export class OrdersController {
     return this.ordersService.create(order, currentUser);
   }
 
-  @UseGuards(OryAuthenticationGuard)
+  @UseGuards(AuthenticationGuard())
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -110,21 +139,17 @@ export class OrdersController {
     return this.ordersService.find(currentUser);
   }
 
-  @PermissionCheck((ctx) => {
+  @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
     const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
     const resourceId = get(req.params, 'id');
-    return relationTupleToString({
-      namespace: PermissionNamespaces[Resources.ORDERS],
-      object: resourceId,
-      relation: 'owners',
-      subjectIdOrSet: {
-        namespace: PermissionNamespaces[Resources.USERS],
-        object: currentUserId,
-      },
-    });
+    return relationTupleBuilder()
+      .subject(PermissionNamespaces[Resources.USERS], currentUserId)
+      .isIn('owners')
+      .of(PermissionNamespaces[Resources.ORDERS], resourceId)
+      .toString();
   })
-  @UseGuards(OryAuthenticationGuard)
+  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -141,21 +166,17 @@ export class OrdersController {
     return this.ordersService.findById(id);
   }
 
-  @PermissionCheck((ctx) => {
+  @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
     const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
     const resourceId = get(req.params, 'id');
-    return relationTupleToString({
-      namespace: PermissionNamespaces[Resources.ORDERS],
-      object: resourceId,
-      relation: 'owners',
-      subjectIdOrSet: {
-        namespace: PermissionNamespaces[Resources.USERS],
-        object: currentUserId,
-      },
-    });
+    return relationTupleBuilder()
+      .subject(PermissionNamespaces[Resources.USERS], currentUserId)
+      .isIn('owners')
+      .of(PermissionNamespaces[Resources.ORDERS], resourceId)
+      .toString();
   })
-  @UseGuards(OryAuthenticationGuard)
+  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
   @UsePipes(
     new ValidationPipe({
       transform: true,

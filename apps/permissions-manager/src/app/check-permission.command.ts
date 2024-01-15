@@ -1,13 +1,14 @@
-import { Logger } from '@nestjs/common';
-import { OryPermissionsService } from '@ticketing/microservices/ory-client';
+import { OryPermissionsService } from '@getlarge/keto-client-wrapper';
 import {
-  type RelationTuple,
+  createPermissionCheckQuery,
   parseRelationTuple,
-} from '@ticketing/microservices/shared/relation-tuple-parser';
+} from '@getlarge/keto-relations-parser';
+import { Logger } from '@nestjs/common';
+import { PermissionApiCheckPermissionRequest } from '@ory/client';
 import { Command, CommandRunner, Option } from 'nest-commander';
 
 interface CommandOptions {
-  tuple: RelationTuple;
+  tuple: PermissionApiCheckPermissionRequest;
 }
 
 @Command({ name: 'check', description: 'Check permission on Ory Keto' })
@@ -30,11 +31,11 @@ export class CheckPermissionCommand extends CommandRunner {
       'Relationship tuple to check permission from, using Zanzibar notation',
     required: true,
   })
-  parseRelationTuple(val: string): RelationTuple {
+  parseRelationTuple(val: string): PermissionApiCheckPermissionRequest {
     const res = parseRelationTuple(val);
     if (res.hasError()) {
       throw res.error;
     }
-    return res.unwrapOrThrow();
+    return createPermissionCheckQuery(res.value).unwrapOrThrow();
   }
 }
