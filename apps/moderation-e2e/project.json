@@ -3,14 +3,25 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "implicitDependencies": ["moderation"],
   "projectType": "application",
+  "namedInputs": {
+    "moderation": [
+      "{workspaceRoot}/apps/moderation/**/*.ts",
+      "{workspaceRoot}/dist/apps/moderation/main.mjs"
+    ]
+  },
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{e2eProjectRoot}",
+        "{workspaceRoot}/dist/apps/moderation"
+      ],
       "options": {
         "jestConfig": "apps/moderation-e2e/jest.config.ts",
         "passWithNoTests": true
-      }
+      },
+      "dependsOn": ["^build"],
+      "inputs": ["^default", "moderation"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
