@@ -27,7 +27,12 @@ async function bootstrap(): Promise<void> {
       trustProxy: true,
       bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 1048576,
     }),
-    { bufferLogs: true, abortOnError: false },
+
+    {
+      bufferLogs: true,
+      abortOnError: false,
+      logger: ['error', 'warn', 'debug'],
+    },
   );
 
   const configService =
@@ -107,7 +112,7 @@ async function bootstrap(): Promise<void> {
 
   await microService.listen();
   await app.listen(DEFAULT_PORT, '0.0.0.0', () => {
-    Logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
+    Logger.debug(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
   });
 }
 
