@@ -3854,6 +3854,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@golevelup/ts-jest@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@golevelup/ts-jest@npm:0.4.0"
+  checksum: 1cb2c938771493445d478665594927304fd0890e964c8d38a11a3f8735fd83a01bed3e5d470c403d3f8f38e8b67571aab822c1bebbedc8562faf2936e74c8f66
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.10":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -22720,6 +22727,7 @@ __metadata:
     "@getlarge/keto-client-wrapper": 0.0.2
     "@getlarge/keto-relations-parser": 0.0.2
     "@getlarge/kratos-client-wrapper": 0.0.2
+    "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0

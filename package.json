@@ -192,6 +192,7 @@
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-angular": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
+    "@golevelup/ts-jest": "^0.4.0",
     "@jscutlery/semver": "^3.1.0",
     "@mermaid-js/mermaid-cli": "^8.13.4",
     "@nestjs/schematics": "10.0.2",

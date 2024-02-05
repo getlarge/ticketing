@@ -157,10 +157,12 @@ export class ModerationsService {
 
     try {
       await manager.wrap(async (session) => {
-        const existingModeration = await this.moderationModel.findOne({
-          'ticket.$id': event.ticket.id,
-        });
-        if (existingModeration) {
+        const existingModeration = await this.moderationModel
+          .findOne({
+            'ticket.$id': event.ticket.id,
+          })
+          .session(session);
+        if (existingModeration?.id) {
           // TODO: check whether moderation is pending,
           throw new AcceptableError(
             `Ticket moderation already exists - ${existingModeration.id}`,
@@ -184,10 +186,10 @@ export class ModerationsService {
         const relationTupleWithAdminGroup = relationTupleBuilder()
           .subject(PermissionNamespaces[Resources.GROUPS], 'admin', 'members')
           .isIn('editors')
-          .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id)
-          .toJSON();
+          .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id);
+
         const createRelationshipBody = createRelationQuery(
-          relationTupleWithAdminGroup,
+          relationTupleWithAdminGroup.toJSON(),
         ).unwrapOrThrow();
         await this.oryRelationshipsService.createRelationship({
           createRelationshipBody,
