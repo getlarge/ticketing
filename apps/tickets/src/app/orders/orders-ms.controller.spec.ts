@@ -29,6 +29,7 @@ describe('OrdersMSController', () => {
             new MockModel() as any,
             new MockOryRelationshipsService() as any,
             new MockPublisher() as any,
+            new MockPublisher() as any,
           ),
         },
       ],

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AsyncLocalStorageModule } from '@ticketing/microservices/shared/async-local-storage';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +10,7 @@ describe('AppController', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
+      imports: [AsyncLocalStorageModule.forRoot()],
       controllers: [AppController],
       providers: [AppService],
     }).compile();
