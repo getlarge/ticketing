@@ -457,7 +457,7 @@ services:
 
   # region Ory Keto
   keto-migrate:
-    image: oryd/keto:v0.11.1
+    image: oryd/keto:v0.12.0
     volumes:
       - type: bind
         source: ./infra/ory/keto
@@ -478,7 +478,7 @@ services:
   keto:
     depends_on:
       - keto-migrate
-    image: oryd/keto:v0.11.1
+    image: oryd/keto:v0.12.0
     ports:
       - '4466:4466' # public
       - '4467:4467' # admin

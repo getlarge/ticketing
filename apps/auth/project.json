@@ -47,7 +47,9 @@
           "buildTarget": "auth:build:development"
         },
         "local": {
-          "buildTarget": "auth:build:development"
+          "buildTarget": "auth:build:development",
+          "inspect": true,
+          "port": 9220
         }
       },
       "defaultConfiguration": "local"
