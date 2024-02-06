@@ -25,7 +25,10 @@ import {
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
-import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import {
+  GenericError,
+  requestValidationErrorFactory,
+} from '@ticketing/shared/errors';
 import { ModerationStatus } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 import { get } from 'lodash-es';
@@ -96,9 +99,25 @@ const AuthenticationGuard = (): Type<CanActivate> =>
         identityId: session.identity.id,
       };
     },
+    unauthorizedFactory(ctx) {
+      return new GenericError(
+        'Unauthorized',
+        401,
+        ctx.switchToHttp().getRequest().url,
+      );
+    },
   });
 
-const AuthorizationGuard = (): Type<CanActivate> => OryAuthorizationGuard({});
+const AuthorizationGuard = (): Type<CanActivate> =>
+  OryAuthorizationGuard({
+    unauthorizedFactory(ctx) {
+      return new GenericError(
+        'Forbidden',
+        403,
+        ctx.switchToHttp().getRequest().url,
+      );
+    },
+  });
 
 @Controller(Resources.MODERATIONS)
 @UseFilters(GenericExceptionFilter)
