@@ -47,7 +47,9 @@
           "buildTarget": "expiration:build:development"
         },
         "local": {
-          "buildTarget": "expiration:build:development"
+          "buildTarget": "expiration:build:development",
+          "inspect": true,
+          "port": 9221
         }
       },
       "defaultConfiguration": "local"
