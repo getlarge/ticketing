@@ -376,8 +376,6 @@ services:
   # region Ory Kratos
   kratos-migrate:
     image: oryd/kratos:v1.0.0
-    environment:
-      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
     volumes:
       - type: bind
         source: ./infra/ory/kratos
@@ -398,8 +396,6 @@ services:
       - '4433:4433' # public
       - '4434:4434' # admin
     restart: unless-stopped
-    environment:
-      - DSN=postgres://dbuser:secret@kratos-postgres:5432/kratosdb?sslmode=disable
     command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
     volumes:
       - type: bind
@@ -465,8 +461,6 @@ services:
       - type: bind
         source: ./tools/ory/namespaces.ts
         target: /home/ory/namespaces.ts
-    environment:
-      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
     restart: on-failure
     networks:
@@ -484,8 +478,6 @@ services:
       - '4467:4467' # admin
     command: serve -c /home/ory/keto.yaml
     restart: on-failure
-    environment:
-      - DSN=postgres://dbuser:secret@keto-postgres:5432/accesscontroldb?sslmode=disable
     volumes:
       - type: bind
         source: ./infra/ory/keto
@@ -512,26 +504,5 @@ services:
     profiles:
       - 'ory-only'
       - 'dev'
-
-  # endregion
-
-  # region Ory Oathkeeper
-
-  # oathkeeper:
-  #   image: oryd/oathkeeper:v0.40
-  #   depends_on:
-  #     - kratos
-  #   ports:
-  #     - 4455:4455
-  #     - 4456:4456
-  #   command: serve proxy -c "/etc/config/oathkeeper/oathkeeper.yaml"
-  #   restart: on-failure
-  #   networks:
-  #     - ory
-  #   volumes:
-  #     - ./infra/ory/oathkeeper:/etc/config/oathkeeper
-  #   profiles:
-  #     - 'ory-only'
-  #     - 'dev'
 
   # endregion
