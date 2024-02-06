@@ -18,6 +18,7 @@
     "**/*.mock.ts",
     "**/*.spec.ts",
     "**/*.d.ts",
-    "jest.config.ts"
+    "jest.config.ts",
+    "jest.setup.ts"
   ]
 }

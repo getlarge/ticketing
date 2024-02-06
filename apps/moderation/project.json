@@ -57,6 +57,13 @@
         "jestConfig": "apps/moderation/jest.config.ts"
       }
     },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/moderation-e2e"],
+      "options": {
+        "jestConfig": "apps/moderation/jest-e2e.config.ts"
+      }
+    },
     "refresh-pkg-json": {
       "executor": "nx:run-commands",
       "options": {
