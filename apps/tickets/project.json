@@ -47,7 +47,9 @@
           "buildTarget": "tickets:build:development"
         },
         "local": {
-          "buildTarget": "tickets:build:development"
+          "buildTarget": "tickets:build:development",
+          "inspect": true,
+          "port": 9224
         }
       },
       "defaultConfiguration": "local"

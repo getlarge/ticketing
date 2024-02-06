@@ -3801,11 +3801,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/keto-client-wrapper@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@getlarge/keto-client-wrapper@npm:0.0.2"
+"@getlarge/keto-client-wrapper@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@getlarge/keto-client-wrapper@npm:0.1.0"
   dependencies:
-    "@getlarge/keto-relations-parser": 0.0.2
+    "@getlarge/keto-relations-parser": 0.0.3
     defekt: ^9.3.1
     lodash.get: ^4.4.2
     tslib: ^2.3.0
@@ -3815,24 +3815,24 @@ __metadata:
     "@nestjs/core": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: d38a03c5eb818a41646b9f3e3c2b07713c624f2e58e3b6c9faf3e7340fd1d47bc7764e7ab550788803b3948a892b14b3eb11286e0a98b994ce396848dda79cbe
+  checksum: 2964831b73e7d7fb6ba7eb403f861d456994db7a04a89ef90a79f72fa131d14b43d016866bd2f3cd44abde6e2ab6c518435b8092c043c5c415bcc1601ff3dad5
   languageName: node
   linkType: hard
 
-"@getlarge/keto-relations-parser@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@getlarge/keto-relations-parser@npm:0.0.2"
+"@getlarge/keto-relations-parser@npm:0.0.3":
+  version: 0.0.3
+  resolution: "@getlarge/keto-relations-parser@npm:0.0.3"
   dependencies:
     defekt: ^9.3.1
     lodash.get: ^4.4.2
     tslib: ^2.3.0
-  checksum: 98a25663324717202e2d9dcb49daa5f589006300c5a89fec2245bbac1aed74b9701cb5d0eca2aabba5ad316ab0452a9670756d6cfa15df1785c9e40f3f4bd872
+  checksum: 053d00f618f556c08e88d9b4b2937d5f5aa2a2054383e12e38a93e51614f61c64a7bcdec870d649b6b170cdc5aacd3513b535bf11b33980c37efc92354d9bb6f
   languageName: node
   linkType: hard
 
-"@getlarge/kratos-client-wrapper@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@getlarge/kratos-client-wrapper@npm:0.0.2"
+"@getlarge/kratos-client-wrapper@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.0"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
@@ -3840,7 +3840,7 @@ __metadata:
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: adfa8f2c43c4ccb339f96bcda665730eec695a5828ca4438600181e646ddb8ec443b710d9747b2bf20d260e029f7cc0f1616998a8e611053c7b9c0f0764e657e
+  checksum: bbadf3d43e046d11fcb10d8f1f9b95bff6bba10ba9d2561981c51594ddd269379ee3a05402e5d841b7c514e52a1bf29d95d6cd6dee42404042d780efc2b68a48
   languageName: node
   linkType: hard
 
@@ -22375,9 +22375,9 @@ __metadata:
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
-    "@getlarge/keto-client-wrapper": 0.0.2
-    "@getlarge/keto-relations-parser": 0.0.2
-    "@getlarge/kratos-client-wrapper": 0.0.2
+    "@getlarge/keto-client-wrapper": 0.1.0
+    "@getlarge/keto-relations-parser": 0.0.3
+    "@getlarge/kratos-client-wrapper": 0.1.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0

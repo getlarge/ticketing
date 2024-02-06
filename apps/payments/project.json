@@ -46,7 +46,9 @@
           "buildTarget": "payments:build:development"
         },
         "local": {
-          "buildTarget": "payments:build:development"
+          "buildTarget": "payments:build:development",
+          "inspect": true,
+          "port": 9223
         }
       },
       "defaultConfiguration": "local"

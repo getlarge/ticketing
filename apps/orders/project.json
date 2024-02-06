@@ -46,7 +46,9 @@
           "buildTarget": "orders:build:development"
         },
         "local": {
-          "buildTarget": "orders:build:development"
+          "buildTarget": "orders:build:development",
+          "inspect": true,
+          "port": 9222
         }
       },
       "defaultConfiguration": "local"
