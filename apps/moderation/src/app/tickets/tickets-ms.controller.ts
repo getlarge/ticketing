@@ -64,7 +64,6 @@ export class TicketsMSController {
       } else {
         channel.nack(message, false, false);
       }
-      channel.nack(message, false, false);
       throw e;
     }
   }

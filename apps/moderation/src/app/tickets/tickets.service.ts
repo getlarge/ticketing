@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { AcceptableError, RecoverableError } from '@ticketing/shared/errors';
-import { Ticket, TicketStatus } from '@ticketing/shared/models';
+import { ModerationTicket, Ticket, TicketStatus } from '@ticketing/shared/models';
 import { MongoNetworkError, MongoServerClosedError } from 'mongodb';
 import { type Model } from 'mongoose';
 import { firstValueFrom, lastValueFrom, Observable, timeout, zip } from 'rxjs';
@@ -34,7 +34,7 @@ export class TicketsService {
     @Inject('ORDERS_CLIENT') private ordersClient: ClientProxy,
   ) {}
 
-  async create(body: Ticket): Promise<void> {
+  async create(body: Ticket): Promise<ModerationTicket> {
     const ticket = await this.ticketModel
       .create({
         ...body,
@@ -61,20 +61,25 @@ export class TicketsService {
       ticket: ticket.toJSON(),
       ctx: {},
     };
-    await this.eventEmitter.emitAsync(TICKET_CREATED_EVENT, event);
-    await this.ticketModel.deleteOne({ _id: ticket.id }).catch((err) => {
-      if (
-        err instanceof MongoNetworkError ||
-        err instanceof MongoServerClosedError
-      ) {
-        throw new RecoverableError(
-          err.message,
-          HttpStatus.SERVICE_UNAVAILABLE,
-          TICKET_CREATED_EVENT,
-        );
-      }
-      throw err;
-    });
+    try {
+      await this.eventEmitter.emitAsync(TICKET_CREATED_EVENT, event);
+      return ticket.toJSON<ModerationTicket>({});
+    } catch (e) {
+      await this.ticketModel.deleteOne({ _id: ticket.id }).catch((err) => {
+        if (
+          err instanceof MongoNetworkError ||
+          err instanceof MongoServerClosedError
+        ) {
+          throw new RecoverableError(
+            err.message,
+            HttpStatus.SERVICE_UNAVAILABLE,
+            TICKET_CREATED_EVENT,
+          );
+        }
+        throw err;
+      });
+      throw e;
+    }
   }
 
   async updateById<S extends TicketStatus>(

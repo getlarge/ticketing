@@ -197,6 +197,7 @@ describe('ModerationsService', () => {
       await expect(
         service.onTicketCreated(ticketCreationEvent),
       ).rejects.toThrow(AcceptableError);
+      //
       expect(moderationModel.startSession).toHaveBeenCalled();
       expect(moderationModel.findOne).toHaveBeenCalledWith({
         'ticket.$id': ticketCreationEvent.ticket.id,
@@ -235,6 +236,7 @@ describe('ModerationsService', () => {
       createdModerationDoc.toJSON.mockReturnValueOnce(createdModeration);
       //
       await service.onTicketCreated(ticketCreationEvent);
+      //
       expect(moderationModel.create).toHaveBeenCalledWith(
         [
           {

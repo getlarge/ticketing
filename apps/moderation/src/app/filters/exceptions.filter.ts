@@ -1,6 +1,8 @@
+import { OryError } from '@getlarge/kratos-client-wrapper/base-client-wrapper';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { ErrorResponse, GenericError } from '@ticketing/shared/errors';
+import type { AxiosError } from 'axios';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { Observable, throwError } from 'rxjs';
 
@@ -26,18 +28,8 @@ export class GenericExceptionFilter<T = unknown> implements ExceptionFilter<T> {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
     const request = ctx.getRequest<FastifyRequest>();
-    const status =
-      exception instanceof GenericError ? exception.statusCode : 500;
-    const errorResponse =
-      exception instanceof GenericError
-        ? exception.toErrorResponse()
-        : new ErrorResponse({
-            name: 'UnknownError',
-            statusCode: status,
-            errors: [{ message: exception?.toString() ?? 'Unknown error' }],
-            details: {},
-            path: request.url,
-          });
+    const status = this.getStatus(exception);
+    const errorResponse = this.getErrorResponse(exception, request.url);
     return response.status(status).send(errorResponse);
   }
 
@@ -47,18 +39,51 @@ export class GenericExceptionFilter<T = unknown> implements ExceptionFilter<T> {
   ): Observable<ErrorResponse> {
     const ctx = host.switchToRpc().getContext<RmqContext>();
     const pattern = ctx.getPattern();
-    const status =
-      exception instanceof GenericError ? exception.statusCode : 400;
-    const errorResponse =
-      exception instanceof GenericError
-        ? exception.toErrorResponse()
-        : new ErrorResponse({
-            name: 'UnknownError',
-            statusCode: status,
-            errors: [{ message: exception?.toString() ?? 'Unknown error' }],
-            details: {},
-            path: pattern,
-          });
+    const errorResponse = this.getErrorResponse(exception, pattern);
     return throwError(() => errorResponse);
+  }
+
+  private getStatus(exception: unknown): number {
+    if (exception instanceof GenericError) {
+      return exception.statusCode;
+    }
+    if (exception instanceof OryError) {
+      return exception.statusCode;
+    }
+    if (exception['isAxiosError']) {
+      return (exception as AxiosError).response?.status || 500;
+    }
+    if (exception instanceof Error) {
+      return 500;
+    }
+  }
+
+  private getMessage(exception: unknown): string {
+    if (exception instanceof OryError) {
+      return exception.message;
+    }
+    if (exception['isAxiosError']) {
+      return (
+        (exception as AxiosError)?.cause?.message ??
+        (exception as AxiosError).message
+      );
+    }
+    if (exception instanceof Error) {
+      return exception.message;
+    }
+    return 'Unknown error';
+  }
+
+  private getErrorResponse(exception: unknown, path?: string): ErrorResponse {
+    if (exception instanceof GenericError) {
+      return exception.toErrorResponse();
+    }
+    return new ErrorResponse({
+      name: 'UnknownError',
+      statusCode: this.getStatus(exception),
+      errors: [{ message: this.getMessage(exception) }],
+      details: {},
+      path,
+    });
   }
 }
