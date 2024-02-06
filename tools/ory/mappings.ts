@@ -36,6 +36,9 @@ const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 
 const DEFAULT_SELF_SERVICE_UI_URL = 'http://localhost:4455';
 
+const strToBool = (value: string | boolean) =>
+  value === 'true' || value === true;
+
 export class KratosMappings extends KeywordMappings {
   @Expose()
   @IsOptional()
@@ -52,6 +55,11 @@ export class KratosMappings extends KeywordMappings {
   })
   courier_smtp_connection_uri?: string =
     'smtps://test:test@mailslurper:1025/?skip_ssl_verify=true';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  kratos_dsn?: string = 'memory';
 
   @Expose()
   @IsOptional()
@@ -95,10 +103,61 @@ export class KratosMappings extends KeywordMappings {
     `${DEFAULT_SELF_SERVICE_UI_URL}/login`;
 
   @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_login_after_hook_config_can_interrupt?: boolean = false;
+
+  @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_login_after_hook_config_response_ignore?: boolean = false;
+
+  @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_login_after_hook_config_response_parse?: boolean = false;
+
+  @Expose()
   @IsOptional()
   @IsUrl(isUrlOptions)
   selfservice_flows_registration_ui_url?: string =
     `${DEFAULT_SELF_SERVICE_UI_URL}/register`;
+
+  @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_registration_after_hook_config_can_interrupt?: boolean =
+    false;
+
+  @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_registration_after_hook_config_response_ignore?: boolean =
+    false;
+
+  @Expose()
+  @Transform(({ obj, key }) => strToBool(obj[key]), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  selfservice_flows_registration_after_hook_config_response_parse?: boolean =
+    false;
 
   @Expose()
   @IsOptional()
@@ -253,6 +312,11 @@ export class KetoMappings extends KeywordMappings {
   @IsOptional()
   @IsString()
   namespaces_location?: string = 'file:///home/ory/namespaces.ts';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  keto_dsn?: string = 'memory';
 }
 
 export class OathkeeperMappings extends KeywordMappings {
