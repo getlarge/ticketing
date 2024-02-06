@@ -2,6 +2,7 @@
 /* eslint-disable max-lines-per-function */
 import { INestMicroservice } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LazyModuleLoader } from '@nestjs/core';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { CustomStrategy } from '@nestjs/microservices';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
@@ -14,11 +15,14 @@ import { AmqpClient, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
+import {
+  type RmqManagerService,
+  getReplyQueueName,
+} from '@ticketing/microservices/shared/rmq';
 import { Services } from '@ticketing/shared/constants';
 import { Ticket, TicketStatus } from '@ticketing/shared/models';
 import { Model, Types } from 'mongoose';
-import { delay, lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom, of } from 'rxjs';
 
 import { EnvironmentVariables } from '../src/app/env';
 import { TICKET_CREATED_EVENT } from '../src/app/shared/events';
@@ -31,12 +35,18 @@ import { TicketsModule } from '../src/app/tickets/tickets.module';
 describe('TicketsMSController (e2e)', () => {
   const envFilePath = 'apps/moderation/.env.test';
   const envVariables = loadEnv(envFilePath, true);
+  const moderationQueue = `${Services.MODERATION_SERVICE}_QUEUE_TEST`;
+  const moderationReplyQueue = `${getReplyQueueName(
+    Services.MODERATION_SERVICE,
+    Services.TICKETS_SERVICE,
+  )}_TEST`;
 
   let app: NestFastifyApplication;
   let microservice: INestMicroservice;
   let ticketRmqPublisher: AmqpClient;
   let ticketModel: Model<TicketDocument>;
   let eventEmitter: EventEmitter2;
+  let rmqManager: RmqManagerService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -60,22 +70,21 @@ describe('TicketsMSController (e2e)', () => {
     app = moduleFixture.createNestApplication(new FastifyAdapter());
     const configService = app.get(ConfigService);
     const rmqUrl = configService.get('RMQ_URL') as string;
-    const moderationQueue = `${Services.ORDERS_SERVICE}_QUEUE_TEST`;
 
     ticketRmqPublisher = new AmqpClient({
       urls: [rmqUrl],
       persistent: false,
-      noAck: false,
-      prefetchCount: 1,
-      isGlobalPrefetchCount: false,
+      noAck: true,
       queue: moderationQueue,
-      replyQueue: `${getReplyQueueName(
-        Services.MODERATION_SERVICE,
-        Services.TICKETS_SERVICE,
-      )}_TEST`,
+      replyQueue: moderationReplyQueue,
       queueOptions: {
         durable: false,
         exclusive: false,
+        autoDelete: false,
+      },
+      replyQueueOptions: {
+        durable: false,
+        exclusive: true,
         autoDelete: false,
       },
       socketOptions: {
@@ -90,8 +99,6 @@ describe('TicketsMSController (e2e)', () => {
         urls: [rmqUrl],
         persistent: false,
         noAck: false,
-        prefetchCount: 1,
-        isGlobalPrefetchCount: false,
         queue: moderationQueue,
         queueOptions: {
           durable: false,
@@ -106,8 +113,22 @@ describe('TicketsMSController (e2e)', () => {
       }),
     };
     microservice = moduleFixture.createNestMicroservice(options);
+
     ticketModel = app.get(getModelToken(TicketModel.name));
     eventEmitter = app.get(EventEmitter2);
+
+    const lazyModuleLoader = app.get(LazyModuleLoader);
+    const { RmqManagerModule, RmqManagerService } = await import(
+      '@ticketing/microservices/shared/rmq'
+    );
+    const moduleRef = await lazyModuleLoader.load(() =>
+      RmqManagerModule.forRoot({
+        apiUrl: configService.get('RMQ_MANAGEMENT_API_URL'),
+        username: 'guest',
+        password: 'guest',
+      }),
+    );
+    rmqManager = moduleRef.get(RmqManagerService);
 
     await microservice.listen();
     await app.init();
@@ -140,17 +161,19 @@ describe('TicketsMSController (e2e)', () => {
       const response = await lastValueFrom(
         ticketRmqPublisher
           .send(Patterns.TicketCreated, ticket)
-          .pipe(delay(500)),
+          .pipe(catchError((err) => of(err))),
       );
-      console.warn('response', response);
+      //
       expect(response).toHaveProperty('name', 'AcceptableError');
       expect(response).toHaveProperty('statusCode', 400);
       expect(response).toHaveProperty('path', Patterns.TicketCreated);
       expect(response).toHaveProperty('details');
       expect(response).toHaveProperty('errors');
+      const data = await rmqManager.getMessages(moderationQueue);
+      expect(data).toHaveLength(0);
       const createdTicket = await ticketModel.findOne({ _id: ticket.id });
-      expect(createdTicket).toBeUndefined();
-    }, 6000);
+      expect(createdTicket).toBeNull();
+    });
 
     it('should create ticket when event data is valid', async () => {
       const ticket: Ticket = {
@@ -167,16 +190,15 @@ describe('TicketsMSController (e2e)', () => {
         eventEmitted = true;
       });
       const response = await lastValueFrom(
-        ticketRmqPublisher
-          .send(Patterns.TicketCreated, ticket)
-          .pipe(delay(500)),
+        ticketRmqPublisher.send(Patterns.TicketCreated, ticket),
       );
       //
-      expect(response).toHaveProperty('id', ticket.id);
-      expect(response).toHaveProperty('title', ticket.title);
+      expect(response).toHaveProperty('ok', true);
+      expect(eventEmitted).toBe(true);
+      const data = await rmqManager.getMessages(moderationQueue);
+      expect(data).toHaveLength(0);
       const createdTicket = await ticketModel.findOne({ _id: ticket.id });
       expect(createdTicket?._id?.toString()).toEqual(ticket.id);
-      expect(eventEmitted).toBe(true);
-    }, 6000);
+    });
   });
 });

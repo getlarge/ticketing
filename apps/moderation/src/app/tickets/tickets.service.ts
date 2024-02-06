@@ -4,7 +4,11 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { AcceptableError, RecoverableError } from '@ticketing/shared/errors';
-import { ModerationTicket, Ticket, TicketStatus } from '@ticketing/shared/models';
+import {
+  ModerationTicket,
+  Ticket,
+  TicketStatus,
+} from '@ticketing/shared/models';
 import { MongoNetworkError, MongoServerClosedError } from 'mongodb';
 import { type Model } from 'mongoose';
 import { firstValueFrom, lastValueFrom, Observable, timeout, zip } from 'rxjs';
@@ -48,13 +52,13 @@ export class TicketsService {
           throw new RecoverableError(
             err.message,
             HttpStatus.SERVICE_UNAVAILABLE,
-            TICKET_CREATED_EVENT,
+            Patterns.TicketCreated,
           );
         }
         throw new AcceptableError(
           err.message,
           HttpStatus.BAD_REQUEST,
-          TICKET_CREATED_EVENT,
+          Patterns.TicketCreated,
         );
       });
     const event: InternalTicketCreatedEvent = {
@@ -73,7 +77,7 @@ export class TicketsService {
           throw new RecoverableError(
             err.message,
             HttpStatus.SERVICE_UNAVAILABLE,
-            TICKET_CREATED_EVENT,
+            Patterns.TicketCreated,
           );
         }
         throw err;
