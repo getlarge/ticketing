@@ -216,6 +216,22 @@ export interface Exchange {
   vhost: string;
 }
 
+export interface Message {
+  payload_bytes: number;
+  redelivered: boolean;
+  exchange: string;
+  routing_key: string;
+  message_count: number;
+  properties: {
+    reply_to?: string;
+    correlation_id: string;
+    delivery_mode: number;
+    headers: Record<string, unknown>;
+  };
+  payload: string;
+  payload_encoding: 'string';
+}
+
 export interface PaginatedResponse<T> {
   filtered_count: number;
   item_count: number;

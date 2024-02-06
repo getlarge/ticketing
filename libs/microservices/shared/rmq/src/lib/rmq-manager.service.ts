@@ -7,6 +7,7 @@ import type {
   ApplyTo,
   ExchangesResponse,
   ExchangeType,
+  Message,
   QueuesResponse,
 } from './rmq.interfaces';
 
@@ -35,6 +36,10 @@ export class RmqManagerService {
   readonly logger = new Logger(RmqManagerService.name);
 
   constructor(@Inject(HttpService) private readonly httpService: HttpService) {
+    this.httpService.axiosRef.interceptors.request.use((config) => {
+      console.warn('Request:', config);
+      return config;
+    });
     this.httpService.axiosRef.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -101,6 +106,60 @@ export class RmqManagerService {
         params,
         headers: { 'x-vhost': vhost },
       }),
+    );
+    return data;
+  }
+
+  /**
+   * @todo: investigate invalid response
+   * for some mysterious reason the axios request always returns 200 OK with empty array
+   * whether the queue is empty or not
+   *
+   * When using the curl command, the response is correct
+   * curl  -X POST \
+   * 'http://localhost:15672/api/queues/%2F/MODERATION_SERVICE_QUEUE_TEST/get' \
+   * --header 'Authorization: Basic xxxxxx' \
+   * --header 'Content-Type: application/json' \
+   * --data-raw '{
+   * "count": 1,
+   * "ackmode": "ack_requeue_true",
+   * "encoding": "auto",
+   * "truncate": 50000
+   *}'
+   *
+   **/
+  async getMessages(
+    queueName: string,
+    options: {
+      count?: number;
+      ackmode?:
+        | 'ack_requeue_true'
+        | 'reject_requeue_true'
+        | 'ack_requeue_false'
+        | 'reject_requeue_false';
+      encoding?: 'auto' | 'base64';
+      truncate?: number;
+    } = {},
+    vhost: string = '/',
+  ): Promise<Message[]> {
+    const defaultOptions = {
+      count: 10,
+      ackmode: 'ack_requeue_true',
+      encoding: 'auto',
+      truncate: 50000,
+    };
+    const body = {
+      ...defaultOptions,
+      ...options,
+      name: queueName,
+      vhost,
+    };
+    const encodedVhost = encodeURIComponent(vhost);
+    const { data } = await firstValueFrom(
+      this.httpService.post<Message[]>(
+        `/queues/${encodedVhost}/${queueName}/get`,
+        body,
+      ),
     );
     return data;
   }
