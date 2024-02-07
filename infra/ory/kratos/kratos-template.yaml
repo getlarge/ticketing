@@ -101,7 +101,6 @@ selfservice:
                 response:
                   ignore: ##selfservice_flows_login_after_hook_config_response_ignore##
                   parse: ##selfservice_flows_login_after_hook_config_response_parse##
-            - hook: require_verified_address
 
     registration:
       lifespan: 10m
