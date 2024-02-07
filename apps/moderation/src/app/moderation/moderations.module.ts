@@ -17,16 +17,18 @@ import { URL } from 'node:url';
 import { ContentGuardModule } from '../content-guard/content-guard.module';
 import { AppConfigService, EnvironmentVariables } from '../env';
 import { QueueNames } from '../shared/queues';
+import { TicketSchema } from '../tickets/schemas';
 import { ModerationsController } from './moderations.controller';
 import { ModerationsProcessor } from './moderations.processor';
 import { ModerationsService } from './moderations.service';
 import { ModerationsTasks } from './moderations.tasks';
-import { Moderation, ModerationSchema } from './schemas';
+import { ModerationSchema } from './schemas';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: Moderation.name, schema: ModerationSchema },
+      { name: 'Moderation', schema: ModerationSchema },
+      { name: 'Ticket', schema: TicketSchema },
     ]),
     ContentGuardModule.forRootAsync({
       inject: [ConfigService],
