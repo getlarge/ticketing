@@ -1,11 +1,11 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { SchedulerRegistry, Timeout } from '@nestjs/schedule';
 import { LockService } from '@s1seven/nestjs-tools-lock';
 import type { Queue } from 'bullmq';
 import type { Model } from 'mongoose';
-import type { Lock } from 'redlock';
+import { type Lock, ExecutionError, ResourceLockedError } from 'redlock';
 
 import { ModerateTicket, QueueNames } from '../shared/queues';
 import { Moderation, ModerationDocument } from './schemas';
@@ -16,22 +16,39 @@ export class ModerationsTasks {
 
   constructor(
     @Inject(LockService) private readonly lockService: LockService,
+    @Inject(SchedulerRegistry) private schedulerRegistry: SchedulerRegistry,
     @InjectModel(Moderation.name)
     private moderationModel: Model<ModerationDocument>,
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Timeout('checkPendingModerations', 5000)
   async checkPendingModerations(): Promise<void> {
-    const lockKey = 'checkPendingModerations';
-    this.logger.verbose('creating lock for checkPendingModerations...');
-    let lock: Lock = await this.lockService.lock(lockKey, 2000);
+    const taskKey = 'checkPendingModerations';
+    this.logger.verbose(`creating lock for ${taskKey}`);
+    let lock: Lock = await this.lockService
+      .lock(taskKey, 2000)
+      .catch(async (err) => {
+        // improve error handling as suggested in https://github.com/mike-marcacci/node-redlock/issues/288
+        let isAlreadyLocked = err instanceof ResourceLockedError;
+        if (err instanceof ExecutionError && err.attempts.length) {
+          const attemptError = (await err.attempts.at(0)).votesAgainst
+            .values()
+            .next().value;
+          isAlreadyLocked = attemptError instanceof ResourceLockedError;
+        }
+        if (!isAlreadyLocked) {
+          throw err;
+        }
+        return null;
+      });
     // if the lock is not released, we don't want to continue
-    if (typeof lock.release !== 'function') {
+    if (typeof lock?.release !== 'function') {
       return;
     }
     this.logger.debug('checking pending moderations...');
+
     try {
       const pendingModerations = await this.moderationModel
         .find({
@@ -77,6 +94,10 @@ export class ModerationsTasks {
           });
       }
     } finally {
+      const timeout = this.schedulerRegistry.getTimeout(
+        taskKey,
+      ) as NodeJS.Timeout;
+      timeout.refresh();
       await lock.release();
     }
   }

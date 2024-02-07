@@ -1,4 +1,4 @@
-import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import { OryError, OryRelationshipsService } from '@getlarge/keto-client-wrapper';
 import {
   createRelationQuery,
   relationTupleBuilder,
@@ -226,8 +226,7 @@ export class ModerationsService {
           TICKET_CREATED_EVENT,
         );
       }
-      // TODO: isOryError
-      if ('getDetails' in e && typeof e.getDetails === 'function') {
+      if (e instanceof OryError) {
         this.logger.error(e.getDetails());
         throw new AcceptableError(
           `Could not create relation`,

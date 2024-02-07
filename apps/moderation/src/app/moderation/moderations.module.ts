@@ -108,8 +108,7 @@ import { ModerationSchema } from './schemas';
         return {
           redis: redisOptions,
           lock: {
-            retryCount: 5,
-            retryDelay: 200,
+            retryCount: 0,
           },
         };
       },

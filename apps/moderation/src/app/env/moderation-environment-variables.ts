@@ -1,10 +1,16 @@
 import { applyDecorators } from '@nestjs/common';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsNumber, IsString, Max, Min } from 'class-validator';
 import { decorate } from 'ts-mixer';
 
 export const IsThresholdDecorator = (): PropertyDecorator => {
-  return applyDecorators(Expose(), IsNumber(), Min(0), Max(1));
+  return applyDecorators(
+    Expose(),
+    Type(() => Number),
+    IsNumber(),
+    Min(0),
+    Max(1),
+  );
 };
 
 export class ModerationEnvironmentVariables {

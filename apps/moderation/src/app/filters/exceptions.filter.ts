@@ -1,4 +1,4 @@
-import { OryError } from '@getlarge/kratos-client-wrapper/base-client-wrapper';
+import { OryError } from '@getlarge/kratos-client-wrapper';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { ErrorResponse, GenericError } from '@ticketing/shared/errors';
