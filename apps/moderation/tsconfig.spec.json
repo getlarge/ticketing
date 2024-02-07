@@ -2,7 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "moduleResolution": "Bundler",
     "module": "esnext",
     "target": "es2022",
     "emitDecoratorMetadata": true,
@@ -19,6 +18,7 @@
     "**/*.spec.ts",
     "**/*.d.ts",
     "jest.config.ts",
-    "jest.setup.ts"
+    "jest.setup.ts",
+    "jest.teardown.ts"
   ]
 }

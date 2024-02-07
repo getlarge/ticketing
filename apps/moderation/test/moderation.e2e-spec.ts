@@ -322,5 +322,18 @@ describe('ModerationsController (e2e)', () => {
       });
       expect(response.statusCode).toBe(200);
     });
+
+    it('should return 200 using cached value', async () => {
+      await moderationModel.deleteOne({ _id: exampleModeration.id });
+      //
+      const response = await app.inject({
+        method: 'GET',
+        url: `/moderations/${exampleModeration.id}`,
+        headers: {
+          Authorization: `Bearer ${validUserCredentials.sessionToken}`,
+        },
+      });
+      expect(response.statusCode).toBe(200);
+    });
   });
 });

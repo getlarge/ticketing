@@ -59,7 +59,7 @@
     },
     "e2e": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/moderation-e2e"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}-e2e"],
       "options": {
         "jestConfig": "apps/moderation/jest-e2e.config.ts"
       }

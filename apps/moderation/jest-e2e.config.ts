@@ -2,7 +2,7 @@ export default {
   displayName: 'moderation-e2e',
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[t]s$': [
+    '^.+\\.ts$': [
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -10,12 +10,12 @@ export default {
       },
     ],
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  globalSetup: '<rootDir>/jest.setup.ts',
+  globalTeardown: '<rootDir>/jest.teardown.ts',
   moduleFileExtensions: ['ts', 'mjs', 'js', 'html', 'node'],
   extensionsToTreatAsEsm: ['.ts'],
   collectCoverageFrom: ['./src/**/*.(t|j)s'],
   coverageDirectory: '../../coverage/apps/moderation-e2e',
-  coverageReporters: ['json'],
   testMatch: ['**/+(*.)+(e2e-spec|test).+(ts|js)?(x)'],
   preset: '../../jest.preset.js',
 };
