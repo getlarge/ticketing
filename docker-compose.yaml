@@ -1,4 +1,4 @@
-version: '2.7'
+version: '3.2'
 
 networks:
   mongo:
@@ -380,6 +380,7 @@ services:
       - type: bind
         source: ./infra/ory/kratos
         target: /etc/config/kratos
+        read_only: true
     command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
     restart: on-failure
     networks:
@@ -401,6 +402,7 @@ services:
       - type: bind
         source: ./infra/ory/kratos
         target: /etc/config/kratos
+        read_only: true
     networks:
       - ory
     profiles:
@@ -458,9 +460,11 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+        read_only: true
       - type: bind
         source: ./tools/ory/namespaces.ts
         target: /home/ory/namespaces.ts
+        read_only: true
     command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
     restart: on-failure
     networks:
@@ -482,9 +486,11 @@ services:
       - type: bind
         source: ./infra/ory/keto
         target: /home/ory
+        read_only: true
       - type: bind
         source: ./tools/ory/namespaces.ts
         target: /home/ory/namespaces.ts
+        read_only: true
     networks:
       - ory
     profiles:

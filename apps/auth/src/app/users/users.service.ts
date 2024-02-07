@@ -51,6 +51,19 @@ export class UsersService {
     if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
+    // logic from original require_verified_address hook https://github.com/ory/kratos/blob/34751a1a3ad9b217af2de7b435b9ee70df510265/selfservice/hook/address_verifier.go
+    if (!identity.verifiable_addresses?.length) {
+      throw new HttpException(
+        'A misconfiguration prevents login. Expected to find a verification address but this identity does not have one assigned.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const hasAddressVerified = identity.verifiable_addresses.some(
+      (address) => address.verified,
+    );
+    if (!hasAddressVerified) {
+      throw new HttpException('Email not verified', HttpStatus.UNAUTHORIZED);
+    }
     if (!user.identityId || user.identityId !== identity.id) {
       user.set({ identityId: identity.id });
       await user.save();
