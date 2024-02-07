@@ -36,10 +36,6 @@ export class RmqManagerService {
   readonly logger = new Logger(RmqManagerService.name);
 
   constructor(@Inject(HttpService) private readonly httpService: HttpService) {
-    this.httpService.axiosRef.interceptors.request.use((config) => {
-      console.warn('Request:', config);
-      return config;
-    });
     this.httpService.axiosRef.interceptors.response.use(
       (response) => response,
       (error) => {

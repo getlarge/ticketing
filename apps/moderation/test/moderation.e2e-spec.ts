@@ -7,11 +7,12 @@ import {
 } from '@getlarge/keto-relations-parser';
 import {
   OryFrontendService,
+  OryIdentitiesModule,
   OryIdentitiesService,
 } from '@getlarge/kratos-client-wrapper';
 import { createMock } from '@golevelup/ts-jest';
 import { DynamicModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import {
@@ -194,6 +195,15 @@ describe('ModerationsController (e2e)', () => {
           delimiter: '/',
         }),
         AsyncLocalStorageModule.forRoot(),
+        OryIdentitiesModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (
+            configService: ConfigService<EnvironmentVariables, true>,
+          ) => ({
+            basePath: configService.get('ORY_KRATOS_ADMIN_URL'),
+            accessToken: configService.get('ORY_KRATOS_API_KEY'),
+          }),
+        }),
       ],
     })
       .overrideModule(ScheduleModule)
@@ -240,12 +250,14 @@ describe('ModerationsController (e2e)', () => {
 
   afterAll(async () => {
     await app?.close();
-    await oryIdentityService?.deleteIdentity({
-      id: validUserCredentials?.identity.id,
-    });
-    await oryIdentityService?.deleteIdentity({
-      id: invalidUserCredentials?.identity.id,
-    });
+    validUserCredentials?.identity.id &&
+      (await oryIdentityService?.deleteIdentity({
+        id: validUserCredentials?.identity.id,
+      }));
+    invalidUserCredentials?.identity.id &&
+      (await oryIdentityService?.deleteIdentity({
+        id: invalidUserCredentials?.identity.id,
+      }));
   });
 
   describe('GET /moderations', () => {
