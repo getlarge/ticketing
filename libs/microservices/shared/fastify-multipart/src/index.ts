@@ -1,1 +1,4 @@
-export * from './lib/microservices-shared-fastify-multipart.module';
+export * from './lib/decorators';
+export * from './lib/interceptors';
+export * from './lib/multipart';
+export * from './lib/storage';
