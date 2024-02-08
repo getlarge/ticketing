@@ -1,7 +1,7 @@
 {
-  "name": "microservices-shared-fastify-passport",
+  "name": "microservices-shared-fastify-multipart",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/microservices/shared/fastify-passport/src",
+  "sourceRoot": "libs/microservices/shared/fastify-multipart/src",
   "projectType": "library",
   "targets": {
     "lint": {
@@ -9,17 +9,15 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "libs/microservices/shared/fastify-passport/**/*.ts"
+          "libs/microservices/shared/fastify-multipart/**/*.ts"
         ]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/libs/microservices/shared/fastify-passport"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.ts"
+        "jestConfig": "libs/microservices/shared/fastify-multipart/jest.config.ts"
       }
     }
   },
