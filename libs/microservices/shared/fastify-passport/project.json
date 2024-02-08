@@ -19,7 +19,8 @@
         "{workspaceRoot}/coverage/libs/microservices/shared/fastify-passport"
       ],
       "options": {
-        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.ts"
+        "jestConfig": "libs/microservices/shared/fastify-passport/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   },
