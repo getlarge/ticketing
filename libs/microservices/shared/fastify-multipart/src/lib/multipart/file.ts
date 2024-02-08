@@ -4,7 +4,9 @@ export const removeStorageFiles = async <
   S extends Storage<StorageFile> extends Storage<infer U>
     ? Storage<U>
     : Storage<StorageFile>,
-  T extends StorageFile extends Storage<infer U> ? U : StorageFile = StorageFile extends Storage<infer U> ? U : StorageFile
+  T extends StorageFile extends Storage<infer U>
+    ? U
+    : StorageFile = StorageFile extends Storage<infer U> ? U : StorageFile,
 >(
   storage: S,
   files?: (T | undefined)[],

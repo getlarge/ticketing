@@ -8,9 +8,7 @@ import type { TransformedUploadOptions } from '../options';
 import { getParts } from '../request';
 import { HandlerResponse } from './types';
 
-export const handleMultipartAnyFiles = async <
-  S extends Storage
->(
+export const handleMultipartAnyFiles = async <S extends Storage>(
   req: FastifyRequest,
   options: TransformedUploadOptions<S>,
 ): Promise<HandlerResponse & { files: StorageFile[] }> => {

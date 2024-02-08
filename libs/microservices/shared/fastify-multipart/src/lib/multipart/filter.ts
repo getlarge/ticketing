@@ -6,12 +6,14 @@ import type {
   MemoryStorageFile,
   Storage,
   StorageFile,
+  StreamStorageFile,
 } from '../storage';
 import type { UploadOptions } from './options';
 
 export type UploadFilterFile =
   | DiskStorageFile
   | MemoryStorageFile
+  | StreamStorageFile
   | StorageFile;
 
 export type UploadFilterHandler = (

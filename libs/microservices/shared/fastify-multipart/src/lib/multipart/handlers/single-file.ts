@@ -40,7 +40,7 @@ export const handleMultipartSingleFile = async <
           );
         }
 
-        const _file = await options.storage.handleFile(part, req) as F
+        const _file = (await options.storage.handleFile(part, req)) as F;
         if (await filterUpload(options, req, _file)) {
           file = _file;
         }

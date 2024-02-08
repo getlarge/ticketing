@@ -13,11 +13,11 @@ export const handleMultipartMultipleFiles = async <
   S extends Storage extends Storage<infer U>
     ? Storage<U>
     : Storage<StorageFile>,
-  T extends S extends Storage<infer U>
+  T extends S extends Storage<infer U> ? U : StorageFile = S extends Storage<
+    infer U
+  >
     ? U
-    : StorageFile = S extends Storage<infer U>
-    ? U
-    : StorageFile
+    : StorageFile,
 >(
   req: FastifyRequest,
   fieldname: string,
