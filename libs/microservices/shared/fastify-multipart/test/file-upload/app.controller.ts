@@ -1,11 +1,22 @@
-import { Controller, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  StreamableFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { join } from 'node:path';
 
 import {
   AnyFilesInterceptor,
+  DiskStorage,
+  DiskStorageFile,
   FileFieldsInterceptor,
   FileInterceptor,
   FilesInterceptor,
   MemoryStorage,
+  MemoryStorageFile,
+  StreamStorage,
+  StreamStorageFile,
   UploadedFile,
   UploadedFiles,
 } from '../../src';
@@ -18,7 +29,9 @@ export class AppController {
       storage: new MemoryStorage(),
     }),
   )
-  uploadSingleFile(@UploadedFile() file: unknown): { success: boolean } {
+  uploadSingleFile(@UploadedFile() file: MemoryStorageFile): {
+    success: boolean;
+  } {
     return { success: !!file };
   }
 
@@ -26,7 +39,7 @@ export class AppController {
   @UseInterceptors(
     FilesInterceptor('file', 10, { storage: new MemoryStorage() }),
   )
-  uploadMultipleFiles(@UploadedFiles() files: unknown[]): {
+  uploadMultipleFiles(@UploadedFiles() files: MemoryStorageFile[]): {
     success: boolean;
     fileCount: number;
   } {
@@ -35,7 +48,7 @@ export class AppController {
 
   @Post('any')
   @UseInterceptors(AnyFilesInterceptor({ storage: new MemoryStorage() }))
-  uploadAnyFiles(@UploadedFiles() files: unknown[]): {
+  uploadAnyFiles(@UploadedFiles() files: MemoryStorageFile[]): {
     success: boolean;
     fileCount: number;
   } {
@@ -49,11 +62,41 @@ export class AppController {
     }),
   )
   uploadFileFieldsFiles(
-    @UploadedFiles() files: { profile?: unknown[]; avatar?: unknown[] },
+    @UploadedFiles()
+    files: {
+      profile?: MemoryStorageFile[];
+      avatar?: MemoryStorageFile[];
+    },
   ): { success: boolean; fileCount: number } {
     return {
       success: !!((files.profile?.length ?? 0) + (files.avatar?.length ?? 0)),
       fileCount: (files.profile?.length ?? 0) + (files.avatar?.length ?? 0),
     };
+  }
+
+  @Post('single-stream')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: new StreamStorage(),
+    }),
+  )
+  streamSingleFile(@UploadedFile() file: StreamStorageFile): StreamableFile {
+    return new StreamableFile(file.stream);
+  }
+
+  @Post('single-disk')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: new DiskStorage({
+        removeAfter: true,
+      }),
+      dest: join(process.cwd(), 'uploads'),
+    }),
+  )
+  persistSingleFile(@UploadedFile() file: DiskStorageFile): {
+    success: boolean;
+    filepath: string;
+  } {
+    return { success: !!file, filepath: file.path };
   }
 }
