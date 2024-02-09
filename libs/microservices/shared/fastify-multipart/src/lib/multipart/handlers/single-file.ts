@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import type { FastifyRequest } from 'fastify';
 import { from } from 'rxjs';
 
-import type { Storage, StorageFile } from '../../storage';
+import type { MultipartFile, Storage, StorageFile } from '../../storage';
 import { filterUpload } from '../filter';
 import type { TransformedUploadOptions } from '../options';
 import { getParts } from '../request';
@@ -28,25 +28,24 @@ export const handleMultipartSingleFile = async <
   };
 
   try {
-    for await (const part of parts) {
-      if (part.file) {
-        if (part.fieldname !== fieldname) {
-          throw new BadRequestException(
-            `Field ${part.fieldname} doesn't accept file`,
-          );
-        } else if (file != null) {
-          throw new BadRequestException(
-            `Field ${fieldname} accepts only one file`,
-          );
-        }
-
-        const _file = (await options.storage.handleFile(part, req)) as F;
-        if (await filterUpload(options, req, _file)) {
-          file = _file;
-        }
-      } else {
-        body[part.fieldname] = part.value;
+    const { value: part }: { value: MultipartFile } = await parts.next();
+    if (part.file) {
+      if (part.fieldname !== fieldname) {
+        throw new BadRequestException(
+          `Field ${part.fieldname} doesn't accept file`,
+        );
+      } else if (file != null) {
+        throw new BadRequestException(
+          `Field ${fieldname} accepts only one file`,
+        );
       }
+
+      const _file = (await options.storage.handleFile(part, req)) as F;
+      if (await filterUpload(options, req, _file)) {
+        file = _file;
+      }
+    } else {
+      body[part.fieldname] = part.value;
     }
   } catch (error) {
     await removeFiles(true);
