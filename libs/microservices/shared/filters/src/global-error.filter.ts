@@ -35,7 +35,9 @@ function hasDetailsProperty(error: unknown): error is { details: any } {
 }
 
 @Catch()
-export class GlobalErrorFilter<T = unknown, R = unknown> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T = unknown, R = unknown>
+  implements ExceptionFilter<T>
+{
   protected logger = new Logger(GlobalErrorFilter.name);
 
   catch(exception: T, host: ArgumentsHost): void | Observable<R> {

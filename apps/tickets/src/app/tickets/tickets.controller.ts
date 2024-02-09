@@ -7,13 +7,19 @@ import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
 import {
   Body,
   Controller,
+  ExecutionContext,
+  FileTypeValidator,
   Get,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
+  StreamableFile,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
   ValidationPipeOptions,
@@ -21,6 +27,7 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiCookieAuth,
   ApiExtraModels,
   ApiOperation,
@@ -33,6 +40,12 @@ import {
   ApiPaginatedDto,
   CurrentUser,
 } from '@ticketing/microservices/shared/decorators';
+import {
+  type StreamStorageFile,
+  FileInterceptor,
+  StreamStorage,
+  UploadedFile,
+} from '@ticketing/microservices/shared/fastify-multipart';
 import {
   PaginatedDto,
   PaginateDto,
@@ -60,6 +73,7 @@ import {
   TicketDto,
   UpdateTicket,
   UpdateTicketDto,
+  UploadTicketImageDto,
 } from './models';
 import { TicketsService } from './tickets.service';
 
@@ -101,6 +115,17 @@ const validationPipeOptions: ValidationPipeOptions = {
   exceptionFactory: requestValidationErrorFactory,
   transformOptions: { enableImplicitConversion: true },
   forbidUnknownValues: true,
+};
+
+const isTicketOwner = (ctx: ExecutionContext): string => {
+  const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+  const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
+  const resourceId = get(req, 'params.id');
+  return relationTupleBuilder()
+    .subject(PermissionNamespaces[Resources.USERS], currentUserId)
+    .isIn('owners')
+    .of(PermissionNamespaces[Resources.TICKETS], resourceId)
+    .toString();
 };
 
 @Controller(Resources.TICKETS)
@@ -167,16 +192,7 @@ export class TicketsController {
   }
 
   // TODO: check permission for ticket orderId if present
-  @OryPermissionChecks((ctx) => {
-    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req, 'params.id');
-    return relationTupleBuilder()
-      .subject(PermissionNamespaces[Resources.USERS], currentUserId)
-      .isIn('owners')
-      .of(PermissionNamespaces[Resources.TICKETS], resourceId)
-      .toString();
-  })
+  @OryPermissionChecks(isTicketOwner)
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
@@ -197,5 +213,68 @@ export class TicketsController {
     @Body() ticket: UpdateTicket,
   ): Promise<Ticket> {
     return this.ticketsService.updateById(id, ticket);
+  }
+
+  @OryPermissionChecks(isTicketOwner)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: new StreamStorage(),
+    }),
+  )
+  @ApiBearerAuth(SecurityRequirements.Bearer)
+  @ApiCookieAuth(SecurityRequirements.Session)
+  @ApiOperation({
+    description: 'Upload ticket image by id',
+    summary: `Upload ticket image - Scope : ${Resources.TICKETS}:${Actions.UPDATE_ONE}`,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UploadTicketImageDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Ticket',
+    type: TicketDto,
+  })
+  @Patch(':id/image')
+  uploadTicketImage(
+    @Param('id', ParseObjectId) id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new FileTypeValidator({ fileType: 'image/png' }),
+        ],
+      }),
+    )
+    file: StreamStorageFile,
+  ): Promise<Ticket> {
+    return this.ticketsService.uploadTicketImage(id, file.stream);
+  }
+
+  @ApiOperation({
+    description: 'Download ticket image by id',
+    summary: `Download ticket image - Scope : ${Resources.TICKETS}:${Actions.READ_ONE}`,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Ticket image',
+    content: {
+      'image/jpeg': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Get(':id/image')
+  async downloadTicketImage(
+    @Param('id', ParseObjectId) id: string,
+  ): Promise<StreamableFile> {
+    const stream = await this.ticketsService.downloadTicketImage(id);
+    return new StreamableFile(stream, {
+      disposition: 'inline',
+      type: 'image/jpeg',
+    });
   }
 }

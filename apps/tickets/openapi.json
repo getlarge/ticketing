@@ -29,7 +29,9 @@
             }
           }
         },
-        "tags": ["tickets"],
+        "tags": [
+          "tickets"
+        ],
         "security": [
           {
             "session": []
@@ -136,7 +138,9 @@
             }
           }
         },
-        "tags": ["tickets"]
+        "tags": [
+          "tickets"
+        ]
       }
     },
     "/api/tickets/{id}": {
@@ -166,7 +170,9 @@
             }
           }
         },
-        "tags": ["tickets"]
+        "tags": [
+          "tickets"
+        ]
       },
       "patch": {
         "operationId": "TicketsController_updateById",
@@ -204,7 +210,9 @@
             }
           }
         },
-        "tags": ["tickets"],
+        "tags": [
+          "tickets"
+        ],
         "security": [
           {
             "session": []
@@ -212,6 +220,87 @@
           {
             "bearer": []
           }
+        ]
+      }
+    },
+    "/api/tickets/{id}/image": {
+      "patch": {
+        "operationId": "TicketsController_uploadTicketImage",
+        "summary": "Upload ticket image - Scope : tickets:update_one",
+        "description": "Upload ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadTicketImageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_downloadTicketImage",
+        "summary": "Download ticket image - Scope : tickets:read_one",
+        "description": "Download ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket image",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
         ]
       }
     }
@@ -267,7 +356,10 @@
             ]
           }
         },
-        "required": ["key", "value"]
+        "required": [
+          "key",
+          "value"
+        ]
       },
       "PaginatedDto": {
         "type": "object",
@@ -281,7 +373,9 @@
             }
           }
         },
-        "required": ["next"]
+        "required": [
+          "next"
+        ]
       },
       "CreateTicketDto": {
         "type": "object",
@@ -298,7 +392,10 @@
             "minimum": 0
           }
         },
-        "required": ["title", "price"]
+        "required": [
+          "title",
+          "price"
+        ]
       },
       "TicketDto": {
         "type": "object",
@@ -325,7 +422,11 @@
           "status": {
             "type": "string",
             "description": "Ticket status",
-            "enum": ["waiting_moderation", "approved", "rejected"]
+            "enum": [
+              "waiting_moderation",
+              "approved",
+              "rejected"
+            ]
           },
           "userId": {
             "type": "string",
@@ -336,7 +437,14 @@
             "description": "Ticket reservation order id"
           }
         },
-        "required": ["id", "title", "price", "version", "status", "userId"]
+        "required": [
+          "id",
+          "title",
+          "price",
+          "version",
+          "status",
+          "userId"
+        ]
       },
       "StartKeyDto": {
         "type": "object",
@@ -355,7 +463,10 @@
             ]
           }
         },
-        "required": ["key", "value"]
+        "required": [
+          "key",
+          "value"
+        ]
       },
       "SortDto": {
         "type": "object",
@@ -369,11 +480,23 @@
             "type": "number"
           }
         },
-        "required": ["field", "order"]
+        "required": [
+          "field",
+          "order"
+        ]
       },
       "FilterOperatorType": {
         "type": "string",
-        "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"]
+        "enum": [
+          "eq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "regex",
+          "in",
+          "nin"
+        ]
       },
       "FilterDto": {
         "type": "object",
@@ -417,7 +540,16 @@
           "mode": {
             "oneOf": [
               {
-                "enum": ["eq", "gt", "gte", "lt", "lte", "regex", "in", "nin"],
+                "enum": [
+                  "eq",
+                  "gt",
+                  "gte",
+                  "lt",
+                  "lte",
+                  "regex",
+                  "in",
+                  "nin"
+                ],
                 "default": "eq"
               },
               {
@@ -426,7 +558,11 @@
             ]
           }
         },
-        "required": ["name", "value", "operator"]
+        "required": [
+          "name",
+          "value",
+          "operator"
+        ]
       },
       "ProjectionDto": {
         "type": "object",
@@ -442,7 +578,10 @@
             "maximum": 1
           }
         },
-        "required": ["name", "mode"]
+        "required": [
+          "name",
+          "mode"
+        ]
       },
       "UpdateTicketDto": {
         "type": "object",
@@ -463,6 +602,18 @@
             "description": "Ticket reservation order id"
           }
         }
+      },
+      "UploadTicketImageDto": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "file"
+        ]
       }
     }
   },

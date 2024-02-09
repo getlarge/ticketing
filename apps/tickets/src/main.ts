@@ -2,6 +2,7 @@ import './vault';
 
 import fastifyCors from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyPassport from '@fastify/passport';
 import fastifySecureSession from '@fastify/secure-session';
 import { ConfigService } from '@nestjs/config';
@@ -59,6 +60,7 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
 
   // Fastify
+  await app.register(fastifyMultipart);
   await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {

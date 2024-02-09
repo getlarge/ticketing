@@ -1,4 +1,7 @@
-import { OryError, OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  OryError,
+  OryRelationshipsService,
+} from '@getlarge/keto-client-wrapper';
 import {
   createRelationQuery,
   relationTupleBuilder,

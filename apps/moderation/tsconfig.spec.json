@@ -5,10 +5,7 @@
     "module": "esnext",
     "target": "es2022",
     "emitDecoratorMetadata": true,
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
     "allowJs": true
   },
   "include": [

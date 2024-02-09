@@ -17,6 +17,8 @@ export class UnidentifiedError extends GenericError {
   }
 }
 
-export function isUnidentifiedError(error: unknown): error is UnidentifiedError {
+export function isUnidentifiedError(
+  error: unknown,
+): error is UnidentifiedError {
   return error instanceof UnidentifiedError;
 }

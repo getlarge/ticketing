@@ -13,12 +13,22 @@ import {
 } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
+import {
+  FileStorageLocal,
+  FileStorageLocalSetup,
+  FileStorageModule,
+  FileStorageS3,
+  FileStorageS3Setup,
+  MethodTypes,
+} from '@s1seven/nestjs-tools-file-storage';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
-import { Services } from '@ticketing/shared/constants';
+import { Environment, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+import { mkdir, readdir } from 'node:fs/promises';
+import { join, parse, resolve } from 'node:path';
 
-import { AppConfigService, EnvironmentVariables } from '../env';
+import { AppConfigService } from '../env';
 import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
@@ -101,28 +111,74 @@ const ModerationsClient = ClientsModule.registerAsync([
     ModerationsClient,
     OryFrontendModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (
-        configService: ConfigService<EnvironmentVariables, true>,
-      ) => ({
+      useFactory: (configService: AppConfigService) => ({
         basePath: configService.get('ORY_KRATOS_PUBLIC_URL'),
       }),
     }),
     OryPermissionsModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (
-        configService: ConfigService<EnvironmentVariables, true>,
-      ) => ({
+      useFactory: (configService: AppConfigService) => ({
         basePath: configService.get('ORY_KETO_PUBLIC_URL'),
       }),
     }),
     OryRelationshipsModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (
-        configService: ConfigService<EnvironmentVariables, true>,
-      ) => ({
+      useFactory: (configService: AppConfigService) => ({
         accessToken: configService.get('ORY_KETO_API_KEY'),
         basePath: configService.get('ORY_KETO_ADMIN_URL'),
       }),
+    }),
+    FileStorageModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => {
+        const environment = configService.get('NODE_ENV', { infer: true });
+        if (environment === Environment.Development) {
+          const setup: FileStorageLocalSetup = {
+            storagePath: configService.get('STORAGE_PATH'),
+            maxPayloadSize: configService.get('MAX_PAYLOAD_SIZE'),
+          };
+
+          const filePath = async (options: {
+            _req?: Request;
+            fileName: string;
+            methodType: MethodTypes;
+          }): Promise<string> => {
+            const { fileName, methodType } = options;
+            const path = resolve(join(setup.storagePath, fileName));
+            if (methodType !== MethodTypes.WRITE) {
+              return path;
+            }
+            const { dir } = parse(path);
+            try {
+              await readdir(dir);
+            } catch (error) {
+              if (error.code === 'ENOENT') {
+                await mkdir(dir, { recursive: true });
+              } else {
+                throw error;
+              }
+            }
+            return path;
+          };
+
+          return new FileStorageLocal(setup, () => {
+            return {
+              filePath,
+              limits: { fileSize: setup.maxPayloadSize * 1024 * 1024 },
+            };
+          });
+        }
+        const setup: FileStorageS3Setup = {
+          maxPayloadSize: configService.get('MAX_PAYLOAD_SIZE'),
+          bucket: configService.get('AWS_S3_BUCKET'),
+          region: configService.get('AWS_S3_REGION'),
+          credentials: {
+            accessKeyId: configService.get('AWS_S3_ACCESS_KEY_ID'),
+            secretAccessKey: configService.get('AWS_S3_SECRET_ACCESS_KEY'),
+          },
+        };
+        return new FileStorageS3(setup);
+      },
     }),
   ],
   controllers: [TicketsController, TicketsMSController],

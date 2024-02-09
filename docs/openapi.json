@@ -537,7 +537,12 @@
                     },
                     "version": {
                       "type": "number",
-                      "description": "Ticket version represented by a number incremented at each updated"
+                      "description": "Ticket version represented by a number incremented at each update"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Ticket status",
+                      "enum": ["waiting_moderation", "approved", "rejected"]
                     },
                     "userId": {
                       "type": "string",
@@ -548,7 +553,14 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": ["id", "title", "price", "version", "userId"]
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "status",
+                    "userId"
+                  ]
                 }
               }
             }
@@ -805,7 +817,16 @@
                               },
                               "version": {
                                 "type": "number",
-                                "description": "Ticket version represented by a number incremented at each updated"
+                                "description": "Ticket version represented by a number incremented at each update"
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Ticket status",
+                                "enum": [
+                                  "waiting_moderation",
+                                  "approved",
+                                  "rejected"
+                                ]
                               },
                               "userId": {
                                 "type": "string",
@@ -821,6 +842,7 @@
                               "title",
                               "price",
                               "version",
+                              "status",
                               "userId"
                             ]
                           }
@@ -876,7 +898,12 @@
                     },
                     "version": {
                       "type": "number",
-                      "description": "Ticket version represented by a number incremented at each updated"
+                      "description": "Ticket version represented by a number incremented at each update"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Ticket status",
+                      "enum": ["waiting_moderation", "approved", "rejected"]
                     },
                     "userId": {
                       "type": "string",
@@ -887,7 +914,14 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": ["id", "title", "price", "version", "userId"]
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "status",
+                    "userId"
+                  ]
                 }
               }
             }
@@ -895,7 +929,7 @@
         },
         "tags": ["tickets"]
       },
-      "put": {
+      "patch": {
         "operationId": "TicketsController_updateById",
         "summary": "Update a ticket - Scope : tickets:update_one",
         "description": "Update a ticket by id",
@@ -961,7 +995,12 @@
                     },
                     "version": {
                       "type": "number",
-                      "description": "Ticket version represented by a number incremented at each updated"
+                      "description": "Ticket version represented by a number incremented at each update"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Ticket status",
+                      "enum": ["waiting_moderation", "approved", "rejected"]
                     },
                     "userId": {
                       "type": "string",
@@ -972,7 +1011,14 @@
                       "description": "Ticket reservation order id"
                     }
                   },
-                  "required": ["id", "title", "price", "version", "userId"]
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "status",
+                    "userId"
+                  ]
                 }
               }
             }
@@ -987,6 +1033,124 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/api/tickets/{id}/image": {
+      "patch": {
+        "operationId": "TicketsController_uploadTicketImage",
+        "summary": "Upload ticket image - Scope : tickets:update_one",
+        "description": "Upload ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Ticket database identifier"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Ticket title",
+                      "minLength": 3,
+                      "maxLength": 56
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Ticket price",
+                      "minimum": 0
+                    },
+                    "version": {
+                      "type": "number",
+                      "description": "Ticket version represented by a number incremented at each update"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Ticket status",
+                      "enum": ["waiting_moderation", "approved", "rejected"]
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Ticket creator id"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "description": "Ticket reservation order id"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "price",
+                    "version",
+                    "status",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": ["tickets"],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_downloadTicketImage",
+        "summary": "Download ticket image - Scope : tickets:read_one",
+        "description": "Download ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["tickets"]
       }
     },
     "/api/orders": {
@@ -1433,7 +1597,7 @@
                     },
                     "version": {
                       "type": "number",
-                      "description": "Payment version represented by a number incremented at each updated"
+                      "description": "Payment version represented by a number incremented at each update"
                     }
                   },
                   "required": ["id", "orderId", "stripeId", "version"]
@@ -1779,7 +1943,12 @@
           },
           "version": {
             "type": "number",
-            "description": "Ticket version represented by a number incremented at each updated"
+            "description": "Ticket version represented by a number incremented at each update"
+          },
+          "status": {
+            "type": "string",
+            "description": "Ticket status",
+            "enum": ["waiting_moderation", "approved", "rejected"]
           },
           "userId": {
             "type": "string",
@@ -1790,7 +1959,7 @@
             "description": "Ticket reservation order id"
           }
         },
-        "required": ["id", "title", "price", "version", "userId"]
+        "required": ["id", "title", "price", "version", "status", "userId"]
       },
       "StartKeyDto": {
         "type": "object",
@@ -1918,6 +2087,16 @@
             "description": "Ticket reservation order id"
           }
         }
+      },
+      "UploadTicketImageDto": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": ["file"]
       },
       "CreateOrderDto": {
         "type": "object",
@@ -2049,7 +2228,7 @@
           },
           "version": {
             "type": "number",
-            "description": "Payment version represented by a number incremented at each updated"
+            "description": "Payment version represented by a number incremented at each update"
           }
         },
         "required": ["id", "orderId", "stripeId", "version"]

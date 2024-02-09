@@ -8,7 +8,9 @@ import {
   OryKratosEnvironmentVariables,
   RmqEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
-import { Exclude } from 'class-transformer';
+import { Environment } from '@ticketing/shared/constants';
+import { Exclude, Expose } from 'class-transformer';
+import { IsString, ValidateIf } from 'class-validator';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,4 +44,29 @@ export class EnvironmentVariables extends Mixin(
   APP_NAME?: string = 'tickets';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
+
+  @Expose()
+  @ValidateIf((o) => o.NODE_ENV !== Environment.Development)
+  @IsString()
+  AWS_S3_BUCKET?: string;
+
+  @Expose()
+  @ValidateIf((o) => o.NODE_ENV !== Environment.Development)
+  @IsString()
+  AWS_S3_REGION?: string;
+
+  @Expose()
+  @ValidateIf((o) => o.NODE_ENV !== Environment.Development)
+  @IsString()
+  AWS_S3_SECRET_ACCESS_KEY?: string;
+
+  @Expose()
+  @ValidateIf((o) => o.NODE_ENV !== Environment.Development)
+  @IsString()
+  AWS_S3_ACCESS_KEY_ID?: string;
+
+  @Expose()
+  @ValidateIf((o) => o.NODE_ENV === Environment.Development)
+  @IsString()
+  STORAGE_PATH?: string;
 }

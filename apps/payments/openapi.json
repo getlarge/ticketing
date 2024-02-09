@@ -29,7 +29,9 @@
             }
           }
         },
-        "tags": ["payments"],
+        "tags": [
+          "payments"
+        ],
         "security": [
           {
             "session": []
@@ -88,7 +90,10 @@
             "example": "tok_visa"
           }
         },
-        "required": ["orderId", "token"]
+        "required": [
+          "orderId",
+          "token"
+        ]
       },
       "PaymentDto": {
         "type": "object",
@@ -110,7 +115,12 @@
             "description": "Payment version represented by a number incremented at each update"
           }
         },
-        "required": ["id", "orderId", "stripeId", "version"]
+        "required": [
+          "id",
+          "orderId",
+          "stripeId",
+          "version"
+        ]
       }
     }
   },
