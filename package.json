@@ -113,6 +113,7 @@
     "@fastify/cookie": "9.0.4",
     "@fastify/cors": "8.3.0",
     "@fastify/helmet": "11.0.0",
+    "@fastify/multipart": "8.1.0",
     "@fastify/passport": "2.3.0",
     "@fastify/secure-session": "7.1.0",
     "@fastify/static": "^6.12.0",

@@ -3626,6 +3626,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/busboy@npm:^1.0.0":
+  version: 1.2.1
+  resolution: "@fastify/busboy@npm:1.2.1"
+  dependencies:
+    text-decoding: ^1.0.0
+  checksum: 6e773a2929fd7732fd8ba8f9e1c1b9d622c6165b6e0bed9268e1785f8fd5e8b0a35d6adfe86f15a701bf7783d09c629f3437b3578d34c0246eb26f973ede20f0
+  languageName: node
+  linkType: hard
+
 "@fastify/busboy@npm:^2.0.0":
   version: 2.1.0
   resolution: "@fastify/busboy@npm:2.1.0"
@@ -3670,7 +3679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/error@npm:^3.2.0":
+"@fastify/error@npm:^3.0.0, @fastify/error@npm:^3.2.0":
   version: 3.4.1
   resolution: "@fastify/error@npm:3.4.1"
   checksum: 2c2e98c33327884c0927a73e8c3b8f162acbf1e4d058bacb68bca0c3607f36d6fde8c376fde45b2097e724d450266f8bb29134305fa24aabd200f83f087c7321
@@ -3724,6 +3733,20 @@ __metadata:
     path-to-regexp: ^6.1.0
     reusify: ^1.0.4
   checksum: 4cef2d50cdc743990ad7c9caeec80d9a44ea051cc941c7d0a3b49cc6e185f4a17a12530af29795624d26077b6f69076122c80e4ae6bad9cb84c8d72289a6d2d3
+  languageName: node
+  linkType: hard
+
+"@fastify/multipart@npm:8.1.0":
+  version: 8.1.0
+  resolution: "@fastify/multipart@npm:8.1.0"
+  dependencies:
+    "@fastify/busboy": ^1.0.0
+    "@fastify/deepmerge": ^1.0.0
+    "@fastify/error": ^3.0.0
+    fastify-plugin: ^4.0.0
+    secure-json-parse: ^2.4.0
+    stream-wormhole: ^1.1.0
+  checksum: 06c13b6669497d2eec55cbf4be9272f67c80947f521b9fb824a9947143fef38c1918badf2b51d67e2f8ba2193ba5a914bfeb7a6164bbb0a63acbaf1f644a6471
   languageName: node
   linkType: hard
 
@@ -21801,6 +21824,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stream-wormhole@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "stream-wormhole@npm:1.1.0"
+  checksum: cc19e0235c5d031bd530fa83913c807d9525fa4ba33d51691dd822c0726b8b7ef138b34f289d063a3018cddba67d3ba7fd0ecedaa97242a0f1ed2eed3c6a2ab1
+  languageName: node
+  linkType: hard
+
 "string-length@npm:^4.0.1":
   version: 4.0.2
   resolution: "string-length@npm:4.0.2"
@@ -22282,6 +22312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"text-decoding@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "text-decoding@npm:1.0.0"
+  checksum: 4b2359d8efdabea72ac470304e991913e9b82a55b1c33ab5204f115d11305ac5900add80aee5f7d22b2bcf0faebaf35b193d28a10b74adf175d9ac9d63604445
+  languageName: node
+  linkType: hard
+
 "text-extensions@npm:^1.0.0":
   version: 1.9.0
   resolution: "text-extensions@npm:1.9.0"
@@ -22371,6 +22408,7 @@ __metadata:
     "@fastify/cookie": 9.0.4
     "@fastify/cors": 8.3.0
     "@fastify/helmet": 11.0.0
+    "@fastify/multipart": 8.1.0
     "@fastify/passport": 2.3.0
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
