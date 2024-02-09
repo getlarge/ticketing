@@ -39,15 +39,11 @@ export function FileInterceptor<S extends Storage>(
         fieldname,
         this.options,
       );
-
       req.body = body;
       req.storageFile = file;
-
       return next.handle().pipe(tap(remove));
     }
   }
 
-  const Interceptor = mixin(MixinInterceptor);
-
-  return Interceptor;
+  return mixin(MixinInterceptor);
 }

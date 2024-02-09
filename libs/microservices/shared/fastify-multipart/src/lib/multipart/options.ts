@@ -26,7 +26,7 @@ export type TransformedUploadOptions<
   storage: S;
 };
 
-export const DEFAULT_UPLOAD_OPTIONS: UploadOptions<MemoryStorage> = {
+export const DEFAULT_UPLOAD_OPTIONS: TransformedUploadOptions<MemoryStorage> = {
   storage: new MemoryStorage(),
 };
 
@@ -34,7 +34,7 @@ export function transformUploadOptions<S extends Storage>(
   opts?: UploadOptions<S>,
 ): TransformedUploadOptions<S> {
   if (!opts) {
-    return DEFAULT_UPLOAD_OPTIONS as TransformedUploadOptions<S>;
+    return DEFAULT_UPLOAD_OPTIONS as unknown as TransformedUploadOptions<S>;
   }
 
   if (opts.dest != null) {
@@ -46,8 +46,11 @@ export function transformUploadOptions<S extends Storage>(
           ? opts.storage?.options
           : {}),
       }),
-    } as TransformedUploadOptions<S>;
+    } as unknown as TransformedUploadOptions<S>;
   }
 
-  return { ...DEFAULT_UPLOAD_OPTIONS, ...opts } as TransformedUploadOptions<S>;
+  return {
+    ...DEFAULT_UPLOAD_OPTIONS,
+    ...opts,
+  } as unknown as TransformedUploadOptions<S>;
 }

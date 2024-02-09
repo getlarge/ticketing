@@ -49,7 +49,5 @@ export function FilesInterceptor<S extends Storage>(
     }
   }
 
-  const Interceptor = mixin(MixinInterceptor);
-
-  return Interceptor;
+  return mixin(MixinInterceptor);
 }
