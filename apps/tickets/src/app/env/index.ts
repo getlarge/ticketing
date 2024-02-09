@@ -8,9 +8,15 @@ import {
   OryKratosEnvironmentVariables,
   RmqEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
-import { Environment } from '@ticketing/shared/constants';
+import { Environment, FEATURE_FLAGS } from '@ticketing/shared/constants';
 import { Exclude, Expose } from 'class-transformer';
-import { IsString, ValidateIf } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -44,6 +50,12 @@ export class EnvironmentVariables extends Mixin(
   APP_NAME?: string = 'tickets';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @IsEnum(FEATURE_FLAGS, { each: true })
+  FEATURE_FLAGS?: FEATURE_FLAGS[] = [FEATURE_FLAGS.TICKET_IMAGE_UPLOAD];
 
   @Expose()
   @ValidateIf((o) => o.NODE_ENV !== Environment.Development)

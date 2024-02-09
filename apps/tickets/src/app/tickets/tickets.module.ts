@@ -21,6 +21,7 @@ import {
   FileStorageS3Setup,
   MethodTypes,
 } from '@s1seven/nestjs-tools-file-storage';
+import { FeatureFlagsModule } from '@ticketing/microservices/shared/feature-flags';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Environment, Services } from '@ticketing/shared/constants';
@@ -179,6 +180,12 @@ const ModerationsClient = ClientsModule.registerAsync([
         };
         return new FileStorageS3(setup);
       },
+    }),
+    FeatureFlagsModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        flags: configService.get('FEATURE_FLAGS'),
+      }),
     }),
   ],
   controllers: [TicketsController, TicketsMSController],
