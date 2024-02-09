@@ -35,3 +35,7 @@ export const VERSION_HEADER_NAME = 'X-Version';
 export const AUTHORIZATION_HEADER_NAME = 'X-Access-Token';
 
 export const MAJOR_SEMVER_REGEX = new RegExp(/0|[1-9]\d*/);
+
+export enum FEATURE_FLAGS {
+  TICKET_IMAGE_UPLOAD = 'TICKET_IMAGE_UPLOAD',
+}

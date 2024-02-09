@@ -39,6 +39,9 @@
       "@ticketing/microservices/shared/fastify-passport": [
         "libs/microservices/shared/fastify-passport/src/index.ts"
       ],
+      "@ticketing/microservices/shared/feature-flags": [
+        "libs/microservices/shared/feature-flags/src/index.ts"
+      ],
       "@ticketing/microservices/shared/filters": [
         "libs/microservices/shared/filters/src/index.ts"
       ],

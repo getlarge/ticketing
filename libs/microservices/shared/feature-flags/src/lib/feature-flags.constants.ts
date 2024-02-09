@@ -1,0 +1,1 @@
+export const FEATURE_FLAGS_OPTONS = Symbol('FEATURE_FLAGS_OPTONS');
