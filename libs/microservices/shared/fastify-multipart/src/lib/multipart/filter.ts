@@ -26,13 +26,12 @@ export const filterUpload = async <S extends Storage>(
   req: FastifyRequest,
   file: UploadFilterFile,
 ): Promise<boolean> => {
-  if (uploadOptions.filter == null) {
+  if (!uploadOptions.filter) {
     return true;
   }
 
   try {
     const res = await uploadOptions.filter(req, file);
-
     if (typeof res === 'string') {
       throw new BadRequestException(res);
     }

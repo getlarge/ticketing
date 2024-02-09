@@ -377,10 +377,7 @@ services:
   kratos-migrate:
     image: oryd/kratos:v1.0.0
     volumes:
-      - type: bind
-        source: ./infra/ory/kratos
-        target: /etc/config/kratos
-        read_only: true
+      - ./infra/ory/kratos:/etc/config/kratos:ro
     command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
     restart: on-failure
     networks:
@@ -399,10 +396,7 @@ services:
     restart: unless-stopped
     command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
     volumes:
-      - type: bind
-        source: ./infra/ory/kratos
-        target: /etc/config/kratos
-        read_only: true
+      - ./infra/ory/kratos:/etc/config/kratos:ro
     networks:
       - ory
     profiles:
@@ -457,15 +451,9 @@ services:
   keto-migrate:
     image: oryd/keto:v0.12.0
     volumes:
-      - type: bind
-        source: ./infra/ory/keto
-        target: /home/ory
-        read_only: true
-      - type: bind
-        source: ./tools/ory/namespaces.ts
-        target: /home/ory/namespaces.ts
-        read_only: true
-    command: ['migrate', 'up', '-y', '-c', '/home/ory/keto.yaml']
+      - ./infra/ory/keto:/etc/config/keto:ro
+      - ./tools/ory/namespaces.ts:/home/ory/namespaces.ts
+    command: ['migrate', 'up', '-y', '-c', '/etc/config/keto/keto.yaml']
     restart: on-failure
     networks:
       - ory
@@ -480,17 +468,11 @@ services:
     ports:
       - '4466:4466' # public
       - '4467:4467' # admin
-    command: serve -c /home/ory/keto.yaml
+    command: serve -c /etc/config/keto/keto.yaml
     restart: on-failure
     volumes:
-      - type: bind
-        source: ./infra/ory/keto
-        target: /home/ory
-        read_only: true
-      - type: bind
-        source: ./tools/ory/namespaces.ts
-        target: /home/ory/namespaces.ts
-        read_only: true
+      - ./infra/ory/keto:/etc/config/keto:ro
+      - ./tools/ory/namespaces.ts:/home/ory/namespaces.ts
     networks:
       - ory
     profiles:

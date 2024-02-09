@@ -38,6 +38,8 @@ export class UsersService {
   /**
    * @description To workaround the issue with Ory's not offering transactional hooks, we need to check if the user exists in our database
    * if not we use it as a second chance to create it
+   * @todo: throw error in format supported by Ory hooks response handler + create specific error class
+   * @see https://www.ory.sh/docs/guides/integrate-with-ory-cloud-through-webhooks#flow-interrupting-webhooks
    **/
   async onSignIn(body: OnOrySignInDto): Promise<OnOrySignInDto> {
     const { identity } = body;
@@ -48,6 +50,7 @@ export class UsersService {
       id: userId,
       email,
     });
+
     if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }

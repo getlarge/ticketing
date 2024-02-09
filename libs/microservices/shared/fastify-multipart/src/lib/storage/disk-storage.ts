@@ -61,8 +61,6 @@ const getUniqueFilename = async (filename: string): Promise<string> => {
 const ENV_TESTS_STORAGE_TMP_PATH = process.env['__TESTS_TMP_PATH__'];
 
 export class DiskStorage extends Storage<DiskStorageFile, DiskStorageOptions> {
-  override readonly options?: DiskStorageOptions;
-
   constructor(options?: DiskStorageOptions) {
     super();
     this.options = options;
