@@ -7,11 +7,11 @@ export enum Environment {
 }
 
 export enum LogLevel {
-  warn = 'warn',
-  error = 'error',
-  silent = 'silent',
-  debug = 'debug',
-  info = 'info',
+  Warn = 'warn',
+  Error = 'error',
+  Silent = 'silent',
+  Debug = 'debug',
+  Info = 'info',
 }
 
 export enum DelayInSeconds {

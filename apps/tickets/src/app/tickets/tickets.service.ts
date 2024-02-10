@@ -93,33 +93,28 @@ export class TicketsService {
     docs: TicketDocument[];
     next_key: { key: string; value: string }[];
   }> {
-    const {
-      skip = 0,
-      limit = 10,
-      start_key = undefined,
-      sort = undefined,
-      filter = undefined,
-      projection = undefined,
-    } = params;
+    const { skip = 0, limit = 10, sort = undefined } = params;
     // TODO: create a PR in nestjs-keyset-paginator to add document types
     return new Paginator().paginate(
       this.ticketModel,
       skip,
       limit,
-      start_key,
+      params.start_key,
       sort?.field,
       sort?.order,
-      filter,
-      projection,
+      params.filter,
+      params.projection,
     );
   }
 
   async find(
     params: PaginateDto = {},
   ): Promise<{ results: Ticket[]; next: NextPaginationDto[] }> {
-    const { docs, next_key } = await this.paginate(params);
-    const results = docs.map((ticket) => ticket.toJSON<Ticket>());
-    return { results, next: next_key };
+    const paginatedResult = await this.paginate(params);
+    const results = paginatedResult.docs.map((ticket) =>
+      ticket.toJSON<Ticket>(),
+    );
+    return { results, next: paginatedResult.next_key };
   }
 
   async findById(id: string): Promise<Ticket> {

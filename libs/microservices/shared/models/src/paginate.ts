@@ -60,6 +60,7 @@ export class PaginateQuery extends PaginationDto {
     ({ value }) => plainToInstance(startKeyDto, transformQueryArray(value)),
     { toClassOnly: true },
   )
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   start_key: startKeyDto[] = undefined;
 
   @Type(() => Number)

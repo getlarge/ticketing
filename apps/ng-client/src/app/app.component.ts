@@ -24,7 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
   isLoading$!: Observable<boolean>;
   user$!: Observable<User | null>;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  Resources = Resources;
+  ordersLink = `/${Resources.ORDERS}`;
+  ticketsLink = `/${Resources.TICKETS}`;
 
   constructor(
     private store: Store<RootState>,
