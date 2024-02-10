@@ -70,7 +70,6 @@
       "outputs": ["{workspaceRoot}/coverage/apps/auth"],
       "options": {
         "jestConfig": "apps/auth/jest.config.ts",
-        "passWithNoTests": true,
         "codeCoverage": true
       }
     },

@@ -14,5 +14,7 @@ export default {
   moduleFileExtensions: ['ts', 'mjs', 'js', 'html'],
   extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/tickets',
+  collectCoverageFrom: ['src/**/*.ts'],
+  coverageProvider: 'v8',
   preset: '../../jest.preset.js',
 };

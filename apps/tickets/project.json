@@ -70,8 +70,8 @@
       "outputs": ["{workspaceRoot}/coverage/apps/tickets"],
       "options": {
         "jestConfig": "apps/tickets/jest.config.ts",
-        "passWithNoTests": true,
-        "codeCoverage": true
+        "codeCoverage": true,
+        "detectOpenHandles": true
       }
     },
     "e2e": {
@@ -79,7 +79,6 @@
       "outputs": ["{workspaceRoot}/coverage/apps/tickets-e2e"],
       "options": {
         "jestConfig": "apps/tickets/jest-e2e.config.ts",
-        "passWithNoTests": true,
         "codeCoverage": true,
         "detectOpenHandles": true
       }
