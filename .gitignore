@@ -68,3 +68,6 @@ keys/*
 .nx/cache
 .flaskenv*
 !.env.vault
+
+# Code Pushup reports
+.code-pushup/*
