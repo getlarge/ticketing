@@ -11,6 +11,9 @@ export default {
       },
     ],
   },
+  moduleNameMapper: {
+    'lodash-es': 'lodash',
+  },
   moduleFileExtensions: ['ts', 'mjs', 'js', 'html'],
   extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/moderation',
