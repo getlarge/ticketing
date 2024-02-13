@@ -38,7 +38,6 @@ concurrency:
 
 env:
   NODE_VERSION: 20.x
-  NODE_OPTIONS: --max_old_space_size=6144
   CI_WORKFLOW: ci.yaml
   CD_WORKFLOW: cd.yaml
   BUILD_FOLDER: dist
@@ -335,7 +334,6 @@ jobs:
     timeout-minutes: 15
     env:
       NX_CLOUD_DISTRIBUTED_EXECUTION_AGENT_COUNT: ${{ needs.init.outputs.agents-count }}
-      NODE_OPTIONS: --experimental-vm-modules
 
     services:
       mongo:
@@ -452,8 +450,6 @@ jobs:
 
       - name: Run verifications for affected apps
         uses: jameshenry/parallel-bash-commands@v1
-        env:
-          NODE_OPTIONS: --experimental-vm-modules
         with:
           cmd1: yarn affected:lint --parallel=4 --exclude=workspace --verbose
           cmd2: yarn affected:test --parallel=4 --exclude=workspace --ci --verbose
