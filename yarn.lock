@@ -2744,9 +2744,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@code-pushup/cli@npm:^0.16.7":
-  version: 0.16.7
-  resolution: "@code-pushup/cli@npm:0.16.7"
+"@code-pushup/cli@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@code-pushup/cli@npm:0.17.0"
   dependencies:
     "@code-pushup/core": "*"
     "@code-pushup/models": "*"
@@ -2756,7 +2756,7 @@ __metadata:
     yargs: ^17.7.2
   bin:
     code-pushup: index.js
-  checksum: f92f085c8c41b0b983e059d9a956da8ceb6f138d47deeb242822a8c9e3d89131944fef1c2cd1667ccbe464b021785e553b2f0f203deede8b9977056fb497fdef
+  checksum: c343d69fcf6b9f4e073e45a35c44424b0349021cd703cb0c576081c39777b591cc768c4e15866161df80bba555820abb3768e149fb13066606ff4763e05ee91d
   languageName: node
   linkType: hard
 
@@ -2772,21 +2772,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@code-pushup/coverage-plugin@npm:^0.16.7":
-  version: 0.16.7
-  resolution: "@code-pushup/coverage-plugin@npm:0.16.7"
+"@code-pushup/coverage-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@code-pushup/coverage-plugin@npm:0.17.0"
   dependencies:
     "@code-pushup/models": "*"
     "@code-pushup/utils": "*"
+    chalk: ^5.3.0
     parse-lcov: ^1.0.4
     zod: ^3.22.4
-  checksum: 604a64714bb3c2645801f3acfdb746acf257324032b6e6f77bfe326c60d17ec47ffe13f83dfc6e48806b2eafa31d808643fc43ff441a9d16071dcfbf1cc82899
+  peerDependencies:
+    "@nx/devkit": ^17.0.0
+  peerDependenciesMeta:
+    "@nx/devkit":
+      optional: true
+  checksum: 8877b75795d2206781a143b9e16cfdea2dfaa1c13f9193e3fc7abe9fb9cd41af0ccfdaac64703dcbab8f424da458d10581f907c91de7e12e7d97c90dbb86acae
   languageName: node
   linkType: hard
 
-"@code-pushup/eslint-plugin@npm:^0.16.7":
-  version: 0.16.7
-  resolution: "@code-pushup/eslint-plugin@npm:0.16.7"
+"@code-pushup/eslint-plugin@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@code-pushup/eslint-plugin@npm:0.17.0"
   dependencies:
     "@code-pushup/models": "*"
     "@code-pushup/utils": "*"
@@ -2797,7 +2803,7 @@ __metadata:
   peerDependenciesMeta:
     "@nx/devkit":
       optional: true
-  checksum: 22ab26f964d50cf64bb2ab317f212c16a2a682d5017e89b75c621e0d05b67a84c671cb5b918166c5f36d4e5415170337f6a7ccbba54c7b36e1cff26722bf95b8
+  checksum: e700a8dfda5ced120db650851540fb73da5be509710465059340c582b091bc86a1b0c476933cda9632ff782f196045a478a4f375f21b755e7596b7979d9e458c
   languageName: node
   linkType: hard
 
@@ -22813,9 +22819,9 @@ __metadata:
     "@angular/platform-browser-dynamic": 17.0.5
     "@angular/router": 17.0.5
     "@apidevtools/swagger-parser": ^10.0.3
-    "@code-pushup/cli": ^0.16.7
-    "@code-pushup/coverage-plugin": ^0.16.7
-    "@code-pushup/eslint-plugin": ^0.16.7
+    "@code-pushup/cli": ^0.17.0
+    "@code-pushup/coverage-plugin": ^0.17.0
+    "@code-pushup/eslint-plugin": ^0.17.0
     "@commitlint/cli": ^15.0.0
     "@commitlint/config-angular": ^15.0.0
     "@commitlint/config-conventional": ^15.0.0
@@ -22946,6 +22952,7 @@ __metadata:
     ts-node-dev: ^2.0.0
     tslib: 2.6.2
     typescript: 5.2.2
+    vscode-material-icons: ^0.1.0
     webpack-cli: ^5.1.4
     yargs: ^17.2.1
     zone.js: 0.14.2
@@ -23956,6 +23963,13 @@ __metadata:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: 10a1c50aab54ff8b4c9042c15fc64aefccce8d2fb90c0640403242db0ee7fb269f9b102bdb69cfb435d7ef3180d61fd4fb004a043a12709abaf9056cfd7e039d
+  languageName: node
+  linkType: hard
+
+"vscode-material-icons@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "vscode-material-icons@npm:0.1.0"
+  checksum: 714041c46eaced8cb3e926046aee4a9697ca258bd94d57def33a159086e6bfc52c1196b68e53a9cf04b0c7441088e91fb96c0504ff2f58b0301774168f22583e
   languageName: node
   linkType: hard
 

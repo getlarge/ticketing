@@ -20,11 +20,17 @@ const coverageConfig: CoveragePluginConfig = {
 const config: CoreConfig = {
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-    coveragePlugin(coverageConfig),
+    await coveragePlugin(coverageConfig),
   ],
   persist: {
     outputDir: '.code-pushup',
-    format: ['md', 'json'],
+    format: ['json', 'md'],
+  },
+  upload: {
+    server: 'https://quality-metrics-staging.web.app/portal/api/graphql',
+    apiKey: process.env.CODE_PUSHUP_API_KEY ?? '',
+    organization: 'code-pushup',
+    project: 'ticketing',
   },
 };
 

@@ -316,7 +316,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.3
+        uses: andymckay/cancel-action@0.4
 
     outputs:
       base-depth: ${{ env.BASE_DEPTH }}
@@ -461,8 +461,18 @@ jobs:
         if: always()
         run: npx nx-cloud stop-all-agents
 
+      - name: Run Code PushUp
+        run: npx code-pushup autorun --upload.apiKey=${{ secrets.CODE_PUSHUP_API_KEY }}
+
+      - name: Upload Code PushUp report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-pushup-report
+          path: .code-pushup
+          retention-days: 5
+
       - name: Upload build output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BUILD_ARTIFACTS }}
           path: ${{ env.BUILD_FOLDER }}
@@ -470,13 +480,13 @@ jobs:
 
       - name: Check libs coverage reports existence
         id: check-libs-coverage
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: ${{ env.COVERAGE_LIBS_UNIT_TESTS_FOLDER }}
 
       - name: Upload libs unit tests coverage reports
         if: steps.check-libs-coverage.outputs.files_exists == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.COVERAGE_LIBS_UNIT_TESTS_ARTIFACTS }}
           path: ${{ env.COVERAGE_LIBS_UNIT_TESTS_FOLDER }}
@@ -484,27 +494,27 @@ jobs:
 
       - name: Check apps coverage reports existence
         id: check-apps-coverage
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
 
       - name: Upload apps unit tests coverage reports
         if: steps.check-apps-coverage.outputs.files_exists == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.COVERAGE_APPS_UNIT_TESTS_ARTIFACTS }}
           path: ${{ env.COVERAGE_APPS_UNIT_TESTS_FOLDER }}
           retention-days: 1
 
       - name: Check coverage reports existence
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         id: check-coverage
         with:
           files: ${{ env.COVERAGE_APPS_E2E_TESTS_FOLDER }}
 
       - name: Upload apps e2e tests coverage reports
         if: ${{ steps.check-coverage.outputs.files_exists == 'true' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.COVERAGE_APPS_E2E_TESTS_ARTIFACTS }}
           path: ${{ env.COVERAGE_APPS_E2E_TESTS_FOLDER }}
@@ -512,7 +522,7 @@ jobs:
 
       - name: Cancel workflow on failure
         if: failure()
-        uses: andymckay/cancel-action@0.3
+        uses: andymckay/cancel-action@0.4
 
     outputs:
       has-apps-coverage: ${{ steps.check-apps-coverage.outputs.files_exists }}
