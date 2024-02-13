@@ -69,6 +69,7 @@
       "outputs": ["{workspaceRoot}/coverage/apps/orders"],
       "options": {
         "jestConfig": "apps/orders/jest.config.ts",
+        "codeCoverage": true,
         "passWithNoTests": true
       }
     },

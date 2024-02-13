@@ -11,6 +11,7 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
+        "eslintConfig": ".eslintrc.json",
         "command": "echo 'nope'"
       }
     },

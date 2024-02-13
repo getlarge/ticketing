@@ -70,6 +70,7 @@
       "outputs": ["{workspaceRoot}/coverage/apps/expiration"],
       "options": {
         "jestConfig": "apps/expiration/jest.config.ts",
+        "codeCoverage": true,
         "passWithNoTests": true
       }
     },

@@ -69,6 +69,7 @@
       "outputs": ["{workspaceRoot}/coverage/apps/payments"],
       "options": {
         "jestConfig": "apps/payments/jest.config.ts",
+        "codeCoverage": true,
         "passWithNoTests": true
       }
     },
