@@ -31,6 +31,7 @@ describe('OrdersMSController', () => {
           useValue: new OrdersService(
             new MockModel() as any,
             new MockModel() as any,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             new ConfigService({ EXPIRATION_WINDOW_SECONDS: 15 * 60 }),
             new MockOryRelationshipsService() as any,
             new MockPublisher() as any,

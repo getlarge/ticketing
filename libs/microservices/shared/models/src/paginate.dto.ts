@@ -48,6 +48,7 @@ export class FilterDto extends PartialType(filterDto) {
     oneOf: [{ type: 'string' }, { type: 'number' }],
     required: false,
   })
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   arr_value: TYPE_STRING_NUM_ARRAY;
 
   @ApiProperty({
@@ -85,6 +86,7 @@ export class PaginateDto extends PartialType(PaginationDto) {
     minItems: 1,
     maxItems: 2,
   })
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   start_key?: startKeyDto[];
 
   @ApiPropertyOptional({ minimum: 0, type: Number })

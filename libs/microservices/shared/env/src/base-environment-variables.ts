@@ -51,7 +51,7 @@ export class BaseEnvironmentVariables {
       require_protocol: true,
       require_valid_protocol: true,
       protocols: ['http', 'https'],
-    })
+    }),
   )
   SERVER_URL?: string = null;
 
@@ -60,8 +60,8 @@ export class BaseEnvironmentVariables {
   @decorate(
     Transform(
       ({ value }) => (value ? value.split(',').map((v) => v.trim()) : []),
-      { toClassOnly: true }
-    )
+      { toClassOnly: true },
+    ),
   )
   @decorate(IsArray())
   @decorate(
@@ -72,8 +72,8 @@ export class BaseEnvironmentVariables {
         require_protocol: true,
         require_valid_protocol: true,
       },
-      { each: true }
-    )
+      { each: true },
+    ),
   )
   PROXY_SERVER_URLS?: string[] = [];
 
@@ -137,7 +137,7 @@ export class BaseEnvironmentVariables {
   @decorate(Expose())
   @decorate(IsOptional())
   @decorate(IsEnum(LogLevel))
-  LOG_LEVEL?: LogLevel = LogLevel.debug;
+  LOG_LEVEL?: LogLevel = LogLevel.Debug;
 
   // EXTERNAL LINKS
   @decorate(Expose())
@@ -148,7 +148,7 @@ export class BaseEnvironmentVariables {
       require_protocol: true,
       require_valid_protocol: true,
       protocols: ['http', 'https'],
-    })
+    }),
   )
   FRONTEND_URL?: string = 'http://localhost:4200';
 }

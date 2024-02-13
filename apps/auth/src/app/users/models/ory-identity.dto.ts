@@ -20,6 +20,7 @@ export class OryIdentityTraitDto {
   email: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export class OryIdentityDto implements Identity {
   @Expose()
   @IsUUID()
@@ -104,6 +105,8 @@ export class OryIdentityDto implements Identity {
   @ApiPropertyOptional()
   state_changed_at?: string;
 }
+
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export class OnOrySignUpDto {
   @Type(() => OryIdentityDto)

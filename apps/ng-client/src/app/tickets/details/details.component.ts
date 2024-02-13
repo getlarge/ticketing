@@ -22,7 +22,7 @@ import {
 export class TicketDetailsComponent implements OnInit, OnDestroy {
   ticket$!: Observable<TicketDto | undefined>;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  Resources = Resources;
+  ticketsLink = `/${Resources.TICKETS}`;
 
   constructor(
     private store: Store<RootStoreState.RootState>,

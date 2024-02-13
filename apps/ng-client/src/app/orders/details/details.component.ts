@@ -22,12 +22,12 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
   order$!: Observable<Order | undefined>;
   expiresIn$!: Observable<number>;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  Resources = Resources;
+  ordersLink = `/${Resources.ORDERS}`;
 
   constructor(
     private store: Store<OrderStoreState.State>,
     private route: ActivatedRoute,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +41,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
     this.expiresIn$ = interval(1000).pipe(
       switchMap(() => this.order$),
       filter((order) => !!order),
-      map((order) => this.expiresIn(order as Order))
+      map((order) => this.expiresIn(order as Order)),
     );
   }
 
@@ -56,7 +56,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
 
   cancelOrder(order: Order): void {
     this.store.dispatch(
-      new OrderStoreActions.CancelOrderAction({ orderId: order.id })
+      new OrderStoreActions.CancelOrderAction({ orderId: order.id }),
     );
   }
 

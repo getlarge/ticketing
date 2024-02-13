@@ -68,16 +68,15 @@ export class GetRelationsCommand extends CommandRunner {
       ...relationQuery,
       ...options,
     });
-    const { relation_tuples, next_page_token } = data;
+    const pageToken = data.next_page_token;
+    yield { relationships: data.relation_tuples, pageToken };
 
-    yield { relationships: relation_tuples, pageToken: next_page_token };
-
-    if (next_page_token) {
+    if (pageToken) {
       return this.fetchPaginatedRelationships(
         {
           ...tuple,
         },
-        { pageToken: next_page_token, pageSize: options.pageSize },
+        { pageToken, pageSize: options.pageSize },
       );
     }
   }
