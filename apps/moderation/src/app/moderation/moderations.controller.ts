@@ -26,7 +26,7 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import {
-  GenericError,
+  AcceptableError,
   requestValidationErrorFactory,
 } from '@ticketing/shared/errors';
 import { ModerationStatus } from '@ticketing/shared/models';
@@ -100,7 +100,7 @@ const AuthenticationGuard = (): Type<CanActivate> =>
       };
     },
     unauthorizedFactory(ctx) {
-      return new GenericError(
+      return new AcceptableError(
         'Unauthorized',
         401,
         ctx.switchToHttp().getRequest().url,
@@ -111,7 +111,7 @@ const AuthenticationGuard = (): Type<CanActivate> =>
 const AuthorizationGuard = (): Type<CanActivate> =>
   OryAuthorizationGuard({
     unauthorizedFactory(ctx) {
-      return new GenericError(
+      return new AcceptableError(
         'Forbidden',
         403,
         ctx.switchToHttp().getRequest().url,

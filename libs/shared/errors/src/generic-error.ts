@@ -1,7 +1,9 @@
 import { CustomError } from './custom-error';
 import { ErrorResponse } from './error-response';
 
-export class GenericError extends CustomError {
+export abstract class GenericError extends CustomError {
+  abstract override name: string;
+
   constructor(
     message: string,
     public readonly statusCode: number,
