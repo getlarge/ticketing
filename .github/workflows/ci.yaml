@@ -32,6 +32,10 @@ on:
       - published
       - edited
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-ci
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 20.x
   NODE_OPTIONS: --max_old_space_size=6144
@@ -291,23 +295,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # this step now goes in conflict with package.json regeneration via ESLint @nx/dependency-checks rule
-      # - name: Regenerate backend apps package.json
-      #   if: needs.init.outputs.should-update-packages == 'true'
-      #   run: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn refresh-pkg-json
-
-      # - name: Add, commit and push backend package.json
-      #   if: needs.init.outputs.should-update-packages == 'true'
-      #   id: commit-pkg
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: 'chore: regenerate backend package*.json [skip ci]'
-      #     file_pattern: 'apps/**/package*.json'
-      #     commit_options: '--no-verify'
-
-      # - if: steps.commit-pkg.outputs.changes_detected == 'true'
-      #   run: echo "BASE_DEPTH=$((${{ env.BASE_DEPTH }} + 1))" >> $GITHUB_ENV
-
       - name: Regenerate frontend models
         if: needs.init.outputs.should-update-models == 'true'
         run: yarn ng:openapi
@@ -319,7 +306,7 @@ jobs:
       - name: Add, commit and push generated models
         if: needs.init.outputs.should-update-models == 'true'
         id: commit-ng-models
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'chore: regenerate frontend models [skip ci]'
           file_pattern: 'libs/ng/shared/open-api/src/lib/generated/*'
