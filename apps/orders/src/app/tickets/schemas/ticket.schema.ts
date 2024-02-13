@@ -7,7 +7,10 @@ import { Ticket as TicketAttrs } from '../models';
 
 @Schema({
   toJSON: {
-    transform(doc: TicketDocument, ret: TicketAttrs & { _id: string; __v: number }) {
+    transform(
+      doc: TicketDocument,
+      ret: TicketAttrs & { _id: string; __v: number },
+    ) {
       ret.id = doc._id.toString();
       const { _id, __v, ...rest } = ret;
       return rest;

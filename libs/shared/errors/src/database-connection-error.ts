@@ -20,5 +20,5 @@ export class DatabaseConnectionError extends CustomError {
 }
 
 export const isDatabaseConnectionError = (
-  error: Error
+  error: Error,
 ): error is DatabaseConnectionError => error instanceof DatabaseConnectionError;

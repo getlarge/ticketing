@@ -1,23 +1,11 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "**/*"
-  ],
-  "plugins": [
-    "@nx"
-  ],
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nx"],
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "*.jsx",
-        "*.cjs"
-      ],
-      "extends": [
-        "plugin:you-dont-need-lodash-underscore/compatible"
-      ],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.cjs"],
+      "extends": ["plugin:you-dont-need-lodash-underscore/compatible"],
       "rules": {
         "@nx/enforce-module-boundaries": [
           "error",
@@ -80,16 +68,11 @@
               },
               {
                 "sourceTag": "type:const",
-                "onlyDependOnLibsWithTags": [
-                  "type:const"
-                ]
+                "onlyDependOnLibsWithTags": ["type:const"]
               },
               {
                 "sourceTag": "type:env",
-                "onlyDependOnLibsWithTags": [
-                  "type:const",
-                  "type:env"
-                ]
+                "onlyDependOnLibsWithTags": ["type:const", "type:env"]
               },
               {
                 "sourceTag": "type:testing",
@@ -101,55 +84,32 @@
               },
               {
                 "sourceTag": "scope:auth",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:auth"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:auth"]
               },
               {
                 "sourceTag": "scope:client",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:client"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:client"]
               },
               {
                 "sourceTag": "scope:expiration",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:expiration"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:expiration"]
               },
               {
                 "sourceTag": "scope:orders",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:orders"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:orders"]
               },
               {
                 "sourceTag": "scope:payments",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:payments"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:payments"]
               },
               {
                 "sourceTag": "scope:tickets",
-                "onlyDependOnLibsWithTags": [
-                  "scope:shared",
-                  "scope:tickets"
-                ]
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:tickets"]
               },
               {
                 "sourceTag": "platform:web",
-                "onlyDependOnLibsWithTags": [
-                  "platform:web",
-                  "platform:shared"
-                ],
-                "bannedExternalImports": [
-                  "*nestjs*"
-                ]
+                "onlyDependOnLibsWithTags": ["platform:web", "platform:shared"],
+                "bannedExternalImports": ["*nestjs*"]
               },
               {
                 "sourceTag": "platform:server",
@@ -157,25 +117,16 @@
                   "platform:server",
                   "platform:shared"
                 ],
-                "bannedExternalImports": [
-                  "*angular*"
-                ]
+                "bannedExternalImports": ["*angular*"]
               },
               {
                 "sourceTag": "platform:shared",
-                "onlyDependOnLibsWithTags": [
-                  "platform:shared"
-                ],
-                "bannedExternalImports": [
-                  "*angular*",
-                  "*nestjs*"
-                ]
+                "onlyDependOnLibsWithTags": ["platform:shared"],
+                "bannedExternalImports": ["*angular*", "*nestjs*"]
               },
               {
                 "sourceTag": "platform:cli",
-                "onlyDependOnLibsWithTags": [
-                  "*"
-                ]
+                "onlyDependOnLibsWithTags": ["*"]
               }
             ]
           }
@@ -183,18 +134,11 @@
       }
     },
     {
-      "files": [
-        "*.ts",
-        "*.tsx"
-      ],
-      "extends": [
-        "plugin:@nx/typescript"
-      ],
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "project": [
-          "tsconfig.base.json"
-        ]
+        "project": ["tsconfig.base.json"]
       },
       "plugins": [
         "@typescript-eslint",
@@ -231,23 +175,12 @@
             "max": 3
           }
         ],
-        "max-params": [
-          "error",
-          10
-        ],
-        "max-params-no-constructor/max-params-no-constructor": [
-          "error",
-          4
-        ],
+        "max-params": ["error", 10],
+        "max-params-no-constructor/max-params-no-constructor": ["error", 4],
         "no-console": [
           "error",
           {
-            "allow": [
-              "error",
-              "warn",
-              "info",
-              "table"
-            ]
+            "allow": ["error", "warn", "info", "table"]
           }
         ],
         "no-duplicate-imports": "error",
@@ -284,69 +217,42 @@
           "error",
           {
             "selector": "classProperty",
-            "format": [
-              "camelCase",
-              "UPPER_CASE"
-            ]
+            "format": ["camelCase", "UPPER_CASE"]
           },
           {
             "selector": "enumMember",
-            "format": [
-              "PascalCase",
-              "UPPER_CASE"
-            ]
+            "format": ["PascalCase", "UPPER_CASE"]
           },
           {
             "selector": "function",
-            "format": [
-              "camelCase",
-              "PascalCase"
-            ]
+            "format": ["camelCase", "PascalCase"]
           },
           {
             "selector": "import",
-            "format": [
-              "camelCase",
-              "PascalCase"
-            ]
+            "format": ["camelCase", "PascalCase"]
           },
           {
             "selector": "objectLiteralProperty",
-            "modifiers": [
-              "requiresQuotes"
-            ],
+            "modifiers": ["requiresQuotes"],
             "format": null
           },
           {
             "selector": "objectLiteralProperty",
-            "format": [
-              "camelCase",
-              "PascalCase",
-              "snake_case"
-            ],
+            "format": ["camelCase", "PascalCase", "snake_case"],
             "leadingUnderscore": "allowSingleOrDouble"
           },
           {
             "selector": "parameter",
-            "format": [
-              "camelCase",
-              "PascalCase"
-            ],
+            "format": ["camelCase", "PascalCase"],
             "leadingUnderscore": "allow"
           },
           {
             "selector": "typeLike",
-            "format": [
-              "PascalCase"
-            ]
+            "format": ["PascalCase"]
           },
           {
             "selector": "variable",
-            "format": [
-              "camelCase",
-              "UPPER_CASE",
-              "PascalCase"
-            ],
+            "format": ["camelCase", "UPPER_CASE", "PascalCase"],
             "filter": {
               "regex": "^(__dirname)$",
               "match": false
@@ -386,21 +292,13 @@
           {
             "groups": [
               // Side effects.
-              [
-                "^\\u0000"
-              ],
+              ["^\\u0000"],
               // 3rd party.
-              [
-                "^@?\\w"
-              ],
+              ["^@?\\w"],
               // Anything not fitting group above.
-              [
-                "^"
-              ],
+              ["^"],
               // Relative imports.
-              [
-                "^\\."
-              ]
+              ["^\\."]
             ]
           }
         ],
@@ -408,14 +306,8 @@
       }
     },
     {
-      "files": [
-        "*.js",
-        "*.jsx",
-        "*.cjs"
-      ],
-      "extends": [
-        "plugin:@nx/javascript"
-      ],
+      "files": ["*.js", "*.jsx", "*.cjs"],
+      "extends": ["plugin:@nx/javascript"],
       "rules": {}
     }
   ]

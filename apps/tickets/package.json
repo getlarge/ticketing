@@ -45,9 +45,6 @@
   "peerDependenciesMeta": {
     "ioredis": {
       "optional": true
-    },
-    "nats": {
-      "optional": true
     }
   },
   "main": "main.js"
