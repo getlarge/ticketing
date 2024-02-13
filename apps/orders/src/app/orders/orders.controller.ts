@@ -140,8 +140,8 @@ export class OrdersController {
 
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = req.params['id'] as string;
     return relationTupleBuilder()
       .subject(PermissionNamespaces[Resources.USERS], currentUserId)
       .isIn('owners')
@@ -167,8 +167,8 @@ export class OrdersController {
 
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = req.params['id'] as string;
     return relationTupleBuilder()
       .subject(PermissionNamespaces[Resources.USERS], currentUserId)
       .isIn('owners')
