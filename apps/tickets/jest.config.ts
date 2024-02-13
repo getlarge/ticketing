@@ -12,9 +12,6 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'mjs', 'js', 'html'],
-  moduleNameMapper: {
-    'lodash-es': 'lodash',
-  },
   extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/tickets',
   collectCoverageFrom: ['src/**/*.ts'],

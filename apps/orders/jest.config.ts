@@ -12,9 +12,6 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'mjs', 'html'],
-  moduleNameMapper: {
-    'lodash-es': 'lodash',
-  },
   extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/orders',
   preset: '../../jest.preset.js',
