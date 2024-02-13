@@ -3,6 +3,7 @@ import type { ValidationError } from 'class-validator';
 import { CustomError } from './custom-error';
 
 export class RequestValidationError extends CustomError {
+  name = 'RequestValidationError';
   statusCode = 400;
 
   constructor(public readonly errors: ValidationError[]) {
