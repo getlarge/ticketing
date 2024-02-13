@@ -2,22 +2,24 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OryPermissionsService } from '@getlarge/keto-client-wrapper';
+import { createMock } from '@golevelup/ts-jest';
 import { jest } from '@jest/globals';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   createRmqContext,
-  MockModel,
   MockOryPermissionsService,
   MockOryRelationshipsService,
-  MockPublisher,
 } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
+import { TicketDocument } from '../tickets/schemas';
 import { Order } from './models';
 import { OrdersService } from './orders.service';
 import { OrdersMSController } from './orders-ms.controller';
+import { OrderDocument } from './schemas';
 
 describe('OrdersMSController', () => {
   let app: TestingModule;
@@ -29,14 +31,14 @@ describe('OrdersMSController', () => {
         {
           provide: OrdersService,
           useValue: new OrdersService(
-            new MockModel() as any,
-            new MockModel() as any,
+            createMock<Model<OrderDocument>>(),
+            createMock<Model<TicketDocument>>(),
             // eslint-disable-next-line @typescript-eslint/naming-convention
             new ConfigService({ EXPIRATION_WINDOW_SECONDS: 15 * 60 }),
             new MockOryRelationshipsService() as any,
-            new MockPublisher() as any,
-            new MockPublisher() as any,
-            new MockPublisher() as any,
+            createMock<ClientProxy>(),
+            createMock<ClientProxy>(),
+            createMock<ClientProxy>(),
           ),
         },
         {

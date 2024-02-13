@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { OrderStatus } from '../../orders/models';
@@ -8,9 +7,13 @@ import { Ticket as TicketAttrs } from '../models';
 
 @Schema({
   toJSON: {
-    transform(doc: TicketDocument, ret: TicketAttrs) {
+    transform(
+      doc: TicketDocument,
+      ret: TicketAttrs & { _id: string; __v: number },
+    ) {
       ret.id = doc._id.toString();
-      return omit(ret, ['_id', '__v']);
+      const { _id, __v, ...rest } = ret;
+      return rest;
     },
   },
 })

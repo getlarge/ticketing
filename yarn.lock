@@ -3972,6 +3972,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@golevelup/ts-jest@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@golevelup/ts-jest@npm:0.4.0"
+  checksum: 1cb2c938771493445d478665594927304fd0890e964c8d38a11a3f8735fd83a01bed3e5d470c403d3f8f38e8b67571aab822c1bebbedc8562faf2936e74c8f66
+  languageName: node
+  linkType: hard
+
 "@graphql-typed-document-node/core@npm:^3.2.0":
   version: 3.2.0
   resolution: "@graphql-typed-document-node/core@npm:3.2.0"
@@ -6873,16 +6880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4.17.12":
-  version: 4.17.12
-  resolution: "@types/lodash-es@npm:4.17.12"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 990a99e2243bebe9505cb5ad19fbc172beb4a8e00f9075c99fc06c46c2801ffdb40bc2867271cf580d5f48994fc9fb076ec92cd60a20e621603bf22114e5b077
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.176":
+"@types/lodash@npm:^4.14.176":
   version: 4.14.202
   resolution: "@types/lodash@npm:4.14.202"
   checksum: a91acf3564a568c6f199912f3eb2c76c99c5a0d7e219394294213b3f2d54f672619f0fde4da22b29dc5d4c31457cd799acc2e5cb6bd90f9af04a1578483b6ff7
@@ -12770,6 +12768,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-you-dont-need-lodash-underscore@npm:^6.13.0":
+  version: 6.13.0
+  resolution: "eslint-plugin-you-dont-need-lodash-underscore@npm:6.13.0"
+  dependencies:
+    kebab-case: ^1.0.0
+  checksum: 28948496056267222bc3f300bbbaddcb39c3d1a791717baab0f7e5e84d909d168dfa2fd9c2c92a0215d0fcd55eb5414c429e2b81a4155785ca9d1f047a18135a
+  languageName: node
+  linkType: hard
+
 "eslint-rule-composer@npm:^0.3.0":
   version: 0.3.0
   resolution: "eslint-rule-composer@npm:0.3.0"
@@ -16553,6 +16560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kebab-case@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "kebab-case@npm:1.0.2"
+  checksum: bf01164e11c544ee9b3aa1a91c2e7d6aa6b3356b834a5e885d43f36db14aae5d347cd4a298a566133321b82fde6bac6b597f148ac19bfd3d3fc81e1034a79729
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.5.3":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -16920,13 +16934,6 @@ __metadata:
   dependencies:
     p-locate: ^6.0.0
   checksum: c1b653bdf29beaecb3d307dfb7c44d98a2a98a02ebe353c9ad055d1ac45d6ed4e1142563d222df9b9efebc2bcb7d4c792b507fad9e7150a04c29530b7db570f8
-  languageName: node
-  linkType: hard
-
-"lodash-es@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
   languageName: node
   linkType: hard
 
@@ -22823,6 +22830,7 @@ __metadata:
     "@getlarge/keto-client-wrapper": 0.1.0
     "@getlarge/keto-relations-parser": 0.0.3
     "@getlarge/kratos-client-wrapper": 0.1.0
+    "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0
@@ -22866,7 +22874,6 @@ __metadata:
     "@types/jest": 29.4.4
     "@types/js-yaml": ^4.0.9
     "@types/lodash": ^4.14.176
-    "@types/lodash-es": ^4.17.12
     "@types/node": 18.14.2
     "@types/passport-jwt": ^3.0.6
     "@types/passport-local": ^1.0.34
@@ -22900,6 +22907,7 @@ __metadata:
     eslint-plugin-simple-import-sort: ^7.0.0
     eslint-plugin-sonarjs: 0.11.0
     eslint-plugin-unused-imports: 2.0.0
+    eslint-plugin-you-dont-need-lodash-underscore: ^6.13.0
     fastify: 4.22.0
     glob: ^10.3.10
     husky: ^7.0.4
@@ -22910,7 +22918,6 @@ __metadata:
     js-yaml: ^4.1.0
     localtunnel: ^2.0.2
     lodash: ^4.17.21
-    lodash-es: ^4.17.21
     mongoose: ^6.1.0
     mongoose-update-if-current: ^1.4.0
     nest-commander: 3.12.5

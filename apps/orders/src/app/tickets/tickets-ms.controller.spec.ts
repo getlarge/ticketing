@@ -1,15 +1,15 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createMock } from '@golevelup/ts-jest';
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  createRmqContext,
-  MockModel,
-} from '@ticketing/microservices/shared/testing';
+import { createRmqContext } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
+import { Model } from 'mongoose';
 
 import { mockTicketEvent } from '../../../test/models/ticket.mock';
+import { TicketDocument } from './schemas';
 import { TicketsService } from './tickets.service';
 import { TicketsMSController } from './tickets-ms.controller';
 
@@ -22,7 +22,7 @@ describe('TicketsMSController', () => {
         TicketsMSController,
         {
           provide: TicketsService,
-          useValue: new TicketsService(new MockModel() as any),
+          useValue: new TicketsService(createMock<Model<TicketDocument>>()),
         },
       ],
     }).compile();

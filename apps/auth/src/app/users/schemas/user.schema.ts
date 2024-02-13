@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { User as UserAttrs } from '../models';
@@ -8,7 +7,8 @@ import { User as UserAttrs } from '../models';
   toJSON: {
     transform(doc, ret) {
       ret.id = doc._id.toString();
-      return omit(ret, ['_id', 'password', '__v']);
+      const { _id, __v, ...rest } = ret;
+      return rest;
     },
   },
 })

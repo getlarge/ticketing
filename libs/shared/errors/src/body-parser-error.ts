@@ -1,10 +1,12 @@
 import { CustomError } from './custom-error';
 
 export class BodyParserError extends CustomError {
+  public readonly name = 'BodyParserError';
+
   constructor(
     public statusCode: number,
     public reason: string,
-    public details: Record<string, unknown> = {}
+    public details: Record<string, unknown> = {},
   ) {
     super('Failed to parse request body');
     Object.setPrototypeOf(this, BodyParserError.prototype);

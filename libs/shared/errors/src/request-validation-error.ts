@@ -3,6 +3,7 @@ import type { ValidationError } from 'class-validator';
 import { CustomError } from './custom-error';
 
 export class RequestValidationError extends CustomError {
+  name = 'RequestValidationError';
   statusCode = 400;
 
   constructor(public readonly errors: ValidationError[]) {
@@ -21,11 +22,11 @@ export class RequestValidationError extends CustomError {
 }
 
 export function extractValidationErrorField(
-  errors: ValidationError[]
+  errors: ValidationError[],
 ): string[] {
   function prependConstraintsWithParentProp(
     parentPath: string,
-    error: ValidationError
+    error: ValidationError,
   ): ValidationError {
     const constraints: ValidationError['constraints'] = {};
     for (const key in error.constraints) {
@@ -36,7 +37,7 @@ export function extractValidationErrorField(
 
   function mapChildrenToValidationErrors(
     error: ValidationError,
-    parentPath?: string
+    parentPath?: string,
   ): ValidationError[] {
     if (!error.children?.length) {
       return [error];
@@ -49,7 +50,7 @@ export function extractValidationErrorField(
     for (const item of error.children) {
       if (item.children?.length) {
         validationErrors.push(
-          ...mapChildrenToValidationErrors(item, parentPath)
+          ...mapChildrenToValidationErrors(item, parentPath),
         );
       }
       validationErrors.push(prependConstraintsWithParentProp(parentPath, item));
@@ -63,11 +64,11 @@ export function extractValidationErrorField(
 }
 
 export function requestValidationErrorFactory(
-  validationErrors: ValidationError[]
+  validationErrors: ValidationError[],
 ): RequestValidationError {
   return new RequestValidationError(validationErrors);
 }
 
 export const isRequestValidationError = (
-  error: Error
+  error: Error,
 ): error is RequestValidationError => error instanceof RequestValidationError;

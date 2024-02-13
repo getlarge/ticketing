@@ -1,11 +1,11 @@
-/* eslint-disable max-lines-per-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockModel } from '@ticketing/microservices/shared/testing';
 import { OrderStatus } from '@ticketing/shared/models';
+import { Model } from 'mongoose';
 
 import { OrdersService } from './orders.service';
 import { OrdersMSController } from './orders-ms.controller';
+import { OrderDocument } from './schemas';
 
 describe('OrdersMSController', () => {
   let app: TestingModule;
@@ -16,7 +16,7 @@ describe('OrdersMSController', () => {
         OrdersMSController,
         {
           provide: OrdersService,
-          useValue: new OrdersService(new MockModel() as any),
+          useValue: new OrdersService(createMock<Model<OrderDocument>>()),
         },
       ],
     }).compile();
@@ -32,7 +32,7 @@ describe('OrdersMSController', () => {
 
   describe('onCcancel()', () => {
     it.todo(
-      `should move the order status to ${OrderStatus.Cancelled} and ack the message`
+      `should move the order status to ${OrderStatus.Cancelled} and ack the message`,
     );
   });
 });
