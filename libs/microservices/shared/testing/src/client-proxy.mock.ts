@@ -102,9 +102,3 @@ export function createRmqContext(
   const channel = new RmqChannel();
   return new RmqContext([message, channel, pattern]);
 }
-
-export class MockPublisher extends MockClient {
-  onApplicationBootstrap = jest.fn();
-  connect = jest.fn();
-  close = jest.fn();
-}
