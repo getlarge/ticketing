@@ -7,7 +7,6 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { fromPairs } from 'lodash-es';
 import {
   filterDto,
   PaginationDto,
@@ -41,7 +40,13 @@ function parseQueryString(val: string): Record<string, unknown> {
   try {
     return JSON.parse(val);
   } catch (e) {
-    return fromPairs(val.split(',').map((s) => s.split('=')));
+    return val
+      .split(',')
+      .map((s) => s.split('='))
+      .reduce(function (accumulator, value) {
+        accumulator[value[0]] = value[1];
+        return accumulator;
+      }, {});
   }
 }
 

@@ -1,13 +1,13 @@
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { omitBy } from 'lodash-es';
 
 export const validate = <T extends object>(envClass: ClassConstructor<T>) => {
   return (config: Record<string, unknown>): T => {
     // eslint-disable-next-line no-param-reassign
-    config = omitBy(
-      config,
-      (val) => !val || val === 'null' || val === 'undefined',
+    config = Object.fromEntries(
+      Object.entries(config).filter(
+        ([, val]) => !val || val === 'null' || val === 'undefined',
+      ),
     );
 
     const validatedConfig = plainToClass(envClass, config, {

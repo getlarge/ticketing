@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash-es';
 import { Document, Model } from 'mongoose';
 
 import { Ticket as TicketAttrs, ticketContraints } from '../models';
 @Schema({
   toJSON: {
-    transform(doc: TicketDocument, ret: TicketAttrs) {
+    transform(doc: TicketDocument, ret: TicketAttrs & { _id: string }) {
       ret.id = doc._id.toString();
-      return omit(ret, ['_id']);
+      const { _id, ...rest } = ret;
+      return rest;
     },
   },
   versionKey: 'version',
