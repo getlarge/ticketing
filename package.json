@@ -4,6 +4,9 @@
   "version": "0.2.0",
   "license": "MIT",
   "packageManager": "yarn@3.6.3",
+  "engines": {
+    "node": ">=18.19.0"
+  },
   "scripts": {
     "start": "nx serve",
     "start:frontend": "nx run ng-client:serve",
