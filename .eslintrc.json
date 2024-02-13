@@ -15,6 +15,9 @@
         "*.jsx",
         "*.cjs"
       ],
+      "extends": [
+        "plugin:you-dont-need-lodash-underscore/compatible"
+      ],
       "rules": {
         "@nx/enforce-module-boundaries": [
           "error",
@@ -365,7 +368,12 @@
           }
         ],
         "@typescript-eslint/no-non-null-assertion": "error",
-        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "ignoreRestSiblings": true
+          }
+        ],
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/no-shadow": "error",
         "@typescript-eslint/no-this-alias": "off",
