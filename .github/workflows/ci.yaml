@@ -33,7 +33,7 @@ on:
       - edited
 
 env:
-  NODE_VERSION: 16.x
+  NODE_VERSION: 20.x
   NODE_OPTIONS: --max_old_space_size=6144
   CI_WORKFLOW: ci.yaml
   CD_WORKFLOW: cd.yaml
