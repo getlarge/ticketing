@@ -1,4 +1,5 @@
 export abstract class CustomError extends Error {
+  abstract override name: string;
   abstract statusCode: number;
 
   constructor(message: string) {

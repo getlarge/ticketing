@@ -26,7 +26,11 @@
             "checkObsoleteDependencies": true,
             "checkVersionMismatches": true,
             "includeTransitiveDependencies": true,
-            "ignoredDependencies": ["@jest/globals", "@nestjs/testing"]
+            "ignoredDependencies": [
+              "@golevelup/ts-jest",
+              "@jest/globals",
+              "@nestjs/testing"
+            ]
           }
         ]
       }

@@ -23,7 +23,6 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { Resources } from '@ticketing/shared/constants';
 import { Ticket, User } from '@ticketing/shared/models';
-import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { lastValueFrom, Observable, timeout, zip } from 'rxjs';
 
@@ -162,7 +161,7 @@ export class OrdersService {
   }
 
   orderExists(id: string, order: OrderDocument): void {
-    if (isEmpty(order)) {
+    if (!order) {
       throw new NotFoundException(`Order ${id} not found`);
     }
   }

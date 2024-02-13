@@ -1,16 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash-es';
-import { Document, Model, Schema as MongooseSchema } from 'mongoose';
+import { Document, Model, ObjectId, Schema as MongooseSchema } from 'mongoose';
 
 import { Ticket } from '../../tickets/schemas';
 import { Order as OrderAttrs, OrderStatus } from '../models';
 
 @Schema({
   toJSON: {
-    transform(doc: OrderDocument, ret: OrderAttrs) {
+    transform(
+      doc: OrderDocument,
+      ret: OrderAttrs & { _id: ObjectId; __v: number },
+    ) {
       ret.id = doc._id.toString();
       ret.expiresAt = doc.expiresAt.toISOString();
-      return omit(ret, ['_id', '__v']);
+      const { _id, __v, ...rest } = ret;
+      return rest;
     },
   },
   versionKey: 'version',

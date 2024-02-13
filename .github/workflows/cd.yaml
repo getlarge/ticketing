@@ -45,7 +45,7 @@ concurrency:
 
 env:
   ACTIONS_STEP_DEBUG: ${{ vars.ACTIONS_STEP_DEBUG }}
-  NODE_VERSION: ${{ vars.NODE_VERSION || '18.x' }}
+  NODE_VERSION: ${{ vars.NODE_VERSION || '20.x' }}
   STEP_SETUP_PROJECT: 'Setup node, checkout and install project dependencies'
   BUILD_FOLDER: dist
   BUILD_ARTIFACTS: build
