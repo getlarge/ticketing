@@ -27,7 +27,9 @@ const config: CoreConfig = {
     format: ['json', 'md'],
   },
   upload: {
-    server: 'https://quality-metrics-staging.web.app/portal/api/graphql',
+    server:
+      process.env.CODE_PUSHUP_API_URL ??
+      'https://api.staging.code-pushup.dev/graphql',
     apiKey: process.env.CODE_PUSHUP_API_KEY ?? '',
     organization: 'code-pushup',
     project: 'ticketing',
