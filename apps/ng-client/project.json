@@ -135,6 +135,7 @@
       "outputs": ["{workspaceRoot}/coverage/apps/ng-client"],
       "options": {
         "jestConfig": "apps/ng-client/jest.config.ts",
+        "codeCoverage": true,
         "passWithNoTests": true
       }
     },
