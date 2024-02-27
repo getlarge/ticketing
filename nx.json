@@ -51,7 +51,15 @@
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": [],
-    "production": ["default"]
+    "production": [
+      "default",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/**/*.spec.[jt]s",
+      "!{projectRoot}/**/*.e2e-spec.[jt]s",
+      "!{projectRoot}/**/jest.config.[jt]s",
+      "!{projectRoot}/**/jest-e2e.config.[jt]s",
+      "!{projectRoot}/**/jest.setup.[jt]s"
+    ]
   },
   "nxCloudAccessToken": "NzI5M2ZhYzctNzIyOS00NjAwLWI4ZjMtNjg1YjBjYTRhNGNhfHJlYWQtd3JpdGU=",
   "parallel": 1

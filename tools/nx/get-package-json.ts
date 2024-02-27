@@ -39,6 +39,7 @@ export async function getPackageJson({
   const packageJson = createPackageJson(projectName, graph, {
     root,
     isProduction,
+    target: 'build',
   });
   packageJson.main = packageJson.main || 'main.js';
   packageJson.version = rootPackageJson.version;
