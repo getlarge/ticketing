@@ -1,0 +1,62 @@
+{
+  "name": "moderation",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/moderation/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/moderation",
+        "outputFileName": "main.mjs",
+        "main": "apps/moderation/src/main.ts",
+        "tsConfig": "apps/moderation/tsconfig.app.json",
+        "assets": ["apps/moderation/src/assets"],
+        "generatePackageJson": true,
+        "target": "node",
+        "compiler": "tsc",
+        "webpackConfig": "apps/moderation/webpack.config.cjs",
+        "isolatedConfig": true
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "local",
+      "options": {
+        "buildTarget": "moderation:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "moderation:build:development"
+        },
+        "production": {
+          "buildTarget": "moderation:build:production"
+        },
+        "local": {
+          "buildTarget": "moderation:build:development"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/moderation/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/moderation/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:moderation", "type:app", "platform:server"]
+}
