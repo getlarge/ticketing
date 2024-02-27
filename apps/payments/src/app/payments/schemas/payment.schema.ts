@@ -1,14 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { omit } from 'lodash-es';
 import { Document } from 'mongoose';
 
 import { Payment as PaymentAttrs } from '../models';
 
 @Schema({
   toJSON: {
-    transform(doc: PaymentDocument, ret: PaymentAttrs) {
+    transform(
+      doc: PaymentDocument,
+      ret: PaymentAttrs & { _id: string; __v: number },
+    ) {
       ret.id = doc._id.toString();
-      return omit(ret, ['_id', '__v']);
+      const { _id, __v, ...rest } = ret;
+      return rest;
     },
   },
   versionKey: 'version',

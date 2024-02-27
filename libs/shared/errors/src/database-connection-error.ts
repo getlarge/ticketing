@@ -1,6 +1,7 @@
 import { CustomError } from './custom-error';
 
 export class DatabaseConnectionError extends CustomError {
+  name = 'DatabaseConnectionError';
   statusCode = 500;
   reason = 'Error connecting to the database';
 
@@ -19,5 +20,5 @@ export class DatabaseConnectionError extends CustomError {
 }
 
 export const isDatabaseConnectionError = (
-  error: Error
+  error: Error,
 ): error is DatabaseConnectionError => error instanceof DatabaseConnectionError;

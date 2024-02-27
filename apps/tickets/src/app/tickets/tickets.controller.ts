@@ -66,7 +66,6 @@ import {
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify/types/request';
-import { get } from 'lodash-es';
 
 import {
   CreateTicket,
@@ -121,8 +120,8 @@ const validationPipeOptions: ValidationPipeOptions = {
 
 const isTicketOwner = (ctx: ExecutionContext): string => {
   const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-  const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-  const resourceId = get(req, 'params.id');
+  const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+  const resourceId = (req.params as { id: string }).id;
   return relationTupleBuilder()
     .subject(PermissionNamespaces[Resources.USERS], currentUserId)
     .isIn('owners')

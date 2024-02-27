@@ -4,7 +4,7 @@ import {
   TicketCreatedEvent,
   TicketUpdatedEvent,
 } from '@ticketing/microservices/shared/events';
-import { Model } from 'mongoose';
+import type { Document, Model } from 'mongoose';
 
 import { Ticket } from './models';
 import { Ticket as TicketSchema, TicketDocument } from './schemas';

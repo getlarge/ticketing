@@ -38,7 +38,6 @@ import {
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify/types/request';
-import { get } from 'lodash-es';
 
 import { CreateOrder, CreateOrderDto, Order, OrderDto } from './models';
 import { OrdersService } from './orders.service';
@@ -84,8 +83,8 @@ export class OrdersController {
   // TODO: check if ticket is reserved via Ory by adding orders to the tickets relations
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.body as CreateOrder, 'ticketId');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = (req.body as CreateOrder).ticketId;
     return relationTupleBuilder()
       .subject(PermissionNamespaces[Resources.USERS], currentUserId)
       .isIn('order')
@@ -141,8 +140,8 @@ export class OrdersController {
 
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = req.params['id'] as string;
     return relationTupleBuilder()
       .subject(PermissionNamespaces[Resources.USERS], currentUserId)
       .isIn('owners')
@@ -168,8 +167,8 @@ export class OrdersController {
 
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.params, 'id');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = req.params['id'] as string;
     return relationTupleBuilder()
       .subject(PermissionNamespaces[Resources.USERS], currentUserId)
       .isIn('owners')

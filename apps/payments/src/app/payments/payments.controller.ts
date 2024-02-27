@@ -32,7 +32,6 @@ import {
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify/types/request';
-import { get } from 'lodash-es';
 
 import { CreatePayment, CreatePaymentDto, Payment, PaymentDto } from './models';
 import { PaymentsService } from './payments.service';
@@ -44,8 +43,8 @@ export class PaymentsController {
 
   @OryPermissionChecks((ctx) => {
     const req = ctx.switchToHttp().getRequest<FastifyRequest>();
-    const currentUserId = get(req, `${CURRENT_USER_KEY}.id`);
-    const resourceId = get(req.body as CreatePayment, 'orderId');
+    const currentUserId = req[`${CURRENT_USER_KEY}`]['id'];
+    const resourceId = (req.body as CreatePayment).orderId;
     return relationTupleToString({
       namespace: PermissionNamespaces[Resources.ORDERS],
       object: resourceId,

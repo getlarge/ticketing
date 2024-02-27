@@ -29,7 +29,6 @@ import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { Resources } from '@ticketing/shared/constants';
 import { isErrorResponse, RetriableError } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
-import { isEmpty } from 'lodash-es';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
 import { Readable } from 'node:stream';
@@ -154,7 +153,7 @@ export class TicketsService {
 
   async findById(id: string): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ _id: id });
-    if (isEmpty(ticket)) {
+    if (!ticket?.id) {
       throw new NotFoundException(`Ticket ${id} not found`);
     }
     return ticket.toJSON<Ticket>();
@@ -182,7 +181,7 @@ export class TicketsService {
       const ticket = await this.ticketModel
         .findOne({ _id: id })
         .session(session);
-      if (isEmpty(ticket)) {
+      if (ticket?.id) {
         throw new NotFoundException(`Ticket ${id} not found`);
       } else if (ticket.orderId) {
         throw new BadRequestException(`Ticket ${id} is currently reserved`);
@@ -216,7 +215,7 @@ export class TicketsService {
       const ticket = await this.ticketModel
         .findOne({ _id: ticketId })
         .session(session);
-      if (isEmpty(ticket)) {
+      if (ticket?.id) {
         throw new NotFoundException(`Ticket ${ticketId} not found`);
       }
       ticket.set({ orderId });
@@ -246,7 +245,7 @@ export class TicketsService {
       const ticket = await this.ticketModel
         .findOne({ _id: ticketId })
         .session(session);
-      if (isEmpty(ticket)) {
+      if (ticket?.id) {
         throw new NotFoundException(`Ticket ${ticketId} not found`);
       }
       ticket.set({ orderId: undefined });

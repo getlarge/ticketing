@@ -1,18 +1,21 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createMock } from '@golevelup/ts-jest';
 import { jest } from '@jest/globals';
+import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FileStorageService } from '@s1seven/nestjs-tools-file-storage';
 import {
   createRmqContext,
-  MockModel,
   MockOryRelationshipsService,
-  MockPublisher,
 } from '@ticketing/microservices/shared/testing';
 import { Channel } from 'amqp-connection-manager';
+import { Model } from 'mongoose';
 
 import { mockOrderEvent } from '../../../test/models/order.mock';
 import { mockTicket } from '../../../test/models/ticket.mock';
+import { TicketDocument } from '../tickets/schemas';
 import { TicketsService } from '../tickets/tickets.service';
 import { OrdersMSController } from './orders-ms.controller';
 
@@ -26,10 +29,11 @@ describe('OrdersMSController', () => {
         {
           provide: TicketsService,
           useValue: new TicketsService(
-            new MockModel() as any,
+            createMock<Model<TicketDocument>>(),
             new MockOryRelationshipsService() as any,
-            new MockPublisher() as any,
-            new MockPublisher() as any,
+            createMock<FileStorageService>(),
+            createMock<ClientProxy>(),
+            createMock<ClientProxy>(),
           ),
         },
       ],
