@@ -6,7 +6,7 @@ export const validate = <T extends object>(envClass: ClassConstructor<T>) => {
     // eslint-disable-next-line no-param-reassign
     config = Object.fromEntries(
       Object.entries(config).filter(
-        ([, val]) => !val || val === 'null' || val === 'undefined',
+        ([, val]) => !!val && val !== 'null' && val !== 'undefined',
       ),
     );
 
