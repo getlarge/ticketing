@@ -15,11 +15,11 @@ import {
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { Ticket } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
-import { TicketDto } from './models';
-import { TicketsService } from './tickets.service';
+import { TicketsService } from '../tickets/tickets.service';
 
 const validationPipeOptions: ValidationPipeOptions = {
   transform: true,
@@ -37,13 +37,10 @@ export class TicketsMSController {
     @Inject(TicketsService) private readonly ticketsService: TicketsService,
   ) {}
 
-  @ApiExcludeEndpoint()
-  @MessagePattern(Patterns.TicketApproved, Transport.RMQ)
-  async onCreated(
-    @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.TicketApproved],
-    @Ctx() context: RmqContext,
-  ): Promise<TicketDto> {
+  private async updateStatusById(
+    data: Ticket,
+    context: RmqContext,
+  ): Promise<void> {
     const channel = context.getChannelRef() as Channel;
     const message = context.getMessage() as Message;
     const pattern = context.getPattern();
@@ -51,37 +48,33 @@ export class TicketsMSController {
       data,
     });
     try {
-      const ticket = await this.ticketsService.create(data);
+      await this.ticketsService.updateStatusById(data.id, data.status);
       channel.ack(message);
-      return ticket;
     } catch (e) {
-      // TODO: requeue when error is timeout or connection error
       channel.nack(message, false, false);
       throw e;
     }
   }
 
   @ApiExcludeEndpoint()
-  @MessagePattern(Patterns.TicketUpdated, Transport.RMQ)
-  async onUpdated(
+  @MessagePattern(Patterns.TicketApproved, Transport.RMQ)
+  async onApproved(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.TicketUpdated],
+    data: EventsMap[Patterns.TicketApproved],
     @Ctx() context: RmqContext,
-  ): Promise<TicketDto> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      const ticket = await this.ticketsService.updateById(data.id, data);
-      channel.ack(message);
-      return ticket;
-    } catch (e) {
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
-      throw e;
-    }
+  ): Promise<{ ok: boolean }> {
+    await this.updateStatusById(data, context);
+    return { ok: true };
+  }
+
+  @ApiExcludeEndpoint()
+  @MessagePattern(Patterns.TicketRejected, Transport.RMQ)
+  async onRejected(
+    @Payload(new ValidationPipe(validationPipeOptions))
+    data: EventsMap[Patterns.TicketApproved],
+    @Ctx() context: RmqContext,
+  ): Promise<{ ok: boolean }> {
+    await this.updateStatusById(data, context);
+    return { ok: true };
   }
 }

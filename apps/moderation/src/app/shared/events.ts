@@ -3,7 +3,6 @@ import {
   Moderation,
   ModerationStatus,
   ModerationTicket,
-  Ticket,
   TicketStatus,
 } from '@ticketing/shared/models';
 
@@ -19,7 +18,7 @@ export const TICKET_CREATED_EVENT = `${Resources.TICKETS}/${EventStatus.CREATED}
 export const TICKET_APPROVED_EVENT = `${Resources.TICKETS}/${EventStatus.APPROVED}/*`;
 export const TICKET_REJECTED_EVENT = `${Resources.TICKETS}/${EventStatus.REJECTED}/*`;
 
-export type TicketEvent = { ticket: Ticket };
+export type TicketEvent = { ticket: ModerationTicket };
 export type TicketCreatedEvent = TicketEvent & {
   ctx?: Record<string, unknown>;
 };

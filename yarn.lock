@@ -4026,6 +4026,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ioredis/commands@npm:^1.1.1":
+  version: 1.2.0
+  resolution: "@ioredis/commands@npm:1.2.0"
+  checksum: 9b20225ba36ef3e5caf69b3c0720597c3016cc9b1e157f519ea388f621dd9037177f84cfe7e25c4c32dad7dd90c70ff9123cd411f747e053cf292193c9c461e2
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -4559,6 +4566,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/bull-shared@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "@nestjs/bull-shared@npm:10.1.0"
+  dependencies:
+    tslib: 2.6.2
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+  checksum: b71cef811475e5c59f20ab935146619987d4957d3635b7fb7a95231f5d4417f79721cbf02b3789111da5e929f485077815d3abce993f1dab2adbc451a827483b
+  languageName: node
+  linkType: hard
+
 "@nestjs/bull@npm:10.0.1":
   version: 10.0.1
   resolution: "@nestjs/bull@npm:10.0.1"
@@ -4570,6 +4589,20 @@ __metadata:
     "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
     bull: ^3.3 || ^4.0.0
   checksum: 928f723977de2c8d7a9e5698583218eba1bbea3c296afbc906fb07a2033152f8906669c253a46799896bdd44db0196648fed1d5983c3aed90c76a2c408ed8c5c
+  languageName: node
+  linkType: hard
+
+"@nestjs/bullmq@npm:10.1.0":
+  version: 10.1.0
+  resolution: "@nestjs/bullmq@npm:10.1.0"
+  dependencies:
+    "@nestjs/bull-shared": ^10.1.0
+    tslib: 2.6.2
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+    bullmq: ^3.0.0 || ^4.0.0 || ^5.0.0
+  checksum: f85a8e111227a030d18624516365dd5090c0c2ac644e3f073d2b25b96c54676903fd769fce411ede18dea61e7513cbd44caf215fe792535e66397009e15326c7
   languageName: node
   linkType: hard
 
@@ -9106,6 +9139,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bullmq@npm:5.4.0":
+  version: 5.4.0
+  resolution: "bullmq@npm:5.4.0"
+  dependencies:
+    cron-parser: ^4.6.0
+    fast-glob: ^3.3.2
+    ioredis: ^5.3.2
+    lodash: ^4.17.21
+    minimatch: ^9.0.3
+    msgpackr: ^1.10.1
+    node-abort-controller: ^3.1.1
+    semver: ^7.5.4
+    tslib: ^2.0.0
+    uuid: ^9.0.0
+  checksum: 783a430c926acfcf51b1e84077c81cb13e98da06db92dd3ab8cb0cc6ee7f44d620ee7e31de61549e8b09e10a07534a91c02ff9a1431de56c16b8e488649f514b
+  languageName: node
+  linkType: hard
+
 "bundle-require@npm:^4.0.1":
   version: 4.0.2
   resolution: "bundle-require@npm:4.0.2"
@@ -10413,7 +10464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron-parser@npm:^4.2.1":
+"cron-parser@npm:^4.2.1, cron-parser@npm:^4.6.0":
   version: 4.9.0
   resolution: "cron-parser@npm:4.9.0"
   dependencies:
@@ -11659,6 +11710,13 @@ __metadata:
   version: 1.5.1
   resolution: "denque@npm:1.5.1"
   checksum: 4375ad19d5cea99f90effa82a8cecdaa10f4eb261fbcd7e47cd753ff2737f037aac8f7f4e031cc77f3966314c491c86a0d3b20c128aeee57f791b4662c45108e
+  languageName: node
+  linkType: hard
+
+"denque@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "denque@npm:2.1.0"
+  checksum: 1d4ae1d05e59ac3a3481e7b478293f4b4c813819342273f3d5b826c7ffa9753c520919ba264f377e09108d24ec6cf0ec0ac729a5686cbb8f32d797126c5dae74
   languageName: node
   linkType: hard
 
@@ -13224,7 +13282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0":
+"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.2":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
   dependencies:
@@ -15033,6 +15091,23 @@ __metadata:
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
   checksum: a8793c3324cd69fa55b4baacbda118ce6724e574260157761276b31411dd3e168c75490f7155c6ce34d79e01488efa98e0cdb162991970fd56da7cbcdafb8fb8
+  languageName: node
+  linkType: hard
+
+"ioredis@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "ioredis@npm:5.3.2"
+  dependencies:
+    "@ioredis/commands": ^1.1.1
+    cluster-key-slot: ^1.1.0
+    debug: ^4.3.4
+    denque: ^2.1.0
+    lodash.defaults: ^4.2.0
+    lodash.isarguments: ^3.1.0
+    redis-errors: ^1.2.0
+    redis-parser: ^3.0.0
+    standard-as-callback: ^2.1.0
+  checksum: 9a23559133e862a768778301efb68ae8c2af3c33562174b54a4c2d6574b976e85c75a4c34857991af733e35c48faf4c356e7daa8fb0a3543d85ff1768c8754bc
   languageName: node
   linkType: hard
 
@@ -17988,6 +18063,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"msgpackr@npm:^1.10.1":
+  version: 1.10.1
+  resolution: "msgpackr@npm:1.10.1"
+  dependencies:
+    msgpackr-extract: ^3.0.2
+  dependenciesMeta:
+    msgpackr-extract:
+      optional: true
+  checksum: e422d18b01051598b23701eebeb4b9e2c686b9c7826b20f564724837ba2b5cd4af74c91a549eaeaf8186645cc95e8196274a4a19442aa3286ac611b98069c194
+  languageName: node
+  linkType: hard
+
 "msgpackr@npm:^1.5.2":
   version: 1.10.0
   resolution: "msgpackr@npm:1.10.0"
@@ -18184,7 +18271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-abort-controller@npm:^3.0.1":
+"node-abort-controller@npm:^3.0.1, node-abort-controller@npm:^3.1.1":
   version: 3.1.1
   resolution: "node-abort-controller@npm:3.1.1"
   checksum: 2c340916af9710328b11c0828223fc65ba320e0d082214a211311bf64c2891028e42ef276b9799188c4ada9e6e1c54cf7a0b7c05dd9d59fcdc8cd633304c8047
@@ -22853,6 +22940,7 @@ __metadata:
     "@mermaid-js/mermaid-cli": ^8.13.4
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
+    "@nestjs/bullmq": 10.1.0
     "@nestjs/common": 10.2.4
     "@nestjs/config": 3.1.1
     "@nestjs/core": 10.2.4
@@ -22905,6 +22993,7 @@ __metadata:
     axios: 1.6.2
     bootstrap: ^5.1.3
     bull: 4.8.2
+    bullmq: 5.4.0
     class-transformer: 0.5.1
     class-validator: 0.13.2
     commitizen: ^4.2.4
@@ -23820,6 +23909,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.1
+  resolution: "uuid@npm:9.0.1"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
   languageName: node
   linkType: hard
 

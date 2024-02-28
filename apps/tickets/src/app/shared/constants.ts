@@ -6,3 +6,4 @@ export const DEFAULT_SERVER_URL = `http://localhost:${DEFAULT_PORT}`;
 
 export const TICKETS_CLIENT = 'TICKETS_CLIENT';
 export const ORDERS_CLIENT = 'ORDERS_CLIENT';
+export const MODERATIONS_CLIENT = 'MODERATIONS_CLIENT';

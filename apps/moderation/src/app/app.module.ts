@@ -9,16 +9,19 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AsyncLocalStorageModule } from '@ticketing/microservices/shared/async-local-storage';
 import { validate } from '@ticketing/microservices/shared/env';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EnvironmentVariables } from './env';
+import { AppConfigService, EnvironmentVariables } from './env';
 import { ModuleMiddleware } from './middlewares/module.middleware';
 import { RequestContextMiddleware } from './middlewares/request-context.middleware';
+import { ModerationsModule } from './moderations/moderations.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -37,6 +40,14 @@ import { RequestContextMiddleware } from './middlewares/request-context.middlewa
       verboseMemoryLeak: true,
       ignoreErrors: false,
     }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+    }),
+    TicketsModule,
+    ModerationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
