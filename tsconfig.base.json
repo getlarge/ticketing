@@ -18,6 +18,9 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "@ticketing/microservices/shared/async-local-storage": [
+        "libs/microservices/shared/async-local-storage/src/index.ts"
+      ],
       "@ticketing/microservices/shared/constants": [
         "libs/microservices/shared/constants/src/index.ts"
       ],
