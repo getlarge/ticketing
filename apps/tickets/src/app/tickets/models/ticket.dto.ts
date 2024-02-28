@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Ticket, ticketConstraints } from '@ticketing/shared/models';
+import {
+  Ticket,
+  ticketConstraints,
+  TicketStatus,
+} from '@ticketing/shared/models';
 
 export class TicketDto extends Ticket {
   @ApiProperty({
@@ -25,10 +29,17 @@ export class TicketDto extends Ticket {
 
   @ApiProperty({
     description:
-      'Ticket version represented by a number incremented at each updated',
+      'Ticket version represented by a number incremented at each update',
     required: true,
   })
   declare version: number;
+
+  @ApiProperty({
+    description: 'Ticket status',
+    required: true,
+    enum: Object.values(TicketStatus),
+  })
+  declare status: TicketStatus;
 
   @ApiProperty({
     description: 'Ticket creator id',
