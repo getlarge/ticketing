@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
+import { AsyncLocalStorageService } from '@ticketing/microservices/shared/async-local-storage';
 
 import { AppService } from './app.service';
 import { ControllerFilter } from './filters/controller.filter';
@@ -40,7 +41,10 @@ export class AppController
 {
   readonly logger = new Logger(AppController.name);
 
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly asyncLocalStorageService: AsyncLocalStorageService,
+  ) {}
 
   onModuleInit(): void {
     this.logger.log(`initialized`);
@@ -79,5 +83,10 @@ export class AppController
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getException(@Param('id', RouteParamsPipe) _id?: string): string {
     throw new Error('Exception');
+  }
+
+  @Get('request-context')
+  getRequestContext(): unknown {
+    return this.asyncLocalStorageService.get('REQUEST_CONTEXT');
   }
 }
