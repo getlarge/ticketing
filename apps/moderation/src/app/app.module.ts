@@ -10,6 +10,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AsyncLocalStorageModule } from '@ticketing/microservices/shared/async-local-storage';
 import { validate } from '@ticketing/microservices/shared/env';
 
@@ -27,6 +28,15 @@ import { RequestContextMiddleware } from './middlewares/request-context.middlewa
       validate: validate(EnvironmentVariables),
     }),
     AsyncLocalStorageModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '/',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

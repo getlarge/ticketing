@@ -4637,6 +4637,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/event-emitter@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@nestjs/event-emitter@npm:2.0.4"
+  dependencies:
+    eventemitter2: 6.4.9
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+  checksum: 36c7dbc4ed3c452d149a489d1c8bc0bd70a1c4d11fada43f9b2197dc5190ccebe0d4d29447443afbdb9d4b12b7d5df5ce6217d6e1b64b428f32a8cb9b8b23041
+  languageName: node
+  linkType: hard
+
 "@nestjs/jwt@npm:10.1.0":
   version: 10.1.0
   resolution: "@nestjs/jwt@npm:10.1.0"
@@ -12945,7 +12957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter2@npm:^6.4.3":
+"eventemitter2@npm:6.4.9, eventemitter2@npm:^6.4.3":
   version: 6.4.9
   resolution: "eventemitter2@npm:6.4.9"
   checksum: be59577c1e1c35509c7ba0e2624335c35bbcfd9485b8a977384c6cc6759341ea1a98d3cb9dbaa5cea4fff9b687e504504e3f9c2cc1674cf3bd8a43a7c74ea3eb
@@ -22844,6 +22856,7 @@ __metadata:
     "@nestjs/common": 10.2.4
     "@nestjs/config": 3.1.1
     "@nestjs/core": 10.2.4
+    "@nestjs/event-emitter": 2.0.4
     "@nestjs/jwt": 10.1.0
     "@nestjs/microservices": 10.2.4
     "@nestjs/mongoose": 10.0.1
