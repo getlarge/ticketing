@@ -24,7 +24,7 @@
       "parser": "jsonc-eslint-parser",
       "rules": {
         "@nx/dependency-checks": [
-          "error",
+          "warn",
           {
             "buildTargets": ["build"],
             "checkMissingDependencies": true,

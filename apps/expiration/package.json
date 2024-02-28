@@ -28,6 +28,7 @@
     "dotenv-expand": "10.0.0",
     "fastify": "4.22.0",
     "ioredis": "4.28.5",
+    "mongoose": "6.12.3",
     "nestjs-pino": "3.4.0",
     "pino-http": "8.5.0",
     "reflect-metadata": "0.1.14",
