@@ -1,6 +1,7 @@
 import {
   BeforeApplicationShutdown,
   Logger,
+  MiddlewareConsumer,
   Module,
   OnApplicationBootstrap,
   OnApplicationShutdown,
@@ -13,6 +14,7 @@ import { validate } from '@ticketing/microservices/shared/env';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvironmentVariables } from './env';
+import { ModuleMiddleware } from './middlewares/module.middleware';
 
 @Module({
   imports: [
@@ -34,6 +36,10 @@ export class AppModule
     BeforeApplicationShutdown
 {
   readonly logger = new Logger(AppModule.name);
+
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(ModuleMiddleware).forRoutes(AppController);
+  }
 
   onModuleInit(): void {
     this.logger.log(`initialized`);

@@ -9,6 +9,11 @@ import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 
 import { AppModule } from './app/app.module';
 import { EnvironmentVariables } from './app/env';
+import { GlobalFilter } from './app/filters/global.filter';
+import { GlobalGuard } from './app/guards/global.guard';
+import { GlobalInterceptor } from './app/interceptors/global.interceptor';
+import { globalMiddleware } from './app/middlewares/global.middleware';
+import { GlobalPipe } from './app/pipes/global.pipe';
 
 const DEFAULT_PORT = 3090;
 
@@ -23,6 +28,12 @@ async function bootstrap(): Promise<void> {
   );
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
   app.enableShutdownHooks();
+
+  app.use(globalMiddleware);
+  app.useGlobalGuards(new GlobalGuard());
+  app.useGlobalInterceptors(new GlobalInterceptor());
+  app.useGlobalPipes(new GlobalPipe());
+  app.useGlobalFilters(new GlobalFilter());
 
   const configService =
     app.get<ConfigService<EnvironmentVariables, true>>(ConfigService);
