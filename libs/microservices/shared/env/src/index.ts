@@ -3,6 +3,7 @@ export * from './base-environment-variables';
 export * from './helpers';
 export * from './jwt-environment-variables';
 export * from './mongo-environment-variables';
+export * from './my-api-environment-variables';
 export * from './ory-environment-variables';
 export * from './rabbitmq-environment-variables';
 export * from './redis-environment-variables';
