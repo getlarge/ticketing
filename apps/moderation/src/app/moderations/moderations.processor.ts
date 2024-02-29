@@ -5,6 +5,7 @@ import { AsyncLocalStorageService } from '@ticketing/microservices/shared/async-
 import { ModerationStatus, TicketStatus } from '@ticketing/shared/models';
 import type { Job } from 'bullmq';
 
+import { ContentGuardService } from '../content-guard/content-guard.service';
 import {
   EventsMap,
   TICKET_APPROVED_EVENT,
@@ -20,6 +21,8 @@ export class ModerationsProcessor extends WorkerHost {
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
     @Inject(AsyncLocalStorageService)
     private readonly asyncLocalStorageService: AsyncLocalStorageService,
+    @Inject(ContentGuardService)
+    private readonly contentGuardService: ContentGuardService,
   ) {
     super();
   }
@@ -63,12 +66,39 @@ export class ModerationsProcessor extends WorkerHost {
     return { status };
   }
 
-  // TODO: implement moderation logic
-  private moderateTicket(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async moderateTicket(
     jobData: ModerateTicket,
   ): Promise<{ status: ModerationStatus; rejectionReason?: string }> {
-    return Promise.resolve({ status: ModerationStatus.Pending });
+    const { ticket } = jobData;
+    const isMatched = this.contentGuardService.matchesDictionary(ticket.title);
+    this.logger.debug(
+      `Ticket: ${ticket.title} is ${
+        isMatched ? 'matched' : 'not matched'
+      } with dictionary`,
+    );
+    if (isMatched) {
+      const rejectionReason = `Ticket title contains inappropriate language`;
+      return { status: ModerationStatus.Rejected, rejectionReason };
+    }
+
+    const result = await this.contentGuardService.isFlagged(ticket.title);
+    this.logger.debug(
+      `Ticket: ${ticket.title} is ${
+        result.flagged ? 'flagged' : 'not flagged'
+      } by OpenAI`,
+    );
+    if (result.flagged) {
+      const flaggedCategories = Object.entries(result.categories)
+        .filter(([, flagged]) => flagged)
+        .map(([category]) => category);
+      const rejectionReason = `Ticket title contains inappropriate language in categories: ${flaggedCategories.join(
+        ', ',
+      )}`;
+      this.logger.debug(rejectionReason);
+      return { status: ModerationStatus.Rejected, rejectionReason };
+    }
+
+    return Promise.resolve({ status: ModerationStatus.Approved });
   }
 
   @OnWorkerEvent('completed')

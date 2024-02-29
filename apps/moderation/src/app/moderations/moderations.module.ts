@@ -17,6 +17,7 @@ import { ModerationsController } from './moderations.controller';
 import { ModerationsProcessor } from './moderations.processor';
 import { ModerationsService } from './moderations.service';
 import { ModerationSchema } from './schemas';
+import { ContentGuardModule } from '../content-guard/content-guard.module';
 
 @Module({
   imports: [
@@ -66,6 +67,12 @@ import { ModerationSchema } from './schemas';
       useFactory: (configService: AppConfigService) => ({
         accessToken: configService.get('ORY_KETO_API_KEY'),
         basePath: configService.get('ORY_KETO_ADMIN_URL'),
+      }),
+    }),
+    ContentGuardModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        openAIApiKey: configService.get('OPENAI_API_KEY'),
       }),
     }),
   ],

@@ -8,7 +8,8 @@ import {
   RedisEnvironmentVariables,
   RmqEnvironmentVariables,
 } from '@ticketing/microservices/shared/env';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,4 +40,8 @@ export class EnvironmentVariables extends Mixin(
   APP_NAME?: string = 'moderation';
 
   APP_VERSION?: string = this.pkg?.version || '0.0.1';
+
+  @Expose()
+  @IsString()
+  OPENAI_API_KEY: string;
 }
