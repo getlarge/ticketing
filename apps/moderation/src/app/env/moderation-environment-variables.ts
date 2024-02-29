@@ -1,6 +1,15 @@
 import { applyDecorators } from '@nestjs/common';
-import { Expose, Type } from 'class-transformer';
-import { IsNumber, IsString, Max, Min } from 'class-validator';
+import { Expose, Transform, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Max,
+  Min,
+} from 'class-validator';
 import { decorate } from 'ts-mixer';
 
 export const IsThresholdDecorator = (): PropertyDecorator => {
@@ -50,4 +59,38 @@ export class ModerationEnvironmentVariables {
 
   @decorate(IsThresholdDecorator())
   MODERATION_VIOLENCE_GRAPHIC_THRESHOLD?: number = 0.7;
+
+  @decorate(Expose())
+  @decorate(
+    IsUrl({
+      require_tld: false,
+      require_protocol: true,
+      require_valid_protocol: true,
+      protocols: ['smtp', 'smtps'],
+    }),
+  )
+  MAILER_URL?: string =
+    'smtps://test:test@localhost:1025/?skip_ssl_verify=true';
+
+  @decorate(Expose())
+  @decorate(IsOptional())
+  @decorate(IsString())
+  MAILER_FROM_NAME?: string = 'Ticketing';
+
+  @decorate(Expose())
+  @decorate(IsOptional())
+  @decorate(IsEmail())
+  MAILER_FROM_ADDRESS?: string = 'no-reply@ticketing.local';
+
+  @decorate(Expose())
+  @decorate(IsOptional())
+  @decorate(
+    Transform(
+      ({ value }) => (value ? value.split(',').map((v) => v.trim()) : []),
+      { toClassOnly: true },
+    ),
+  )
+  @decorate(IsArray())
+  @decorate(IsEmail({}, { each: true }))
+  MODERATORS_EMAILS?: string[] = [];
 }

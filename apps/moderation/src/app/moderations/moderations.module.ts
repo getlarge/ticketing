@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LockModule } from '@s1seven/nestjs-tools-lock';
+import { MailerModule } from '@ticketing/microservices/shared/mailer';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
@@ -106,6 +107,24 @@ import { ModerationSchema } from './schemas';
       },
     }),
     ScheduleModule.forRoot(),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => {
+        const { protocol, hostname, port, password, username } = new URL(
+          configService.get('MAILER_URL'),
+        );
+        const fromAddress = configService.get('MAILER_FROM_ADDRESS');
+        return {
+          host: hostname,
+          port: +port,
+          secure: protocol.startsWith('smtps'),
+          user: username,
+          password,
+          fromName: configService.get('MAILER_FROM_NAME') ?? fromAddress,
+          fromAddress,
+        };
+      },
+    }),
     OryFrontendModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: AppConfigService) => ({

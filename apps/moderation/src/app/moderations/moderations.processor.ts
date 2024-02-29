@@ -3,7 +3,12 @@ import { Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AsyncLocalStorageService } from '@ticketing/microservices/shared/async-local-storage';
-import { ModerationStatus, TicketStatus } from '@ticketing/shared/models';
+import { MailerService } from '@ticketing/microservices/shared/mailer';
+import {
+  Moderation,
+  ModerationStatus,
+  TicketStatus,
+} from '@ticketing/shared/models';
 import type { Job } from 'bullmq';
 
 import {
@@ -30,6 +35,7 @@ export class ModerationsProcessor extends WorkerHost {
     @Inject(ContentGuardService)
     private readonly contentGuardService: ContentGuardService,
     @Inject(ConfigService) private readonly configService: AppConfigService,
+    @Inject(MailerService) private readonly mailerService: MailerService,
   ) {
     super();
   }
@@ -68,7 +74,6 @@ export class ModerationsProcessor extends WorkerHost {
         });
         break;
       case ModerationStatus.RequiresManualReview:
-        //  TODO: notify moderation team
         await this.emitEventAsync(TICKET_MANUAL_REVIEW_REQUIRED_EVENT, {
           ctx,
           moderation: {
@@ -77,6 +82,11 @@ export class ModerationsProcessor extends WorkerHost {
             rejectionReason,
           },
           ticket: { ...ticket, status: TicketStatus.WaitingModeration },
+        });
+        await this.sendModerationEmail(ticket, {
+          ...moderation,
+          status: ModerationStatus.RequiresManualReview,
+          rejectionReason,
         });
         break;
       default:
@@ -165,6 +175,28 @@ export class ModerationsProcessor extends WorkerHost {
     }
 
     return Promise.resolve({ status: ModerationStatus.Approved });
+  }
+
+  private async sendModerationEmail(
+    ticket: ModerateTicket['ticket'],
+    moderation: Moderation,
+  ): Promise<void> {
+    const recipients = this.configService.get('MODERATORS_EMAILS', {
+      infer: true,
+    });
+    if (!recipients.length) {
+      return Promise.resolve();
+    }
+    const html = await this.mailerService.renderTemplate(
+      'moderation-required.hbs',
+      {
+        moderationId: moderation.id,
+        title: ticket.title,
+        ticketId: ticket.id,
+        reason: moderation.rejectionReason,
+      },
+    );
+    await this.mailerService.sendMail(recipients, 'Moderation Required', html);
   }
 
   @OnWorkerEvent('completed')
