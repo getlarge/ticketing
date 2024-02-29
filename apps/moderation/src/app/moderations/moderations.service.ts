@@ -1,11 +1,18 @@
+import { OryRelationshipsService } from '@getlarge/keto-client-wrapper';
+import {
+  createRelationQuery,
+  relationTupleBuilder,
+} from '@getlarge/keto-relations-parser';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
+import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
+import { Resources } from '@ticketing/shared/constants';
 import { Moderation, ModerationStatus } from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
-import { Model,Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import {
   type TicketApprovedEvent,
@@ -26,6 +33,8 @@ export class ModerationsService {
   constructor(
     @InjectModel(ModerationSchema.name)
     private moderationModel: Model<ModerationDocument>,
+    @Inject(OryRelationshipsService)
+    private readonly oryRelationshipsService: OryRelationshipsService,
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
   ) {}
@@ -62,6 +71,21 @@ export class ModerationsService {
       await res[0].populate('ticket');
       const moderation = res[0].toJSON<Moderation>();
       this.logger.debug(`Created moderation ${moderation.id}`);
+
+      const relationTupleWithAdminGroup = relationTupleBuilder()
+        .subject(PermissionNamespaces[Resources.GROUPS], 'admin', 'members')
+        .isIn('editors')
+        .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id)
+        .toJSON();
+      const createRelationshipBody = createRelationQuery(
+        relationTupleWithAdminGroup,
+      ).unwrapOrThrow();
+      await this.oryRelationshipsService.createRelationship({
+        createRelationshipBody,
+      });
+      this.logger.debug(
+        `Created relation ${relationTupleWithAdminGroup.toString()}`,
+      );
 
       const job = await this.moderationProcessor.add(
         'moderate-ticket',

@@ -1,3 +1,8 @@
+import {
+  OryPermissionsModule,
+  OryRelationshipsModule,
+} from '@getlarge/keto-client-wrapper';
+import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -5,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
 
+import { AppConfigService } from '../env';
 import { QueueNames } from '../shared/queues';
 import { TicketSchema } from '../tickets/schemas';
 import { ModerationsController } from './moderations.controller';
@@ -21,7 +27,7 @@ import { ModerationSchema } from './schemas';
     BullModule.registerQueueAsync({
       name: QueueNames.MODERATE_TICKET,
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: AppConfigService) => {
         const { port, hostname, password } = new URL(
           configService.get('REDIS_URL'),
         );
@@ -42,6 +48,25 @@ import { ModerationSchema } from './schemas';
           sharedConnection: true,
         };
       },
+    }),
+    OryFrontendModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        basePath: configService.get('ORY_KRATOS_PUBLIC_URL'),
+      }),
+    }),
+    OryPermissionsModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        basePath: configService.get('ORY_KETO_PUBLIC_URL'),
+      }),
+    }),
+    OryRelationshipsModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => ({
+        accessToken: configService.get('ORY_KETO_API_KEY'),
+        basePath: configService.get('ORY_KETO_ADMIN_URL'),
+      }),
     }),
   ],
   controllers: [ModerationsController],
