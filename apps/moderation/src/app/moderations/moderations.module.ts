@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
 
+import { ContentGuardModule } from '../content-guard/content-guard.module';
 import { AppConfigService } from '../env';
 import { QueueNames } from '../shared/queues';
 import { TicketSchema } from '../tickets/schemas';
@@ -17,7 +18,6 @@ import { ModerationsController } from './moderations.controller';
 import { ModerationsProcessor } from './moderations.processor';
 import { ModerationsService } from './moderations.service';
 import { ModerationSchema } from './schemas';
-import { ContentGuardModule } from '../content-guard/content-guard.module';
 
 @Module({
   imports: [

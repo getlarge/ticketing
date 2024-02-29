@@ -32,6 +32,11 @@ upstream tickets_service {
   server $TICKETS_SERVICE:$TICKETS_SERVICE_PORT;
 }
 
+upstream moderations_service {
+  least_conn;
+  server $MODERATIONS_SERVICE:$MODERATIONS_SERVICE_PORT;
+}
+
 # set default version header to 0
 map $http_x_version $req_version {
   default $http_x_version;
@@ -85,11 +90,10 @@ server {
   # localtunnel specific header
   add_header Bypass-Tunnel-Reminder "yo";
 
-  if ($request_method = 'OPTIONS' ) {
+  if ($request_method = 'OPTIONS') {
     return 204 no-content;
   }
 
-  # Auth Service
   location /api/users {
     proxy_pass http://auth_service;
     proxy_set_header X-Version $req_version;
@@ -118,6 +122,13 @@ server {
     include /etc/nginx/snippets/proxy.conf;
   }
 
+  location /api/moderations {
+    proxy_pass http://moderations_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $MODERATIONS_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+  }
+
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
   }
@@ -143,10 +154,9 @@ server {
     proxy_set_header Host $FRONTEND;
     include /etc/nginx/snippets/proxy.conf;
     add_header X-Frame-Options "SAMEORIGIN" always;
-    # add_header Content-Security-Policy "default-src 'self' $DEFAULT_SRC; script-src 'self' $SCRIPT_SRC; style-src 'self' $STYLE_SRC; style-src-elem 'self' $STYLE_SRC_ELEM; style-src-attr 'self' 'unsafe-inline' $STYLE_SRC_ATTR; connect-src 'self' $CONNECT_SRC; font-src 'self' $FONT_SRC; object-src 'self'; media-src 'self' $MEDIA_SRC; img-src 'self' data: $IMG_SRC; form-action 'self' $FORM_ACTION; frame-src 'self' $FRAME_SRC"; always;
     add_header X-Content-Type-Options nosniff always;
-		add_header Referrer-Policy "no-referrer" always;
-		add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer" always;
+    add_header X-XSS-Protection "1; mode=block" always;
   }
 
   error_page 500 502 503 504 /50x.html;

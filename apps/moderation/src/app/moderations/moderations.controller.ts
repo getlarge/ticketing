@@ -5,11 +5,13 @@ import {
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
 import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
 import {
+  Body,
   CanActivate,
   Controller,
   ExecutionContext,
   Get,
   Param,
+  Patch,
   Query,
   Type,
   UseGuards,
@@ -19,7 +21,11 @@ import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import type { FastifyRequest } from 'fastify';
 
-import { FilterModerationsDto, ModerationDto } from './models';
+import {
+  FilterModerationsDto,
+  ModerationDto,
+  RejectModerationDto,
+} from './models';
 import { ModerationsService } from './moderations.service';
 
 const adminPermission = (ctx: ExecutionContext): string => {
@@ -92,5 +98,22 @@ export class ModerationsController {
   @Get(':id')
   findById(@Param('id', ParseObjectId) id: string): Promise<ModerationDto> {
     return this.moderationService.findById(id);
+  }
+
+  @OryPermissionChecks(moderationPermission)
+  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @Patch(':id/approve')
+  approveById(@Param('id', ParseObjectId) id: string): Promise<ModerationDto> {
+    return this.moderationService.approveById(id);
+  }
+
+  @OryPermissionChecks(moderationPermission)
+  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @Patch(':id/reject')
+  rejectById(
+    @Param('id', ParseObjectId) id: string,
+    @Body() { rejectionReason }: RejectModerationDto = {},
+  ): Promise<ModerationDto> {
+    return this.moderationService.rejectById(id, rejectionReason);
   }
 }
