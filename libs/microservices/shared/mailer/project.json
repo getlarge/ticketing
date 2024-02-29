@@ -1,0 +1,23 @@
+{
+  "name": "microservices-shared-mailer",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/microservices/shared/mailer/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/microservices/shared/mailer/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/microservices/shared/mailer/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:util", "platform:server"]
+}
