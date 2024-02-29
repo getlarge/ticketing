@@ -4,6 +4,7 @@ import {
 } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
 import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   CanActivate,
@@ -15,6 +16,7 @@ import {
   Query,
   Type,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
   ValidationPipeOptions,
@@ -23,6 +25,7 @@ import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { ModerationStatus } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 
 import {
@@ -100,6 +103,20 @@ export class ModerationsController {
 
   @OryPermissionChecks(adminPermission)
   @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL((ctx) => {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const query = (req.query as FilterModerationsDto) ?? {};
+    switch (query?.status) {
+      case ModerationStatus.Approved:
+      case ModerationStatus.Rejected:
+        return 60;
+      case ModerationStatus.Pending:
+      case ModerationStatus.RequiresManualReview:
+      default:
+        return 5;
+    }
+  })
   @Get()
   find(
     @Query(new ValidationPipe(validationPipeOptions))

@@ -4606,6 +4606,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/cache-manager@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@nestjs/cache-manager@npm:2.2.1"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0
+    cache-manager: <=5
+    rxjs: ^7.0.0
+  checksum: 871dfe83115dcfd39f76d30d2e9b12ebc5e485007abc24e72414c5505a71e0cfdcb7a5c20fc58fe82302259a3b346eee884332a07418437d42e82ff704049433
+  languageName: node
+  linkType: hard
+
 "@nestjs/common@npm:10.2.4":
   version: 10.2.4
   resolution: "@nestjs/common@npm:10.2.4"
@@ -9206,6 +9218,27 @@ __metadata:
     tar: ^6.1.11
     unique-filename: ^3.0.0
   checksum: 5a0b3b2ea451a0379814dc1d3c81af48c7c6db15cd8f7d72e028501ae0036a599a99bbac9687bfec307afb2760808d1c7708e9477c8c70d2b166e7d80b162a23
+  languageName: node
+  linkType: hard
+
+"cache-manager-ioredis-yet@npm:1.2.2":
+  version: 1.2.2
+  resolution: "cache-manager-ioredis-yet@npm:1.2.2"
+  dependencies:
+    cache-manager: ^5.2.3
+    ioredis: ^5.3.2
+  checksum: d391c9d16ab6c88027c68e1547b14422cdd106d7f080d635f31dc93ae97cd7cd8f97c1ddedcfa14cce60170e48858a8e8afb05f0f5bffa98f1175faf173fd89e
+  languageName: node
+  linkType: hard
+
+"cache-manager@npm:5.4.0, cache-manager@npm:^5.2.3":
+  version: 5.4.0
+  resolution: "cache-manager@npm:5.4.0"
+  dependencies:
+    lodash.clonedeep: ^4.5.0
+    lru-cache: ^10.1.0
+    promise-coalesce: ^1.1.2
+  checksum: ede2fd29ecb17cc73e3201bead73a2f2e3bea4b0a358576854ed3d8669b6c06de63acaef444c2c0cf4107966ab824a68719c5b4c9e7c3de395e832450b449849
   languageName: node
   linkType: hard
 
@@ -17037,6 +17070,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.clonedeep@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.clonedeep@npm:4.5.0"
+  checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -17276,6 +17316,13 @@ __metadata:
   version: 10.1.0
   resolution: "lru-cache@npm:10.1.0"
   checksum: 58056d33e2500fbedce92f8c542e7c11b50d7d086578f14b7074d8c241422004af0718e08a6eaae8705cee09c77e39a61c1c79e9370ba689b7010c152e6a76ab
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^10.1.0":
+  version: 10.2.0
+  resolution: "lru-cache@npm:10.2.0"
+  checksum: eee7ddda4a7475deac51ac81d7dd78709095c6fa46e8350dc2d22462559a1faa3b81ed931d5464b13d48cbd7e08b46100b6f768c76833912bc444b99c37e25db
   languageName: node
   linkType: hard
 
@@ -20252,6 +20299,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise-coalesce@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "promise-coalesce@npm:1.1.2"
+  checksum: 6f951b5db40ca78d09ad0f72adea0a2e9c5bdb0fc5b3ef218c611e2191c6ce2e9f752f815630fd07875dd1c9f04cc7327d6bada04b662dce986ce86ab88c2d5e
+  languageName: node
+  linkType: hard
+
 "promise-inflight@npm:^1.0.1":
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
@@ -22941,6 +22995,7 @@ __metadata:
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
     "@nestjs/bullmq": 10.1.0
+    "@nestjs/cache-manager": 2.2.1
     "@nestjs/common": 10.2.4
     "@nestjs/config": 3.1.1
     "@nestjs/core": 10.2.4
@@ -22994,6 +23049,8 @@ __metadata:
     bootstrap: ^5.1.3
     bull: 4.8.2
     bullmq: 5.4.0
+    cache-manager: 5.4.0
+    cache-manager-ioredis-yet: 1.2.2
     class-transformer: 0.5.1
     class-validator: 0.13.2
     commitizen: ^4.2.4

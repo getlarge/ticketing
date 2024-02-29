@@ -4,6 +4,7 @@ import {
   relationTupleBuilder,
 } from '@getlarge/keto-relations-parser';
 import { InjectQueue } from '@nestjs/bullmq';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +17,7 @@ import {
   TicketStatus,
 } from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
+import type { Cache } from 'cache-manager';
 import { Model, Types } from 'mongoose';
 
 import {
@@ -45,6 +47,7 @@ export class ModerationsService {
     @InjectQueue(QueueNames.MODERATE_TICKET)
     private readonly moderationProcessor: Queue<ModerateTicket>,
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   private emitEventAsync<T extends keyof EventsMap>(
@@ -61,17 +64,30 @@ export class ModerationsService {
     return moderations.map((moderation) => moderation.toJSON<Moderation>());
   }
 
-  async findById(id: string): Promise<Moderation> {
-    const moderation = await this.moderationModel
-      .findOne({
-        _id: id,
-      })
-      .populate('ticket');
-
-    if (!moderation) {
-      throw new NotFoundException(`Moderation not found - ${id}`);
-    }
-    return moderation.toJSON<Moderation>();
+  findById(id: string): Promise<Moderation> {
+    return this.cacheManager.wrap(
+      `moderation:${id}`,
+      async () => {
+        const moderation = await this.moderationModel
+          .findOne({ _id: id })
+          .populate('ticket');
+        if (!moderation) {
+          throw new NotFoundException(`Moderation not found - ${id}`);
+        }
+        return moderation.toJSON<Moderation>();
+      },
+      (moderation) => {
+        switch (moderation?.status) {
+          case ModerationStatus.Approved:
+          case ModerationStatus.Rejected:
+            return 60;
+          case ModerationStatus.Pending:
+          case ModerationStatus.RequiresManualReview:
+          default:
+            return 5;
+        }
+      },
+    );
   }
 
   async updateById(
