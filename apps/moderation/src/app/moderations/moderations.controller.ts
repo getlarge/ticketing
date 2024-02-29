@@ -15,6 +15,7 @@ import {
   Patch,
   Query,
   Type,
+  UseFilters,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -24,10 +25,14 @@ import {
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
-import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import {
+  AcceptableError,
+  requestValidationErrorFactory,
+} from '@ticketing/shared/errors';
 import { ModerationStatus } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify';
 
+import { GenericExceptionFilter } from '../filters/exception.filter';
 import {
   FilterModerationsDto,
   ModerationDto,
@@ -85,9 +90,25 @@ const AuthenticationGuard = (): Type<CanActivate> =>
         identityId: session.identity.id,
       };
     },
+    unauthorizedFactory(ctx) {
+      return new AcceptableError(
+        'Unauthorized',
+        401,
+        ctx.switchToHttp().getRequest().url,
+      );
+    },
   });
 
-const AuthorizationGuard = (): Type<CanActivate> => OryAuthorizationGuard({});
+const AuthorizationGuard = (): Type<CanActivate> =>
+  OryAuthorizationGuard({
+    unauthorizedFactory(ctx) {
+      return new AcceptableError(
+        'Forbidden',
+        403,
+        ctx.switchToHttp().getRequest().url,
+      );
+    },
+  });
 
 const validationPipeOptions: ValidationPipeOptions = {
   transform: true,
@@ -97,6 +118,7 @@ const validationPipeOptions: ValidationPipeOptions = {
   whitelist: true,
 };
 
+@UseFilters(GenericExceptionFilter)
 @Controller(Resources.MODERATIONS)
 export class ModerationsController {
   constructor(private readonly moderationService: ModerationsService) {}

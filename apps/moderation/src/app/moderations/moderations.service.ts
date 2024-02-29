@@ -3,14 +3,27 @@ import {
   createRelationQuery,
   relationTupleBuilder,
 } from '@getlarge/keto-relations-parser';
+import { OryError } from '@getlarge/kratos-client-wrapper';
 import { InjectQueue } from '@nestjs/bullmq';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { Resources } from '@ticketing/shared/constants';
+import {
+  AcceptableError,
+  GenericError,
+  RecoverableError,
+  UnidentifiedError,
+} from '@ticketing/shared/errors';
 import {
   Moderation,
   ModerationStatus,
@@ -18,6 +31,7 @@ import {
 } from '@ticketing/shared/models';
 import { Queue } from 'bullmq';
 import type { Cache } from 'cache-manager';
+import { MongoNetworkError, MongoServerClosedError } from 'mongodb';
 import { Model, Types } from 'mongoose';
 
 import {
@@ -147,50 +161,81 @@ export class ModerationsService {
         .session(session);
       if (existingModeration) {
         // TODO: check whether moderation is pending,
-        throw new Error(
+        throw new AcceptableError(
           `Ticket moderation already exists - ${existingModeration.id}`,
+          HttpStatus.BAD_REQUEST,
+          TICKET_CREATED_EVENT,
         );
       }
-      const res = await this.moderationModel.create(
-        [
+      try {
+        const res = await this.moderationModel.create(
+          [
+            {
+              ticket: Types.ObjectId.createFromHexString(event.ticket.id),
+              status: ModerationStatus.Pending,
+            },
+          ],
+          { session },
+        );
+        await res[0].populate('ticket');
+        const moderation = res[0].toJSON<Moderation>();
+        this.logger.debug(`Created moderation ${moderation.id}`);
+
+        const relationTupleWithAdminGroup = relationTupleBuilder()
+          .subject(PermissionNamespaces[Resources.GROUPS], 'admin', 'members')
+          .isIn('editors')
+          .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id);
+        const createRelationshipBody = createRelationQuery(
+          relationTupleWithAdminGroup.toJSON(),
+        ).unwrapOrThrow();
+        await this.oryRelationshipsService.createRelationship({
+          createRelationshipBody,
+        });
+        this.logger.debug(
+          `Created relation ${relationTupleWithAdminGroup.toString()}`,
+        );
+
+        const job = await this.moderationProcessor.add(
+          'moderate-ticket',
+          { ticket: event.ticket, ctx: event.ctx, moderation },
           {
-            ticket: Types.ObjectId.createFromHexString(event.ticket.id),
-            status: ModerationStatus.Pending,
+            attempts: 2,
+            delay: 1000,
+            jobId: moderation.id,
+            removeOnComplete: true,
+            removeOnFail: true,
           },
-        ],
-        { session },
-      );
-      await res[0].populate('ticket');
-      const moderation = res[0].toJSON<Moderation>();
-      this.logger.debug(`Created moderation ${moderation.id}`);
-
-      const relationTupleWithAdminGroup = relationTupleBuilder()
-        .subject(PermissionNamespaces[Resources.GROUPS], 'admin', 'members')
-        .isIn('editors')
-        .of(PermissionNamespaces[Resources.MODERATIONS], moderation.id);
-      const createRelationshipBody = createRelationQuery(
-        relationTupleWithAdminGroup.toJSON(),
-      ).unwrapOrThrow();
-      await this.oryRelationshipsService.createRelationship({
-        createRelationshipBody,
-      });
-      this.logger.debug(
-        `Created relation ${relationTupleWithAdminGroup.toString()}`,
-      );
-
-      const job = await this.moderationProcessor.add(
-        'moderate-ticket',
-        { ticket: event.ticket, ctx: event.ctx, moderation },
-        {
-          attempts: 2,
-          delay: 1000,
-          jobId: moderation.id,
-          removeOnComplete: true,
-          removeOnFail: true,
-        },
-      );
-      this.logger.debug(`Created job ${job.id}`);
-      return moderation;
+        );
+        this.logger.debug(`Created job ${job.id}`);
+        return moderation;
+      } catch (e) {
+        if (e instanceof GenericError) {
+          throw e;
+        }
+        if (
+          e instanceof MongoNetworkError ||
+          e instanceof MongoServerClosedError
+        ) {
+          throw new RecoverableError(
+            e.message,
+            HttpStatus.SERVICE_UNAVAILABLE,
+            TICKET_CREATED_EVENT,
+          );
+        }
+        if (e instanceof OryError) {
+          this.logger.error(e.getDetails());
+          throw new AcceptableError(
+            `Could not create relation`,
+            HttpStatus.BAD_REQUEST,
+            TICKET_CREATED_EVENT,
+          );
+        }
+        throw new UnidentifiedError(
+          e.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          TICKET_CREATED_EVENT,
+        );
+      }
     });
   }
 

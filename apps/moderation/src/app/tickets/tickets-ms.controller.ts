@@ -1,4 +1,10 @@
-import { Controller, Inject, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Logger,
+  UseFilters,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -8,12 +14,14 @@ import {
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
-import { requestValidationErrorFactory } from '@ticketing/shared/errors';
+import { isRecoverableError, requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
+import { GenericExceptionFilter } from '../filters/exception.filter';
 import { TicketsService } from './tickets.service';
 
+@UseFilters(GenericExceptionFilter)
 @Controller()
 export class TicketsMSController {
   readonly logger = new Logger(TicketsMSController.name);
@@ -48,9 +56,11 @@ export class TicketsMSController {
       channel.ack(message);
       return { ok: true };
     } catch (e) {
-      console.error(e);
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
+      if (isRecoverableError(e)) {
+        channel.nack(message, false, true);
+      } else {
+        channel.nack(message, false, false);
+      }
       throw e;
     }
   }
