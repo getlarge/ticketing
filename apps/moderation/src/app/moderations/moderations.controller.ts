@@ -15,10 +15,14 @@ import {
   Query,
   Type,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import { CURRENT_USER_KEY, Resources } from '@ticketing/shared/constants';
+import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { FastifyRequest } from 'fastify';
 
 import {
@@ -82,6 +86,14 @@ const AuthenticationGuard = (): Type<CanActivate> =>
 
 const AuthorizationGuard = (): Type<CanActivate> => OryAuthorizationGuard({});
 
+const validationPipeOptions: ValidationPipeOptions = {
+  transform: true,
+  transformOptions: { enableImplicitConversion: true },
+  exceptionFactory: requestValidationErrorFactory,
+  forbidUnknownValues: true,
+  whitelist: true,
+};
+
 @Controller(Resources.MODERATIONS)
 export class ModerationsController {
   constructor(private readonly moderationService: ModerationsService) {}
@@ -89,7 +101,10 @@ export class ModerationsController {
   @OryPermissionChecks(adminPermission)
   @UseGuards(AuthenticationGuard(), AuthorizationGuard())
   @Get()
-  find(@Query() params: FilterModerationsDto): Promise<ModerationDto[]> {
+  find(
+    @Query(new ValidationPipe(validationPipeOptions))
+    params: FilterModerationsDto,
+  ): Promise<ModerationDto[]> {
     return this.moderationService.find(params);
   }
 
@@ -107,6 +122,7 @@ export class ModerationsController {
     return this.moderationService.approveById(id);
   }
 
+  @UsePipes(new ValidationPipe(validationPipeOptions))
   @OryPermissionChecks(moderationPermission)
   @UseGuards(AuthenticationGuard(), AuthorizationGuard())
   @Patch(':id/reject')
