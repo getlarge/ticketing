@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { AsyncLocalStorageService } from '@ticketing/microservices/shared/async-local-storage';
+import { AsyncLocalStorage } from 'async_hooks';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,14 +11,23 @@ describe('AppController', () => {
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        AppService,
+        {
+          useValue: AsyncLocalStorage,
+          provide: 'ASYNC_LOCAL_STORAGE',
+        },
+        AsyncLocalStorageService,
+      ],
     }).compile();
   });
 
   describe('getData', () => {
-    it('should return "Hello API"', () => {
+    it('should return "Welcome to moderation!"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Hello API' });
+      expect(appController.getData()).toEqual({
+        message: 'Welcome to moderation!',
+      });
     });
   });
 });

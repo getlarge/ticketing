@@ -1,11 +1,18 @@
-/* eslint-disable */
 export default {
   displayName: 'moderation',
-  preset: '../../jest.preset.js',
+  globals: {},
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
+    '^.+\\.[t]s$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        useESM: true,
+      },
+    ],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
+  moduleFileExtensions: ['ts', 'mjs', 'js', 'html'],
+  extensionsToTreatAsEsm: ['.ts'],
   coverageDirectory: '../../coverage/apps/moderation',
+  preset: '../../jest.preset.js',
 };
