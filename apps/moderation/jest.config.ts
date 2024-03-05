@@ -3,7 +3,7 @@ export default {
   globals: {},
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[t]s$': [
+    '^.+\\.ts$': [
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.spec.json',
