@@ -46,6 +46,7 @@ import {
   StreamStorage,
   UploadedFile,
 } from '@ticketing/microservices/shared/fastify-multipart';
+import { FeatureFlagsGuard } from '@ticketing/microservices/shared/feature-flags';
 import {
   PaginatedDto,
   PaginateDto,
@@ -59,6 +60,7 @@ import {
 import {
   Actions,
   CURRENT_USER_KEY,
+  FeatureFlags,
   Resources,
 } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
@@ -219,7 +221,11 @@ export class TicketsController {
   }
 
   @IsTicketOwner()
-  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  @UseGuards(
+    FeatureFlagsGuard(FeatureFlags.TICKET_IMAGE_UPLOAD),
+    AuthenticationGuard,
+    AuthorizationGuard,
+  )
   @UseInterceptors(
     FileInterceptor('file', {
       storage: new StreamStorage(),
@@ -254,6 +260,7 @@ export class TicketsController {
     return this.ticketsService.uploadTicketImage(id, file.stream);
   }
 
+  @UseGuards(FeatureFlagsGuard(FeatureFlags.TICKET_IMAGE_UPLOAD))
   @ApiOperation({
     description: 'Download ticket image by id',
     summary: `Download ticket image - Scope : ${Resources.TICKETS}:${Actions.READ_ONE}`,

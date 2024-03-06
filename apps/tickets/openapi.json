@@ -222,6 +222,87 @@
           }
         ]
       }
+    },
+    "/api/tickets/{id}/image": {
+      "patch": {
+        "operationId": "TicketsController_uploadTicketImage",
+        "summary": "Upload ticket image - Scope : tickets:update_one",
+        "description": "Upload ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadTicketImageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ],
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_downloadTicketImage",
+        "summary": "Download ticket image - Scope : tickets:read_one",
+        "description": "Download ticket image by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket image",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tickets"
+        ]
+      }
     }
   },
   "info": {
@@ -336,7 +417,16 @@
           },
           "version": {
             "type": "number",
-            "description": "Ticket version represented by a number incremented at each updated"
+            "description": "Ticket version represented by a number incremented at each update"
+          },
+          "status": {
+            "type": "string",
+            "description": "Ticket status",
+            "enum": [
+              "waiting_moderation",
+              "approved",
+              "rejected"
+            ]
           },
           "userId": {
             "type": "string",
@@ -352,6 +442,7 @@
           "title",
           "price",
           "version",
+          "status",
           "userId"
         ]
       },
@@ -511,6 +602,18 @@
             "description": "Ticket reservation order id"
           }
         }
+      },
+      "UploadTicketImageDto": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "file"
+        ]
       }
     }
   },
