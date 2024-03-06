@@ -14,6 +14,10 @@ export enum LogLevel {
   Info = 'info',
 }
 
+export enum FeatureFlags {
+  TICKET_IMAGE_UPLOAD = 'TICKET_IMAGE_UPLOAD',
+}
+
 export enum DelayInSeconds {
   ONE_MINUTE = 60,
   ONE_HOUR = 6300,
