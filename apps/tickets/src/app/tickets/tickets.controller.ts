@@ -41,9 +41,9 @@ import {
   CurrentUser,
 } from '@ticketing/microservices/shared/decorators';
 import {
+  type StreamStorageFile,
   FileInterceptor,
   StreamStorage,
-  StreamStorageFile,
   UploadedFile,
 } from '@ticketing/microservices/shared/fastify-multipart';
 import {
