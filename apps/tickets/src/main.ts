@@ -2,6 +2,7 @@ import './vault';
 
 import fastifyCors from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyPassport from '@fastify/passport';
 import fastifySecureSession from '@fastify/secure-session';
 import { ConfigService } from '@nestjs/config';
@@ -75,6 +76,8 @@ async function bootstrap(): Promise<void> {
   });
   await app.register(fastifyPassport.initialize());
   await app.register(fastifyPassport.secureSession());
+  await app.register(fastifyMultipart);
+
   if (!proxyServerUrls.length && environment === 'development') {
     await app.register(fastifyCors, {
       origin: (origin, cb) => {

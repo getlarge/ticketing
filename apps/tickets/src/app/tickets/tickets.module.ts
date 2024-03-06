@@ -13,10 +13,20 @@ import {
 } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
+import {
+  FileStorageLocal,
+  FileStorageLocalSetup,
+  FileStorageModule,
+  FileStorageS3,
+  FileStorageS3Setup,
+  MethodTypes,
+} from '@s1seven/nestjs-tools-file-storage';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
-import { Services } from '@ticketing/shared/constants';
+import { Environment, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+import { mkdir, readdir } from 'node:fs/promises';
+import path from 'node:path';
 
 import { AppConfigService, EnvironmentVariables } from '../env';
 import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
@@ -95,6 +105,63 @@ const Clients = ClientsModule.registerAsync([
   imports: [
     MongooseFeatures,
     Clients,
+    FileStorageModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: AppConfigService) => {
+        const environment = configService.get('NODE_ENV', { infer: true });
+        if (environment === Environment.Development) {
+          const setup: FileStorageLocalSetup = {
+            storagePath: configService.get('STORAGE_PATH'),
+            maxPayloadSize: configService.get('MAX_PAYLOAD_SIZE'),
+          };
+
+          const filePath = async (options: {
+            _req?: Request;
+            fileName: string;
+            methodType: MethodTypes;
+          }): Promise<string> => {
+            const { fileName, methodType } = options;
+            // TODO: avoid path traversal
+            const absoluteFilepath = path.resolve(
+              path.join(setup.storagePath, fileName),
+            );
+            if (methodType !== MethodTypes.WRITE) {
+              return absoluteFilepath;
+            }
+            const { dir } = path.parse(absoluteFilepath);
+            try {
+              // eslint-disable-next-line security/detect-non-literal-fs-filename
+              await readdir(dir);
+            } catch (error) {
+              if (error.code === 'ENOENT') {
+                // eslint-disable-next-line security/detect-non-literal-fs-filename
+                await mkdir(dir, { recursive: true });
+              } else {
+                throw error;
+              }
+            }
+            return absoluteFilepath;
+          };
+
+          return new FileStorageLocal(setup, () => {
+            return {
+              filePath,
+              limits: { fileSize: setup.maxPayloadSize * 1024 * 1024 },
+            };
+          });
+        }
+        const setup: FileStorageS3Setup = {
+          maxPayloadSize: configService.get('MAX_PAYLOAD_SIZE'),
+          bucket: configService.get('AWS_S3_BUCKET'),
+          region: configService.get('AWS_S3_REGION'),
+          credentials: {
+            accessKeyId: configService.get('AWS_S3_ACCESS_KEY_ID'),
+            secretAccessKey: configService.get('AWS_S3_SECRET_ACCESS_KEY'),
+          },
+        };
+        return new FileStorageS3(setup);
+      },
+    }),
     OryFrontendModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (

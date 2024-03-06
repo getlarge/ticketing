@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
+import { FileStorageService } from '@s1seven/nestjs-tools-file-storage';
 import {
   OrderCancelledEvent,
   OrderCreatedEvent,
@@ -26,10 +27,12 @@ import {
 } from '@ticketing/microservices/shared/models';
 import { transactionManager } from '@ticketing/microservices/shared/mongo';
 import { Resources } from '@ticketing/shared/constants';
-import { isErrorResponse,RetriableError } from '@ticketing/shared/errors';
+import { isErrorResponse, RetriableError } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import { Model } from 'mongoose';
 import { Paginator } from 'nestjs-keyset-paginator';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import {
   catchError,
   lastValueFrom,
@@ -54,6 +57,8 @@ export class TicketsService {
     private readonly oryRelationshipsService: OryRelationshipsService,
     @Inject(ORDERS_CLIENT) private readonly ordersClient: ClientProxy,
     @Inject(MODERATIONS_CLIENT) private readonly moderationClient: ClientProxy,
+    @Inject(FileStorageService)
+    private readonly fileStorageService: FileStorageService,
   ) {}
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
@@ -261,5 +266,24 @@ export class TicketsService {
       throw result.error;
     }
     return result.value;
+  }
+
+  private ticketFilePath(id: string): string {
+    return `tickets/${id}`;
+  }
+
+  async uploadTicketImage(id: string, stream: Readable): Promise<Ticket> {
+    const ticket = await this.findById(id);
+    const filePath = this.ticketFilePath(id);
+    const writeStream = await this.fileStorageService.uploadStream({
+      filePath,
+    });
+    await pipeline(stream, writeStream);
+    return ticket;
+  }
+
+  downloadTicketImage(id: string): Promise<Readable> {
+    const filePath = this.ticketFilePath(id);
+    return this.fileStorageService.downloadStream({ filePath });
   }
 }
