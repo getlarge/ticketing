@@ -6,7 +6,9 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { ClusterService, ClusterServiceConfig } from '@s1seven/cluster-service';
 import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
+import { LockService } from '@s1seven/nestjs-tools-lock';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { Services } from '@ticketing/shared/constants';
 
@@ -19,6 +21,8 @@ import { globalMiddleware } from './app/middlewares/global.middleware';
 import { GlobalPipe } from './app/pipes/global.pipe';
 
 const DEFAULT_PORT = 3090;
+const CLUSTER_MODE = process.env.CLUSTER_MODE === 'true';
+const MAX_WORKERS = +process.env.MAX_WORKERS || 2;
 
 async function createRmqPolicy(app: NestFastifyApplication): Promise<void> {
   const lazyModuleLoader = app.get(LazyModuleLoader);
@@ -60,58 +64,102 @@ async function createRmqPolicy(app: NestFastifyApplication): Promise<void> {
     vhost,
   );
 }
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({
-      trustProxy: true,
-      bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 1048576,
-    }),
-    { bufferLogs: true, abortOnError: false },
-  );
-  app.setGlobalPrefix(GLOBAL_API_PREFIX);
-  app.enableShutdownHooks();
 
-  app.use(globalMiddleware);
-  app.useGlobalGuards(new GlobalGuard());
-  app.useGlobalInterceptors(new GlobalInterceptor());
-  app.useGlobalPipes(new GlobalPipe());
-  app.useGlobalFilters(new GlobalFilter());
+// eslint-disable-next-line max-lines-per-function
+async function bootstrap(
+  opts: { workerId?: number } = {},
+  disconnect: () => void = () => process.exit(1),
+): Promise<void> {
+  /**
+   * This is a global variable that will be used to identify the worker id
+   * in the application. This is useful for debugging purposes.
+   */
+  globalThis.__WORKER_ID__ = opts.workerId;
 
-  await createRmqPolicy(app);
+  try {
+    const app = await NestFactory.create<NestFastifyApplication>(
+      AppModule,
+      new FastifyAdapter({
+        trustProxy: true,
+        bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 1048576,
+      }),
+      { bufferLogs: true, abortOnError: false },
+    );
+    app.setGlobalPrefix(GLOBAL_API_PREFIX);
+    app.enableShutdownHooks();
 
-  const configService = app.get<AppConfigService>(ConfigService);
-  const port = configService.get('PORT', { infer: true }) ?? DEFAULT_PORT;
+    app.use(globalMiddleware);
+    app.useGlobalGuards(new GlobalGuard());
+    app.useGlobalInterceptors(new GlobalInterceptor());
+    app.useGlobalPipes(new GlobalPipe());
+    app.useGlobalFilters(new GlobalFilter());
 
-  const amqpOptions: AmqpOptions = {
-    urls: [configService.get('RMQ_URL') as string],
-    persistent: true,
-    noAck: false,
-    prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
-    isGlobalPrefetchCount: false,
-    queue: `${Services.MODERATION_SERVICE}_QUEUE`,
-    queueOptions: {
-      durable: true,
-      exclusive: false,
-      autoDelete: false,
-    },
-    socketOptions: {
-      keepAlive: true,
-      heartbeatIntervalInSeconds: 30,
-      reconnectTimeInSeconds: 1,
-    },
-  };
-  const options: CustomStrategy = {
-    strategy: new AmqpServer(amqpOptions),
-  };
-  const microService = app.connectMicroservice(options);
-  await microService.listen();
-  await app.listen(port, '0.0.0.0', () => {
-    Logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
-  });
+    const configService = app.get<AppConfigService>(ConfigService);
+    const port = configService.get('PORT', { infer: true }) ?? DEFAULT_PORT;
+
+    const amqpOptions: AmqpOptions = {
+      urls: [configService.get('RMQ_URL') as string],
+      persistent: true,
+      noAck: false,
+      prefetchCount: configService.get('RMQ_PREFETCH_COUNT'),
+      isGlobalPrefetchCount: false,
+      queue: `${Services.MODERATION_SERVICE}_QUEUE`,
+      queueOptions: {
+        durable: true,
+        exclusive: false,
+        autoDelete: false,
+      },
+      socketOptions: {
+        keepAlive: true,
+        heartbeatIntervalInSeconds: 30,
+        reconnectTimeInSeconds: 1,
+      },
+    };
+    const options: CustomStrategy = {
+      strategy: new AmqpServer(amqpOptions),
+    };
+    const microService = app.connectMicroservice(options);
+
+    // required to initialize modules (include LockModule) before opening listeners
+    await app.init();
+
+    // only one worker should create the policy
+    const lock = await app
+      .get(LockService)
+      .lock('createRmqPolicy', 5000)
+      .catch(() => null);
+    if (lock) {
+      try {
+        await createRmqPolicy(app);
+      } catch (error) {
+        Logger.error(error);
+      }
+    }
+
+    await microService.listen();
+    await app.listen(port, '0.0.0.0', () => {
+      Logger.log(`Listening at http://localhost:${port}/${GLOBAL_API_PREFIX}`);
+    });
+  } catch (error) {
+    Logger.error(error);
+    disconnect();
+  }
 }
 
-bootstrap().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (CLUSTER_MODE) {
+  const clusterConfig: ClusterServiceConfig = {
+    workers: MAX_WORKERS,
+    delay: 2000,
+    grace: 1000,
+  };
+
+  const clusterService = new ClusterService(clusterConfig);
+  clusterService.clusterize(bootstrap).catch((e) => {
+    clusterService.logger.error(e);
+    process.exit(1);
+  });
+} else {
+  void bootstrap({}, () => {
+    process.exit(1);
+  });
+}
