@@ -101,6 +101,19 @@ const Clients = ClientsModule.registerAsync([
   },
 ]);
 
+const sanitizePath = (fileName: string, root: string): string => {
+  if (fileName.indexOf('\0') !== -1) {
+    throw new Error('Invalid path');
+  }
+  const safeInput = path.normalize(fileName).replace(/^(\.\.(\/|\\|$))+/, '');
+
+  const absoluteFilepath = path.join(root, safeInput);
+  if (absoluteFilepath.indexOf(root) !== 0) {
+    throw new Error('Invalid path');
+  }
+  return absoluteFilepath;
+};
+
 @Module({
   imports: [
     MongooseFeatures,
@@ -121,10 +134,8 @@ const Clients = ClientsModule.registerAsync([
             methodType: MethodTypes;
           }): Promise<string> => {
             const { fileName, methodType } = options;
-            // TODO: avoid path traversal
-            const absoluteFilepath = path.resolve(
-              path.join(setup.storagePath, fileName),
-            );
+            const root = path.resolve(setup.storagePath);
+            const absoluteFilepath = sanitizePath(fileName, root);
             if (methodType !== MethodTypes.WRITE) {
               return absoluteFilepath;
             }

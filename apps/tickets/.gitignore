@@ -3,3 +3,4 @@
 !.env.project
 .flaskenv*
 !.env.vault
+*store
