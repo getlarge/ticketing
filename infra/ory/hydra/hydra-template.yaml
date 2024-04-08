@@ -1,0 +1,31 @@
+serve:
+  cookies:
+    same_site_mode: Lax
+
+log:
+  level: '##log_level##'
+
+dsn: '##hydra_dsn##'
+
+urls:
+  self:
+    issuer: '##urls_self_issuer##'
+    public: '##urls_self_public##'
+  consent: '##urls_consent##'
+  login: '##urls_login##'
+  logout: '##urls_logout##'
+  identity_provider:
+    publicUrl: '##urls_identity_provider_publicUrl##'
+    url: '##urls_identity_provider_url##'
+
+secrets:
+  system:
+    - '##secrets_system##'
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: '##oidc_subject_identifiers_pairwise_salt##'

@@ -254,6 +254,11 @@ export class KratosMappings extends KeywordMappings {
 
   @Expose()
   @IsOptional()
+  @IsUrl(isUrlOptions)
+  oauth2_provider_url?: string = 'http://localhost:4445/';
+
+  @Expose()
+  @IsOptional()
   @IsString()
   @Length(16)
   secrets_cookie?: string;
@@ -305,6 +310,58 @@ export class KratosMappings extends KeywordMappings {
   @IsOptional()
   @IsString()
   session_cookie_name?: string = 'ory_kratos_session';
+}
+
+export class HydraMappings extends KeywordMappings {
+  @Expose()
+  @IsOptional()
+  @IsString()
+  hydra_dsn?: string = 'memory';
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_self_issuer?: string = 'http://localhost:4444';
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_self_public = 'http://localhost:4444';
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_consent?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/consent`;
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_login?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/login`;
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_logout?: string = `${DEFAULT_SELF_SERVICE_UI_URL}/logout`;
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_identity_provider_publicUrl?: string = 'http://localhost:4433';
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  urls_identity_provider_url?: string = 'http://kratos:4434';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  secrets_system?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  oidc_subject_identifiers_pairwise_salt?: string;
 }
 
 export class KetoMappings extends KeywordMappings {
