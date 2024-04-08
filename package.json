@@ -161,6 +161,7 @@
     "dotenv": "16.3.1",
     "dotenv-expand": "10.0.0",
     "fastify": "4.22.0",
+    "ioredis": "5.3.2",
     "lodash": "^4.17.21",
     "mongoose": "^6.1.0",
     "mongoose-update-if-current": "^1.4.0",
