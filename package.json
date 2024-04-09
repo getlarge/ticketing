@@ -126,7 +126,7 @@
     "@fastify/secure-session": "7.1.0",
     "@fastify/static": "^6.12.0",
     "@fastify/swagger": "8.10.0",
-    "@getlarge/hydra-client-wrapper": "0.1.1",
+    "@getlarge/hydra-client-wrapper": "0.2.0",
     "@getlarge/keto-cli": "0.2.1",
     "@getlarge/keto-client-wrapper": "0.2.5",
     "@getlarge/keto-relations-parser": "0.0.9",

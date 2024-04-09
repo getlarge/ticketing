@@ -3923,16 +3923,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/hydra-client-wrapper@npm:0.1.1":
-  version: 0.1.1
-  resolution: "@getlarge/hydra-client-wrapper@npm:0.1.1"
+"@getlarge/hydra-client-wrapper@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@getlarge/hydra-client-wrapper@npm:0.2.0"
   dependencies:
     "@nestjs/axios": ^3.0.1
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
     tslib: ^2.3.0
-  checksum: fe30c0e6d6c2badeadb7d3fad0952675abeeb11ca1278a7abcf4a139369c54c5b06a1ba03e6b78927d70e59672547c765f6eeb971a975371e52b8199645154cf
+  checksum: 1c0b8318f16ddcbca67ea8ca8de4f830fd766feffc83e0d0861585a39cc69c1c63c41b548e538ce7cf6a8abf6eff6f96a46ad5411c674a0527555f9308d155b6
   languageName: node
   linkType: hard
 
@@ -23015,7 +23015,7 @@ __metadata:
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
-    "@getlarge/hydra-client-wrapper": 0.1.1
+    "@getlarge/hydra-client-wrapper": 0.2.0
     "@getlarge/keto-cli": 0.2.1
     "@getlarge/keto-client-wrapper": 0.2.5
     "@getlarge/keto-relations-parser": 0.0.9
