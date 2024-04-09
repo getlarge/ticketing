@@ -1,6 +1,4 @@
-import {
-  OryPermissionChecks,
-} from '@getlarge/keto-client-wrapper';
+import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
 import {
   Body,
@@ -63,9 +61,6 @@ import {
   UpdateTicketDto,
 } from './models';
 import { TicketsService } from './tickets.service';
-
-
-
 
 const validationPipeOptions: ValidationPipeOptions = {
   transform: true,

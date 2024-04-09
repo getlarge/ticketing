@@ -99,7 +99,7 @@ export class ClientsController {
   @UseGuards(OryOAuth2AuthenticationGuard())
   @ApiOperation({
     description: 'Get details about currently authenticated client',
-    summary: `Get current user - Scope : ${Resources.CLIENTS}:${Actions.READ_ONE}`,
+    summary: `Get current client - Scope : ${Resources.CLIENTS}:${Actions.READ_ONE}`,
   })
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiResponse({
