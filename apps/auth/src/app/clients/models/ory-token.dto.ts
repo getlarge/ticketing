@@ -6,6 +6,7 @@ import {
   IsBoolean,
   IsNotEmptyObject,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 
@@ -19,9 +20,10 @@ class OryOAuth2WebhookPayloadIDTokenClaims {
   @IsString()
   sub: string;
 
+  @ValidateIf((object, value) => value != null)
   @IsArray()
   @IsString({ each: true })
-  aud: string[];
+  aud: string[] | null;
 
   @IsString()
   nonce: string;
@@ -32,8 +34,9 @@ class OryOAuth2WebhookPayloadIDTokenClaims {
   @IsString()
   acr: string;
 
+  @ValidateIf((object, value) => value != null)
   @IsString()
-  amr: null;
+  amr: string | null;
 
   @IsString()
   c_hash: string;
