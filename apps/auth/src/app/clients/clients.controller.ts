@@ -35,6 +35,7 @@ import {
   Client,
   ClientDto,
   CreateClientDto,
+  CreatedClientDto,
   OryOAuth2WebhookPayloadDto,
   OryOAuth2WebhookResponseDto,
 } from './models';
@@ -60,14 +61,14 @@ export class ClientsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Client created',
-    type: ClientDto,
+    type: CreatedClientDto,
   })
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   create(
     @CurrentUser() user: User,
     @Body() body: CreateClientDto,
-  ): Promise<ClientDto> {
+  ): Promise<CreatedClientDto> {
     return this.clientsService.create(body, user);
   }
 

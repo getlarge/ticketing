@@ -6,10 +6,13 @@ import { Client as ClientAttrs } from '../models';
 
 @Schema({
   toJSON: {
-    transform(doc: ClientDocument, ret: ClientAttrs & { _id: ObjectId }) {
+    transform(
+      doc: ClientDocument,
+      ret: ClientAttrs & { _id: ObjectId; __v: number },
+    ) {
       ret.id = doc._id.toString();
       ret.userId = doc.user._id.toString();
-      const { _id, ...rest } = ret;
+      const { _id, __v, ...rest } = ret;
       return rest;
     },
   },

@@ -153,7 +153,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ClientDto"
+                  "$ref": "#/components/schemas/CreatedClientDto"
                 }
               }
             }
@@ -411,6 +411,40 @@
         "type": "object",
         "properties": {}
       },
+      "CreatedClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Ory client id",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Owner id"
+          },
+          "clientSecret": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "userId",
+          "clientSecret"
+        ]
+      },
+      "OryOAuth2WebhookPayloadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OryOAuth2WebhookResponseDto": {
+        "type": "object",
+        "properties": {}
+      },
       "ClientDto": {
         "type": "object",
         "properties": {
@@ -432,14 +466,6 @@
           "clientId",
           "userId"
         ]
-      },
-      "OryOAuth2WebhookPayloadDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "OryOAuth2WebhookResponseDto": {
-        "type": "object",
-        "properties": {}
       }
     }
   },

@@ -14,6 +14,7 @@ import { User } from '../users/models';
 import {
   Client,
   CreateClientDto,
+  CreatedClientDto,
   OryOAuth2WebhookPayloadDto,
   OryOAuth2WebhookResponseDto,
 } from './models';
@@ -30,13 +31,14 @@ export class ClientsService {
     private readonly clientModel: Model<ClientDocument>,
   ) {}
 
-  async create(body: CreateClientDto, user: User): Promise<Client> {
+  async create(body: CreateClientDto, user: User): Promise<CreatedClientDto> {
     const { scope = 'offline' } = body;
     const { data: oryClient } = await this.oryOAuth2Service.createOAuth2Client({
       oAuth2Client: {
-        owner: user.id,
+        owner: user.identityId,
         access_token_strategy: 'opaque',
         grant_types: ['client_credentials'],
+        token_endpoint_auth_method: 'client_secret_post',
         scope,
       },
     });
@@ -44,7 +46,10 @@ export class ClientsService {
       clientId: oryClient.client_id,
       user: Types.ObjectId.createFromHexString(user.id),
     });
-    return client.toJSON<Client>();
+    return {
+      ...client.toJSON<Client>(),
+      clientSecret: oryClient.client_secret,
+    };
   }
 
   /**

@@ -30,7 +30,7 @@ import { Client, ClientSchema } from './schemas/client.schema';
       useFactory: (
         configService: ConfigService<EnvironmentVariables, true>,
       ) => ({
-        basePath: configService.get('ORY_HYDRA_PUBLIC_URL'),
+        basePath: configService.get('ORY_HYDRA_ADMIN_URL'),
         accessToken: configService.get('ORY_HYDRA_API_KEY'),
       }),
     }),
