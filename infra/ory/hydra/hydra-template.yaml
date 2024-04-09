@@ -22,6 +22,16 @@ secrets:
   system:
     - '##secrets_system##'
 
+oauth2:
+  token_hook:
+    url: '##oauth2_token_hook_url##'
+    auth:
+      type: api_key
+      config:
+        in: header
+        name: X-Ory-API-Key
+        value: '##oauth2_token_hook_auth_config_value##'
+
 oidc:
   subject_identifiers:
     supported_types:

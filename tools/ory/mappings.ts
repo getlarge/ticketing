@@ -362,6 +362,16 @@ export class HydraMappings extends KeywordMappings {
   @IsOptional()
   @IsString()
   oidc_subject_identifiers_pairwise_salt?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsUrl(isUrlOptions)
+  oauth2_token_hook_url?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  oauth2_token_hook_auth_config_value?: string;
 }
 
 export class KetoMappings extends KeywordMappings {
