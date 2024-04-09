@@ -130,6 +130,7 @@
     "@getlarge/keto-cli": "0.2.1",
     "@getlarge/keto-client-wrapper": "0.2.5",
     "@getlarge/keto-relations-parser": "0.0.9",
+    "@getlarge/kratos-cli": "0.2.1",
     "@getlarge/kratos-client-wrapper": "0.1.7",
     "@nestjs/axios": "3.0.0",
     "@nestjs/bull": "10.0.1",

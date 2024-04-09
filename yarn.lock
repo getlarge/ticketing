@@ -3983,6 +3983,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@getlarge/kratos-cli@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@getlarge/kratos-cli@npm:0.2.1"
+  dependencies:
+    "@getlarge/kratos-client-wrapper": 0.1.6
+    "@nestjs/common": ^10.0.2
+    "@nestjs/config": ^3.1.1
+    "@ory/client": ^1.4.9
+    class-transformer: ^0.5.1
+    class-validator: ^0.14.1
+    nest-commander: ^3.12.5
+    tslib: ^2.3.0
+  bin:
+    kratos-cli: src/index.js
+  checksum: cb900d1db4ea28adc2a403ab606b230a2b46ee475923bcf1038e95325e5c7969d6f5e91947509518e39b611c62d336f53de8052ed95391311bb482fa882cf3d7
+  languageName: node
+  linkType: hard
+
+"@getlarge/kratos-client-wrapper@npm:0.1.6":
+  version: 0.1.6
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.6"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+  checksum: 27da844b0550660c4c15d54122bbf980620b0bc3c8da0546b9c232da630a5e840f54beb7178b2dabf286d38a0dbc9ff5fd155a48f763020e0ae86c9e479ab296
+  languageName: node
+  linkType: hard
+
 "@getlarge/kratos-client-wrapper@npm:0.1.7":
   version: 0.1.7
   resolution: "@getlarge/kratos-client-wrapper@npm:0.1.7"
@@ -23019,6 +23051,7 @@ __metadata:
     "@getlarge/keto-cli": 0.2.1
     "@getlarge/keto-client-wrapper": 0.2.5
     "@getlarge/keto-relations-parser": 0.0.9
+    "@getlarge/kratos-cli": 0.2.1
     "@getlarge/kratos-client-wrapper": 0.1.7
     "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
