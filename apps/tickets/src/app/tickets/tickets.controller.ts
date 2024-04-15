@@ -1,5 +1,6 @@
 import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
+import { OrGuard } from '@nest-lab/or-guard';
 import {
   Body,
   Controller,
@@ -32,6 +33,7 @@ import {
 import {
   OryAuthenticationGuard,
   OryAuthorizationGuard,
+  OryOAuth2AuthenticationGuard,
 } from '@ticketing/microservices/shared/guards';
 import {
   PaginatedDto,
@@ -75,7 +77,9 @@ const validationPipeOptions: ValidationPipeOptions = {
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(OryAuthenticationGuard())
+  @UseGuards(
+    OrGuard([OryAuthenticationGuard(), OryOAuth2AuthenticationGuard()]),
+  )
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -143,7 +147,10 @@ export class TicketsController {
       .of(PermissionNamespaces[Resources.TICKETS], resourceId)
       .toString();
   })
-  @UseGuards(OryAuthenticationGuard(), OryAuthorizationGuard())
+  @UseGuards(
+    OrGuard([OryAuthenticationGuard(), OryOAuth2AuthenticationGuard()]),
+    OryAuthorizationGuard(),
+  )
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)

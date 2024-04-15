@@ -31,6 +31,8 @@ oauth2:
         in: header
         name: X-Ory-API-Key
         value: '##oauth2_token_hook_auth_config_value##'
+  client_credentials:
+    default_grant_allowed_scope: true
 
 oidc:
   subject_identifiers:
