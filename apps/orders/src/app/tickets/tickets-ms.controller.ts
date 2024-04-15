@@ -13,7 +13,11 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
+import {
+  TicketCreatedEvent,
+  TicketEventData,
+  TicketUpdatedEvent,
+} from '@ticketing/microservices/shared/events';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
@@ -38,10 +42,10 @@ export class TicketsMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @MessagePattern(Patterns.TicketCreated, Transport.RMQ)
+  @MessagePattern(TicketCreatedEvent.name, Transport.RMQ)
   async onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.TicketCreated],
+    data: TicketEventData,
     @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;
@@ -62,10 +66,10 @@ export class TicketsMSController {
   }
 
   @ApiExcludeEndpoint()
-  @MessagePattern(Patterns.TicketUpdated, Transport.RMQ)
+  @MessagePattern(TicketUpdatedEvent.name, Transport.RMQ)
   async onUpdated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.TicketUpdated],
+    data: TicketEventData,
     @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
     const channel = context.getChannelRef() as Channel;

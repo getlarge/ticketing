@@ -3936,9 +3936,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/keto-cli@npm:0.2.2":
-  version: 0.2.2
-  resolution: "@getlarge/keto-cli@npm:0.2.2"
+"@getlarge/keto-cli@npm:0.2.3":
+  version: 0.2.3
+  resolution: "@getlarge/keto-cli@npm:0.2.3"
   dependencies:
     "@getlarge/keto-client-wrapper": 0.2.6
     "@getlarge/keto-relations-parser": 0.0.9
@@ -3951,7 +3951,7 @@ __metadata:
     tslib: ^2.3.0
   bin:
     keto-cli: src/index.js
-  checksum: 593e89ef6d723c36a9a542dee63119f87ac97549adaa326a2ee9fe9093cc1613883d94b4099df110dc46920595f1775ccfb1f37f5c2c6c96ee7c7d006639fdf5
+  checksum: 5796d976c7db3caa10f8a78cf558d0f365c8388b4f0846d8503102379bf5d7102ebf13a2eed4b649cd7498911f80e3c7dfe8f4f703426608264a2fe868ee1caa
   languageName: node
   linkType: hard
 
@@ -3983,11 +3983,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/kratos-cli@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@getlarge/kratos-cli@npm:0.2.1"
+"@getlarge/kratos-cli@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@getlarge/kratos-cli@npm:0.3.0"
   dependencies:
-    "@getlarge/kratos-client-wrapper": 0.1.6
+    "@getlarge/kratos-client-wrapper": 0.1.8
     "@nestjs/common": ^10.0.2
     "@nestjs/config": ^3.1.1
     "@ory/client": ^1.4.9
@@ -3997,21 +3997,7 @@ __metadata:
     tslib: ^2.3.0
   bin:
     kratos-cli: src/index.js
-  checksum: cb900d1db4ea28adc2a403ab606b230a2b46ee475923bcf1038e95325e5c7969d6f5e91947509518e39b611c62d336f53de8052ed95391311bb482fa882cf3d7
-  languageName: node
-  linkType: hard
-
-"@getlarge/kratos-client-wrapper@npm:0.1.6":
-  version: 0.1.6
-  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.6"
-  dependencies:
-    tslib: ^2.3.0
-  peerDependencies:
-    "@nestjs/axios": ^3.0.1
-    "@nestjs/common": ^10.0.2
-    "@ory/client": ^1.4.9
-    axios: 1.6.5
-  checksum: 27da844b0550660c4c15d54122bbf980620b0bc3c8da0546b9c232da630a5e840f54beb7178b2dabf286d38a0dbc9ff5fd155a48f763020e0ae86c9e479ab296
+  checksum: b9c1e02203c25fdbb9f0dd07cae7552d9e22dc186951a8aa82fc837e17d0d5d5ccd9bf2267f2cf3a37996b320c5a4a90a21aa50f0bbfe80a021ea49adb856ab1
   languageName: node
   linkType: hard
 
@@ -23066,10 +23052,10 @@ __metadata:
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
     "@getlarge/hydra-client-wrapper": 0.2.1
-    "@getlarge/keto-cli": 0.2.2
+    "@getlarge/keto-cli": 0.2.3
     "@getlarge/keto-client-wrapper": 0.2.6
     "@getlarge/keto-relations-parser": 0.0.9
-    "@getlarge/kratos-cli": 0.2.1
+    "@getlarge/kratos-cli": 0.3.0
     "@getlarge/kratos-client-wrapper": 0.1.8
     "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0

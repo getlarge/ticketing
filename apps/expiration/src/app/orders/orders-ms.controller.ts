@@ -14,10 +14,14 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
+import {
+  OrderCancelledEvent,
+  OrderCancelledEventData,
+  OrderCreatedEvent,
+  OrderCreatedEventData,
+} from '@ticketing/microservices/shared/events';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import { Order } from '@ticketing/shared/models';
 import type { Channel } from 'amqp-connection-manager';
 import type { Message } from 'amqplib';
 
@@ -41,10 +45,10 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCreated, Transport.RMQ)
+  @EventPattern(OrderCreatedEvent.name, Transport.RMQ)
   async onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.OrderCreated],
+    data: OrderCreatedEventData,
     @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;
@@ -67,10 +71,10 @@ export class OrdersMSController {
   }
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.OrderCancelled, Transport.RMQ)
+  @EventPattern(OrderCancelledEvent.name, Transport.RMQ)
   async onCancelled(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: Order,
+    data: OrderCancelledEventData,
     @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;

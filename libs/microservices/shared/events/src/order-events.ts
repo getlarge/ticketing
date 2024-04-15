@@ -23,7 +23,7 @@ export class OrderCreatedEvent implements Event {
 
 class OrderCancelledTicket extends PickType(Ticket, ['id']) {}
 
-class OrderCancelledEventData extends OmitType(Order, ['ticket']) {
+export class OrderCancelledEventData extends OmitType(Order, ['ticket']) {
   @Type(() => OrderCancelledTicket)
   @ValidateNested()
   ticket: OrderCancelledTicket;
