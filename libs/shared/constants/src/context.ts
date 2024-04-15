@@ -14,6 +14,7 @@ export enum Resources {
   PAYMENTS = 'payments',
   TICKETS = 'tickets',
   USERS = 'users',
+  CLIENTS = 'clients',
 }
 
 export enum Actions {
@@ -50,4 +51,5 @@ export enum Actions {
 }
 
 export const CURRENT_USER_KEY = 'user';
+export const CURRENT_CLIENT_KEY = 'client';
 export const SESSION_ACCESS_TOKEN = 'access_token';

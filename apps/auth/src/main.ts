@@ -102,6 +102,7 @@ async function bootstrap(): Promise<void> {
     .addSecurityRequirements(SecurityRequirements.Session)
     .addSecurityRequirements(SecurityRequirements.Bearer)
     .addTag(Resources.USERS)
+    .addTag(Resources.CLIENTS)
     .addServer(configService.get('SERVER_URL'));
 
   if (proxyServerUrls.length) {

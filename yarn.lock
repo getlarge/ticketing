@@ -3923,13 +3923,45 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/keto-client-wrapper@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@getlarge/keto-client-wrapper@npm:0.1.0"
+"@getlarge/hydra-client-wrapper@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@getlarge/hydra-client-wrapper@npm:0.2.1"
   dependencies:
-    "@getlarge/keto-relations-parser": 0.0.3
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+    tslib: ^2.3.0
+  checksum: aabdd5b36b67b1163f49561d7bdb372e0b7ad28d4cff57da7ebe04738529d405ef4ba1e5ca0aaaac23065f1b04412b96639b782536f3744561d05dfafaab71b5
+  languageName: node
+  linkType: hard
+
+"@getlarge/keto-cli@npm:0.2.3":
+  version: 0.2.3
+  resolution: "@getlarge/keto-cli@npm:0.2.3"
+  dependencies:
+    "@getlarge/keto-client-wrapper": 0.2.6
+    "@getlarge/keto-relations-parser": 0.0.9
+    "@nestjs/common": ^10.0.2
+    "@nestjs/config": ^3.1.1
+    "@ory/client": ^1.4.9
+    class-transformer: ^0.5.1
+    class-validator: ^0.14.1
+    nest-commander: ^3.12.5
+    tslib: ^2.3.0
+  bin:
+    keto-cli: src/index.js
+  checksum: 5796d976c7db3caa10f8a78cf558d0f365c8388b4f0846d8503102379bf5d7102ebf13a2eed4b649cd7498911f80e3c7dfe8f4f703426608264a2fe868ee1caa
+  languageName: node
+  linkType: hard
+
+"@getlarge/keto-client-wrapper@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@getlarge/keto-client-wrapper@npm:0.2.6"
+  dependencies:
+    "@getlarge/keto-relations-parser": 0.0.9
     defekt: ^9.3.1
-    lodash.get: ^4.4.2
+    rxjs: ^7.8.0
     tslib: ^2.3.0
   peerDependencies:
     "@nestjs/axios": ^3.0.1
@@ -3937,24 +3969,41 @@ __metadata:
     "@nestjs/core": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: 2964831b73e7d7fb6ba7eb403f861d456994db7a04a89ef90a79f72fa131d14b43d016866bd2f3cd44abde6e2ab6c518435b8092c043c5c415bcc1601ff3dad5
+  checksum: e95f2198eb1b3148b74dcda0d4ac9f479c846f592b1d79e629849f019cbb41d145d535b63ea23fe3977e502d753a0f725d86c45f7bad5a74a5b7ec22829ee697
   languageName: node
   linkType: hard
 
-"@getlarge/keto-relations-parser@npm:0.0.3":
-  version: 0.0.3
-  resolution: "@getlarge/keto-relations-parser@npm:0.0.3"
+"@getlarge/keto-relations-parser@npm:0.0.9":
+  version: 0.0.9
+  resolution: "@getlarge/keto-relations-parser@npm:0.0.9"
   dependencies:
     defekt: ^9.3.1
-    lodash.get: ^4.4.2
     tslib: ^2.3.0
-  checksum: 053d00f618f556c08e88d9b4b2937d5f5aa2a2054383e12e38a93e51614f61c64a7bcdec870d649b6b170cdc5aacd3513b535bf11b33980c37efc92354d9bb6f
+  checksum: 4f139e53837e0e40ef06998e471d02fa0bc28dbdb7e2e1655544d8649e5304f9e4f31ba33aa28ade6b3a3dd528095ee683ac8b84afe6785defc2d4b146be3d5b
   languageName: node
   linkType: hard
 
-"@getlarge/kratos-client-wrapper@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.0"
+"@getlarge/kratos-cli@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@getlarge/kratos-cli@npm:0.3.0"
+  dependencies:
+    "@getlarge/kratos-client-wrapper": 0.1.8
+    "@nestjs/common": ^10.0.2
+    "@nestjs/config": ^3.1.1
+    "@ory/client": ^1.4.9
+    class-transformer: ^0.5.1
+    class-validator: ^0.14.1
+    nest-commander: ^3.12.5
+    tslib: ^2.3.0
+  bin:
+    kratos-cli: src/index.js
+  checksum: b9c1e02203c25fdbb9f0dd07cae7552d9e22dc186951a8aa82fc837e17d0d5d5ccd9bf2267f2cf3a37996b320c5a4a90a21aa50f0bbfe80a021ea49adb856ab1
+  languageName: node
+  linkType: hard
+
+"@getlarge/kratos-client-wrapper@npm:0.1.8":
+  version: 0.1.8
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.8"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
@@ -3962,7 +4011,7 @@ __metadata:
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: bbadf3d43e046d11fcb10d8f1f9b95bff6bba10ba9d2561981c51594ddd269379ee3a05402e5d841b7c514e52a1bf29d95d6cd6dee42404042d780efc2b68a48
+  checksum: 65d475966d63d285d4c211b7892df1f001f201266edeab4adaaf245395be9980a4c7da9964f04761d06c13918a4ccab4ea8c95a1a5ede146d3c48145e261ea06
   languageName: node
   linkType: hard
 
@@ -4542,6 +4591,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nest-lab/or-guard@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@nest-lab/or-guard@npm:2.4.1"
+  peerDependencies:
+    "@nestjs/common": " ^8.0.0 || ^9.0.0 || ^10.0.0"
+    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+    rxjs: ^7.0.0
+  peerDependenciesMeta:
+    "@nestjs/common":
+      optional: false
+    "@nestjs/core":
+      optional: false
+    rxjs:
+      optional: false
+  checksum: 34a83836ffeb3206dd6a039ff090893f5da93cd067db9b6e9c1244aec00c3f1eba075cde697988452fa3b46329cd115298738110dff8d5d86957628011b40874
+  languageName: node
+  linkType: hard
+
 "@nestjs/axios@npm:3.0.0":
   version: 3.0.0
   resolution: "@nestjs/axios@npm:3.0.0"
@@ -4551,6 +4618,17 @@ __metadata:
     reflect-metadata: ^0.1.12
     rxjs: ^6.0.0 || ^7.0.0
   checksum: 0483ef5a10ed920eb84756472de59b5bd83d09f152de9b769f68a57bd9c2c922961545c50001ac3ea45584cf991aee355b8fef4fe249b849fded4f1df92244f6
+  languageName: node
+  linkType: hard
+
+"@nestjs/axios@npm:^3.0.1":
+  version: 3.0.2
+  resolution: "@nestjs/axios@npm:3.0.2"
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+    axios: ^1.3.1
+    rxjs: ^6.0.0 || ^7.0.0
+  checksum: 285a735fb5db602b63aa4a37e161f609b2cec05b69f4bffe983617c2136ac29c0a33bb96e6276d22a656907bed5d53460e740310bc05c043dcd39c37db7cda29
   languageName: node
   linkType: hard
 
@@ -4601,6 +4679,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/common@npm:^10.0.2":
+  version: 10.3.7
+  resolution: "@nestjs/common@npm:10.3.7"
+  dependencies:
+    iterare: 1.2.1
+    tslib: 2.6.2
+    uid: 2.0.2
+  peerDependencies:
+    class-transformer: "*"
+    class-validator: "*"
+    reflect-metadata: ^0.1.12 || ^0.2.0
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+  checksum: 9f4b43b3818861a9a3ae356cba3b7670f7960baf01f9215c155c1ebfd56b77346fc55c7c373abb018b07eccddefed349b2ff58ae3d889ba66364c9c2500393a0
+  languageName: node
+  linkType: hard
+
 "@nestjs/config@npm:3.1.1":
   version: 3.1.1
   resolution: "@nestjs/config@npm:3.1.1"
@@ -4613,6 +4712,21 @@ __metadata:
     "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
     reflect-metadata: ^0.1.13
   checksum: 95446dd12678581582c15a1c7cc4d7b560466b646085cec2aab442e977def6699526f300c18f0bbbd795d7e7675b505ace382a453b3babc650d14d0c5af9502f
+  languageName: node
+  linkType: hard
+
+"@nestjs/config@npm:^3.1.1":
+  version: 3.2.2
+  resolution: "@nestjs/config@npm:3.2.2"
+  dependencies:
+    dotenv: 16.4.5
+    dotenv-expand: 10.0.0
+    lodash: 4.17.21
+    uuid: 9.0.1
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    rxjs: ^7.1.0
+  checksum: 1f677ff4ea13dc7d9c27e094965101ea661dd1ec362aed8f188413037dac21c08f71967add551cad5a3d21301c66d4c61815ed709bf101afaa0fd0aa0f4bf14c
   languageName: node
   linkType: hard
 
@@ -5703,6 +5817,15 @@ __metadata:
   dependencies:
     axios: ^0.27.2
   checksum: a81bd2da93dd4bc1e630d6817453eac380c8ce4c5a5f13d52f4f7bc762f1c8444af8e32ddf6b33b96ca846a77b6d30dfbc3e6c86a36a539ff168849b2647e72e
+  languageName: node
+  linkType: hard
+
+"@ory/client@npm:^1.4.9":
+  version: 1.9.0
+  resolution: "@ory/client@npm:1.9.0"
+  dependencies:
+    axios: ^1.6.1
+  checksum: c732911c967a67a96ae8acbd5f83b3e5dc38ffbc8b2d8c8f865c2659533762939ee6fe5594540aef3cd91ea5be24af708a46950f338009b3ea2ed6356aeb7a5e
   languageName: node
   linkType: hard
 
@@ -7196,6 +7319,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/validator@npm:^13.11.8":
+  version: 13.11.9
+  resolution: "@types/validator@npm:13.11.9"
+  checksum: c8d53c9e45479328ed72136d13ac80f13e8bb72ab0a6ae2e82802a55b6d84e045473267d8bf66546961f96ed0bbd0f310f317592dccc9fd11a2a81025c3571ce
+  languageName: node
+  linkType: hard
+
 "@types/webidl-conversions@npm:*":
   version: 7.0.3
   resolution: "@types/webidl-conversions@npm:7.0.3"
@@ -8403,6 +8533,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:1.6.5":
+  version: 1.6.5
+  resolution: "axios@npm:1.6.5"
+  dependencies:
+    follow-redirects: ^1.15.4
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: e28d67b2d9134cb4608c44d8068b0678cfdccc652742e619006f27264a30c7aba13b2cd19c6f1f52ae195b5232734925928fb192d5c85feea7edd2f273df206d
+  languageName: node
+  linkType: hard
+
 "axios@npm:^0.27.2":
   version: 0.27.2
   resolution: "axios@npm:0.27.2"
@@ -8410,6 +8551,17 @@ __metadata:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.1":
+  version: 1.6.8
+  resolution: "axios@npm:1.6.8"
+  dependencies:
+    follow-redirects: ^1.15.6
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: bf007fa4b207d102459300698620b3b0873503c6d47bf5a8f6e43c0c64c90035a4f698b55027ca1958f61ab43723df2781c38a99711848d232cad7accbcdfcdd
   languageName: node
   linkType: hard
 
@@ -9389,7 +9541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-transformer@npm:0.5.1":
+"class-transformer@npm:0.5.1, class-transformer@npm:^0.5.1":
   version: 0.5.1
   resolution: "class-transformer@npm:0.5.1"
   checksum: f191c8b4cc4239990f5efdd790cabdd852c243ed66248e39f6616a349c910c6eed2d9fd1fbf7ee6ea89f69b4f1d0b493b27347fe0cd0ae26b47c3745a805b6d3
@@ -9403,6 +9555,17 @@ __metadata:
     libphonenumber-js: ^1.9.43
     validator: ^13.7.0
   checksum: 0deb4c29faa18345f6989fd7eaaaa07b05caae5298603fcd6485531c6daad503e5d2b24cc1342e4fc88ae5ba0acffdc24d0fc333110ef3f21a667cd8a79e1258
+  languageName: node
+  linkType: hard
+
+"class-validator@npm:^0.14.1":
+  version: 0.14.1
+  resolution: "class-validator@npm:0.14.1"
+  dependencies:
+    "@types/validator": ^13.11.8
+    libphonenumber-js: ^1.10.53
+    validator: ^13.9.0
+  checksum: bea808145c81ba3b185e1174d92f97a2d6ffef0558261217042552e9027222eadb9a9731a4418a07eaaa72ac334347df7a1079ff48eaadaa3ee6848a6a88995c
   languageName: node
   linkType: hard
 
@@ -11943,6 +12106,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:16.4.5":
+  version: 16.4.5
+  resolution: "dotenv@npm:16.4.5"
+  checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:^0.1.1":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -13616,6 +13786,16 @@ __metadata:
     debug:
       optional: true
   checksum: 584da22ec5420c837bd096559ebfb8fe69d82512d5585004e36a3b4a6ef6d5905780e0c74508c7b72f907d1fa2b7bd339e613859e9c304d0dc96af2027fd0231
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.4, follow-redirects@npm:^1.15.6":
+  version: 1.15.6
+  resolution: "follow-redirects@npm:1.15.6"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: a62c378dfc8c00f60b9c80cab158ba54e99ba0239a5dd7c81245e5a5b39d10f0c35e249c3379eae719ff0285fff88c365dd446fab19dee771f1d76252df1bbf5
   languageName: node
   linkType: hard
 
@@ -16780,6 +16960,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"libphonenumber-js@npm:^1.10.53":
+  version: 1.10.60
+  resolution: "libphonenumber-js@npm:1.10.60"
+  checksum: 4267fe6d2a26cacd0d313ccb57fd2f605e915be8dbe7f2b023dd2814da24848e69df273262747df3f5d2cf288616936abb8082fc8bc55c46bc139bca1bd8e2fd
+  languageName: node
+  linkType: hard
+
 "libphonenumber-js@npm:^1.9.43":
   version: 1.10.51
   resolution: "libphonenumber-js@npm:1.10.51"
@@ -17002,7 +17189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.get@npm:^4, lodash.get@npm:^4.4.2":
+"lodash.get@npm:^4":
   version: 4.4.2
   resolution: "lodash.get@npm:4.4.2"
   checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
@@ -18117,7 +18304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nest-commander@npm:3.12.5":
+"nest-commander@npm:3.12.5, nest-commander@npm:^3.12.5":
   version: 3.12.5
   resolution: "nest-commander@npm:3.12.5"
   dependencies:
@@ -22864,12 +23051,16 @@ __metadata:
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
-    "@getlarge/keto-client-wrapper": 0.1.0
-    "@getlarge/keto-relations-parser": 0.0.3
-    "@getlarge/kratos-client-wrapper": 0.1.0
+    "@getlarge/hydra-client-wrapper": 0.2.1
+    "@getlarge/keto-cli": 0.2.3
+    "@getlarge/keto-client-wrapper": 0.2.6
+    "@getlarge/keto-relations-parser": 0.0.9
+    "@getlarge/kratos-cli": 0.3.0
+    "@getlarge/kratos-client-wrapper": 0.1.8
     "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
+    "@nest-lab/or-guard": 2.4.1
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
     "@nestjs/common": 10.2.4
@@ -23842,6 +24033,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:9.0.1":
+  version: 9.0.1
+  resolution: "uuid@npm:9.0.1"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
+  languageName: node
+  linkType: hard
+
 "v8-compile-cache-lib@npm:^3.0.1":
   version: 3.0.1
   resolution: "v8-compile-cache-lib@npm:3.0.1"
@@ -23926,7 +24126,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.7.0":
+"validator@npm:^13.7.0, validator@npm:^13.9.0":
   version: 13.11.0
   resolution: "validator@npm:13.11.0"
   checksum: d1e0c27022681420756da25bc03eb08d5f0c66fb008f8ff02ebc95812b77c6be6e03d3bd05cf80ca702e23eeb73dadd66b4b3683173ea2a0bc7cc72820bee131

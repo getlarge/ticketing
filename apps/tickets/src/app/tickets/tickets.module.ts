@@ -1,3 +1,4 @@
+import { OryOAuth2Module } from '@getlarge/hydra-client-wrapper';
 import {
   OryPermissionsModule,
   OryRelationshipsModule,
@@ -14,12 +15,20 @@ import {
 import { MongooseModule } from '@nestjs/mongoose';
 import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
+import {
+  OryAuthenticationGuard,
+  OryOAuth2AuthenticationGuard,
+} from '@ticketing/microservices/shared/guards';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { AppConfigService, EnvironmentVariables } from '../env';
-import { ORDERS_CLIENT } from '../shared/constants';
+import {
+  ORDERS_CLIENT,
+  ORY_AUTH_GUARD,
+  ORY_OAUTH2_GUARD,
+} from '../shared/constants';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
@@ -101,6 +110,15 @@ const OrdersClient = ClientsModule.registerAsync([
         basePath: configService.get('ORY_KETO_ADMIN_URL'),
       }),
     }),
+    OryOAuth2Module.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
+        basePath: configService.get('ORY_HYDRA_PUBLIC_URL'),
+        accessToken: configService.get('ORY_HYDRA_API_KEY'),
+      }),
+    }),
   ],
   controllers: [TicketsController],
   providers: [
@@ -110,6 +128,14 @@ const OrdersClient = ClientsModule.registerAsync([
     },
     GlobalErrorFilter,
     TicketsService,
+    {
+      provide: ORY_AUTH_GUARD,
+      useClass: OryAuthenticationGuard(),
+    },
+    {
+      provide: ORY_OAUTH2_GUARD,
+      useClass: OryOAuth2AuthenticationGuard(),
+    },
   ],
   exports: [MongooseFeatures, OrdersClient, TicketsService],
 })

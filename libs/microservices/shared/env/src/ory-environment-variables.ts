@@ -2,28 +2,21 @@ import { Expose } from 'class-transformer';
 import { IsOptional, IsString, IsUrl } from 'class-validator';
 import { decorate } from 'ts-mixer';
 
+const isUrlOptions = {
+  require_protocol: true,
+  require_valid_protocol: true,
+  require_host: true,
+  require_tld: false,
+};
+
 export class OryKratosEnvironmentVariables {
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   @decorate(IsOptional())
   ORY_KRATOS_ADMIN_URL?: string = 'http://localhost:4434';
 
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   @decorate(IsOptional())
   ORY_KRATOS_PUBLIC_URL?: string = 'http://localhost:4433';
 
@@ -35,26 +28,12 @@ export class OryKratosEnvironmentVariables {
 
 export class OryHydraEnvironmentVariables {
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   @decorate(IsOptional())
   ORY_HYDRA_ADMIN_URL?: string = 'http://localhost:4445';
 
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   @decorate(IsOptional())
   ORY_HYDRA_PUBLIC_URL?: string = 'http://localhost:4444';
 
@@ -66,25 +45,11 @@ export class OryHydraEnvironmentVariables {
 
 export class OryKetoEnvironmentVariables {
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   ORY_KETO_ADMIN_URL?: string = 'http://localhost:4467';
 
   @decorate(Expose())
-  @decorate(
-    IsUrl({
-      require_protocol: true,
-      require_valid_protocol: true,
-      require_host: true,
-      require_tld: false,
-    }),
-  )
+  @decorate(IsUrl(isUrlOptions))
   ORY_KETO_PUBLIC_URL?: string = 'http://localhost:4466';
 
   @decorate(Expose())

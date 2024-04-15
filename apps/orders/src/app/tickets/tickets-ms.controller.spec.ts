@@ -4,8 +4,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createRmqContext } from '@ticketing/microservices/shared/testing';
-import { Channel } from 'amqp-connection-manager';
 import { Model } from 'mongoose';
 
 import { mockTicketEvent } from '../../../test/models/ticket.mock';
@@ -32,22 +30,18 @@ describe('TicketsMSController', () => {
     it('should call "TicketsService.create" and in case of success ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
-      const context = createRmqContext();
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
       ticketsService.create = jest.fn(() => Promise.resolve(ticket));
-      context.getChannelRef().ack = jest.fn();
       //
-      await ticketsController.onCreated(ticket, context);
+      await ticketsController.onCreated(ticket);
       expect(ticketsService.create).toBeCalledWith(ticket);
-      expect(context.getChannelRef().ack).toBeCalled();
     });
 
     it('should call "TicketsService.create" and in case of error NOT ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
-      const context = createRmqContext();
       const expectedError = new Error('Cannot create ticket');
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
@@ -57,16 +51,11 @@ describe('TicketsMSController', () => {
           throw expectedError;
         })
         .mockRejectedValueOnce(expectedError);
-      const channel = context.getChannelRef() as Channel;
-      channel.ack = jest.fn();
-      channel.nack = jest.fn();
       //
-      await expect(
-        ticketsController.onCreated(ticket, context),
-      ).rejects.toThrowError(expectedError);
+      await expect(ticketsController.onCreated(ticket)).rejects.toThrowError(
+        expectedError,
+      );
       expect(ticketsService.create).toBeCalledWith(ticket);
-      expect(channel.ack).not.toBeCalled();
-      expect(channel.nack).toBeCalled();
     });
   });
 
@@ -74,22 +63,18 @@ describe('TicketsMSController', () => {
     it('should call "TicketsService.updatedById" and in case of success, ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
-      const context = createRmqContext();
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
       const ticketsService = app.get<TicketsService>(TicketsService);
       ticketsService.updateById = jest.fn(() => Promise.resolve(ticket));
-      context.getChannelRef().ack = jest.fn();
       //
-      await ticketsController.onUpdated(ticket, context);
+      await ticketsController.onUpdated(ticket);
       expect(ticketsService.updateById).toBeCalledWith(ticket.id, ticket);
-      expect(context.getChannelRef().ack).toBeCalled();
     });
 
     it('should call "TicketsService.updatedById" and in case of error, NOT ack RMQ message', async () => {
       // ticket coming from tickets-service
       const ticket = mockTicketEvent();
-      const context = createRmqContext();
       const expectedError = new Error('Cannot create ticket');
       const ticketsController =
         app.get<TicketsMSController>(TicketsMSController);
@@ -99,16 +84,11 @@ describe('TicketsMSController', () => {
           throw expectedError;
         })
         .mockRejectedValueOnce(expectedError);
-      const channel = context.getChannelRef() as Channel;
-      channel.ack = jest.fn();
-      channel.nack = jest.fn();
       //
-      await expect(
-        ticketsController.onUpdated(ticket, context),
-      ).rejects.toThrowError(expectedError);
+      await expect(ticketsController.onUpdated(ticket)).rejects.toThrowError(
+        expectedError,
+      );
       expect(ticketsService.updateById).toBeCalledWith(ticket.id, ticket);
-      expect(channel.ack).not.toBeCalled();
-      expect(channel.nack).toBeCalled();
     });
   });
 });
