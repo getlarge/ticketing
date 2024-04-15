@@ -3923,24 +3923,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/hydra-client-wrapper@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@getlarge/hydra-client-wrapper@npm:0.2.0"
+"@getlarge/hydra-client-wrapper@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@getlarge/hydra-client-wrapper@npm:0.2.1"
   dependencies:
     "@nestjs/axios": ^3.0.1
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
     tslib: ^2.3.0
-  checksum: 1c0b8318f16ddcbca67ea8ca8de4f830fd766feffc83e0d0861585a39cc69c1c63c41b548e538ce7cf6a8abf6eff6f96a46ad5411c674a0527555f9308d155b6
+  checksum: aabdd5b36b67b1163f49561d7bdb372e0b7ad28d4cff57da7ebe04738529d405ef4ba1e5ca0aaaac23065f1b04412b96639b782536f3744561d05dfafaab71b5
   languageName: node
   linkType: hard
 
-"@getlarge/keto-cli@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@getlarge/keto-cli@npm:0.2.1"
+"@getlarge/keto-cli@npm:0.2.2":
+  version: 0.2.2
+  resolution: "@getlarge/keto-cli@npm:0.2.2"
   dependencies:
-    "@getlarge/keto-client-wrapper": 0.2.5
+    "@getlarge/keto-client-wrapper": 0.2.6
     "@getlarge/keto-relations-parser": 0.0.9
     "@nestjs/common": ^10.0.2
     "@nestjs/config": ^3.1.1
@@ -3951,13 +3951,13 @@ __metadata:
     tslib: ^2.3.0
   bin:
     keto-cli: src/index.js
-  checksum: 72c1089bf1164d8f0fa86fe6a741d491b99b17254e46bfedb48fae278aa443655d8188dc7efb967e36076263560c67a170f7fb5e7c2dcbb2373b38b755fcf15a
+  checksum: 593e89ef6d723c36a9a542dee63119f87ac97549adaa326a2ee9fe9093cc1613883d94b4099df110dc46920595f1775ccfb1f37f5c2c6c96ee7c7d006639fdf5
   languageName: node
   linkType: hard
 
-"@getlarge/keto-client-wrapper@npm:0.2.5":
-  version: 0.2.5
-  resolution: "@getlarge/keto-client-wrapper@npm:0.2.5"
+"@getlarge/keto-client-wrapper@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@getlarge/keto-client-wrapper@npm:0.2.6"
   dependencies:
     "@getlarge/keto-relations-parser": 0.0.9
     defekt: ^9.3.1
@@ -3969,7 +3969,7 @@ __metadata:
     "@nestjs/core": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: 8684c24de40c89bf29a5cda268d18076deb744f6dd2966b37f43b90ff148081e0dca89d5e669258df02fd10a4888f6ab43a116c7f91e4fa06c090ce02fad46e1
+  checksum: e95f2198eb1b3148b74dcda0d4ac9f479c846f592b1d79e629849f019cbb41d145d535b63ea23fe3977e502d753a0f725d86c45f7bad5a74a5b7ec22829ee697
   languageName: node
   linkType: hard
 
@@ -4015,9 +4015,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/kratos-client-wrapper@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.7"
+"@getlarge/kratos-client-wrapper@npm:0.1.8":
+  version: 0.1.8
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.1.8"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
@@ -4025,7 +4025,7 @@ __metadata:
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
-  checksum: 9f8611e8fbd766e79ba099fd9c1ff4d217c9a68b40194f4b9db3d5352dc670390f46415b3dc5a7548980eaf89a719809fed7ba5c2487a77d622bd34d600528b7
+  checksum: 65d475966d63d285d4c211b7892df1f001f201266edeab4adaaf245395be9980a4c7da9964f04761d06c13918a4ccab4ea8c95a1a5ede146d3c48145e261ea06
   languageName: node
   linkType: hard
 
@@ -4602,6 +4602,24 @@ __metadata:
   version: 3.0.2
   resolution: "@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.2"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@nest-lab/or-guard@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@nest-lab/or-guard@npm:2.4.1"
+  peerDependencies:
+    "@nestjs/common": " ^8.0.0 || ^9.0.0 || ^10.0.0"
+    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+    rxjs: ^7.0.0
+  peerDependenciesMeta:
+    "@nestjs/common":
+      optional: false
+    "@nestjs/core":
+      optional: false
+    rxjs:
+      optional: false
+  checksum: 34a83836ffeb3206dd6a039ff090893f5da93cd067db9b6e9c1244aec00c3f1eba075cde697988452fa3b46329cd115298738110dff8d5d86957628011b40874
   languageName: node
   linkType: hard
 
@@ -23047,15 +23065,16 @@ __metadata:
     "@fastify/secure-session": 7.1.0
     "@fastify/static": ^6.12.0
     "@fastify/swagger": 8.10.0
-    "@getlarge/hydra-client-wrapper": 0.2.0
-    "@getlarge/keto-cli": 0.2.1
-    "@getlarge/keto-client-wrapper": 0.2.5
+    "@getlarge/hydra-client-wrapper": 0.2.1
+    "@getlarge/keto-cli": 0.2.2
+    "@getlarge/keto-client-wrapper": 0.2.6
     "@getlarge/keto-relations-parser": 0.0.9
     "@getlarge/kratos-cli": 0.2.1
-    "@getlarge/kratos-client-wrapper": 0.1.7
+    "@getlarge/kratos-client-wrapper": 0.1.8
     "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
     "@mermaid-js/mermaid-cli": ^8.13.4
+    "@nest-lab/or-guard": 2.4.1
     "@nestjs/axios": 3.0.0
     "@nestjs/bull": 10.0.1
     "@nestjs/common": 10.2.4
