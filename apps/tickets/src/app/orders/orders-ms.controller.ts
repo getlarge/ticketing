@@ -2,16 +2,12 @@ import {
   Controller,
   Inject,
   Logger,
+  UseFilters,
+  UseInterceptors,
   ValidationPipe,
   ValidationPipeOptions,
 } from '@nestjs/common';
-import {
-  Ctx,
-  MessagePattern,
-  Payload,
-  RmqContext,
-  Transport,
-} from '@nestjs/microservices';
+import { MessagePattern, Payload, Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import {
   OrderCancelledEvent,
@@ -19,9 +15,11 @@ import {
   OrderCreatedEvent,
   OrderCreatedEventData,
 } from '@ticketing/microservices/shared/events';
+import {
+  GlobalErrorFilter,
+  MessageAckInterceptor,
+} from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import type { Channel } from 'amqp-connection-manager';
-import type { Message } from 'amqplib';
 
 import { TicketDto } from '../tickets/models';
 import { TicketsService } from '../tickets/tickets.service';
@@ -33,7 +31,8 @@ const validationPipeOptions: ValidationPipeOptions = {
   forbidUnknownValues: true,
   whitelist: true,
 };
-
+@UseInterceptors(MessageAckInterceptor)
+@UseFilters(GlobalErrorFilter)
 @Controller()
 export class OrdersMSController {
   readonly logger = new Logger(OrdersMSController.name);
@@ -44,49 +43,19 @@ export class OrdersMSController {
 
   @ApiExcludeEndpoint()
   @MessagePattern(OrderCreatedEvent.name, Transport.RMQ)
-  async onCreated(
+  onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
     data: OrderCreatedEventData,
-    @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      const ticket = await this.ticketsService.createOrder(data);
-      channel.ack(message);
-      return ticket;
-    } catch (e) {
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
-      throw e;
-    }
+    return this.ticketsService.createOrder(data);
   }
 
   @ApiExcludeEndpoint()
   @MessagePattern(OrderCancelledEvent.name, Transport.RMQ)
-  async onCancelled(
+  onCancelled(
     @Payload(new ValidationPipe(validationPipeOptions))
     data: OrderCancelledEventData,
-    @Ctx() context: RmqContext,
   ): Promise<TicketDto> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      const ticket = await this.ticketsService.cancelOrder(data);
-      channel.ack(message);
-      return ticket;
-    } catch (e) {
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
-      throw e;
-    }
+    return this.ticketsService.cancelOrder(data);
   }
 }

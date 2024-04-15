@@ -3,16 +3,11 @@ import {
   Inject,
   Logger,
   UseFilters,
+  UseInterceptors,
   ValidationPipe,
   ValidationPipeOptions,
 } from '@nestjs/common';
-import {
-  Ctx,
-  EventPattern,
-  Payload,
-  RmqContext,
-  Transport,
-} from '@nestjs/microservices';
+import { EventPattern, Payload, Transport } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import {
   OrderCancelledEvent,
@@ -20,10 +15,11 @@ import {
   OrderCreatedEvent,
   OrderCreatedEventData,
 } from '@ticketing/microservices/shared/events';
-import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
+import {
+  GlobalErrorFilter,
+  MessageAckInterceptor,
+} from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import type { Channel } from 'amqp-connection-manager';
-import type { Message } from 'amqplib';
 
 import { OrderService } from './orders.service';
 
@@ -36,6 +32,7 @@ const validationPipeOptions: ValidationPipeOptions = {
 };
 
 @UseFilters(GlobalErrorFilter)
+@UseInterceptors(MessageAckInterceptor)
 @Controller()
 export class OrdersMSController {
   readonly logger = new Logger(OrdersMSController.name);
@@ -49,25 +46,11 @@ export class OrdersMSController {
   async onCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
     data: OrderCreatedEventData,
-    @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;
   }> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-
-    try {
-      await this.orderService.createJob(data);
-      channel.ack(message);
-      return { ok: true };
-    } catch (e) {
-      channel.nack(message, false, false);
-      throw e;
-    }
+    await this.orderService.createJob(data);
+    return { ok: true };
   }
 
   @ApiExcludeEndpoint()
@@ -75,23 +58,10 @@ export class OrdersMSController {
   async onCancelled(
     @Payload(new ValidationPipe(validationPipeOptions))
     data: OrderCancelledEventData,
-    @Ctx() context: RmqContext,
   ): Promise<{
     ok: boolean;
   }> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      await this.orderService.cancelJob(data);
-      channel.ack(message);
-      return { ok: true };
-    } catch (e) {
-      channel.nack(message, false, false);
-      throw e;
-    }
+    await this.orderService.cancelJob(data);
+    return { ok: true };
   }
 }
