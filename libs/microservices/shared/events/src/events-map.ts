@@ -5,10 +5,10 @@ import { PaymentCreatedEvent } from './payment-events';
 import { TicketCreatedEvent, TicketUpdatedEvent } from './ticket-events';
 
 export type EventsMap = {
-  [Patterns.TicketCreated]: TicketCreatedEvent['data'];
-  [Patterns.TicketUpdated]: TicketUpdatedEvent['data'];
-  [Patterns.OrderCreated]: OrderCreatedEvent['data'];
-  [Patterns.OrderCancelled]: OrderCancelledEvent['data'];
-  [Patterns.ExpirationCompleted]: ExpirationCompletedEvent['data'];
-  [Patterns.PaymentCreated]: PaymentCreatedEvent['data'];
+  readonly [Patterns.TicketCreated]: TicketCreatedEvent['data'];
+  readonly [Patterns.TicketUpdated]: TicketUpdatedEvent['data'];
+  readonly [Patterns.OrderCreated]: OrderCreatedEvent['data'];
+  readonly [Patterns.OrderCancelled]: OrderCancelledEvent['data'];
+  readonly [Patterns.ExpirationCompleted]: ExpirationCompletedEvent['data'];
+  readonly [Patterns.PaymentCreated]: PaymentCreatedEvent['data'];
 };
