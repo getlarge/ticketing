@@ -30,11 +30,7 @@ import {
   ApiPaginatedDto,
   CurrentUser,
 } from '@ticketing/microservices/shared/decorators';
-import {
-  OryAuthenticationGuard,
-  OryAuthorizationGuard,
-  OryOAuth2AuthenticationGuard,
-} from '@ticketing/microservices/shared/guards';
+import { OryAuthorizationGuard } from '@ticketing/microservices/shared/guards';
 import {
   PaginatedDto,
   PaginateDto,
@@ -54,6 +50,7 @@ import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify/types/request';
 
+import { ORY_AUTH_GUARD, ORY_OAUTH2_GUARD } from '../shared/constants';
 import {
   CreateTicket,
   CreateTicketDto,
@@ -77,9 +74,7 @@ const validationPipeOptions: ValidationPipeOptions = {
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(
-    OrGuard([OryAuthenticationGuard(), OryOAuth2AuthenticationGuard()]),
-  )
+  @UseGuards(OrGuard([ORY_AUTH_GUARD, ORY_OAUTH2_GUARD]))
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -148,7 +143,7 @@ export class TicketsController {
       .toString();
   })
   @UseGuards(
-    OrGuard([OryAuthenticationGuard(), OryOAuth2AuthenticationGuard()]),
+    OrGuard([ORY_AUTH_GUARD, ORY_OAUTH2_GUARD]),
     OryAuthorizationGuard(),
   )
   @UsePipes(new ValidationPipe(validationPipeOptions))
