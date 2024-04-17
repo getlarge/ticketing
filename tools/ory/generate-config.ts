@@ -3,6 +3,7 @@ import {
   generateOryKratosConfig,
   generateOryKetoConfig,
   generateOryOathkeeperConfig,
+  generateOryHydraConfig,
 } from './helpers';
 
 interface BaseOptions {
@@ -32,6 +33,20 @@ async function main() {
       ) => {
         const { envFile } = argv;
         generateOryKratosConfig(envFile);
+      },
+    })
+    .command({
+      command: 'hydra',
+      describe: 'Command to generate Hydra config from template',
+      handler: (
+        argv: yargs.ArgumentsCamelCase<
+          BaseOptions & {
+            _: ['hydra'];
+          }
+        >,
+      ) => {
+        const { envFile } = argv;
+        generateOryHydraConfig(envFile);
       },
     })
     .command({
