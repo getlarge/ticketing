@@ -1,19 +1,13 @@
-import {
-  OryAuthorizationGuard,
-  OryPermissionChecks,
-} from '@getlarge/keto-client-wrapper';
+import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
-import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
 import {
   Body,
-  CanActivate,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
   Post,
-  Type,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -28,6 +22,10 @@ import {
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
+import {
+  OryAuthenticationGuard,
+  OryAuthorizationGuard,
+} from '@ticketing/microservices/shared/guards';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import { ParseObjectId } from '@ticketing/microservices/shared/pipes';
 import {
@@ -41,39 +39,6 @@ import type { FastifyRequest } from 'fastify/types/request';
 
 import { CreateOrder, CreateOrderDto, Order, OrderDto } from './models';
 import { OrdersService } from './orders.service';
-
-const AuthenticationGuard = (): Type<CanActivate> =>
-  OryAuthenticationGuard({
-    cookieResolver: (ctx) =>
-      ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
-    isValidSession: (x) => {
-      return (
-        !!x?.identity &&
-        typeof x.identity.traits === 'object' &&
-        !!x.identity.traits &&
-        'email' in x.identity.traits &&
-        typeof x.identity.metadata_public === 'object' &&
-        !!x.identity.metadata_public &&
-        'id' in x.identity.metadata_public &&
-        typeof x.identity.metadata_public.id === 'string'
-      );
-    },
-    sessionTokenResolver: (ctx) =>
-      ctx
-        .switchToHttp()
-        .getRequest<FastifyRequest>()
-        .headers?.authorization?.replace('Bearer ', ''),
-    postValidationHook: (ctx, session) => {
-      ctx.switchToHttp().getRequest().session = session;
-      ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
-        id: session.identity.metadata_public['id'],
-        email: session.identity.traits.email,
-        identityId: session.identity.id,
-      };
-    },
-  });
-
-const AuthorizationGuard = (): Type<CanActivate> => OryAuthorizationGuard({});
 
 @Controller(Resources.ORDERS)
 @ApiTags(Resources.ORDERS)
@@ -91,7 +56,7 @@ export class OrdersController {
       .of(PermissionNamespaces[Resources.TICKETS], resourceId)
       .toString();
   })
-  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @UseGuards(OryAuthenticationGuard(), OryAuthorizationGuard())
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -120,7 +85,7 @@ export class OrdersController {
     return this.ordersService.create(order, currentUser);
   }
 
-  @UseGuards(AuthenticationGuard())
+  @UseGuards(OryAuthenticationGuard())
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -148,7 +113,7 @@ export class OrdersController {
       .of(PermissionNamespaces[Resources.ORDERS], resourceId)
       .toString();
   })
-  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @UseGuards(OryAuthenticationGuard(), OryAuthorizationGuard())
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
   @ApiOperation({
@@ -175,7 +140,7 @@ export class OrdersController {
       .of(PermissionNamespaces[Resources.ORDERS], resourceId)
       .toString();
   })
-  @UseGuards(AuthenticationGuard(), AuthorizationGuard())
+  @UseGuards(OryAuthenticationGuard(), OryAuthorizationGuard())
   @UsePipes(
     new ValidationPipe({
       transform: true,

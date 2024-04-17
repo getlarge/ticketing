@@ -97,6 +97,13 @@ server {
     include /etc/nginx/snippets/proxy.conf;
   }
 
+  location /api/clients {
+    proxy_pass http://auth_service;
+    proxy_set_header X-Version $req_version;
+    proxy_set_header Host $AUTH_SERVICE;
+    include /etc/nginx/snippets/proxy.conf;
+  }
+
   location /api/orders {
     proxy_pass http://orders_service;
     proxy_set_header X-Version $req_version;
