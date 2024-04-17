@@ -1,8 +1,8 @@
+import { LockService } from '@getlarge/nestjs-tools-lock';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SchedulerRegistry, Timeout } from '@nestjs/schedule';
-import { LockService } from '@s1seven/nestjs-tools-lock';
 import type { Queue } from 'bullmq';
 import type { Model } from 'mongoose';
 import { type Lock, ExecutionError, ResourceLockedError } from 'redlock';
