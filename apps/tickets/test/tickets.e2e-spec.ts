@@ -1,9 +1,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
-import fastifyPassport from '@fastify/passport';
-import fastifySecureSession from '@fastify/secure-session';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import {
@@ -20,7 +18,7 @@ import {
 } from '@ticketing/microservices/shared/testing';
 import { Types } from 'mongoose';
 
-import { AppConfigService, EnvironmentVariables } from '../src/app/env';
+import { EnvironmentVariables } from '../src/app/env';
 import { ORDERS_CLIENT } from '../src/app/shared/constants';
 import { CreateTicket, UpdateTicket } from '../src/app/tickets/models';
 import {
@@ -64,17 +62,6 @@ describe('TicketsController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
-
-    const configService = app.get<AppConfigService>(ConfigService);
-    await app.register(fastifySecureSession, {
-      key: configService.get('SESSION_KEY'),
-      cookie: {
-        secure: false,
-        signed: false,
-      },
-    });
-    await app.register(fastifyPassport.initialize());
-    await app.register(fastifyPassport.secureSession());
 
     ticketModel = app.get<TicketModel>(getModelToken(TicketSchema.name));
     ordersRmqPublisher = app.get(ORDERS_CLIENT);

@@ -4,3 +4,7 @@ export { OnOrySignUpDto } from './models/on-ory-sign-up-dto';
 export { OnOrySignInDto } from './models/on-ory-sign-in-dto';
 export { UserCredentialsDto } from './models/user-credentials-dto';
 export { UserDto } from './models/user-dto';
+export { CreateClientDto } from './models/create-client-dto';
+export { ClientDto } from './models/client-dto';
+export { OryOAuth2WebhookPayloadDto } from './models/ory-o-auth-2-webhook-payload-dto';
+export { OryOAuth2WebhookResponseDto } from './models/ory-o-auth-2-webhook-response-dto';
