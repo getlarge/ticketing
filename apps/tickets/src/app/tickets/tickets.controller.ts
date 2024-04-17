@@ -1,9 +1,6 @@
-import {
-  OryAuthorizationGuard,
-  OryPermissionChecks,
-} from '@getlarge/keto-client-wrapper';
+import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
-import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
+import { OrGuard } from '@nest-lab/or-guard';
 import {
   applyDecorators,
   Body,
@@ -48,6 +45,10 @@ import {
 } from '@ticketing/microservices/shared/fastify-multipart';
 import { FeatureFlagsGuard } from '@ticketing/microservices/shared/feature-flags';
 import {
+  OryAuthenticationGuard,
+  OryAuthorizationGuard,
+} from '@ticketing/microservices/shared/guards';
+import {
   PaginatedDto,
   PaginateDto,
   PaginateQuery,
@@ -67,6 +68,7 @@ import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 import { User } from '@ticketing/shared/models';
 import type { FastifyRequest } from 'fastify/types/request';
 
+import { ORY_AUTH_GUARD, ORY_OAUTH2_GUARD } from '../shared/constants';
 import {
   CreateTicket,
   CreateTicketDto,
@@ -77,39 +79,6 @@ import {
   UploadTicketImageDto,
 } from './models';
 import { TicketsService } from './tickets.service';
-
-const AuthenticationGuard = OryAuthenticationGuard({
-  cookieResolver: (ctx) =>
-    ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
-  isValidSession: (x) => {
-    return (
-      !!x?.identity &&
-      typeof x.identity.traits === 'object' &&
-      !!x.identity.traits &&
-      'email' in x.identity.traits &&
-      typeof x.identity.metadata_public === 'object' &&
-      !!x.identity.metadata_public &&
-      'id' in x.identity.metadata_public &&
-      typeof x.identity.metadata_public.id === 'string'
-    );
-  },
-  sessionTokenResolver: (ctx) =>
-    ctx
-      .switchToHttp()
-      .getRequest<FastifyRequest>()
-      .headers?.authorization?.replace('Bearer ', ''),
-  postValidationHook: (ctx, session) => {
-    ctx.switchToHttp().getRequest().session = session;
-    // eslint-disable-next-line security/detect-object-injection
-    ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
-      id: session.identity.metadata_public['id'],
-      email: session.identity.traits.email,
-      identityId: session.identity.id,
-    };
-  },
-});
-
-const AuthorizationGuard = OryAuthorizationGuard({});
 
 const validationPipeOptions: ValidationPipeOptions = {
   transform: true,
@@ -138,7 +107,7 @@ const IsTicketOwner = (): MethodDecorator =>
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @UseGuards(AuthenticationGuard)
+  @UseGuards(OrGuard([ORY_AUTH_GUARD, ORY_OAUTH2_GUARD]))
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -198,7 +167,10 @@ export class TicketsController {
   // TODO: check permission for ticket orderId if present
 
   @IsTicketOwner()
-  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  @UseGuards(
+    OrGuard([ORY_AUTH_GUARD, ORY_OAUTH2_GUARD]),
+    OryAuthorizationGuard(),
+  )
   @UsePipes(new ValidationPipe(validationPipeOptions))
   @ApiBearerAuth(SecurityRequirements.Bearer)
   @ApiCookieAuth(SecurityRequirements.Session)
@@ -223,8 +195,8 @@ export class TicketsController {
   @IsTicketOwner()
   @UseGuards(
     FeatureFlagsGuard(FeatureFlags.TICKET_IMAGE_UPLOAD),
-    AuthenticationGuard,
-    AuthorizationGuard,
+    OryAuthenticationGuard(),
+    OryAuthorizationGuard(),
   )
   @UseInterceptors(
     FileInterceptor('file', {

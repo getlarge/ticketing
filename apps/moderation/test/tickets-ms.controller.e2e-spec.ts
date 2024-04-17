@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
+import { AmqpClient, AmqpServer } from '@getlarge/nestjs-tools-amqp-transport';
 import { INestMicroservice } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LazyModuleLoader } from '@nestjs/core';
@@ -11,7 +12,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AmqpClient, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { Patterns } from '@ticketing/microservices/shared/events';
 // eslint-disable-next-line @nx/enforce-module-boundaries
