@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { User, UserCredentials } from './models';
+import { OryWebhookError, User, UserCredentials } from './models';
 import { OnOrySignInDto, OnOrySignUpDto } from './models/ory-identity.dto';
 import { User as UserSchema, UserDocument } from './schemas';
 
@@ -27,7 +27,25 @@ export class UsersService {
       email,
     });
     if (existingUser) {
-      throw new HttpException('email already used', HttpStatus.BAD_REQUEST);
+      throw new OryWebhookError(
+        `email (${email}) already used`,
+        [
+          {
+            instance_ptr: '#/traits/email',
+            messages: [
+              {
+                id: 123,
+                text: 'email already used',
+                type: 'validation',
+                context: {
+                  value: email,
+                },
+              },
+            ],
+          },
+        ],
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const result = await this.userModel.create({ email });
     const user = result.toJSON<User>();
@@ -38,7 +56,6 @@ export class UsersService {
   /**
    * @description To workaround the issue with Ory's not offering transactional hooks, we need to check if the user exists in our database
    * if not we use it as a second chance to create it
-   * @todo: throw error in format supported by Ory hooks response handler + create specific error class
    * @see https://www.ory.sh/docs/guides/integrate-with-ory-cloud-through-webhooks#flow-interrupting-webhooks
    **/
   async onSignIn(body: OnOrySignInDto): Promise<OnOrySignInDto> {
@@ -52,20 +69,54 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      throw new OryWebhookError(
+        'user not found',
+        [
+          {
+            instance_ptr: '#/traits/email',
+            messages: [
+              {
+                id: 123,
+                text: 'user not found',
+                type: 'validation',
+                context: {
+                  value: email,
+                },
+              },
+            ],
+          },
+        ],
+        HttpStatus.NOT_FOUND,
+      );
     }
     // logic from original require_verified_address hook https://github.com/ory/kratos/blob/34751a1a3ad9b217af2de7b435b9ee70df510265/selfservice/hook/address_verifier.go
     if (!identity.verifiable_addresses?.length) {
-      throw new HttpException(
-        'A misconfiguration prevents login. Expected to find a verification address but this identity does not have one assigned.',
-        HttpStatus.NOT_FOUND,
-      );
+      // this means the identity schema does not require email verification
+      return { identity };
     }
     const hasAddressVerified = identity.verifiable_addresses.some(
       (address) => address.verified,
     );
     if (!hasAddressVerified) {
-      throw new HttpException('Email not verified', HttpStatus.UNAUTHORIZED);
+      throw new OryWebhookError(
+        'Email not verified',
+        [
+          {
+            instance_ptr: '#/verifiable_addresses',
+            messages: [
+              {
+                id: 123,
+                text: 'Email not verified',
+                type: 'validation',
+                context: {
+                  value: email,
+                },
+              },
+            ],
+          },
+        ],
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     if (!user.identityId || user.identityId !== identity.id) {
       user.set({ identityId: identity.id });
@@ -74,6 +125,9 @@ export class UsersService {
     return { identity };
   }
 
+  /**
+   * @deprecated Account creation is now handled by Ory and the backend is only involved during the on-sign-up webhook
+   */
   async signUp(credentials: UserCredentials): Promise<User> {
     const existingUser = await this.userModel.findOne({
       email: credentials.email,
