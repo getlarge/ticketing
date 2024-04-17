@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
+import { Relationship } from '@ory/client';
 import {
   EventsMap,
   OrderCancelledEvent,
@@ -54,38 +55,48 @@ export class TicketsService {
   }
 
   async create(ticket: CreateTicket, currentUser: User): Promise<Ticket> {
-    await using manager = await transactionManager(this.ticketModel);
-    const res = await manager.wrap<Ticket>(async (session) => {
-      const doc: CreateTicket & { userId: string } = {
-        ...ticket,
-        userId: currentUser.id,
-      };
-      const docs = await this.ticketModel.create([doc], {
-        session,
-      });
-      const newTicket = docs[0].toJSON<Ticket>();
-      this.logger.debug(`Created ticket ${newTicket.id}`);
+    let createdRelation: Relationship | undefined;
+    try {
+      await using manager = await transactionManager(this.ticketModel);
+      const res = await manager.wrap<Ticket>(async (session) => {
+        const doc: CreateTicket & { userId: string } = {
+          ...ticket,
+          userId: currentUser.id,
+        };
+        const docs = await this.ticketModel.create([doc], {
+          session,
+        });
+        const newTicket = docs[0].toJSON<Ticket>();
+        this.logger.debug(`Created ticket ${newTicket.id}`);
 
-      const relationTuple = relationTupleBuilder()
-        .subject(PermissionNamespaces[Resources.USERS], currentUser.id)
-        .isIn('owners')
-        .of(PermissionNamespaces[Resources.TICKETS], newTicket.id)
-        .toJSON();
-      const createRelationshipBody =
-        createRelationQuery(relationTuple).unwrapOrThrow();
-      await this.oryRelationshipsService.createRelationship({
-        createRelationshipBody,
-      });
-      this.logger.debug(`Created relation ${relationTuple.toString()}`);
+        const relationTuple = relationTupleBuilder()
+          .subject(PermissionNamespaces[Resources.USERS], currentUser.id)
+          .isIn('owners')
+          .of(PermissionNamespaces[Resources.TICKETS], newTicket.id);
+        const createRelationshipBody = createRelationQuery(
+          relationTuple.toJSON(),
+        ).unwrapOrThrow();
+        const { data } = await this.oryRelationshipsService.createRelationship({
+          createRelationshipBody,
+        });
+        createdRelation = data;
+        this.logger.debug(`Created relation ${relationTuple.toString()}`);
 
-      await lastValueFrom(this.sendEvent(Patterns.TicketCreated, newTicket));
-      this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
-      return newTicket;
-    });
-    if (res.error) {
-      throw res.error;
+        await lastValueFrom(this.sendEvent(Patterns.TicketCreated, newTicket));
+        this.logger.debug(`Sent event ${Patterns.TicketCreated}`);
+        return newTicket;
+      });
+
+      if (res.error) {
+        throw res.error;
+      }
+      return res.value;
+    } catch (error) {
+      if (createdRelation) {
+        await this.oryRelationshipsService.deleteRelationships(createdRelation);
+      }
+      throw error;
     }
-    return res.value;
   }
 
   paginate(params: PaginateDto = {}): Promise<{
