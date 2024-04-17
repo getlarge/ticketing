@@ -1,11 +1,9 @@
-import { plainToInstance } from 'class-transformer';
 import {
   IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  validateSync,
 } from 'class-validator';
 
 type ErrorResponsePartial = Pick<
@@ -40,5 +38,13 @@ export class ErrorResponse {
   }
 }
 
-export const isErrorResponse = (error: unknown): error is ErrorResponse =>
-  validateSync(plainToInstance(ErrorResponse, error)).length === 0;
+export const isErrorResponse = (x: unknown): x is ErrorResponse =>
+  typeof x === 'object' &&
+  x != null &&
+  'statusCode' in x &&
+  typeof x?.statusCode === 'number' &&
+  'errors' in x &&
+  Array.isArray(x?.errors) &&
+  'path' in x &&
+  typeof x?.path === 'string' &&
+  'timestamp' in x;

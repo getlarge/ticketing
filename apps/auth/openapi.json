@@ -130,6 +130,100 @@
           }
         ]
       }
+    },
+    "/api/clients": {
+      "post": {
+        "operationId": "ClientsController_create",
+        "summary": "Register a new client - Scope : clients:create_one",
+        "description": "Register a new client",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Client created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedClientDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "clients"
+        ]
+      }
+    },
+    "/api/clients/on-token-request": {
+      "post": {
+        "operationId": "ClientsController_onSignUp",
+        "summary": "",
+        "description": "Triggered when a client request an OAuth2 token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OryOAuth2WebhookPayloadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token session update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OryOAuth2WebhookResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "clients"
+        ]
+      }
+    },
+    "/api/clients/current-client": {
+      "get": {
+        "operationId": "ClientsController_getCurrentClient",
+        "summary": "Get current client - Scope : clients:read_one",
+        "description": "Get details about currently authenticated client",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Current client authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "clients"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "info": {
@@ -141,6 +235,10 @@
   "tags": [
     {
       "name": "users",
+      "description": ""
+    },
+    {
+      "name": "clients",
       "description": ""
     }
   ],
@@ -307,6 +405,66 @@
           "email",
           "id",
           "identityId"
+        ]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatedClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Ory client id",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Owner id"
+          },
+          "clientSecret": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "userId",
+          "clientSecret"
+        ]
+      },
+      "OryOAuth2WebhookPayloadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OryOAuth2WebhookResponseDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Ory client id",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Owner id"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "userId"
         ]
       }
     }

@@ -1,8 +1,18 @@
+import { OryOAuth2Module } from '@getlarge/hydra-client-wrapper';
 import {
   OryPermissionsModule,
   OryRelationshipsModule,
 } from '@getlarge/keto-client-wrapper';
 import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
+import { AmqpClient, AmqpOptions } from '@getlarge/nestjs-tools-amqp-transport';
+import {
+  FileStorageLocal,
+  FileStorageLocalSetup,
+  FileStorageModule,
+  FileStorageS3,
+  FileStorageS3Setup,
+  MethodTypes,
+} from '@getlarge/nestjs-tools-file-storage';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -12,16 +22,11 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
-import {
-  FileStorageLocal,
-  FileStorageLocalSetup,
-  FileStorageModule,
-  FileStorageS3,
-  FileStorageS3Setup,
-  MethodTypes,
-} from '@s1seven/nestjs-tools-file-storage';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
+import {
+  OryAuthenticationGuard,
+  OryOAuth2AuthenticationGuard,
+} from '@ticketing/microservices/shared/guards';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Environment, Services } from '@ticketing/shared/constants';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
@@ -29,7 +34,12 @@ import { mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 import { AppConfigService, EnvironmentVariables } from '../env';
-import { MODERATIONS_CLIENT, ORDERS_CLIENT } from '../shared/constants';
+import {
+  MODERATIONS_CLIENT,
+  ORDERS_CLIENT,
+  ORY_AUTH_GUARD,
+  ORY_OAUTH2_GUARD,
+} from '../shared/constants';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
@@ -198,6 +208,15 @@ const sanitizePath = (fileName: string, root: string): string => {
         basePath: configService.get('ORY_KETO_ADMIN_URL'),
       }),
     }),
+    OryOAuth2Module.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (
+        configService: ConfigService<EnvironmentVariables, true>,
+      ) => ({
+        basePath: configService.get('ORY_HYDRA_PUBLIC_URL'),
+        accessToken: configService.get('ORY_HYDRA_API_KEY'),
+      }),
+    }),
   ],
   controllers: [TicketsController, TicketsMSController],
   providers: [
@@ -207,6 +226,14 @@ const sanitizePath = (fileName: string, root: string): string => {
     },
     GlobalErrorFilter,
     TicketsService,
+    {
+      provide: ORY_AUTH_GUARD,
+      useClass: OryAuthenticationGuard(),
+    },
+    {
+      provide: ORY_OAUTH2_GUARD,
+      useClass: OryOAuth2AuthenticationGuard(),
+    },
   ],
   exports: [MongooseFeatures, Clients, TicketsService],
 })

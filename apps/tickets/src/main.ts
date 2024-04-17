@@ -1,10 +1,10 @@
 import './vault';
+import 'reflect-metadata';
 
 import fastifyCors from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
 import fastifyMultipart from '@fastify/multipart';
-import fastifyPassport from '@fastify/passport';
-import fastifySecureSession from '@fastify/secure-session';
+import { AmqpOptions, AmqpServer } from '@getlarge/nestjs-tools-amqp-transport';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { CustomStrategy } from '@nestjs/microservices';
@@ -17,10 +17,8 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import {
   bearerSecurityScheme,
-  getCookieOptions,
   GLOBAL_API_PREFIX,
   SecurityRequirements,
   sessionSecurityScheme,
@@ -41,8 +39,6 @@ async function bootstrap(): Promise<void> {
     new FastifyAdapter({
       trustProxy: true,
       bodyLimit: 1048576,
-      // bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 5,
-      // maxParamLength: 100,
     }),
     { bufferLogs: true, abortOnError: false },
   );
@@ -70,12 +66,6 @@ async function bootstrap(): Promise<void> {
       },
     },
   });
-  await app.register(fastifySecureSession, {
-    key: configService.get('SESSION_KEY'),
-    cookie: getCookieOptions(environment),
-  });
-  await app.register(fastifyPassport.initialize());
-  await app.register(fastifyPassport.secureSession());
   await app.register(fastifyMultipart);
 
   if (!proxyServerUrls.length && environment === 'development') {
