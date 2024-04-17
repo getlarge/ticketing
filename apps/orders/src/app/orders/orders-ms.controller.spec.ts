@@ -8,11 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  createRmqContext,
   MockOryPermissionsService,
   MockOryRelationshipsService,
 } from '@ticketing/microservices/shared/testing';
-import { Channel } from 'amqp-connection-manager';
 import { Model, Types } from 'mongoose';
 
 import { TicketDocument } from '../tickets/schemas';
@@ -53,21 +51,17 @@ describe('OrdersMSController', () => {
     it('should call "OrdersService.expireById" and in case of success ack RMQ message', async () => {
       // order coming from expiration-service
       const order = { id: new Types.ObjectId().toHexString() } as Order;
-      const context = createRmqContext();
       const ordersController = app.get(OrdersMSController);
       const ordersService = app.get(OrdersService);
       ordersService.expireById = jest.fn(() => Promise.resolve(order));
-      context.getChannelRef().ack = jest.fn();
       //
-      await ordersController.onExpiration(order, context);
+      await ordersController.onExpiration(order);
       expect(ordersService.expireById).toBeCalledWith(order.id);
-      expect(context.getChannelRef().ack).toBeCalled();
     });
 
     it('should call "OrdersService.expireById" and in case of error NOT ack RMQ message', async () => {
       // order coming from expiration-service
       const order = { id: new Types.ObjectId().toHexString() };
-      const context = createRmqContext();
       const expectedError = new Error('Cannot find order');
       const ordersController = app.get(OrdersMSController);
       const ordersService = app.get(OrdersService);
@@ -76,17 +70,11 @@ describe('OrdersMSController', () => {
           throw expectedError;
         })
         .mockRejectedValueOnce(expectedError);
-      context.getChannelRef().ack = jest.fn();
-      const channel = context.getChannelRef() as Channel;
-      channel.ack = jest.fn();
-      channel.nack = jest.fn();
       //
-      await expect(
-        ordersController.onExpiration(order, context),
-      ).rejects.toThrowError(expectedError);
+      await expect(ordersController.onExpiration(order)).rejects.toThrowError(
+        expectedError,
+      );
       expect(ordersService.expireById).toBeCalledWith(order.id);
-      expect(channel.ack).not.toBeCalled();
-      expect(channel.nack).toBeCalled();
     });
   });
 });

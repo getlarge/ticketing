@@ -4,6 +4,7 @@ import { load, dump } from 'js-yaml';
 import { constants, accessSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import {
+  HydraMappings,
   KetoMappings,
   KeywordMappings,
   KratosMappings,
@@ -13,6 +14,7 @@ import {
 
 export const ORY_INFRA_DIRECTORY = join(__dirname, '..', '..', 'infra', 'ory');
 export const ORY_KRATOS_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'kratos');
+export const ORY_HYDRA_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'hydra');
 export const ORY_KETO_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'keto');
 export const ORY_OATHKEEPER_DIRECTORY = join(ORY_INFRA_DIRECTORY, 'oathkeeper');
 
@@ -89,6 +91,10 @@ function getOryMappings<T extends KeywordMappings>(
   return validateMappings(cls, processEnv);
 }
 
+export function getOryHydraMappings(envFilePath: string): HydraMappings {
+  return getOryMappings(HydraMappings, envFilePath);
+}
+
 export function getOryKratosMappings(envFilePath: string): KratosMappings {
   return getOryMappings(KratosMappings, envFilePath);
 }
@@ -133,6 +139,22 @@ export function generateOryKratosConfig(
   ) as ConfigFilepath,
 ): void {
   const mappings = getOryKratosMappings(envFilePath);
+  const config = getOryConfig(configFilepath, mappings);
+  storeGeneratedOryConfig(config, outputFilePath);
+}
+
+export function generateOryHydraConfig(
+  envFilePath: string = join(ORY_HYDRA_DIRECTORY, '.env'),
+  configFilepath: ConfigFilepath = join(
+    ORY_HYDRA_DIRECTORY,
+    'hydra-template.yaml',
+  ) as ConfigFilepath,
+  outputFilePath: ConfigFilepath = join(
+    ORY_HYDRA_DIRECTORY,
+    'hydra.yaml',
+  ) as ConfigFilepath,
+): void {
+  const mappings = getOryHydraMappings(envFilePath);
   const config = getOryConfig(configFilepath, mappings);
   storeGeneratedOryConfig(config, outputFilePath);
 }
