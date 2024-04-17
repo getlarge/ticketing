@@ -5,10 +5,10 @@ import {
   HealthIndicatorResult,
   TimeoutError,
 } from '@nestjs/terminus';
-import * as Redis from 'ioredis';
+import { Redis, RedisOptions } from 'ioredis';
 
 export interface RedisHealthCheckOptions {
-  options?: Redis.RedisOptions;
+  options?: RedisOptions;
   timeout?: number;
 }
 
@@ -26,7 +26,7 @@ export class RedisHealthCheckTimeoutError extends Error {
 export class RedisHealthCheck extends HealthIndicator {
   promiseTimeout(
     delay: number,
-    client: Redis.Redis,
+    client: Redis,
     fn: Promise<void>,
   ): Promise<void> {
     const timeoutError = new RedisHealthCheckTimeoutError(
@@ -47,7 +47,7 @@ export class RedisHealthCheck extends HealthIndicator {
     });
   }
 
-  private pingMicroservice(client: Redis.Redis): Promise<void> {
+  private pingMicroservice(client: Redis): Promise<void> {
     const checkConnection = async (): Promise<void> => {
       if (!client.status.includes('connect')) {
         await client.connect();
