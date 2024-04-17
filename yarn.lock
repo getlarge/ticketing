@@ -7002,13 +7002,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.176":
-  version: 4.14.202
-  resolution: "@types/lodash@npm:4.14.202"
-  checksum: a91acf3564a568c6f199912f3eb2c76c99c5a0d7e219394294213b3f2d54f672619f0fde4da22b29dc5d4c31457cd799acc2e5cb6bd90f9af04a1578483b6ff7
-  languageName: node
-  linkType: hard
-
 "@types/mime@npm:*":
   version: 3.0.4
   resolution: "@types/mime@npm:3.0.4"
@@ -23262,7 +23255,6 @@ __metadata:
     "@types/glob": ^8.1.0
     "@types/jest": 29.4.4
     "@types/js-yaml": ^4.0.9
-    "@types/lodash": ^4.14.176
     "@types/node": 18.14.2
     "@types/passport-jwt": ^3.0.6
     "@types/passport-local": ^1.0.34
@@ -23307,7 +23299,6 @@ __metadata:
     jest-preset-angular: 13.1.4
     js-yaml: ^4.1.0
     localtunnel: ^2.0.2
-    lodash: ^4.17.21
     mongoose: ^6.1.0
     mongoose-update-if-current: ^1.4.0
     nestjs-keyset-paginator: 3.0.4
