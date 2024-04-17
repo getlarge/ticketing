@@ -19,5 +19,5 @@
       }
     }
   },
-  "tags": ["scope:shared", "type:util", "platform:server"]
+  "tags": ["scope:shared", "type:utils", "platform:server"]
 }

@@ -1,3 +1,9 @@
+import { AmqpOptions, AmqpServer } from '@getlarge/nestjs-tools-amqp-transport';
+import {
+  ClusterService,
+  ClusterServiceConfig,
+} from '@getlarge/nestjs-tools-cluster';
+import { LockService } from '@getlarge/nestjs-tools-lock';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LazyModuleLoader, NestFactory } from '@nestjs/core';
@@ -6,9 +12,6 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { ClusterService, ClusterServiceConfig } from '@s1seven/cluster-service';
-import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
-import { LockService } from '@s1seven/nestjs-tools-lock';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { Services } from '@ticketing/shared/constants';
 

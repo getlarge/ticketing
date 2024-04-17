@@ -1,9 +1,5 @@
-import {
-  OryAuthorizationGuard,
-  OryPermissionChecks,
-} from '@getlarge/keto-client-wrapper';
+import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleToString } from '@getlarge/keto-relations-parser';
-import { OryAuthenticationGuard } from '@getlarge/kratos-client-wrapper';
 import {
   Body,
   Controller,
@@ -23,6 +19,10 @@ import {
 } from '@nestjs/swagger';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import { CurrentUser } from '@ticketing/microservices/shared/decorators';
+import {
+  OryAuthenticationGuard,
+  OryAuthorizationGuard,
+} from '@ticketing/microservices/shared/guards';
 import { PermissionNamespaces } from '@ticketing/microservices/shared/models';
 import {
   Actions,
@@ -55,38 +55,7 @@ export class PaymentsController {
       },
     });
   })
-  @UseGuards(
-    OryAuthenticationGuard({
-      cookieResolver: (ctx) =>
-        ctx.switchToHttp().getRequest<FastifyRequest>().headers.cookie,
-      isValidSession: (x) => {
-        return (
-          !!x?.identity &&
-          typeof x.identity.traits === 'object' &&
-          !!x.identity.traits &&
-          'email' in x.identity.traits &&
-          typeof x.identity.metadata_public === 'object' &&
-          !!x.identity.metadata_public &&
-          'id' in x.identity.metadata_public &&
-          typeof x.identity.metadata_public.id === 'string'
-        );
-      },
-      sessionTokenResolver: (ctx) =>
-        ctx
-          .switchToHttp()
-          .getRequest<FastifyRequest>()
-          .headers?.authorization?.replace('Bearer ', ''),
-      postValidationHook: (ctx, session) => {
-        ctx.switchToHttp().getRequest().session = session;
-        ctx.switchToHttp().getRequest()[CURRENT_USER_KEY] = {
-          id: session.identity.metadata_public['id'],
-          email: session.identity.traits.email,
-          identityId: session.identity.id,
-        };
-      },
-    }),
-    OryAuthorizationGuard({}),
-  )
+  @UseGuards(OryAuthenticationGuard(), OryAuthorizationGuard())
   @UsePipes(
     new ValidationPipe({
       transform: true,
