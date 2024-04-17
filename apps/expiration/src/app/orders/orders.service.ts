@@ -13,7 +13,7 @@ import { OrdersProcessorData } from './orders.processor';
 export class OrderService {
   constructor(
     @InjectQueue(ORDERS_QUEUE)
-    private expirationQueue: Queue<OrdersProcessorData>
+    private expirationQueue: Queue<OrdersProcessorData>,
   ) {}
 
   async createJob(order: OrderCreatedEvent['data']): Promise<void> {
