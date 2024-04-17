@@ -4,6 +4,7 @@ import {
   OryRelationshipsModule,
 } from '@getlarge/keto-client-wrapper';
 import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
+import { AmqpClient, AmqpOptions } from '@getlarge/nestjs-tools-amqp-transport';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -13,7 +14,6 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AmqpClient, AmqpOptions } from '@s1seven/nestjs-tools-amqp-transport';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import {
   OryAuthenticationGuard,

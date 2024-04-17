@@ -2,8 +2,6 @@ import './vault';
 
 import fastifyCors from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
-import fastifyPassport from '@fastify/passport';
-import fastifySecureSession from '@fastify/secure-session';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -17,7 +15,6 @@ import {
 } from '@nestjs/swagger';
 import {
   bearerSecurityScheme,
-  getCookieOptions,
   GLOBAL_API_PREFIX,
   SecurityRequirements,
   sessionSecurityScheme,
@@ -68,12 +65,6 @@ async function bootstrap(): Promise<void> {
       },
     },
   });
-  await app.register(fastifySecureSession, {
-    key: configService.get('SESSION_KEY'),
-    cookie: getCookieOptions(environment),
-  });
-  await app.register(fastifyPassport.initialize());
-  await app.register(fastifyPassport.secureSession());
   if (!proxyServerUrls.length && environment === 'production') {
     await app.register(fastifyCors, {
       origin: (origin, cb) => {
