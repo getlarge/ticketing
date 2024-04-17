@@ -32,6 +32,10 @@
       "description": ""
     },
     {
+      "name": "clients",
+      "description": ""
+    },
+    {
       "name": "tickets",
       "description": ""
     },
@@ -482,6 +486,127 @@
         ]
       }
     },
+    "/api/clients": {
+      "post": {
+        "operationId": "ClientsController_create",
+        "summary": "Register a new client - Scope : clients:create_one",
+        "description": "Register a new client",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Client created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "type": "string",
+                      "description": "Ory client id",
+                      "format": "uuid"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Owner id"
+                    }
+                  },
+                  "required": ["id", "clientId", "userId"]
+                }
+              }
+            }
+          }
+        },
+        "tags": ["clients"]
+      }
+    },
+    "/api/clients/on-token-request": {
+      "post": {
+        "operationId": "ClientsController_onSignUp",
+        "summary": "",
+        "description": "Triggered when a client request an OAuth2 token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token session update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "tags": ["clients"]
+      }
+    },
+    "/api/clients/current-client": {
+      "get": {
+        "operationId": "ClientsController_getCurrentClient",
+        "summary": "Get current user - Scope : clients:read_one",
+        "description": "Get details about currently authenticated client",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Current client authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "type": "string",
+                      "description": "Ory client id",
+                      "format": "uuid"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Owner id"
+                    }
+                  },
+                  "required": ["id", "clientId", "userId"]
+                }
+              }
+            }
+          }
+        },
+        "tags": ["clients"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/tickets": {
       "post": {
         "operationId": "TicketsController_create",
@@ -895,7 +1020,7 @@
         },
         "tags": ["tickets"]
       },
-      "put": {
+      "patch": {
         "operationId": "TicketsController_updateById",
         "summary": "Update a ticket - Scope : tickets:update_one",
         "description": "Update a ticket by id",
@@ -1433,7 +1558,7 @@
                     },
                     "version": {
                       "type": "number",
-                      "description": "Payment version represented by a number incremented at each updated"
+                      "description": "Payment version represented by a number incremented at each update"
                     }
                   },
                   "required": ["id", "orderId", "stripeId", "version"]
@@ -1692,6 +1817,36 @@
           }
         },
         "required": ["email", "id", "identityId"]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Ory client id",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Owner id"
+          }
+        },
+        "required": ["id", "clientId", "userId"]
+      },
+      "OryOAuth2WebhookPayloadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OryOAuth2WebhookResponseDto": {
+        "type": "object",
+        "properties": {}
       },
       "NextPaginationDto": {
         "type": "object",
@@ -2049,7 +2204,7 @@
           },
           "version": {
             "type": "number",
-            "description": "Payment version represented by a number incremented at each updated"
+            "description": "Payment version represented by a number incremented at each update"
           }
         },
         "required": ["id", "orderId", "stripeId", "version"]
