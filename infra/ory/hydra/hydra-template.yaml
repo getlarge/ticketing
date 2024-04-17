@@ -1,0 +1,43 @@
+serve:
+  cookies:
+    same_site_mode: Lax
+
+log:
+  level: '##log_level##'
+
+dsn: '##hydra_dsn##'
+
+urls:
+  self:
+    issuer: '##urls_self_issuer##'
+    public: '##urls_self_public##'
+  consent: '##urls_consent##'
+  login: '##urls_login##'
+  logout: '##urls_logout##'
+  identity_provider:
+    publicUrl: '##urls_identity_provider_publicUrl##'
+    url: '##urls_identity_provider_url##'
+
+secrets:
+  system:
+    - '##secrets_system##'
+
+oauth2:
+  token_hook:
+    url: '##oauth2_token_hook_url##'
+    auth:
+      type: api_key
+      config:
+        in: header
+        name: X-Ory-API-Key
+        value: '##oauth2_token_hook_auth_config_value##'
+  client_credentials:
+    default_grant_allowed_scope: true
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: '##oidc_subject_identifiers_pairwise_salt##'
