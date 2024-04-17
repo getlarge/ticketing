@@ -1,6 +1,8 @@
 import './vault';
+import 'reflect-metadata';
 
 import { fastifyHelmet } from '@fastify/helmet';
+import { AmqpOptions, AmqpServer } from '@getlarge/nestjs-tools-amqp-transport';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { CustomStrategy } from '@nestjs/microservices';
@@ -8,7 +10,6 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { AmqpOptions, AmqpServer } from '@s1seven/nestjs-tools-amqp-transport';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { Services } from '@ticketing/shared/constants';
 import { Logger } from 'nestjs-pino';

@@ -9,6 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ClientsModule } from './clients/clients.module';
 import { EnvironmentVariables } from './env';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
@@ -48,6 +49,7 @@ import { UsersModule } from './users/users.module';
     }),
     HealthModule,
     UsersModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [

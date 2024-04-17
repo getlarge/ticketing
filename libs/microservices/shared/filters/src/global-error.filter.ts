@@ -1,7 +1,11 @@
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ArgumentsHost } from '@nestjs/common/interfaces';
 import { RmqContext, RpcException } from '@nestjs/microservices';
-import { ErrorResponse, isCustomError } from '@ticketing/shared/errors';
+import {
+  ErrorResponse,
+  isCustomError,
+  isErrorResponse,
+} from '@ticketing/shared/errors';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { Observable, throwError } from 'rxjs';
 
@@ -55,13 +59,13 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     const status = this.getExceptionStatus(exception);
     const message = this.getExceptionMessage(exception);
     const details = this.getExceptionDetails(exception);
-    const errorResponse: ErrorResponse = {
+    const errorResponse = new ErrorResponse({
       statusCode: status,
       path: request.url,
       errors: message,
       timestamp: new Date().toISOString(),
       details,
-    };
+    });
     this.logger.warn(errorResponse);
     if (response.sent) {
       return;
@@ -77,19 +81,21 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
     const status = this.getExceptionStatus(exception);
     const message = this.getExceptionMessage(exception);
     const details = this.getExceptionDetails(exception);
-    const errorResponse: ErrorResponse = {
+    const errorResponse = new ErrorResponse({
       statusCode: status,
       path: pattern,
       errors: message,
       timestamp: new Date().toISOString(),
       details,
-    };
+    });
     this.logger.warn(errorResponse);
     return throwError(() => errorResponse);
   }
 
+  // TODO: handle OryError
+
   getExceptionStatus(exception: T): HttpStatus {
-    if (isCustomError(exception)) {
+    if (isCustomError(exception) || isErrorResponse(exception)) {
       return exception.statusCode;
     } else if (isHttpException(exception)) {
       return exception.getStatus();
@@ -102,6 +108,8 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
   getExceptionMessage(exception: T): { message: string; field?: string }[] {
     if (isCustomError(exception)) {
       return exception.serializeErrors();
+    } else if (isErrorResponse(exception)) {
+      return exception.errors;
     } else if (isHttpException(exception)) {
       return [{ message: exception.message }];
     } else if (isRpcException(exception)) {
@@ -120,7 +128,7 @@ export class GlobalErrorFilter<T = unknown, R = unknown> {
       return exception.getResponse();
     } else if (isRpcException(exception)) {
       return exception.getError();
-    } else if (hasDetailsProperty(exception)) {
+    } else if (isErrorResponse(exception) || hasDetailsProperty(exception)) {
       return exception.details;
     }
     return null;

@@ -2,22 +2,29 @@ import {
   Controller,
   Inject,
   Logger,
+  UseFilters,
+  UseInterceptors,
   ValidationPipe,
   ValidationPipeOptions,
 } from '@nestjs/common';
 import {
-  Ctx,
   EventPattern,
   MessagePattern,
   Payload,
-  RmqContext,
   Transport,
 } from '@nestjs/microservices';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { EventsMap, Patterns } from '@ticketing/microservices/shared/events';
+import {
+  ExpirationCompletedEvent,
+  ExpirationCompletedEventData,
+  PaymentCreatedEvent,
+  PaymentCreatedEventData,
+} from '@ticketing/microservices/shared/events';
+import {
+  GlobalErrorFilter,
+  MessageAckInterceptor,
+} from '@ticketing/microservices/shared/filters';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
-import type { Channel } from 'amqp-connection-manager';
-import type { Message } from 'amqplib';
 
 import { OrderDto } from './models';
 import { OrdersService } from './orders.service';
@@ -29,6 +36,8 @@ const validationPipeOptions: ValidationPipeOptions = {
   forbidUnknownValues: true,
 };
 
+@UseInterceptors(MessageAckInterceptor)
+@UseFilters(GlobalErrorFilter)
 @Controller()
 export class OrdersMSController {
   readonly logger = new Logger(OrdersMSController.name);
@@ -38,48 +47,19 @@ export class OrdersMSController {
   ) {}
 
   @ApiExcludeEndpoint()
-  @EventPattern(Patterns.ExpirationCompleted, Transport.RMQ)
+  @EventPattern(ExpirationCompletedEvent.name, Transport.RMQ)
   async onExpiration(
-    @Payload() data: EventsMap[Patterns.ExpirationCompleted],
-    @Ctx() context: RmqContext,
+    @Payload() data: ExpirationCompletedEventData,
   ): Promise<void> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      await this.ordersService.expireById(data.id);
-      channel.ack(message);
-    } catch (e) {
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
-      throw e;
-    }
+    await this.ordersService.expireById(data.id);
   }
 
   @ApiExcludeEndpoint()
-  @MessagePattern(Patterns.PaymentCreated, Transport.RMQ)
-  async onPaymentCreated(
+  @MessagePattern(PaymentCreatedEvent.name, Transport.RMQ)
+  onPaymentCreated(
     @Payload(new ValidationPipe(validationPipeOptions))
-    data: EventsMap[Patterns.PaymentCreated],
-    @Ctx() context: RmqContext,
+    data: PaymentCreatedEventData,
   ): Promise<OrderDto> {
-    const channel = context.getChannelRef() as Channel;
-    const message = context.getMessage() as Message;
-    const pattern = context.getPattern();
-    this.logger.debug(`received message on ${pattern}`, {
-      data,
-    });
-    try {
-      const order = await this.ordersService.complete(data);
-      channel.ack(message);
-      return order;
-    } catch (e) {
-      // TODO: requeue when error is timeout or connection error
-      channel.nack(message, false, false);
-      throw e;
-    }
+    return this.ordersService.complete(data);
   }
 }
