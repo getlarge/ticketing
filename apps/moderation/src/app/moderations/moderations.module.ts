@@ -3,13 +3,13 @@ import {
   OryRelationshipsModule,
 } from '@getlarge/keto-client-wrapper';
 import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
+import { LockModule } from '@getlarge/nestjs-tools-lock';
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
-import { LockModule } from '@s1seven/nestjs-tools-lock';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import type { RedisOptions } from 'ioredis';
 import { URL } from 'node:url';
