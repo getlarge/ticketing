@@ -1,3 +1,7 @@
+import {
+  type AmqpOptions,
+  AmqpClient,
+} from '@getlarge/nestjs-tools-amqp-transport';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -6,10 +10,6 @@ import {
   CustomClientOptions,
   Transport,
 } from '@nestjs/microservices';
-import {
-  type AmqpOptions,
-  AmqpClient,
-} from '@s1seven/nestjs-tools-amqp-transport';
 import { getReplyQueueName } from '@ticketing/microservices/shared/rmq';
 import { Services } from '@ticketing/shared/constants';
 

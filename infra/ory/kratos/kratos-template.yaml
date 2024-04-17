@@ -1,4 +1,4 @@
-version: v1.0.0
+version: v1.1.0
 
 dsn: '##kratos_dsn##'
 
@@ -158,3 +158,6 @@ courier:
 feature_flags:
   cacheable_sessions: false
   # use_continue_with_transitions: true
+
+oauth2_provider:
+  url: '##oauth2_provider_url##'
