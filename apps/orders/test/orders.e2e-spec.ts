@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
-import fastifyPassport from '@fastify/passport';
-import fastifySecureSession from '@fastify/secure-session';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import {
@@ -19,7 +17,7 @@ import {
 } from '@ticketing/microservices/shared/testing';
 import { Model, Types } from 'mongoose';
 
-import { AppConfigService, EnvironmentVariables } from '../src/app/env';
+import { EnvironmentVariables } from '../src/app/env';
 import { CreateOrder, Order, OrderStatus } from '../src/app/orders/models';
 import { OrdersModule } from '../src/app/orders/orders.module';
 import { Order as OrderSchema, OrderDocument } from '../src/app/orders/schemas';
@@ -75,17 +73,6 @@ describe('OrdersController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication(new FastifyAdapter());
-
-    const configService = app.get<AppConfigService>(ConfigService);
-    await app.register(fastifySecureSession, {
-      key: configService.get('SESSION_KEY'),
-      cookie: {
-        secure: false,
-        signed: false,
-      },
-    });
-    await app.register(fastifyPassport.initialize());
-    await app.register(fastifyPassport.secureSession());
 
     orderModel = app.get<Model<OrderDocument>>(getModelToken(OrderSchema.name));
     ticketModel = app.get<Model<TicketDocument>>(

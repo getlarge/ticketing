@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export interface PaymentDto {
-
   /**
    * Charge internal identifier
    */
@@ -18,7 +17,7 @@ export interface PaymentDto {
   stripeId: string;
 
   /**
-   * Payment version represented by a number incremented at each updated
+   * Payment version represented by a number incremented at each update
    */
   version: number;
 }
