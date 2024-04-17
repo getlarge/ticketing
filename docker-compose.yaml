@@ -17,6 +17,7 @@ volumes:
   redis_volume:
   rabbitmq_volume:
   kratos_postgres_volume:
+  hydra_postgres_volume:
   keto_postgres_volume:
 
 services:
@@ -375,7 +376,7 @@ services:
 
   # region Ory Kratos
   kratos-migrate:
-    image: oryd/kratos:v1.0.0
+    image: oryd/kratos:v1.1.0
     volumes:
       - ./infra/ory/kratos:/etc/config/kratos:ro
     command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
@@ -389,7 +390,7 @@ services:
   kratos:
     depends_on:
       - kratos-migrate
-    image: oryd/kratos:v1.0.0
+    image: oryd/kratos:v1.1.0
     ports:
       - '4433:4433' # public
       - '4434:4434' # admin
@@ -421,11 +422,17 @@ services:
       - 'dev'
 
   kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    image: oryd/kratos-selfservice-ui-node:v1.1.0
     environment:
       - KRATOS_PUBLIC_URL=http://kratos:4433
       - KRATOS_BROWSER_URL=http://127.0.0.1:4433
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - KRATOS_ADMIN_URL=http://kratos:4434
       - PORT=4455
+      - COOKIE_SECRET=changeme
+      - CSRF_COOKIE_NAME=cookie_name
+      - CSRF_COOKIE_SECRET=changeme
+      - DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES=true
     ports:
       - '4455:4455'
     networks:
@@ -445,6 +452,54 @@ services:
     profiles:
       - 'ory-only'
       - 'dev'
+  # endregion
+
+  #region Hydra
+
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    command: migrate -c /etc/config/hydra/hydra.yaml sql -e --yes
+    volumes:
+      - ./infra/ory/hydra:/etc/config/hydra:ro
+    restart: on-failure
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  hydra:
+    image: oryd/hydra:v2.2.0
+    ports:
+      - '4444:4444' # public
+      - '4445:4445' # admin
+      - '5555:5555' # port to use for OAuth2 redirect URIs
+    command: serve -c /etc/config/hydra/hydra.yaml all --dev
+    volumes:
+      - ./infra/ory/hydra:/etc/config/hydra:ro
+    restart: unless-stopped
+    depends_on:
+      - hydra-migrate
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
+  hydra-postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=hydradb
+    volumes:
+      - hydra_postgres_volume:/var/lib/postgresql/data
+    networks:
+      - ory
+    profiles:
+      - 'ory-only'
+      - 'dev'
+
   # endregion
 
   # region Ory Keto
@@ -469,7 +524,7 @@ services:
       - '4466:4466' # public
       - '4467:4467' # admin
     command: serve -c /etc/config/keto/keto.yaml
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - ./infra/ory/keto:/etc/config/keto:ro
       - ./tools/ory/namespaces.ts:/home/ory/namespaces.ts
