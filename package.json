@@ -133,6 +133,7 @@
     "@getlarge/kratos-cli": "0.3.0",
     "@getlarge/kratos-client-wrapper": "0.1.8",
     "@getlarge/nestjs-tools-amqp-transport": "0.5.2",
+    "@getlarge/nestjs-tools-fastify-upload": "0.1.1",
     "@nest-lab/or-guard": "2.4.1",
     "@nestjs/axios": "3.0.2",
     "@nestjs/bull": "10.1.1",
