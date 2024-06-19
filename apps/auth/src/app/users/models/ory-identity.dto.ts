@@ -1,6 +1,6 @@
 'created_at';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Identity, IdentityState } from '@ory/client';
+import { Identity, IdentityStateEnum } from '@ory/client';
 import { Expose, Type } from 'class-transformer';
 import {
   IsArray,
@@ -52,7 +52,7 @@ export class OryIdentityDto implements Identity {
   @IsString()
   @IsIn(['active', 'inactive'])
   @ApiPropertyOptional()
-  state?: IdentityState;
+  state?: IdentityStateEnum;
 
   @Expose()
   @IsArray()
