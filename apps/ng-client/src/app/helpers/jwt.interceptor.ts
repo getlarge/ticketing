@@ -20,7 +20,7 @@ export class JwtInterceptor implements HttpInterceptor {
   // add auth header with jwt if user is logged in and request is to the api url
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     //? Take token from LocalStorageService.get('token') instead ?
     return this.store.select(UserStoreSelectors.selectCurrentToken).pipe(
@@ -29,16 +29,16 @@ export class JwtInterceptor implements HttpInterceptor {
         // eslint-disable-next-line no-param-reassign
         request = this.updateRequest(
           request,
-          token || LocalStorageService.get('token')
+          token || LocalStorageService.get('token'),
         );
         return next.handle(request);
-      })
+      }),
     );
   }
 
   updateRequest(
     request: HttpRequest<unknown>,
-    token?: string
+    token?: string,
   ): HttpRequest<unknown> {
     const url = new URL(request.url);
     const isApiUrl = url.hostname === environment.apiBaseDomain;

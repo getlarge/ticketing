@@ -4,6 +4,7 @@
   "projectType": "library",
   "sourceRoot": "libs/ng/env/src",
   "prefix": "ticketing",
+  "tags": ["type:env", "scope:shared", "platform:web"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
@@ -14,14 +15,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/ng/env/src/**/*.ts",
-          "libs/ng/env/src/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     }
-  },
-  "tags": ["type:env", "scope:shared", "platform:web"]
+  }
 }
