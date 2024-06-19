@@ -290,25 +290,21 @@
         "simple-import-sort/imports": [
           "error",
           {
-            "groups": [
-              // Side effects.
-              ["^\\u0000"],
-              // 3rd party.
-              ["^@?\\w"],
-              // Anything not fitting group above.
-              ["^"],
-              // Relative imports.
-              ["^\\."]
-            ]
+            "groups": [["^\\u0000"], ["^@?\\w"], ["^"], ["^\\."]]
           }
         ],
-        "simple-import-sort/exports": "error"
+        "simple-import-sort/exports": "error",
+        "@typescript-eslint/no-extra-semi": "error",
+        "no-extra-semi": "off"
       }
     },
     {
       "files": ["*.js", "*.jsx", "*.cjs"],
       "extends": ["plugin:@nx/javascript"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-extra-semi": "error",
+        "no-extra-semi": "off"
+      }
     }
   ]
 }
