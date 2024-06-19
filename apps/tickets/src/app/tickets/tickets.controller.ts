@@ -1,5 +1,11 @@
 import { OryPermissionChecks } from '@getlarge/keto-client-wrapper';
 import { relationTupleBuilder } from '@getlarge/keto-relations-parser';
+import {
+  type StreamStorageFile,
+  FileInterceptor,
+  StreamStorage,
+  UploadedFile,
+} from '@getlarge/nestjs-tools-fastify-upload';
 import { OrGuard } from '@nest-lab/or-guard';
 import {
   applyDecorators,
@@ -37,12 +43,6 @@ import {
   ApiPaginatedDto,
   CurrentUser,
 } from '@ticketing/microservices/shared/decorators';
-import {
-  type StreamStorageFile,
-  FileInterceptor,
-  StreamStorage,
-  UploadedFile,
-} from '@ticketing/microservices/shared/fastify-multipart';
 import { FeatureFlagsGuard } from '@ticketing/microservices/shared/feature-flags';
 import {
   OryAuthenticationGuard,
