@@ -9,5 +9,18 @@
     "**/Thumbs.db": true,
     "**/node_modules": true
   },
-  "vsicons.presets.nestjs": true
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ory/keto/master/.schema/version.schema.json": [
+      "keto*.yml",
+      "keto*.yaml"
+    ],
+    "https://raw.githubusercontent.com/ory/kratos/master/.schema/version.schema.json": [
+      "kratos*.yml",
+      "kratos*.yaml"
+    ],
+    "https://raw.githubusercontent.com/ory/hydra/master/.schema/version.schema.json": [
+      "hydra*.yml",
+      "hydra*.yaml"
+    ]
+  }
 }
