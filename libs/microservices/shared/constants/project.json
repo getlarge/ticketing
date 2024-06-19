@@ -3,13 +3,10 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/microservices/shared/constants/src",
   "projectType": "library",
+  "tags": ["scope:shared", "type:constants", "platform:server"],
   "targets": {
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/microservices/shared/constants/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -21,6 +18,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": ["scope:shared", "type:constants", "platform:server"]
+  }
 }
