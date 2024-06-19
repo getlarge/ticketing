@@ -20,6 +20,7 @@ import { UserStoreModule } from './user-store/user-store.module';
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,
+      connectInZone: true,
     }),
     EffectsModule.forRoot([]),
   ],
