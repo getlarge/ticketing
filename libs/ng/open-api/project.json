@@ -4,6 +4,7 @@
   "projectType": "library",
   "sourceRoot": "libs/ng/open-api/src",
   "prefix": "ticketing",
+  "tags": ["scope:shared", "type:utils", "platform:web"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
@@ -14,14 +15,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/ng/open-api/src/**/*.ts",
-          "libs/ng/open-api/src/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     }
-  },
-  "tags": ["scope:shared", "type:utils", "platform:web"]
+  }
 }
