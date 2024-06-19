@@ -33,6 +33,6 @@ export class OryActionAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = this.getRequest(context);
     const authHeader = req.headers['x-ory-api-key'];
-    return authHeader && authHeader === this.apiKey;
+    return !!authHeader && authHeader === this.apiKey;
   }
 }

@@ -1,7 +1,4 @@
 {
-  "affected": {
-    "defaultBase": "main"
-  },
   "pluginsConfig": {
     "@nx/js": {
       "analyzeSourceFiles": true
@@ -51,6 +48,14 @@
     },
     "e2e": {
       "cache": true
+    },
+    "@nx/eslint:lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/tools/eslint-rules/**/*"
+      ]
     }
   },
   "namedInputs": {
@@ -67,5 +72,7 @@
     ]
   },
   "nxCloudAccessToken": "NzI5M2ZhYzctNzIyOS00NjAwLWI4ZjMtNjg1YjBjYTRhNGNhfHJlYWQtd3JpdGU=",
-  "parallel": 1
+  "parallel": 1,
+  "useInferencePlugins": false,
+  "defaultBase": "main"
 }

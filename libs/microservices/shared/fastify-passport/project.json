@@ -3,15 +3,10 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/microservices/shared/fastify-passport/src",
   "projectType": "library",
+  "tags": ["scope:shared", "type:utils", "platform:server"],
   "targets": {
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "libs/microservices/shared/fastify-passport/**/*.ts"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -23,6 +18,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": ["scope:shared", "type:utils", "platform:server"]
+  }
 }
