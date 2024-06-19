@@ -4746,9 +4746,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/nestjs-tools-fastify-upload@npm:0.1.1":
-  version: 0.1.1
-  resolution: "@getlarge/nestjs-tools-fastify-upload@npm:0.1.1"
+"@getlarge/nestjs-tools-fastify-upload@npm:0.1.2":
+  version: 0.1.2
+  resolution: "@getlarge/nestjs-tools-fastify-upload@npm:0.1.2"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
@@ -4757,7 +4757,7 @@ __metadata:
     "@nestjs/common": 10
     fastify: 4
     rxjs: 7
-  checksum: b450c4f083fe8d6bf97930495fcca047bb87dcae0f4884da7d28ab37a9b37bb7229ebe310729bf82551ac7b8ac5c14ec699fa5009030f3c407ccee4c0f9d81fa
+  checksum: 2597093c30c52fb226096baf4856049445b8cc9081780ca65426af1c0752900b4e086f4174d1380f8a659ec17b51ce6fd0fab2ecfa4d9496d81132287ce57779
   languageName: node
   linkType: hard
 
@@ -24850,7 +24850,7 @@ __metadata:
     "@getlarge/kratos-client-wrapper": 0.1.8
     "@getlarge/nestjs-tools-amqp-transport": 0.5.2
     "@getlarge/nestjs-tools-cluster": 0.15.6
-    "@getlarge/nestjs-tools-fastify-upload": 0.1.1
+    "@getlarge/nestjs-tools-fastify-upload": 0.1.2
     "@getlarge/nestjs-tools-file-storage": 1.0.0
     "@getlarge/nestjs-tools-lock": 1.0.0
     "@golevelup/ts-jest": ^0.4.0
