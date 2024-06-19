@@ -1,4 +1,8 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -23,9 +27,9 @@ import { RootStoreModule } from './store/root-store.module';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
-    HttpClientModule,
     NgbModule,
     RootStoreModule,
     AlertModule,
@@ -77,7 +81,7 @@ import { RootStoreModule } from './store/root-store.module';
       useFactory: () => new AddVersionHeaderInterceptor(environment),
       multi: true,
     },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

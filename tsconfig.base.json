@@ -30,9 +30,6 @@
       "@ticketing/microservices/shared/events": [
         "libs/microservices/shared/events/src/index.ts"
       ],
-      "@ticketing/microservices/shared/fastify-multipart": [
-        "libs/microservices/shared/fastify-multipart/src/index.ts"
-      ],
       "@ticketing/microservices/shared/fastify-passport": [
         "libs/microservices/shared/fastify-passport/src/index.ts"
       ],
