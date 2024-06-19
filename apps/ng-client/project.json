@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/ng-client/src",
   "prefix": "ticketing",
+  "tags": ["scope:client", "type:app", "platform:web"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
@@ -122,13 +123,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/ng-client/src/**/*.ts",
-          "apps/ng-client/src/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -160,6 +155,5 @@
         "command": "docker push ghcr.io/getlarge/ticketing-ng-client:{args.tag}"
       }
     }
-  },
-  "tags": ["scope:client", "type:app", "platform:web"]
+  }
 }
