@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/auth/src",
   "projectType": "application",
+  "tags": ["scope:auth", "type:app", "platform:server"],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -17,7 +18,6 @@
         "target": "node",
         "compiler": "tsc",
         "webpackConfig": "apps/auth/webpack.config.cjs",
-        "isolatedConfig": true,
         "babelUpwardRootMode": true
       },
       "configurations": {
@@ -55,15 +55,7 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "apps/auth/**/*.ts",
-          "apps/auth/**/package.json",
-          "apps/auth/**/project.json"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -147,6 +139,5 @@
       "cwd": ".",
       "parallel": false
     }
-  },
-  "tags": ["scope:auth", "type:app", "platform:server"]
+  }
 }

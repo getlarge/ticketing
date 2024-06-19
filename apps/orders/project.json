@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/orders/src",
   "projectType": "application",
+  "tags": ["scope:orders", "type:app", "platform:server"],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -16,7 +17,6 @@
         "target": "node",
         "compiler": "tsc",
         "webpackConfig": "apps/orders/webpack.config.cjs",
-        "isolatedConfig": true,
         "babelUpwardRootMode": true
       },
       "configurations": {
@@ -54,15 +54,7 @@
       "defaultConfiguration": "local"
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "apps/orders/**/*.ts",
-          "apps/orders/**/package.json",
-          "apps/orders/**/project.json"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -148,6 +140,5 @@
       "cwd": ".",
       "parallel": false
     }
-  },
-  "tags": ["scope:orders", "type:app", "platform:server"]
+  }
 }
