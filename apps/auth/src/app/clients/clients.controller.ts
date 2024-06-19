@@ -91,7 +91,7 @@ export class ClientsController {
   })
   @Post('on-token-request')
   @HttpCode(HttpStatus.OK)
-  onSignUp(
+  onTokenRequest(
     @Body() body: OryOAuth2WebhookPayloadDto,
   ): Promise<OryOAuth2WebhookResponseDto> {
     return this.clientsService.onTokenRequest(body);
