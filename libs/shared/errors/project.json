@@ -3,13 +3,10 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/errors/src",
   "projectType": "library",
+  "tags": ["scope:shared", "type:utils", "platform:shared"],
   "targets": {
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/shared/errors/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -19,6 +16,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": ["scope:shared", "type:utils", "platform:shared"]
+  }
 }

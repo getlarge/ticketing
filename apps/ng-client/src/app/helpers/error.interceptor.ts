@@ -17,7 +17,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((err) => {
@@ -26,7 +26,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           this.store.dispatch(new UserStoreActions.SignOutAction());
         }
         return throwError(() => err.error || err);
-      })
+      }),
     );
   }
 }
