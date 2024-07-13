@@ -1,20 +1,25 @@
 # Ticketing (think concert tickets)
 
-This project is a remix of the app built in the course [microservices with node.js and react](https://www.udemy.com/course/microservices-with-node-js-and-react/) starting in chapter 5.
-You can find the source code for the course [here](https://github.com/StephenGrider/ticketing).
+📚 This repository is a learning resource for building a full-stack application with [Nx](https://nx.dev), [NestJS](https://nestjs.com), [Angular](https://angular.dev), and [Ory](https://ory.sh).
 
-This repository shows:
+It shows:
 
-- another way to manage shared/common modules (with [Nx](https://nx.dev))
-- tricks to use [Fastify](https://fastify.dev) with [NestJS](https://nestjs.com)
-- tricks to consume and produce ES6 modules with NestJS (and Nx)
-- how to integrate [Ory network](https://ory.sh) in NestJS and Angular apps for authentication and authorization flows
-- how to set up Ory in local and remote working environments
-- how to use [RabbitMQ](https://www.rabbitmq.com) with NestJS
+- how to organize internal dependencies
+- tricks to use [Fastify](https://fastify.dev) with `NestJS`
+- tricks to consume and produce ES6 modules with `NestJS`, `Jest` and `Nx`
+- how to integrate `Ory` in `NestJS` and `Angular` apps for authentication and authorization flows
+- how to set up `Ory` in local and remote working environments
+- how to use [RabbitMQ](https://www.rabbitmq.com) with `NestJS`
 - how to define/validate environment variables
 - how to containerize Nx apps with [Docker](https://www.docker.com)
 - how to integrate Nx into a [Kubernetes](https://kubernetes.io) workflow
-- how to dynamically rebuild Docker images based on the Nx project graph
+- how to dynamically rebuild `Docker` images based on the `Nx` project graph
+
+And there is even a list of [challenges](./CHALLENGES.md)! 🏁
+
+> [!INFO]
+> This project is inspired by Stephen Grider's [Microservices with Node JS and React](https://www.udemy.com/course/microservices-with-node-js-and-react/) course on Udemy, starting in chapter 5.
+> You can find the source code for the course [here](https://github.com/StephenGrider/ticketing).
 
 ## User story
 
