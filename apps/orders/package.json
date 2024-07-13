@@ -7,7 +7,6 @@
     "@fastify/helmet": "11.1.1",
     "@fastify/passport": "2.4.0",
     "@fastify/secure-session": "7.5.0",
-    "@fastify/static": "7.0.3",
     "@getlarge/hydra-client-wrapper": "0.2.1",
     "@getlarge/keto-client-wrapper": "0.2.6",
     "@getlarge/keto-relations-parser": "0.0.9",
@@ -26,30 +25,24 @@
     "@nestjs/swagger": "7.3.1",
     "@nestjs/terminus": "10.2.3",
     "@nx/webpack": "19.2.3",
-    "amqp-connection-manager": "4.1.14",
     "amqplib": "0.10.3",
-    "axios": "1.7.2",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
     "dotenv": "16.3.1",
     "dotenv-expand": "10.0.0",
     "fastify": "4.26.2",
-    "ioredis": "5.3.2",
     "mongoose": "^6.1.0",
     "mongoose-update-if-current": "1.4.0",
     "nestjs-keyset-paginator": "3.0.4",
     "nestjs-pino": "3.4.0",
     "passport-jwt": "4.0.0",
-    "pino-http": "8.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "7.8.1",
     "sodium-native": "4.1.1",
     "ts-mixer": "6.0.1",
     "webpack-node-externals": "3.0.0"
   },
-  "peerDependencies": {
-    "promise-breaker": "6.0.0"
-  },
+  "peerDependencies": {},
   "peerDependenciesMeta": {
     "ioredis": {
       "optional": true
