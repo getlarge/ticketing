@@ -9,12 +9,12 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
+import { UsersModule } from '@ticketing/microservices/auth/users';
 import { loadEnv, validate } from '@ticketing/microservices/shared/env';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
 import { UserCredentials } from '@ticketing/shared/models';
 
-import { EnvironmentVariables } from '../src/app/env';
-import { UsersModule } from '../src/app/users/users.module';
 import { envFilePath } from './constants';
 import { signUpAndLogin } from './helpers';
 

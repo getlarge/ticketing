@@ -16,7 +16,7 @@
               {
                 "sourceTag": "type:app",
                 "onlyDependOnLibsWithTags": [
-                  "type:app",
+                  "type:api",
                   "type:core",
                   "type:const",
                   "type:env",
@@ -29,6 +29,7 @@
               {
                 "sourceTag": "type:api",
                 "onlyDependOnLibsWithTags": [
+                  "type:api",
                   "type:const",
                   "type:core",
                   "type:env",

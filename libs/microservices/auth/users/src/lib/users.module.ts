@@ -2,9 +2,9 @@ import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
 
-import { EnvironmentVariables } from '../env';
-import { User, UserSchema } from './schemas/user.schema';
+import { USER_COLLECTION, UserSchema } from './schemas/user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -12,7 +12,7 @@ import { UsersService } from './users.service';
   imports: [
     MongooseModule.forFeatureAsync([
       {
-        name: User.name,
+        name: USER_COLLECTION,
         useFactory: () => {
           return UserSchema;
         },

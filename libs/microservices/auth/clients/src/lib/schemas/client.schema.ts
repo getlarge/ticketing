@@ -1,7 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import {
+  USER_COLLECTION,
+  UserDocument,
+} from '@ticketing/microservices/auth/users';
 import { Document, Model, ObjectId, Schema as MongooseSchema } from 'mongoose';
 
-import { User } from '../../users/schemas';
 import { Client as ClientAttrs } from '../models';
 
 @Schema({
@@ -17,12 +20,12 @@ import { Client as ClientAttrs } from '../models';
     },
   },
 })
-export class Client extends ClientAttrs {
+class Client extends ClientAttrs {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'User',
+    ref: USER_COLLECTION,
   })
-  user: User & Document;
+  user!: UserDocument;
 
   @Prop({ type: String, required: true, unique: true, index: true })
   declare clientId: string;
@@ -35,3 +38,5 @@ export const ClientSchema = SchemaFactory.createForClass(Client);
 export interface ClientModel extends Model<ClientDocument> {
   build(attr: ClientAttrs): ClientDocument;
 }
+
+export const CLIENT_COLLECTION = Client.name;
