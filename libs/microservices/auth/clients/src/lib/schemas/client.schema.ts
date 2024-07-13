@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
+  type UserDocument,
   USER_COLLECTION,
-  UserDocument,
 } from '@ticketing/microservices/auth/users';
 import { Document, Model, ObjectId, Schema as MongooseSchema } from 'mongoose';
 

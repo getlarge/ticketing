@@ -16,7 +16,18 @@ import { Mixin } from 'ts-mixer';
 export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkgPath = join(__dirname, '..', '..', '..', '..', '..', 'package.json');
+const pkgPath = join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  'apps',
+  'auth',
+  'package.json',
+);
 
 class OryEnvironmentVariables extends Mixin(
   OryHydraEnvironmentVariables,

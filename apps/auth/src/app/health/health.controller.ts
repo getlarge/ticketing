@@ -16,6 +16,7 @@ import {
   MemoryHealthIndicator,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
+import type { EnvironmentVariables } from '@ticketing/microservices/auth/env';
 import {
   HEALTH_DEFAULT_HEAP_USED_TRESHOLD,
   HEALTH_DEFAULT_MEMORY_RSS_TRESHOLD,
@@ -24,8 +25,6 @@ import {
 } from '@ticketing/microservices/shared/constants';
 import { Resources } from '@ticketing/shared/constants';
 import { Connection } from 'mongoose';
-
-import type { EnvironmentVariables } from '../env';
 
 @ApiTags(Resources.HEALTH)
 @Controller({ path: Resources.HEALTH, version: VERSION_NEUTRAL })
