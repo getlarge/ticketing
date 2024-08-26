@@ -105,7 +105,7 @@ First, let's set up the working environment to ensure we have the correct Node.j
    gh repo fork getlarge/ticketing --clone
    ```
 
-> **Note:**
+> [!TIP]
 > You can also use the [⑂ Fork button](https://github.com/getlarge/ticketing/fork) on the GitHub repository page to fork the project.
 
 5. **Install Project Dependencies:**
@@ -536,7 +536,7 @@ export class MyApiEnvironmentVariables {
 }
 ```
 
-> **Note**:
+> [!NOTE]
 >
 > - The `decorate` function is used to allow decorators to be used and inherited in mixins. See [ts-mixer](https://github.com/tannerntannern/ts-mixer#mixing-with-decorators) for more details.
 > - The `@Expose` decorator is used to expose the property when using the `plainToClass` method from `class-transformer`, with the option `excludeExtraneousValues`. See [class-transformer](https://github.com/typestack/class-transformer#enforcing-type-safe-instance) for more details.
@@ -579,7 +579,7 @@ export class EnvironmentVariables extends Mixin(
 }
 ```
 
-> **Note**:
+> [!NOTE]
 >
 > - The `Mixin` function is used to allow multiple inheritance of classes. See [ts-mixer](https://github.com/tannerntannern/ts-mixer#overview).
 > - The `@Exclude` decorator is used to exclude the property when using the `plainToClass` method from `class-transformer`.
@@ -618,7 +618,7 @@ import { EnvironmentVariables } from "./env";
 export class AppModule {}
 ```
 
-> **Note**:
+> [!IMPORTANT]
 >
 > - The `validate` function is used to validate the environment variables at load time. It receives the `EnvironmentVariables` class as a parameter and uses the `class-validator` and `class-transformer` libraries to validate the environment variables.
 > - The `cache` option is set to `true` to enable caching of the environment variables, which can improve performance by reducing the number of file reads.
@@ -661,7 +661,7 @@ npx nx serve tickets
 npx nx serve moderation
 ```
 
-> **Note**:
+> [!TIP]:
 >
 > - When running docker commands from a Linux machine, you will need to uncomment the `extra_hosts` options in docker.compose.yaml.
 > - If you use an older version of docker, replace calls to `docker compose` by `docker-compose` in `package.json` scripts.
@@ -918,7 +918,7 @@ This diagram represents the sequence of events during the NestJS application lif
 
 `onModuleDestroy`, `beforeApplicationShutdown` and `onApplicationShutdown` are only triggered if you explicitly call app.close() or if the process receives a special system signal (such as SIGTERM) and you have correctly called enableShutdownHooks at application bootstrap (see below Application shutdown part).
 
-> **Note:**
+> [!IMPORTANT]
 > Lifecycle hooks methods are not invoked in lazy loaded modules and services.
 
 ### 3.1. Implement lifecycle hooks
@@ -1112,7 +1112,7 @@ export class AppService
 
 </details>
 
-> **Tip:**
+> [!TIP]
 > Interfaces are technically optional because they do not exist after TypeScript compilation. Nonetheless, it's good practice to use them in order to benefit from strong typing and editor tooling. To register a lifecycle hook, implement the appropriate interface.
 
 ### 3.2. Enable shutdown hooks
@@ -1164,7 +1164,7 @@ bootstrap().catch((error) => {
 });
 ```
 
-> **Note:**
+> [!IMPORTANT]
 > When you enable shutdown hooks with `app.enableShutdownHooks()`, the onModuleDestroy(), beforeApplicationShutdown() and onApplicationShutdown() hooks are called in the terminating phase (in response to an explicit call to app.close() or upon receipt of system signals such as SIGTERM if opted-in).
 
 </details>
@@ -1298,7 +1298,8 @@ For example, they can be used to log the request, parse the request body, add he
 Create a file `apps/moderation/src/app/middlewares/global.middleware.ts` with the following content:
 
 <details>
-> **Note**:
+
+> [!IMPORTANT]
 > You cannot access the DI container in the global middleware constructor.
 
 ```ts
@@ -1333,18 +1334,18 @@ Global middlewares are registered in `apps/moderation/src/main.ts`:
 <details>
 
 ```ts
-...
+// ...
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter({
     trustProxy: true,
     bodyLimit: +process.env.MAX_PAYLOAD_SIZE || 1048576,
   }),
-  { bufferLogs: true, abortOnError: false }
+  { bufferLogs: true, abortOnError: false },
 );
 
 app.use(globalMiddleware);
-...
+//...
 ```
 
 </details>
@@ -1406,7 +1407,7 @@ export class AppModule implements NestModule {
 
 Guards are commonly used to secure routes; they are executed after middleware and before interceptors, pipes, and route handlers.
 
-> **Note**:
+> [!NOTE]
 >
 > - Guards should have a single responsibility and should not be used to perform business logic.
 > - Guards have a big advantage over middlewares, beyond knowing the request details, they are aware which controller and handler they are protecting.
@@ -1588,7 +1589,7 @@ export class AppController {
 
 Interceptors are used to intercept a request before it reaches a route handler. They are executed after the guards and before the pipes.
 
-> **Note**:
+> [!NOTE]
 >
 > - Interceptors can inject extra logic before and/or after the handler execution.
 > - Interceptors can transform the response returned by the handler.
@@ -1671,7 +1672,7 @@ Or as a provider in `apps/moderation/src/app/app.module.ts`:
   ],
 })
 export class AppModule {
-  ...
+  // ...
 }
 ```
 
@@ -1719,7 +1720,7 @@ Controller interceptors are registered in `apps/moderation/src/app/app.controlle
 @UseInterceptors(ControllerInterceptor)
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  ...
+  // ...
 }
 ```
 
@@ -1767,7 +1768,7 @@ Route interceptors are registered in `apps/moderation/src/app/app.controller.ts`
 @UseInterceptors(ControllerInterceptor)
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  ...
+  // ...
   @Get()
   @UseInterceptors(RouteInterceptor)
   getHello(): string {
@@ -1782,7 +1783,7 @@ export class AppController {
 
 Pipes are used to transform and/or validate the request data before it reaches the route handler. They are executed after the interceptors and before the route handler.
 
-> **Note**:
+> [!NOTE]
 >
 > - Pipes can transform the request data.
 > - Pipes can validate the request data.
@@ -1960,9 +1961,9 @@ Route parameters pipes are registered in `apps/moderation/src/app/app.controller
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  ...
-  @Get(':id')
-  getHello(@Param('id', RouteParamsPipe) id: string): string {
+  //...
+  @Get(":id")
+  getHello(@Param("id", RouteParamsPipe) id: string): string {
     return this.appService.getHello();
   }
 }
@@ -1974,7 +1975,7 @@ export class AppController {
 
 Exception filters are used to catch exceptions thrown by application code. They are executed after the route handler and after the interceptors.
 
-> **Note**:
+> [!NOTE]
 >
 > - Exception filters can catch exceptions thrown by HTTP exceptions, pipes, guards, interceptors, microservices, etc.
 > - A filter should aways return a response to the client, either by throwing an exception, by returning a value or using the FastifyReply instance.
@@ -2044,7 +2045,7 @@ Or as a provider in `apps/moderation/src/app/app.module.ts`:
   ],
 })
 export class AppModule  {
-  ...
+  // ...
 }
 ```
 
@@ -2456,7 +2457,7 @@ Libraries like `cls-hooked` or `async_hooks` in Node.js can help manage request-
 **Dependency Injection:**
 In NestJS, it is possible to scope the [injection to a request](https://docs.nestjs.com/fundamentals/injection-scopes), instantiating the given class or value for each request.
 
-> **Note**
+> [!CAUTION]
 > involve building services aware of their short lifetime, might incur a slight performance penalty.
 
 **Passing Context Manually:**
@@ -2465,7 +2466,7 @@ This solution has the advantage of avoiding any Typescript / Javascript voodoo b
 
 It is also challenging to spread context in certain situations as it requires controlling the whole operation flow to propagate context to all functions and methods.
 
-> **Note**
+> [!CAUTION]
 > This approach is not recommended for complex applications.
 
 The specific implementation and propagation mechanism will depend on the architecture and libraries you are using in your Node.js application. Choosing an approach that aligns with your application's framework, design patterns, and specific requirements is essential.
@@ -2474,7 +2475,7 @@ The specific implementation and propagation mechanism will depend on the archite
 
 We will use the [AsyncLocalStorage](https://nodejs.org/api/async_context.html#class-asynclocalstorage) API to store the request context.
 
-> **Note**:
+> [!IMPORTANT]
 >
 > - The `AsyncLocalStorage` might appear like a simple key-value store, but it is much more than that. It is a store that is scoped to the current async operation, which means that it is safe to use in asynchronous environment.
 > - Tracking the current async operation is started by calling `enterWith` or `run` and ended by calling `exit`.
@@ -2700,7 +2701,7 @@ export class RequestContextMiddleware implements NestMiddleware {
 
 </details>
 
-> **Note:** The `RequestContextMiddleware` is responsible for creating a new store available for the given async operation.
+> [!NOTE] The `RequestContextMiddleware` is responsible for creating a new store available for the given async operation.
 > Beware that this middleware must be registered before any other middleware that requires access to the request context and will only work with NestJS HTTP applications.
 > For microservices an alternative approach would be to use a custom `Guard` instead.
 
