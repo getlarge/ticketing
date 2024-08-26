@@ -17,7 +17,7 @@ It shows:
 
 And there is even a list of [challenges](./CHALLENGES.md)! 🏁
 
-> [!INFO]
+> [!NOTE]
 > This project is inspired by Stephen Grider's [Microservices with Node JS and React](https://www.udemy.com/course/microservices-with-node-js-and-react/) course on Udemy, starting in chapter 5.
 > You can find the source code for the course [here](https://github.com/StephenGrider/ticketing).
 

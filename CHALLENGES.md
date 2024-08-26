@@ -48,5 +48,5 @@ gitGraph LR:
 
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > The exercises are organized in chapters. Each chapter contains a set of exercises that build on top of each other. To resolve an exercise, create a new branch and submit a PR with the solution.
