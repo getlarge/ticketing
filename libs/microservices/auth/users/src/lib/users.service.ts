@@ -4,14 +4,14 @@ import { Model } from 'mongoose';
 
 import { OryWebhookError, User, UserCredentials } from './models';
 import { OnOrySignInDto, OnOrySignUpDto } from './models/ory-identity.dto';
-import { User as UserSchema, UserDocument } from './schemas';
+import { USER_COLLECTION, UserDocument } from './schemas';
 
 @Injectable()
 export class UsersService {
   readonly logger = new Logger(UsersService.name);
 
   constructor(
-    @InjectModel(UserSchema.name) private userModel: Model<UserDocument>,
+    @InjectModel(USER_COLLECTION) private userModel: Model<UserDocument>,
   ) {}
 
   /**

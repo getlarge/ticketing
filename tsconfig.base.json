@@ -18,6 +18,15 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "@ticketing/microservices/auth/clients": [
+        "libs/microservices/auth/clients/src/index.ts"
+      ],
+      "@ticketing/microservices/auth/env": [
+        "libs/microservices/auth/env/src/index.ts"
+      ],
+      "@ticketing/microservices/auth/users": [
+        "libs/microservices/auth/users/src/index.ts"
+      ],
       "@ticketing/microservices/shared/constants": [
         "libs/microservices/shared/constants/src/index.ts"
       ],

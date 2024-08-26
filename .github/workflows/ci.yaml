@@ -6,12 +6,15 @@ on:
       - main
     paths-ignore:
       - README.md
-      - docs/*.md
+      - docs
       - '**/CHANGELOG.md'
       # auto-generated
       - 'apps/**/openapi.json'
       - 'apps/**/package*.json'
       - 'libs/ng/shared/data-access/src/lib/generated/**'
+      - CHALLENGES.md
+      - exercises
+      - assets
   pull_request:
     branches:
       - main
@@ -22,11 +25,14 @@ on:
       - synchronize
     paths-ignore:
       - README.md
-      - docs/*.md
+      - docs
       - '**/CHANGELOG.md'
       # auto-generated
       - 'apps/**/openapi.json'
       - 'apps/**/package*.json'
+      - CHALLENGES.md
+      - exercises
+      - assets
   release:
     types:
       - published

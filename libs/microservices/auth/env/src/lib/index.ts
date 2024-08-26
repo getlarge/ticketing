@@ -16,7 +16,18 @@ import { Mixin } from 'ts-mixer';
 export type AppConfigService = ConfigService<EnvironmentVariables, true>;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkgPath = join(__dirname, '..', '..', '..', '..', '..', 'package.json');
+const pkgPath = join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  'apps',
+  'auth',
+  'package.json',
+);
 
 class OryEnvironmentVariables extends Mixin(
   OryHydraEnvironmentVariables,
@@ -32,12 +43,9 @@ export class EnvironmentVariables extends Mixin(
 ) {
   @Exclude()
   private pkg: { [key: string]: unknown; name?: string; version?: string } =
-    JSON.parse(
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      readFileSync(pkgPath, 'utf8'),
-    );
+    JSON.parse(readFileSync(pkgPath, 'utf8'));
 
-  APP_NAME?: string = 'auth';
+  override APP_NAME?: string = 'auth';
 
-  APP_VERSION?: string = this.pkg?.version || '0.0.1';
+  override APP_VERSION?: string = this.pkg?.version || '0.0.1';
 }

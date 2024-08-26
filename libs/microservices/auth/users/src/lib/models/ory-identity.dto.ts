@@ -1,4 +1,3 @@
-'created_at';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Identity, IdentityStateEnum } from '@ory/client';
 import { Expose, Type } from 'class-transformer';
@@ -17,7 +16,7 @@ export class OryIdentityTraitDto {
   @Expose()
   @IsString()
   @ApiProperty()
-  email: string;
+  email!: string;
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -25,17 +24,17 @@ export class OryIdentityDto implements Identity {
   @Expose()
   @IsUUID()
   @ApiProperty()
-  id: string;
+  id!: string;
 
   @Expose()
   @IsString()
   @ApiProperty()
-  schema_id: string;
+  schema_id!: string;
 
   @Expose()
   @IsString()
   @ApiProperty()
-  schema_url: string;
+  schema_url!: string;
 
   @Expose()
   @IsNotEmptyObject()
@@ -45,7 +44,7 @@ export class OryIdentityDto implements Identity {
     description: 'The identity traits',
     type: OryIdentityTraitDto,
   })
-  traits: OryIdentityTraitDto;
+  traits!: OryIdentityTraitDto;
 
   @Expose()
   @IsOptional()
@@ -115,7 +114,7 @@ export class OnOrySignUpDto {
     description: 'The identity created by Ory',
     type: OryIdentityDto,
   })
-  identity: OryIdentityDto;
+  identity!: OryIdentityDto;
 }
 
 export class OnOrySignInDto {
@@ -125,5 +124,5 @@ export class OnOrySignInDto {
     description: 'The identity logged in Ory',
     type: OryIdentityDto,
   })
-  identity: OryIdentityDto;
+  identity!: OryIdentityDto;
 }

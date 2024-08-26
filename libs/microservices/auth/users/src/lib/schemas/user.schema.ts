@@ -12,7 +12,7 @@ import { User as UserAttrs } from '../models';
     },
   },
 })
-export class User extends UserAttrs {
+class User extends UserAttrs {
   @Prop({
     type: String,
     required: true,
@@ -33,3 +33,5 @@ export const UserSchema = SchemaFactory.createForClass(User);
 export interface UserModel extends Model<UserDocument> {
   build(attr: UserAttrs): UserDocument;
 }
+
+export const USER_COLLECTION = User.name;

@@ -13,6 +13,7 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
 import {
   bearerSecurityScheme,
   GLOBAL_API_PREFIX,
@@ -25,7 +26,6 @@ import { Logger } from 'nestjs-pino';
 import { resolve } from 'path';
 
 import { AppModule } from './app/app.module';
-import { EnvironmentVariables } from './app/env';
 import { APP_FOLDER, DEFAULT_PORT } from './app/shared/constants';
 
 // eslint-disable-next-line max-lines-per-function

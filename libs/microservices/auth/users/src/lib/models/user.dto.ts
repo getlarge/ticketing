@@ -6,11 +6,11 @@ export class UserDto extends OmitType(UserCredentialsDto, ['password']) {
   @ApiProperty({
     description: 'User id',
   })
-  id: string;
+  id!: string;
 
   @ApiProperty({
     description: 'User identity id',
     format: 'uuid',
   })
-  identityId: string;
+  identityId!: string;
 }

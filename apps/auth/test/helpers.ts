@@ -1,11 +1,11 @@
-import { NestFastifyApplication } from '@nestjs/platform-fastify';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 export async function signUpAndLogin(
   app: NestFastifyApplication,
   payload: {
     email: string;
     password: string;
-  }
+  },
 ): Promise<{ session: string }> {
   await app.inject({
     method: 'POST',

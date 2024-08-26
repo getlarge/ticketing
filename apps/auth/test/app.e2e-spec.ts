@@ -4,11 +4,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
 import { validate } from '@ticketing/microservices/shared/env';
 
 import { AppController } from '../src/app/app.controller';
 import { AppService } from '../src/app/app.service';
-import { EnvironmentVariables } from '../src/app/env';
 
 describe('AppController (e2e)', () => {
   let app: NestFastifyApplication;
