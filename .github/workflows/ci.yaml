@@ -467,15 +467,15 @@ jobs:
         if: always()
         run: npx nx-cloud stop-all-agents
 
-      - name: Run Code PushUp
-        run: npx code-pushup autorun --upload.apiKey=${{ secrets.CODE_PUSHUP_API_KEY }}
+      # - name: Run Code PushUp
+      #   run: npx code-pushup autorun --upload.apiKey=${{ secrets.CODE_PUSHUP_API_KEY }}
 
-      - name: Upload Code PushUp report
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-pushup-report
-          path: .code-pushup
-          retention-days: 5
+      # - name: Upload Code PushUp report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: code-pushup-report
+      #     path: .code-pushup
+      #     retention-days: 5
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
