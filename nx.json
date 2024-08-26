@@ -1,34 +1,16 @@
 {
-  "pluginsConfig": {
-    "@nx/js": {
-      "analyzeSourceFiles": true
-    }
-  },
+  "pluginsConfig": { "@nx/js": { "analyzeSourceFiles": true } },
   "generators": {
-    "@nx/react": {
-      "application": {
-        "babel": true
-      }
-    },
-    "@nx/next": {
-      "application": {
-        "style": "css",
-        "linter": "eslint"
-      }
-    },
+    "@nx/react": { "application": { "babel": true } },
+    "@nx/next": { "application": { "style": "css", "linter": "eslint" } },
     "@nx/angular:application": {
       "style": "css",
       "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
-    "@nx/angular:library": {
-      "linter": "eslint",
-      "unitTestRunner": "jest"
-    },
-    "@nx/angular:component": {
-      "style": "css"
-    }
+    "@nx/angular:library": { "linter": "eslint", "unitTestRunner": "jest" },
+    "@nx/angular:component": { "style": "css" }
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
@@ -76,7 +58,7 @@
       "!{projectRoot}/**/jest.setup.[jt]s"
     ]
   },
-  "nxCloudAccessToken": "NzI5M2ZhYzctNzIyOS00NjAwLWI4ZjMtNjg1YjBjYTRhNGNhfHJlYWQtd3JpdGU=",
+  "nxCloudAccessToken": "NDUzNzFiNzctMTY0Yi00N2NiLWFjZjEtZDk5OTVkNDk5YzBlfHJlYWQtd3JpdGU=",
   "parallel": 1,
   "useInferencePlugins": false,
   "defaultBase": "main"
