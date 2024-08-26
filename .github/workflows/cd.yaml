@@ -239,39 +239,24 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # When building images in CI runner
-      - name: Retrieve build output from external workflow
-        if: github.event_name == 'workflow_dispatch'
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ needs.init.outputs.current-branch }}
-          workflow: ${{ env.CI_WORKFLOW }}
-          name: ${{ env.BUILD_ARTIFACTS }}
-          path: ${{ env.BUILD_FOLDER }}
-          if_no_artifact_found: warn
+      - name: Get Nx apps to build
+        id: build-apps
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "list=$(yarn get:apps)" >> $GITHUB_OUTPUT
+          else
+            echo "list=$(yarn affected:apps | tr -d ' ')" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Check build outputs presence
-        uses: xSAVIKx/artifact-exists-action@v0
-        id: check-build-artifact
-        with:
-          name: ${{ env.BUILD_ARTIFACTS }}
+      - name: Build apps
+        run: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
 
-      - name: Retrieve build output from current workflow
-        if: github.event_name != 'workflow_dispatch' && steps.check-build-artifact.outputs.exists == 'true'
-        uses: actions/download-artifact@v4
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BUILD_ARTIFACTS }}
           path: ${{ env.BUILD_FOLDER }}
-
-      - name: Check build artifact existence
-        id: check-build
-        uses: andstor/file-existence-action@v2
-        with:
-          files: ${{ env.BUILD_FOLDER }}
-
-      - if: steps.check-build.outputs.files_exists != 'true'
-        run: exit 1
+          retention-days: 5
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -292,7 +277,7 @@ jobs:
           use: true
 
       - name: Run Docker build
-        run: yarn nx run-many --target=docker-build-remote --projects=$(yarn get:apps) --parallel=4 --verbose
+        run: yarn nx run-many --target=docker-build --conf=development --tag=dev --projects=$(yarn get:apps) --parallel=2 --verbose
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
