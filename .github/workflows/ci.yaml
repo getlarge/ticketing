@@ -445,23 +445,8 @@ jobs:
 
       - run: npx nx-cloud start-ci-run
 
-      - name: Get Nx apps to build
-        id: build-apps
-        run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "list=$(yarn get:apps)" >> $GITHUB_OUTPUT
-          else
-            echo "list=$(yarn affected:apps | tr -d ' ')" >> $GITHUB_OUTPUT
-          fi
-
       - name: Run verifications for affected apps
-        uses: jameshenry/parallel-bash-commands@v1
-        with:
-          cmd1: yarn affected:lint --parallel=4 --exclude=workspace --verbose
-          cmd2: yarn affected:test --parallel=4 --exclude=workspace --ci --verbose
-          cmd3: npx nx run-many --target=build --parallel=4 --projects=${{ steps.build-apps.outputs.list }} --verbose
-          # running e2e tests in parallel create conflicts in DB
-          # cmd4: NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn affected:e2e:backend --ci --verbose
+        run: yarn affected -t lint,test,build --parallel=2 --exclude=workspace --ci --verbose
 
       - name: Stop Nx agents
         if: always()
@@ -476,13 +461,6 @@ jobs:
       #     name: code-pushup-report
       #     path: .code-pushup
       #     retention-days: 5
-
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.BUILD_ARTIFACTS }}
-          path: ${{ env.BUILD_FOLDER }}
-          retention-days: 5
 
       - name: Check libs coverage reports existence
         id: check-libs-coverage
