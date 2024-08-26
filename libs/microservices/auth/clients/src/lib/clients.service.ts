@@ -7,10 +7,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { User } from '@ticketing/microservices/auth/users';
 import { Model, Types } from 'mongoose';
 import { inspect } from 'util';
 
-import { User } from '../users/models';
 import {
   Client,
   CreateClientDto,
@@ -18,7 +18,7 @@ import {
   OryOAuth2WebhookPayloadDto,
   OryOAuth2WebhookResponseDto,
 } from './models';
-import { Client as ClientSchema, ClientDocument } from './schemas';
+import { CLIENT_COLLECTION, ClientDocument } from './schemas';
 
 @Injectable()
 export class ClientsService {
@@ -27,12 +27,13 @@ export class ClientsService {
   constructor(
     @Inject(OryOAuth2Service)
     private readonly oryOAuth2Service: OryOAuth2Service,
-    @InjectModel(ClientSchema.name)
+    @InjectModel(CLIENT_COLLECTION)
     private readonly clientModel: Model<ClientDocument>,
   ) {}
 
   async create(body: CreateClientDto, user: User): Promise<CreatedClientDto> {
     const { scope = 'offline' } = body;
+    // TODO: wrap in transaction
     const { data: oryClient } = await this.oryOAuth2Service.createOAuth2Client({
       oAuth2Client: {
         owner: user.identityId,
@@ -48,7 +49,7 @@ export class ClientsService {
     });
     return {
       ...client.toJSON<Client>(),
-      clientSecret: oryClient.client_secret,
+      clientSecret: oryClient.client_secret as string,
     };
   }
 

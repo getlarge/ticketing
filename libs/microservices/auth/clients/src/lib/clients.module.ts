@@ -3,17 +3,17 @@ import { OryFrontendModule } from '@getlarge/kratos-client-wrapper';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
 
-import { EnvironmentVariables } from '../env';
 import { ClientsController } from './clients.controller';
 import { ClientsService } from './clients.service';
-import { Client, ClientSchema } from './schemas/client.schema';
+import { CLIENT_COLLECTION, ClientSchema } from './schemas/client.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
-        name: Client.name,
+        name: CLIENT_COLLECTION,
         schema: ClientSchema,
       },
     ]),

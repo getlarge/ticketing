@@ -3983,16 +3983,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/hydra-client-wrapper@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@getlarge/hydra-client-wrapper@npm:0.2.1"
+"@getlarge/hydra-client-wrapper@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@getlarge/hydra-client-wrapper@npm:0.3.0"
   dependencies:
     "@nestjs/axios": ^3.0.1
     "@nestjs/common": ^10.0.2
     "@ory/client": ^1.4.9
     axios: 1.6.5
     tslib: ^2.3.0
-  checksum: aabdd5b36b67b1163f49561d7bdb372e0b7ad28d4cff57da7ebe04738529d405ef4ba1e5ca0aaaac23065f1b04412b96639b782536f3744561d05dfafaab71b5
+  checksum: 4c661dbe99dc56f942227329f5e0995e0a8359d248c9b37f00ca2d629e44eae876daf1e338ab18bf21ab99755b6dedd733a1369ab18ff1d77a7b8a496f01c3c2
   languageName: node
   linkType: hard
 
@@ -4030,6 +4030,24 @@ __metadata:
     "@ory/client": ^1.4.9
     axios: 1.6.5
   checksum: e95f2198eb1b3148b74dcda0d4ac9f479c846f592b1d79e629849f019cbb41d145d535b63ea23fe3977e502d753a0f725d86c45f7bad5a74a5b7ec22829ee697
+  languageName: node
+  linkType: hard
+
+"@getlarge/keto-client-wrapper@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@getlarge/keto-client-wrapper@npm:0.3.0"
+  dependencies:
+    "@getlarge/keto-relations-parser": 0.0.9
+    defekt: ^9.3.1
+    rxjs: ^7.8.0
+    tslib: ^2.3.0
+  peerDependencies:
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@nestjs/core": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+  checksum: 9e560ef98d0d203e276de8f828c5c2bc54ed48bf0a3ced0d980b487084c464ac2e9b8c1f986321451b5001ad576abb773bb851d6901af626c2a55656dc7b8aae
   languageName: node
   linkType: hard
 
@@ -4075,9 +4093,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getlarge/nestjs-tools-amqp-transport@npm:0.5.2":
-  version: 0.5.2
-  resolution: "@getlarge/nestjs-tools-amqp-transport@npm:0.5.2"
+"@getlarge/kratos-client-wrapper@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@getlarge/kratos-client-wrapper@npm:0.2.0"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@nestjs/axios": ^3.0.1
+    "@nestjs/common": ^10.0.2
+    "@ory/client": ^1.4.9
+    axios: 1.6.5
+  checksum: 768d1cdd139aabd9efe16d857c32cf2b9d73dea752e95105b43c604e288761b8c8a10ff7483547fb58a98f10860f3aaba439494cd69892288885f41167ec07e7
+  languageName: node
+  linkType: hard
+
+"@getlarge/nestjs-tools-amqp-transport@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@getlarge/nestjs-tools-amqp-transport@npm:0.6.0"
   dependencies:
     "@getlarge/typed-event-emitter": 0.2.0
     tslib: ^2.3.0
@@ -4089,7 +4121,7 @@ __metadata:
     amqplib: 0.10
     promise-breaker: 6.0.0
     rxjs: 7
-  checksum: 310bf82159dcc229dbf638cb033c5a61c093194f5f96d6785608859eadbf0fedc163909fff7a416a9bd4eb0bcd934ab9a1ccfd7f91eb263a9a71a8acb5107205
+  checksum: 3b2b4a33d644ffdb1c2de33090d60e6278d6b22a726a07c4e4dd1652bd9cdc5bb124483e25b79c92d55913755572db78ae15eb3856f7ea2d75ec1e4804cc20ad
   languageName: node
   linkType: hard
 
@@ -6951,6 +6983,15 @@ __metadata:
   version: 0.1.3
   resolution: "@swc/counter@npm:0.1.3"
   checksum: df8f9cfba9904d3d60f511664c70d23bb323b3a0803ec9890f60133954173047ba9bdeabce28cd70ba89ccd3fd6c71c7b0bd58be85f611e1ffbe5d5c18616598
+  languageName: node
+  linkType: hard
+
+"@swc/helpers@npm:~0.5.11":
+  version: 0.5.12
+  resolution: "@swc/helpers@npm:0.5.12"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 293c0cb8f41804f94beb04a764bbcfaf316707ec43947713154ac66311590299446bf9b96ab253ce59ce9e435a0edc8cc2bf93f88dc3989f9241271507dd5fe9
   languageName: node
   linkType: hard
 
@@ -23412,13 +23453,13 @@ __metadata:
     "@fastify/secure-session": 7.5.0
     "@fastify/static": 7.0.3
     "@fastify/swagger": 8.14.0
-    "@getlarge/hydra-client-wrapper": 0.2.1
+    "@getlarge/hydra-client-wrapper": 0.3.0
     "@getlarge/keto-cli": 0.2.3
-    "@getlarge/keto-client-wrapper": 0.2.6
+    "@getlarge/keto-client-wrapper": 0.3.0
     "@getlarge/keto-relations-parser": 0.0.9
     "@getlarge/kratos-cli": 0.3.0
-    "@getlarge/kratos-client-wrapper": 0.1.8
-    "@getlarge/nestjs-tools-amqp-transport": 0.5.2
+    "@getlarge/kratos-client-wrapper": 0.2.0
+    "@getlarge/nestjs-tools-amqp-transport": 0.6.0
     "@getlarge/nestjs-tools-fastify-upload": 0.1.1
     "@golevelup/ts-jest": ^0.4.0
     "@jscutlery/semver": ^3.1.0
@@ -23458,6 +23499,7 @@ __metadata:
     "@stripe/stripe-js": 1.34.0
     "@swc-node/register": 1.9.2
     "@swc/core": 1.5.7
+    "@swc/helpers": ~0.5.11
     "@types/amqplib": ^0.10.4
     "@types/bull": ^3.15.8
     "@types/glob": ^8.1.0

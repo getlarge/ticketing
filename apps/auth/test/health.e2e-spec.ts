@@ -5,10 +5,10 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AppConfigService } from '@ticketing/microservices/auth/env';
 
 import { AppController } from '../src/app/app.controller';
 import { AppService } from '../src/app/app.service';
-import { AppConfigService } from '../src/app/env';
 import { HealthModule } from '../src/app/health/health.module';
 import { envFilePath } from './constants';
 

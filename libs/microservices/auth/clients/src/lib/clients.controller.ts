@@ -16,6 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { User } from '@ticketing/microservices/auth/users';
 import { SecurityRequirements } from '@ticketing/microservices/shared/constants';
 import {
   CurrentClient,
@@ -29,7 +30,6 @@ import {
 import { Actions, Resources } from '@ticketing/shared/constants';
 import { requestValidationErrorFactory } from '@ticketing/shared/errors';
 
-import { User } from '../users/models';
 import { ClientsService } from './clients.service';
 import {
   Client,

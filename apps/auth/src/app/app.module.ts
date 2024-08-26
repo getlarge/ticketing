@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ClientsModule } from '@ticketing/microservices/auth/clients';
+import { EnvironmentVariables } from '@ticketing/microservices/auth/env';
+import { UsersModule } from '@ticketing/microservices/auth/users';
 import { GLOBAL_API_PREFIX } from '@ticketing/microservices/shared/constants';
 import { validate } from '@ticketing/microservices/shared/env';
 import { GlobalErrorFilter } from '@ticketing/microservices/shared/filters';
@@ -9,10 +12,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientsModule } from './clients/clients.module';
-import { EnvironmentVariables } from './env';
 import { HealthModule } from './health/health.module';
-import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
