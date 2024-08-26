@@ -138,7 +138,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "node ./tools/deploy/build-docker.js -p 'ng-client' -c {args.conf} -t {args.tag} -f {args.file}"
+          "node ./tools/deploy/build-docker.js -p 'ng-client' -c {args.conf} -t {args.tag} -f infra/docker/Dockerfile.frontend"
         ],
         "parallel": false
       }
