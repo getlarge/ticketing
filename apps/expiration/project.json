@@ -76,7 +76,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "node ./tools/deploy/build-docker.js -p expiration -c {args.conf} -t {args.tag} -f {args.file}"
+          "node ./tools/deploy/build-docker.js -p expiration -c {args.conf} -t {args.tag} -f infra/docker/Dockerfile.backend"
         ],
         "parallel": false
       }
